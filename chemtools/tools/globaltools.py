@@ -4,6 +4,7 @@
 
 import math
 
+
 class BaseGlobalTool(object):
     '''
     Base Class of Global Conceptual DFT Reactivity Descriptors.
@@ -129,3 +130,46 @@ class QuadraticGlobalTool(BaseGlobalTool):
         value = math.pow(3 * self._ip - self._ea, 2)
         value /= (8 * (self._ip - self._ea))
         return value
+
+
+class LinearGlobalTool(BaseGlobalTool):
+    '''
+    Class of Global Conceptual DFT Reactivity Descriptors based on the Linear Energy Model.
+    '''
+    def __init__(self, ip, ea):
+        '''
+        Parameters
+        ----------
+        ip : float
+            The ionization potential.
+        ea : float
+            The electron affinity.
+        '''
+        super(self.__class__, self).__init__(ip, ea)
+
+    @property
+    def mu_minus(self):
+        '''
+        Chemical potential defined as the first derivative from below of the linear energy model w.r.t.
+        the number of electrons at fixed external potential.
+        $\mu^{-} = -I$
+        '''
+        return -1 * self._ip
+
+    @property
+    def mu_plus(self):
+        '''
+        Chemical potential defined as the first derivative from above of the linear energy model w.r.t.
+        the number of electrons at fixed external potential.
+        $\mu^{+} = -A$
+        '''
+        return -1 * self._ea
+
+    @property
+    def mu_zero(self):
+        '''
+        'Chemical potential defined as the averaged first derivative of the linear energy model w.r.t.
+        the number of electrons at fixed external potential.
+        $\mu^{0} = \frac{\mu^{+} + \mu^{-}}{2}$
+        '''
+        return -0.5 * (self._ea + self._ip)
