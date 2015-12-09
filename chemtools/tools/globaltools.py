@@ -4,10 +4,9 @@
 
 import math
 
-
-class QuadraticGlobalTool(object):
+class BaseGlobalTool(object):
     '''
-    Class of Global Conceptual DFT Reactivity Descriptors based on the Quadratic Energy Model.
+    Base Class of Global Conceptual DFT Reactivity Descriptors.
     '''
     def __init__(self, ip, ea):
         '''
@@ -40,6 +39,22 @@ class QuadraticGlobalTool(object):
     def ea(self):
         '''Electron Affinity (EA).'''
         return self._ea
+
+
+class QuadraticGlobalTool(BaseGlobalTool):
+    '''
+    Class of Global Conceptual DFT Reactivity Descriptors based on the Quadratic Energy Model.
+    '''
+    def __init__(self, ip, ea):
+        '''
+        Parameters
+        ----------
+        ip : float
+            The ionization potential.
+        ea : float
+            The electron affinity.
+        '''
+        super(self.__class__, self).__init__(ip, ea)
 
     @property
     def mu(self):

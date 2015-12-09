@@ -4,8 +4,8 @@
 
 import numpy as np
 from horton import BeckeMolGrid
-from chemtools.tools.glob import QuadraticGlobalTool
-from chemtools.tools.local import QuadraticLocalTool
+from chemtools.tools.globaltools import QuadraticGlobalTool
+from chemtools.tools.localtools import QuadraticLocalTool
 
 
 class Analyze(object):
