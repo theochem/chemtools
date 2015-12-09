@@ -339,3 +339,19 @@ class GeneralizedGlobalTool(object):
     @property
     def params(self):
         return self._params
+
+
+class ExpGlobalTool(BaseGlobalTool):
+    '''
+    Class of Global Conceptual DFT Reactivity Descriptors based on the Exponential Energy Model.
+    '''
+    def __init__(self, energy_zero, energy_plus, energy_minus, num_elec_zero):
+        super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus)
+        self._num_elec_zero = num_elec_zero
+
+    @property
+    def num_elec_zero(self):
+        """ Number of electrons of the system at ground state
+        """
+        return self._num_elec_zero
+    
