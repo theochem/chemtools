@@ -2,9 +2,9 @@
 '''Local Conceptual Density Functional Theory (DFT) Reactivity Tools.'''
 
 
-class QuadraticLocalTool(object):
+class BaseLocalTool(object):
     '''
-    Class of Local Conceptual DFT Reactivity Descriptors based on the Quadratic Energy Model.
+    Base Class of Local Conceptual DFT Reactivity Descriptors.
     '''
     def __init__(self, ff_plus=None, ff_minus=None, global_instance=None):
         '''
@@ -69,11 +69,48 @@ class QuadraticLocalTool(object):
 
         # Get the global property & the Fukui Function
         global_descriptor = getattr(self._global_instance, global_prop)
-        fukui_funcion = getattr(self, 'ff_' + ff_type)
-        if fukui_funcion is None:
+        fukui_function = getattr(self, 'ff_' + ff_type)
+        if fukui_function is None:
             raise ValueError('The ff_{0} is None!'.format(ff_type))
 
         # Compute the local property
-        local_descriptor = global_descriptor * fukui_funcion
+        local_descriptor = global_descriptor * fukui_function
 
         return local_descriptor
+
+
+class LinearLocalTool(BaseLocalTool):
+    '''
+    Class of Local Conceptual DFT Reactivity Descriptors based on the Linear Energy Model.
+    '''
+
+    def __init__(self, ff_plus=None, ff_minus=None, global_instance=None):
+        '''
+        Parameters
+        ----------
+        ff_plus : np.ndarray
+            Positive Fukui Function.
+        ff_minus : np.ndarray
+            Negative Fukui Function.
+        global_instance :
+            Instance of ``GlobalConceptualTool`` class.
+        '''
+        super(self.__class__, self).__init__(ff_plus, ff_minus, global_instance)
+
+
+class QuadraticLocalTool(BaseLocalTool):
+    '''
+    Class of Local Conceptual DFT Reactivity Descriptors based on the Quadratic Energy Model.
+    '''
+    def __init__(self, ff_plus=None, ff_minus=None, global_instance=None):
+        '''
+        Parameters
+        ----------
+        ff_plus : np.ndarray
+            Positive Fukui Function.
+        ff_minus : np.ndarray
+            Negative Fukui Function.
+        global_instance :
+            Instance of ``GlobalConceptualTool`` class.
+        '''
+        super(self.__class__, self).__init__(ff_plus, ff_minus, global_instance)
