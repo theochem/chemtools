@@ -6,36 +6,36 @@ class QuadraticLocalTool(object):
     '''
     Class of Local Conceptual DFT Reactivity Descriptors based on the Quadratic Energy Model.
     '''
-    def __init__(self, ff_above=None, ff_below=None, global_instance=None):
+    def __init__(self, ff_plus=None, ff_minus=None, global_instance=None):
         '''
         Parameters
         ----------
-        ff_above : np.ndarray
+        ff_plus : np.ndarray
             Positive Fukui Function.
-        ff_below : np.ndarray
+        ff_minus : np.ndarray
             Negative Fukui Function.
         global_instance :
             Instance of ``GlobalConceptualTool`` class.
         '''
-        self._ff_above = ff_above
-        self._ff_below = ff_below
+        self._ff_plus = ff_plus
+        self._ff_minus = ff_minus
         self._global_instance = global_instance
 
         # Define central Fukui Functional as the average of FF+ and FF-
-        if (self._ff_above is not None) and (self._ff_below is not None):
-            self._ff_central = 0.5 * (self._ff_above + self._ff_below)
+        if (self._ff_plus is not None) and (self._ff_minus is not None):
+            self._ff_central = 0.5 * (self._ff_plus + self._ff_minus)
         else:
             self._ff_central = None
 
     @property
-    def ff_above(self):
+    def ff_plus(self):
         '''Fukui Function from above (positive Fukui Function).'''
-        return self._ff_above
+        return self._ff_plus
 
     @property
-    def ff_below(self):
+    def ff_minus(self):
         '''Fukui Function from below (negative Fukui Function).'''
-        return self._ff_below
+        return self._ff_minus
 
     @property
     def ff_central(self):
@@ -45,8 +45,8 @@ class QuadraticLocalTool(object):
     @property
     def dual_descriptor(self):
         '''Dual Descriptor.'''
-        if (self._ff_above is not None) and (self._ff_below is not None):
-            value = self._ff_above - self._ff_below
+        if (self._ff_plus is not None) and (self._ff_minus is not None):
+            value = self._ff_plus - self._ff_minus
             return value
 
     def __getattr__(self, attr):
