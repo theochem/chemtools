@@ -44,7 +44,8 @@ class Analyze(object):
             self._mol.exp_alpha, self._grid.points, np.array([lumo_index]))**2
 
         # Make instances of the ConceptualTools
-        self._glob = QuadraticGlobalTool(ip=-homo_energy, ea=-lumo_energy)
+        # self._glob = QuadraticGlobalTool(0, ip=-homo_energy, ea=-lumo_energy)
+        self._glob = QuadraticGlobalTool(0, lumo_energy, -homo_energy)
         self._local = QuadraticLocalTool(ff_plus=homo_density,
                                           ff_minus=lumo_density,
                                           global_instance=self._glob)

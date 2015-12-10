@@ -28,7 +28,7 @@ def test_local():
 
 def test_local_H_fake_FF():
     # H atom: IP=13.59843401, EA=0.754195
-    glob = QuadraticGlobalTool(13.59843401, 0.754195)
+    glob = QuadraticGlobalTool(0, -0.754195, 13.59843401)
     loc = QuadraticLocalTool(ff_plus=np.array([ 1.1, 2.3, -3.7]),
                               ff_minus=np.array([-4.2, 5.0, 9.4]),
                               global_instance=glob)

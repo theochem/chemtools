@@ -3,7 +3,9 @@
 from chemtools import *
 import numpy.testing
 
-def check_global_properties(global_instance, ip, ea):
+def check_global_properties(global_instance, energy_zero, energy_plus, energy_minus):
+    ip = energy_minus - energy_zero
+    ea = energy_zero - energy_plus
     # chemical potential (mu) and hardness (eta)
     mu, eta = -0.5 * (ip + ea), (ip - ea)
     # check the attributes of the gloabl instance
@@ -23,14 +25,14 @@ def check_global_properties(global_instance, ip, ea):
 
 def test_global_H():
     # H atom: IP=13.59843401, EA=0.754195
-    g = QuadraticGlobalTool(13.59843401, 0.754195)
-    check_global_properties(g, 13.59843401, 0.754195)
+    g = QuadraticGlobalTool(0, -0.754195, 13.59843401)
+    check_global_properties(g, 0, -0.754195, 13.59843401)
 
 
 def test_global_Mg():
     # Mg atom: IP=7.646235, EA=0.0
-    g = QuadraticGlobalTool(7.646235, 0.0)
-    check_global_properties(g, 7.646235, 0.0)
+    g = QuadraticGlobalTool(0, 0, -7.646235)
+    check_global_properties(g,0, 0, -7.646235)
 
 def check_global_linear_properties(global_instance, ip, ea):
     # mu_plus, mu_minus, mu_zero
@@ -42,10 +44,12 @@ def check_global_linear_properties(global_instance, ip, ea):
 
 def test_global_linear_H():
     # H atom: IP=13.59843401, EA=0.754195
-    g = LinearGlobalTool(13.59843401, 0.754195)
-    check_global_linear_properties(g, 13.59843401, 0.754195)
+    g = LinearGlobalTool(0, -0.754195, 13.59843401)
+    check_global_linear_properties(g, 0, -0.754195, 13.59843401)
 
 def test_global_linear_Mg():
     # Mg atom: IP=7,646235, EA=0.0
-    g = LinearGlobalTool(7.646235, 0.0)
-    check_global_linear_properties(g, 7.646235, 0.0)
+    g = LinearGlobalTool(0, 0, -7.646235)
+    check_global_linear_properties(g,0, 0, -7.646235)
+    g = QuadraticGlobalTool(0, 0, -7.646235)
+    check_global_properties(g, 0, 0, -7.646235)
