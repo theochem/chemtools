@@ -3,6 +3,9 @@
 
 
 import math
+import numpy as np
+import sympy as sp
+from scipy.optimize import root
 
 
 class BaseGlobalTool(object):
@@ -185,3 +188,152 @@ class LinearGlobalTool(BaseGlobalTool):
         $\mu^{0} = \frac{\mu^{+} + \mu^{-}}{2}$
         '''
         return -0.5 * (self._ea + self._ip)
+
+
+class GeneralizedGlobalTool(object):
+    '''
+    Generalized, Symbolic Class of Global Conceptual DFT Reactivity Descriptors.
+    '''
+
+    def __init__(self, expr, nelec, n_energies, n_symbol, **kwargs):
+        '''
+        Initialize the GeneralizedGlobalTool instance.
+
+        Parameters
+        ----------
+        expr : sp.Expr
+            The expression for the property.
+        nelec : int
+            The electron number at which to evaluate `expr`.
+        n_energies : dict
+            The energy values of `expr` at different electron-numbers.  The dict has int
+            (electron-number) keys, float (energy) values.
+        n_symbol : sp.Symbol
+            The symbol in `expr` that represents electron-number.
+        nelec_symbol: sp.Symbol, optional
+            The symbol in `expr` that represents the electron-number at which to evaluate
+            `expr`.  If not specified, assume that it is already expressed numerically in
+            `expr`.
+        guess : dict, optional
+            Guesses at the values of the parameters of `expr`.  The dict has sp.Symbol
+            keys, 
+            
+        opts :
+            weffqwduweybuyv
+
+        '''
+
+        # Handle keyword arguments
+        defaults = {'nelec_symbol': None, 'guess': None, 'opts': None}
+        defaults.update(kwargs)
+        nelec_symbol = defaults['nelec_symbol'] if defaults['nelec_symbol'] else None
+        guess = defaults['guess'] if defaults['guess'] else None
+        opts = defaults['opts'] if defaults['opts'] else None
+
+        # Assign basic attributes
+        self._nelec = nelec
+        self._n_symbol = n_symbol
+
+        # Solve for the parameters of the given `expr`, update attributes
+        solution = self._solve(n_energies, nelec_symbol, guess, opts)
+        self.expr = solution[0]
+        self.d_expr = solution[1]
+        self._params = solution[2]
+        self._mu = self._subs_nelec(self.d_expr)
+        self._eta = self._subs_nelec(self._diff_nelec(self.d_expr))
+    
+
+    def __getattr__(self, attr):
+        order = int(attr.rsplit('_', 1)[-1])
+        if order == 0:
+            return self._mu
+        elif order == 1:
+            return self._eta
+        else:
+            return self.d_expr.diff(self._n_symbol, order).subs(self._n_symbol, self._nelec)
+
+
+    def _diff_nelec(self, expr, order=1):
+        return expr.diff(self._n_symbol, order)
+
+
+    def _subs_nelec(self, expr):
+        return expr.subs(self._n_symbol, self._nelec)
+
+    
+    def _solve(self, n_energies, nelec_symbol=None, guess=None, opts=None):
+        """
+        Doc string.
+    
+        Parameters
+        ----------
+        guess : dict, optional
+            Initial guess at the values of `expr`'s parameters.  sp.Symbol keys, float
+            values.
+        ndiff : int, optional
+            The order of the derivative to take.  Defaults to 1.
+        opts : dict, optional
+            Additional options to pass to the internal SciPy solver.
+    
+        Returns
+        -------
+        solution :
+            dfwfererveruvini
+    
+        """
+    
+        # Argument handler
+        expr = self._expr
+        if not opts:
+            opts = {}
+    
+        # Parse the non-electron-number parameters of `expr`
+        if nelec_symbol:
+            expr = expr.subs(nelec_symbol, self._nelec)
+        params = [symbol for symbol in expr.atoms() if isinstance(symbol, sp.Symbol) and
+                  (symbol is not self._n_symbol) and (symbol is not nelec_symbol)]
+    
+        # Fill in missing non- energy/electron-number symbols from `guess`
+        if guess:
+            guess.update({symbol: 0. for symbol in params if symbol not in guess})
+    
+        # Create initial guess at `params`' values if `guess` is not given
+        else:
+            guess = {symbol: 0. for symbol in params}
+    
+        # Construct system of equations to _solve for `params`
+        assert len(params) <= len(n_energies), \
+            "The system is underdetermined.  Inlcude more (electron-number, energy) pairs."
+        system_eqns = []
+        for n, energy in n_energies.iteritems():
+            eqn = sp.lambdify((params,), expr.subs(self._n_symbol, n) - energy, "numpy")
+            system_eqns.append(eqn)
+    
+        # Solve the system of equations for `params`
+        def objective(args):
+            return np.array([fun(args) for fun in system_eqns])
+    
+        root_guess = np.array([guess[symbol] for symbol in params])
+        roots = root(objective, root_guess, **opts)
+        assert roots.success, \
+            "The system of equations could not be solved."
+    
+        # Substitute in the values of `params` and differentiate wrt `n_symbol`
+        expr = expr.subs([(params[i], roots.x[i]) for i in range(len(params))])
+        d_expr = expr.diff(self._n_symbol)
+    
+        # Return
+        return expr, d_expr, roots.x
+
+
+    @property
+    def mu(self):
+        return self._mu
+
+
+    @property
+    def eta(self):
+        return self._eta
+
+# vim: set textwidth=90 :
+
