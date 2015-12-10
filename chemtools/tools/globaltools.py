@@ -148,7 +148,7 @@ class LinearGlobalTool(BaseGlobalTool):
     '''
     Class of Global Conceptual DFT Reactivity Descriptors based on the Linear Energy Model.
     '''
-    def __init__(self, ip, ea):
+    def __init__(self, energy_zero, energy_plus, energy_minus):
         '''
         Parameters
         ----------
@@ -157,7 +157,7 @@ class LinearGlobalTool(BaseGlobalTool):
         ea : float
             The electron affinity.
         '''
-        super(self.__class__, self).__init__(ip, ea)
+        super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus)
 
     @property
     def mu_minus(self):

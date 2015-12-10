@@ -34,8 +34,11 @@ def test_global_Mg():
     g = QuadraticGlobalTool(0, 0, -7.646235)
     check_global_properties(g,0, 0, -7.646235)
 
-def check_global_linear_properties(global_instance, ip, ea):
+def check_global_linear_properties(global_instance, energy_zero, energy_plus, energy_minus):
     # mu_plus, mu_minus, mu_zero
+    ip = energy_minus - energy_zero
+    ea = energy_zero - energy_plus
+    # chemical potential (mu) and hardness (eta)
     mu_plus, mu_minus, mu_zero = -ea, -ip, -0.5*(ea + ip)
     # check the attributes of the global instance
     numpy.testing.assert_almost_equal(global_instance.mu_plus, mu_plus, 6)
@@ -50,6 +53,6 @@ def test_global_linear_H():
 def test_global_linear_Mg():
     # Mg atom: IP=7,646235, EA=0.0
     g = LinearGlobalTool(0, 0, -7.646235)
-    check_global_linear_properties(g,0, 0, -7.646235)
+    check_global_linear_properties(g, 0, 0, -7.646235)
     g = QuadraticGlobalTool(0, 0, -7.646235)
     check_global_properties(g, 0, 0, -7.646235)
