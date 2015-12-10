@@ -216,10 +216,9 @@ class GeneralizedGlobalTool(object):
             `expr`.
         guess : dict, optional
             Guesses at the values of the parameters of `expr`.  The dict has sp.Symbol
-            keys, 
-            
-        opts :
-            weffqwduweybuyv
+            keys, float values.
+        opts : dict, optional
+            Optional keyword arguments to pass to the internal SciPy solver.
 
         '''
 
@@ -235,7 +234,7 @@ class GeneralizedGlobalTool(object):
         self._n_symbol = n_symbol
 
         # Solve for the parameters of the given `expr`, update attributes
-        solution = self._solve(n_energies, nelec_symbol, guess, opts)
+        solution = self._solve(expr, n_energies, nelec_symbol, guess, opts)
         self.expr = solution[0]
         self.d_expr = solution[1]
         self._params = solution[2]
@@ -261,29 +260,27 @@ class GeneralizedGlobalTool(object):
         return expr.subs(self._n_symbol, self._nelec)
 
     
-    def _solve(self, n_energies, nelec_symbol=None, guess=None, opts=None):
-        """
-        Doc string.
-    
-        Parameters
-        ----------
-        guess : dict, optional
-            Initial guess at the values of `expr`'s parameters.  sp.Symbol keys, float
-            values.
-        ndiff : int, optional
-            The order of the derivative to take.  Defaults to 1.
-        opts : dict, optional
-            Additional options to pass to the internal SciPy solver.
-    
+    def _solve(self, expr, n_energies, nelec_symbol=None, guess=None, opts=None):
+        '''
+        Solve for the parameters of the tool's property expression.
+
+        See __init__().
+
         Returns
         -------
-        solution :
-            dfwfererveruvini
-    
-        """
+        solution : tuple of sp.Expr, dict
+            The solved expression, the solved expression's first derivative wrt
+            electron-number, and a dictionary of sp.Symbol keys corresponding to the
+            value of the expression's solved parameters.
+
+        Raises
+        ------
+        AssertionError
+            If the system if underdetermined or if the expression cannot be solved.
+
+        '''
     
         # Argument handler
-        expr = self._expr
         if not opts:
             opts = {}
     
@@ -301,9 +298,9 @@ class GeneralizedGlobalTool(object):
         else:
             guess = {symbol: 0. for symbol in params}
     
-        # Construct system of equations to _solve for `params`
+        # Construct system of equations to solve for `params`
         assert len(params) <= len(n_energies), \
-            "The system is underdetermined.  Inlcude more (electron-number, energy) pairs."
+            "The system is underdetermined.  Inlcude more (elec-number, energy) pairs."
         system_eqns = []
         for n, energy in n_energies.iteritems():
             eqn = sp.lambdify((params,), expr.subs(self._n_symbol, n) - energy, "numpy")
@@ -321,9 +318,12 @@ class GeneralizedGlobalTool(object):
         # Substitute in the values of `params` and differentiate wrt `n_symbol`
         expr = expr.subs([(params[i], roots.x[i]) for i in range(len(params))])
         d_expr = expr.diff(self._n_symbol)
+        param_dict = {}
+        for i in range(len(params)):
+            param_dict[params[i]] = roots.x[i]
     
         # Return
-        return expr, d_expr, roots.x
+        return expr, d_expr, param_dict
 
 
     @property
@@ -334,6 +334,11 @@ class GeneralizedGlobalTool(object):
     @property
     def eta(self):
         return self._eta
+
+
+    @property
+    def params(self):
+        return self._params
 
 # vim: set textwidth=90 :
 

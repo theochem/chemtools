@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import sympy as sp
+import numpy as np
 from chemtools import *
 import numpy.testing
 
@@ -56,3 +58,25 @@ def test_global_linear_Mg():
     check_global_linear_properties(g, 0, 0, -7.646235)
     g = QuadraticGlobalTool(0, 0, -7.646235)
     check_global_properties(g, 0, 0, -7.646235)
+
+def test_generalized_global():
+    # Create an instance
+    n, n0, a, b, g = sp.symbols("n, n0, a, b, g")
+    expr = a * sp.exp(-g * (n - n0)) + b
+    nelec = 5
+    n_symbol = n
+    nelec_symbol = n0
+    n_energies = {4: 6., 5: 5., 6: 3.}
+    guess = {a: -1., b: 4., g: -np.log(3.)}
+    glb = GeneralizedGlobalTool(expr, nelec, n_energies, n_symbol, nelec_symbol=n0, guess=guess)
+    # Try some attributes/properties
+    test_stuff = glb.mu, glb.eta, glb.hyper_eta_3
+    # Test the accuracy
+    answer = glb.params
+    d_expr_actual = expr.subs([ (param, value) for (param, value) in answer.iteritems() ])
+    d_expr_actual = d_expr_actual.subs(n0, nelec)
+    d_expr_actual = d_expr_actual.diff(n)
+    vals_computed = [ glb.d_expr.subs(n, value) for value in range(0,10) ]
+    vals_actual = [ d_expr_actual.subs(n, value) for value in range(0,10) ]
+    for i in range(0,10):
+        assert np.abs(vals_computed[i] - vals_actual[i]) < 1e-9
