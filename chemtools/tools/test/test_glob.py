@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from chemtools import *
-
+import numpy.testing
 
 def check_global_properties(global_instance, ip, ea):
     # chemical potential (mu) and hardness (eta)
@@ -21,7 +21,6 @@ def check_global_properties(global_instance, ip, ea):
     value = (3 * ip - ea)**2 / (8 * (ip - ea))
     assert abs(global_instance.electrofugality - value) < 1.e-6
 
-
 def test_global_H():
     # H atom: IP=13.59843401, EA=0.754195
     g = QuadraticGlobalTool(13.59843401, 0.754195)
@@ -32,3 +31,21 @@ def test_global_Mg():
     # Mg atom: IP=7.646235, EA=0.0
     g = QuadraticGlobalTool(7.646235, 0.0)
     check_global_properties(g, 7.646235, 0.0)
+
+def check_global_linear_properties(global_instance, ip, ea):
+    # mu_plus, mu_minus, mu_zero
+    mu_plus, mu_minus, mu_zero = -ea, -ip, -0.5*(ea + ip)
+    # check the attributes of the global instance
+    numpy.testing.assert_almost_equal(global_instance.mu_plus, mu_plus, 6)
+    numpy.testing.assert_almost_equal(global_instance.mu_minus, mu_minus, 6)
+    numpy.testing.assert_almost_equal(global_instance.mu_zero, mu_zero, 6)
+
+def test_global_linear_H():
+    # H atom: IP=13.59843401, EA=0.754195
+    g = LinearGlobalTool(13.59843401, 0.754195)
+    check_global_linear_properties(g, 13.59843401, 0.754195)
+
+def test_global_linear_Mg():
+    # Mg atom: IP=7,646235, EA=0.0
+    g = LinearGlobalTool(7.646235, 0.0)
+    check_global_linear_properties(g, 7.646235, 0.0)
