@@ -2,6 +2,9 @@
 '''Local Conceptual Density Functional Theory (DFT) Reactivity Tools.'''
 
 
+from horton import doc_inherit
+
+
 class BaseLocalTool(object):
     '''
     Base Class of Local Conceptual DFT Reactivity Descriptors.
