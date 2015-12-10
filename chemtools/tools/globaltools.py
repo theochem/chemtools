@@ -9,17 +9,27 @@ class BaseGlobalTool(object):
     '''
     Base Class of Global Conceptual DFT Reactivity Descriptors.
     '''
-    def __init__(self, ip, ea):
+    def __init__(self, zero_energy, plus_energy, minus_energy):
         '''
         Parameters
         ----------
-        ip : float
-            The ionization potential.
-        ea : float
-            The electron affinity.
+        zero_energy : float
+            The energy of inital state
+        plus_energy : float
+            The energy of initial state with one more electron
+        minus_energy : float
+            The energy of inital state with one less electron
         '''
-        self._ip = ip
-        self._ea = ea
+        self._zero_energy = zero_energy
+        self._minus_energy = minus_energy
+        self._plus_energy = plus_energy
+        self._ip = minus_energy - zero_energy
+        self._ea = zero_energy - plus_energy
+
+    @property
+    def zero_energy(self):
+        '''Energy of inital state'''
+        return self._zero_energy
 
     @property
     def ip(self):
@@ -46,16 +56,18 @@ class QuadraticGlobalTool(BaseGlobalTool):
     '''
     Class of Global Conceptual DFT Reactivity Descriptors based on the Quadratic Energy Model.
     '''
-    def __init__(self, ip, ea):
+    def __init__(self, zero_energy, plus_energy, minus_energy):
         '''
         Parameters
         ----------
-        ip : float
-            The ionization potential.
-        ea : float
-            The electron affinity.
+        zero_energy : float
+            The energy of inital state
+        plus_energy : float
+            The energy of initial state with one more electron
+        minus_energy : float
+            The energy of inital state with one less electron
         '''
-        super(self.__class__, self).__init__(ip, ea)
+        super(self.__class__, self).__init__(zero_energy, plus_energy, minus_energy)
 
     @property
     def mu(self):
