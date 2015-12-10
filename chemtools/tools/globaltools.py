@@ -195,7 +195,7 @@ class GeneralizedGlobalTool(object):
     Generalized, Symbolic Class of Global Conceptual DFT Reactivity Descriptors.
     '''
 
-    def __init__(self, expr, nelec, n_energies, n_symbol, **kwargs):
+    def __init__(self, expr, n0, n_energies, n_symbol, **kwargs):
         '''
         Initialize the GeneralizedGlobalTool instance.
 
@@ -203,14 +203,14 @@ class GeneralizedGlobalTool(object):
         ----------
         expr : sp.Expr
             The expression for the property.
-        nelec : int
+        n0 : int
             The electron number at which to evaluate `expr`.
         n_energies : dict
             The energy values of `expr` at different electron-numbers.  The dict has int
             (electron-number) keys, float (energy) values.
         n_symbol : sp.Symbol
             The symbol in `expr` that represents electron-number.
-        nelec_symbol: sp.Symbol, optional
+        n0_symbol: sp.Symbol, optional
             The symbol in `expr` that represents the electron-number at which to evaluate
             `expr`.  If not specified, assume that it is already expressed numerically in
             `expr`.
@@ -223,25 +223,25 @@ class GeneralizedGlobalTool(object):
         '''
 
         # Handle keyword arguments
-        defaults = {'nelec_symbol': None, 'guess': None, 'opts': None}
+        defaults = {'n0_symbol': None, 'guess': None, 'opts': None}
         defaults.update(kwargs)
-        nelec_symbol = defaults['nelec_symbol'] if defaults['nelec_symbol'] else None
+        n0_symbol = defaults['n0_symbol'] if defaults['n0_symbol'] else None
         guess = defaults['guess'] if defaults['guess'] else None
         opts = defaults['opts'] if defaults['opts'] else None
 
         # Assign basic attributes
-        self._nelec = nelec
+        self._n0 = n0
         self._n_symbol = n_symbol
+        self._n0_symbol = n0_symbol
 
         # Solve for the parameters of the given `expr`, update attributes
-        solution = self._solve(expr, n_energies, nelec_symbol, guess, opts)
+        solution = self._solve(expr, n_energies, n0_symbol, guess, opts)
         self.expr = solution[0]
         self.d_expr = solution[1]
         self._params = solution[2]
-        self._mu = self._subs_nelec(self.d_expr)
-        self._eta = self._subs_nelec(self._diff_nelec(self.d_expr))
+        self._mu = self.d_expr.subs([(self._n_symbol, n0), (self._n0_symbol, n0)])
+        self._eta = self.d_expr.diff(self._n_symbol).subs([(self._n_symbol, n0), (self._n0_symbol, n0)])
     
-
     def __getattr__(self, attr):
         order = int(attr.rsplit('_', 1)[-1])
         if order == 0:
@@ -249,18 +249,9 @@ class GeneralizedGlobalTool(object):
         elif order == 1:
             return self._eta
         else:
-            return self.d_expr.diff(self._n_symbol, order).subs(self._n_symbol, self._nelec)
+            return self.d_expr.diff(self._n_symbol, order).subs(self._n_symbol, self._n0)
 
-
-    def _diff_nelec(self, expr, order=1):
-        return expr.diff(self._n_symbol, order)
-
-
-    def _subs_nelec(self, expr):
-        return expr.subs(self._n_symbol, self._nelec)
-
-    
-    def _solve(self, expr, n_energies, nelec_symbol=None, guess=None, opts=None):
+    def _solve(self, expr, n_energies, n0_symbol=None, guess=None, opts=None):
         '''
         Solve for the parameters of the tool's property expression.
 
@@ -281,14 +272,15 @@ class GeneralizedGlobalTool(object):
         '''
     
         # Argument handler
+        expr_free = expr.copy()
         if not opts:
             opts = {}
     
         # Parse the non-electron-number parameters of `expr`
-        if nelec_symbol:
-            expr = expr.subs(nelec_symbol, self._nelec)
+        if n0_symbol:
+            expr = expr.subs(n0_symbol, self._n0)
         params = [symbol for symbol in expr.atoms() if isinstance(symbol, sp.Symbol) and
-                  (symbol is not self._n_symbol) and (symbol is not nelec_symbol)]
+                  (symbol is not self._n_symbol) and (symbol is not n0_symbol)]
     
         # Fill in missing non- energy/electron-number symbols from `guess`
         if guess:
@@ -316,7 +308,7 @@ class GeneralizedGlobalTool(object):
             "The system of equations could not be solved."
     
         # Substitute in the values of `params` and differentiate wrt `n_symbol`
-        expr = expr.subs([(params[i], roots.x[i]) for i in range(len(params))])
+        expr = expr_free.subs([(params[i], roots.x[i]) for i in range(len(params))])
         d_expr = expr.diff(self._n_symbol)
         param_dict = {}
         for i in range(len(params)):
@@ -325,20 +317,25 @@ class GeneralizedGlobalTool(object):
         # Return
         return expr, d_expr, param_dict
 
+    def energy(self, n0):
+        return self.expr.subs([(self._n_symbol, n0), (self._n0_symbol, n0)])
+
+    def d_energy(self, n0, order=1):
+        if order == 1:
+            return self.d_expr.subs([(self._n_symbol, n0), (self._n0_symbol, n0)])
+        elif order > 1:
+            return self.d_expr.diff(self._n_symbol, order - 1).subs([(self._n_symbol, n0), (self._n0_symbol, n0)])
+        else:
+            raise ValueError
 
     @property
     def mu(self):
         return self._mu
 
-
     @property
     def eta(self):
         return self._eta
 
-
     @property
     def params(self):
         return self._params
-
-# vim: set textwidth=90 :
-

@@ -61,22 +61,20 @@ def test_global_linear_Mg():
 
 def test_generalized_global():
     # Create an instance
-    n, n0, a, b, g = sp.symbols("n, n0, a, b, g")
-    expr = a * sp.exp(-g * (n - n0)) + b
-    nelec = 5
-    n_symbol = n
-    nelec_symbol = n0
+    n_symbol, n0_symbol, a, b, g = sp.symbols("n, n0, a, b, g")
+    expr = a * sp.exp(-g * (n_symbol - n0_symbol)) + b
+    n0 = 5
     n_energies = {4: 6., 5: 5., 6: 3.}
     guess = {a: -1., b: 4., g: -np.log(3.)}
-    glb = GeneralizedGlobalTool(expr, nelec, n_energies, n_symbol, nelec_symbol=n0, guess=guess)
+    glb = GeneralizedGlobalTool(expr, n0, n_energies, n_symbol, n0_symbol=n0_symbol, guess=guess)
     # Try some attributes/properties
     test_stuff = glb.mu, glb.eta, glb.hyper_eta_3
     # Test the accuracy
     answer = glb.params
     d_expr_actual = expr.subs([ (param, value) for (param, value) in answer.iteritems() ])
-    d_expr_actual = d_expr_actual.subs(n0, nelec)
-    d_expr_actual = d_expr_actual.diff(n)
-    vals_computed = [ glb.d_expr.subs(n, value) for value in range(0,10) ]
-    vals_actual = [ d_expr_actual.subs(n, value) for value in range(0,10) ]
+    d_expr_actual = d_expr_actual.diff(n_symbol)
+    d_expr_actual = d_expr_actual.subs([(n_symbol, n0), (n0_symbol, n0)])
+    vals_computed = [ glb.d_expr.subs([(n_symbol, value), (n0_symbol, value)]) for value in range(0,10) ]
+    vals_actual = [ d_expr_actual.subs(n_symbol, value) for value in range(0,10) ]
     for i in range(0,10):
-        assert np.abs(vals_computed[i] - vals_actual[i]) < 1e-9
+        assert abs(vals_computed[i] - vals_actual[i]) < 1e-9
