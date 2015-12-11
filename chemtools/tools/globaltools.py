@@ -344,6 +344,34 @@ class GeneralizedGlobalTool(object):
 class ExpGlobalTool(BaseGlobalTool):
     '''
     Class of Global Conceptual DFT Reactivity Descriptors based on the Exponential Energy Model.
+
+    The energy model has the form:
+    ..math::
+        E(N) = A \exp(-\gamma(N-N_0)) + B
+
+    We can solve for :math: `\gamma`, :math:`A`, and :math:`B` with the conditions that
+    ..math::
+        E(N_0-1) &= A \exp(\gamma) + B\\
+        E(N_0) &= A + B\\
+        E(N_0+1) &= A \exp(-\gamma) + B\\
+
+    Solving this,
+    ..math::
+        B &= E(N_0) A\\
+        E(N_0+1) - E(N_0) &= A \exp(-\gamma) - A\\
+        &= (A-1) \exp(-\gamma)\\
+        A &= 1+ \frac{E(N_0+1)-E(N_0)}}{\exp(-\gamma)}\\
+        &= E(N_0-1)-E(N_0) &= (A-1)\exp(\gamma)\\
+        &= (E(N_0+1)) - E(N_0) \frac{\exp(\gamma)}{\exp(-\gamma)}\\
+        &= (E(N_0+1)) - E(N_0) \exp(2\gamma)\\
+        \exp(2\gamma) &= \frac{E(N_0-1)-E(N_0)}{E(N_0+1)-E(N_0)}\\
+        \gamma &= \frac{1}{2} \ln \left( \frac{E(N_0-1)-E(N_0)}{E(N_0+1)-E(N_0)} \right)\\
+        &= \frac{1}{2} \ln \frac{IP}{EA}\\
+        A &= 1 + \sqrt{(E(N_0+1)-E(N_0))(E(N_0)-1)(E(N_0))}\\
+        &= 1+ \sqrt{(EA)(IP)}
+        B &= E(N_0) - 1 - \sqrt{(E(N_0+1)-E(N_0))(E(N_0)-1)(E(N_0))}\\
+        &= 1 - A
+
     '''
     def __init__(self, energy_zero, energy_plus, energy_minus, num_elec_zero):
         super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus)
@@ -355,3 +383,138 @@ class ExpGlobalTool(BaseGlobalTool):
         """
         return self._num_elec_zero
     
+    @property
+    def gamma(self):
+        """ First parameter of exponential energy model
+
+        Note
+        ----
+        See class documentation
+        """
+        return 0.5 * math.log(self.ip / self.ea)
+
+    @property
+    def A(self):
+        """ Second parameter of epxonential energy model
+
+        Note
+        ----
+        See class documentation
+        """
+        return 1 + math.sqrt(self.ip * self.ea)
+
+    @property
+    def B(self):
+        """ Third parameter of exponential energy model
+
+        Note
+        ----
+        See class documentation
+        """
+        return self.ground_state - self.A
+
+    def energy(self, num_elec):
+        """Energy for system with arbitrary number of electrons
+
+        ..math::
+            E(N) = A \exp(-\gamma(N-N_0)) + B
+
+        Parameter
+        ---------
+        num_elec: float
+            Number of electrons
+
+        Returns
+        -------
+        energy: float
+        """
+        return self.A * math.exp(-self.gamma * (num_elec - self.num_elec_ground)) + self.B
+
+    def grand_potential(self, num_elec):
+        """Grand potential for system with arbitrary number of election
+        
+        ..math::
+            \omega = E - \miu * N
+        Parameters
+        ----------
+        num_elec : float
+            Number of electrons
+        
+        Returns
+        -------
+        name : float
+        """
+        return self.energy(num_elec) - self.chemical_potential * num_elec
+
+    def energy_parital_der(self, order):
+        """ Returns the nth order partial derivative of the energy with respect
+        to the number of electrons evaluated at the ground state number of electrons
+
+        ..math::
+            E(N) = A \exp(-\gamma(N-N_0)) + B
+            \frac{\partial}{\partial N} E(N) = A (-\gamma) \exp(-\gamma(N-N_0)) = \mu
+            \frac{\partial^2}{\partial N^2} E(N) = A (-\gamma)^2 \exp(-\gamma(N-N_0)) = \eta
+            \frac{\partial^n}{\partial N^n} E(N) = A (-\gamma)^n \exp(-\gamma(N-N_0)) = \eta^{(n-1)}
+
+        Parameters
+        ----------
+        order: int
+            Order of the partial differentiation
+
+        Returns
+        -------
+        hyperhardness: float
+            nth order hyperhardness
+
+        Raises
+        ------
+        AssertionError
+            If order is negative
+        """
+        assert order >= 0
+        if order > 0:
+            return self.A * (-self.gamma)**order
+        else:
+            return self.A + self.B
+
+    @property
+    def chemical_potential(self):
+        """ Returns the chemical potential of the system using the Exponential
+        energy model at the number of electrons at ground state
+
+        ..math::
+            \frac{\partial}{\partial N} E(N_0) = A (-\gamma)
+        """
+        return self.energy_partial_der(1)
+
+    @property
+    def mu(self):
+        """ Chemical potential
+        """
+        return self.chemical_potential
+
+    @property
+    def chemical_hardness(self):
+        """ Returns the chemical hardness of the system using the Exponential
+        energy model at the number of electrons at ground state
+
+        ..math::
+            \frac{\partial^2}{\partial N^2} E(N_0) = A (-\gamma)^2
+        """
+        return self.energy_partial_der(2)
+
+    @property
+    def eta(self):
+        """ Chemical hardness
+        """
+        return self.chemical_hardness
+
+    @property
+    def softness(self):
+        """ Returns chemical softness
+
+        ..math::
+            (\frac{\partial^2 \Omega}{\\partial \mu^2})_{v(\ver{r})} &= \frac{1}{\eta}\\
+            &= S
+        """
+        return 1./self.chemical_hardness
