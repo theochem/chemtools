@@ -235,12 +235,15 @@ class GeneralizedGlobalTool(object):
         self._n0_symbol = n0_symbol
 
         # Solve for the parameters of the given `expr`, update attributes
+        substitutions = [(self._n_symbol, n0)]
+        if self._n0_symbol:
+            substitutions.append((self._n0_symbol, n0))
         solution = self._solve(expr, n_energies, n0_symbol, guess, opts)
         self.expr = solution[0]
         self.d_expr = solution[1]
         self._params = solution[2]
-        self._mu = self.d_expr.subs([(self._n_symbol, n0), (self._n0_symbol, n0)])
-        self._eta = self.d_expr.diff(self._n_symbol).subs([(self._n_symbol, n0), (self._n0_symbol, n0)])
+        self._mu = self.d_expr.subs(substitutions)
+        self._eta = self.d_expr.diff(self._n_symbol).subs(substitutions)
     
     def __getattr__(self, attr):
         order = int(attr.rsplit('_', 1)[-1])
@@ -249,7 +252,7 @@ class GeneralizedGlobalTool(object):
         elif order == 1:
             return self._eta
         else:
-            return self.d_expr.diff(self._n_symbol, order).subs(self._n_symbol, self._n0)
+            return self._eta.diff(self._n_symbol, order).subs(self._n_symbol, self._n0)
 
     def _solve(self, expr, n_energies, n0_symbol=None, guess=None, opts=None):
         '''
@@ -271,8 +274,10 @@ class GeneralizedGlobalTool(object):
 
         '''
     
-        # Argument handler
+        # Initialize variables
         expr_free = expr.copy()
+        if not guess:
+            guess = {}
         if not opts:
             opts = {}
     
@@ -280,15 +285,11 @@ class GeneralizedGlobalTool(object):
         if n0_symbol:
             expr = expr.subs(n0_symbol, self._n0)
         params = [symbol for symbol in expr.atoms() if isinstance(symbol, sp.Symbol) and
-                  (symbol is not self._n_symbol) and (symbol is not n0_symbol)]
+                  #(symbol is not self._n_symbol) and (symbol is not n0_symbol)]
+                  symbol not in (self._n_symbol, n0_symbol)]
     
-        # Fill in missing non- energy/electron-number symbols from `guess`
-        if guess:
-            guess.update({symbol: 0. for symbol in params if symbol not in guess})
-    
-        # Create initial guess at `params`' values if `guess` is not given
-        else:
-            guess = {symbol: 0. for symbol in params}
+        # Fill in missing non-electron-number symbols from `guess`
+        guess.update({symbol: 0. for symbol in params if symbol not in guess})
     
         # Construct system of equations to solve for `params`
         assert len(params) <= len(n_energies), \
@@ -310,23 +311,24 @@ class GeneralizedGlobalTool(object):
         # Substitute in the values of `params` and differentiate wrt `n_symbol`
         expr = expr_free.subs([(params[i], roots.x[i]) for i in range(len(params))])
         d_expr = expr.diff(self._n_symbol)
-        param_dict = {}
-        for i in range(len(params)):
-            param_dict[params[i]] = roots.x[i]
+        param_dict = {params[i]: roots.x[i] for i in range(len(params))}
     
         # Return
         return expr, d_expr, param_dict
 
     def energy(self, n0):
-        return self.expr.subs([(self._n_symbol, n0), (self._n0_symbol, n0)])
+        value = self.expr.subs(self._n_symbol, n0)
+        if self._n0_symbol:
+            value = value.subs(self._n0_symbol, n0)
+        return value
 
     def d_energy(self, n0, order=1):
-        if order == 1:
-            return self.d_expr.subs([(self._n_symbol, n0), (self._n0_symbol, n0)])
-        elif order > 1:
-            return self.d_expr.diff(self._n_symbol, order - 1).subs([(self._n_symbol, n0), (self._n0_symbol, n0)])
-        else:
-            raise ValueError
+        assert order >= 0, \
+            "The order of the derivative cannot be negative."
+        value = self.d_expr.diff(self._n_symbol, order - 1).subs(self._n_symbol, n0)
+        if self._n0_symbol:
+            value = value.subs(self._n0_symbol, n0)
+        return value
 
     @property
     def mu(self):

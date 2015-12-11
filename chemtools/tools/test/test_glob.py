@@ -66,6 +66,7 @@ def test_generalized_global():
     n0 = 5
     n_energies = {4: 6., 5: 5., 6: 3.}
     guess = {a: -1., b: 4., g: -np.log(3.)}
+    expr, n0_symbol = expr.subs(n0_symbol, 5), None
     glb = GeneralizedGlobalTool(expr, n0, n_energies, n_symbol, n0_symbol=n0_symbol, guess=guess)
     # Try some attributes/properties
     test_stuff = glb.mu, glb.eta, glb.hyper_eta_3
@@ -73,8 +74,7 @@ def test_generalized_global():
     answer = glb.params
     d_expr_actual = expr.subs([ (param, value) for (param, value) in answer.iteritems() ])
     d_expr_actual = d_expr_actual.diff(n_symbol)
-    d_expr_actual = d_expr_actual.subs([(n_symbol, n0), (n0_symbol, n0)])
-    vals_computed = [ glb.d_expr.subs([(n_symbol, value), (n0_symbol, value)]) for value in range(0,10) ]
+    vals_computed = [ glb.d_expr.subs([(n_symbol, value)]) for value in range(0,10) ]
     vals_actual = [ d_expr_actual.subs(n_symbol, value) for value in range(0,10) ]
     for i in range(0,10):
         assert abs(vals_computed[i] - vals_actual[i]) < 1e-9
