@@ -275,7 +275,7 @@ class GeneralizedGlobalTool(object):
         elif order == 1:
             return self._eta
         else:
-            return self._eta.diff(self._n_symbol, order).subs(self._n_symbol, self._n0)
+            return self._eta.diff(self._n_symbol, order - 1).subs(self._n_symbol, self._n0)
 
     def _solve(self, expr, n_energies, n0_symbol=None, guess=None, opts=None):
         '''
@@ -316,7 +316,7 @@ class GeneralizedGlobalTool(object):
 
         # Construct system of equations to solve for `params`
         assert len(params) <= len(n_energies), \
-            "The system is underdetermined.  Inlcude more (elec-number, energy) pairs."
+            "The system is underdetermined.  Include more (elec-number, energy) pairs."
         system_eqns = []
         for n, energy in n_energies.iteritems():
             eqn = sp.lambdify((params,), expr.subs(self._n_symbol, n) - energy, "numpy")
