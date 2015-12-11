@@ -202,7 +202,7 @@ class GeneralizedGlobalTool(object):
         Parameters
         ----------
         expr : sp.Expr
-            The expression for the property.
+            The energy expression.
         n0 : int
             The electron number at which to evaluate `expr`.
         n_energies : dict
@@ -244,9 +244,32 @@ class GeneralizedGlobalTool(object):
         self._params = solution[2]
         self._mu = self.d_expr.subs(substitutions)
         self._eta = self.d_expr.diff(self._n_symbol).subs(substitutions)
-    
+
     def __getattr__(self, attr):
+        '''
+        Allow any attribute corresponding to higher-order derivatives of energy
+        (e.g., `gen_global.hyper_eta_2`), to be created on the fly.
+
+        Parameters
+        ----------
+        attr : str
+            The name of the attribute Python is attempting to access.
+
+        Returns
+        -------
+        hyper_eta_x : sp.Expr
+            The 'x'th derivative of the energy expression wrt electron-number.
+
+        Raises
+        ------
+        AssertionError
+            If the order of derivative specified by 'x' is invalid.
+
+        '''
+
         order = int(attr.rsplit('_', 1)[-1])
+        assert order >= 0, \
+            "The order of derivative cannot be negative."
         if order == 0:
             return self._mu
         elif order == 1:
@@ -256,7 +279,7 @@ class GeneralizedGlobalTool(object):
 
     def _solve(self, expr, n_energies, n0_symbol=None, guess=None, opts=None):
         '''
-        Solve for the parameters of the tool's property expression.
+        Solve for the parameters of the tool's energy expression.
 
         See __init__().
 
@@ -273,24 +296,24 @@ class GeneralizedGlobalTool(object):
             If the system if underdetermined or if the expression cannot be solved.
 
         '''
-    
+
         # Initialize variables
         expr_free = expr.copy()
         if not guess:
             guess = {}
         if not opts:
             opts = {}
-    
+
         # Parse the non-electron-number parameters of `expr`
         if n0_symbol:
             expr = expr.subs(n0_symbol, self._n0)
         params = [symbol for symbol in expr.atoms() if isinstance(symbol, sp.Symbol) and
                   #(symbol is not self._n_symbol) and (symbol is not n0_symbol)]
                   symbol not in (self._n_symbol, n0_symbol)]
-    
+
         # Fill in missing non-electron-number symbols from `guess`
         guess.update({symbol: 0. for symbol in params if symbol not in guess})
-    
+
         # Construct system of equations to solve for `params`
         assert len(params) <= len(n_energies), \
             "The system is underdetermined.  Inlcude more (elec-number, energy) pairs."
@@ -298,31 +321,71 @@ class GeneralizedGlobalTool(object):
         for n, energy in n_energies.iteritems():
             eqn = sp.lambdify((params,), expr.subs(self._n_symbol, n) - energy, "numpy")
             system_eqns.append(eqn)
-    
+
         # Solve the system of equations for `params`
         def objective(args):
             return np.array([fun(args) for fun in system_eqns])
-    
+
         root_guess = np.array([guess[symbol] for symbol in params])
         roots = root(objective, root_guess, **opts)
         assert roots.success, \
             "The system of equations could not be solved."
-    
+
         # Substitute in the values of `params` and differentiate wrt `n_symbol`
         expr = expr_free.subs([(params[i], roots.x[i]) for i in range(len(params))])
         d_expr = expr.diff(self._n_symbol)
         param_dict = {params[i]: roots.x[i] for i in range(len(params))}
-    
+
         # Return
         return expr, d_expr, param_dict
 
     def energy(self, n0):
+        '''
+        Return the energy expression evaluated at electron-number `n0`.
+
+        Parameters
+        ----------
+        n0 : int
+            The electron number.
+
+        Returns
+        -------
+        value : sp.Expr
+            The energy expression with the value of `n0` substituted in for
+            electron-number `n`.
+
+        '''
+
         value = self.expr.subs(self._n_symbol, n0)
         if self._n0_symbol:
             value = value.subs(self._n0_symbol, n0)
         return value
 
     def d_energy(self, n0, order=1):
+        '''
+        Return the derivative of the energy expression wrt electron-number
+        evaluated at electron-number `n0`.
+
+        Parameters
+        ----------
+        n0 : int
+            The electron number.
+        order : int, optional
+            The order of the derivative wrt electron-number to take.
+
+        Returns
+        -------
+        value : sp.Expr
+            The energy expression with the value of `n0` substituted in for
+            electron-number `n`.
+
+        Raises
+        ------
+        AssertionError
+            If the order of derivative specified by 'x' is invalid.
+
+        '''
+
         assert order >= 0, \
             "The order of the derivative cannot be negative."
         value = self.d_expr.diff(self._n_symbol, order - 1).subs(self._n_symbol, n0)
