@@ -5,6 +5,7 @@
 import math
 import numpy as np
 import sympy as sp
+import matplotlib.pyplot as plt
 from scipy.optimize import root
 
 
@@ -193,6 +194,25 @@ class LinearGlobalTool(BaseGlobalTool):
 class GeneralizedGlobalTool(object):
     '''
     Generalized, Symbolic Class of Global Conceptual DFT Reactivity Descriptors.
+
+    Examples
+    --------
+    >>> a, b, g, n, n0 = sp.symbols("a, b, g, n, n0")
+    >>> expr = a * sp.exp(-g * (n - n0)) + b
+    >>> guess = {a: -2., b: 7., g: -np.log(2.)}
+    >>> values = {4: 6.0, 5: 5.0, 6: 3.0}
+    >>> glb = GeneralizedGlobalTool(expr, 5, values, n, n0, guess=guess)
+    >>> glb
+        E(n) = -2.0*exp(0.693147180559945*n - 0.693147180559945*n0) + 7.0
+
+    >>> a, b, c, n = sp.symbols("a, b, g, n")
+    >>> expr = a + b*n + c*n*n
+    >>> guess = {a: 1.0, b: 2.0, c: 2.0}
+    >>> values = {1: 3.0, 2: 7.0, 3: 13.0}
+    >>> glb = GeneralizedGlobalTool(expr, 2, values, n, guess=guess)
+    >>> glb
+        E(n) = 1.0*n**2 + 1.0*n + 1.0
+
     '''
 
     def __init__(self, expr, n0, n_energies, n_symbol, **kwargs):
@@ -245,6 +265,14 @@ class GeneralizedGlobalTool(object):
         self._mu = self.d_expr.subs(substitutions)
         self._eta = self.d_expr.diff(self._n_symbol).subs(substitutions)
 
+    def __repr__(self):
+        '''
+        The readable representation of a GeneralizedGlobalTool instance.
+
+        '''
+
+        return "E({0}) = {1}".format(self._n_symbol, self.expr)
+
     def __getattr__(self, attr):
         '''
         Allow any attribute corresponding to higher-order derivatives of energy
@@ -268,8 +296,7 @@ class GeneralizedGlobalTool(object):
         '''
 
         order = int(attr.rsplit('_', 1)[-1])
-        assert order >= 0, \
-            "The order of derivative cannot be negative."
+        assert order >= 0, "The order of derivative cannot be negative."
         if order == 0:
             return self._mu
         elif order == 1:
@@ -328,8 +355,7 @@ class GeneralizedGlobalTool(object):
 
         root_guess = np.array([guess[symbol] for symbol in params])
         roots = root(objective, root_guess, **opts)
-        assert roots.success, \
-            "The system of equations could not be solved."
+        assert roots.success, "The system of equations could not be solved."
 
         # Substitute in the values of `params` and differentiate wrt `n_symbol`
         expr = expr_free.subs([(params[i], roots.x[i]) for i in range(len(params))])
@@ -363,7 +389,7 @@ class GeneralizedGlobalTool(object):
 
     def d_energy(self, n0, order=1):
         '''
-        Return the derivative of the energy expression wrt electron-number
+        Return the 'x'th derivative of the energy expression wrt electron-number
         evaluated at electron-number `n0`.
 
         Parameters
@@ -386,8 +412,7 @@ class GeneralizedGlobalTool(object):
 
         '''
 
-        assert order >= 0, \
-            "The order of the derivative cannot be negative."
+        assert order >= 0, "The order of the derivative cannot be negative."
         value = self.d_expr.diff(self._n_symbol, order - 1).subs(self._n_symbol, n0)
         if self._n0_symbol:
             value = value.subs(self._n0_symbol, n0)
@@ -404,6 +429,73 @@ class GeneralizedGlobalTool(object):
     @property
     def params(self):
         return self._params
+
+    def latex(self, deriv=0):
+        '''
+        Return the LaTeX representation of the energy expression or its 'x'th derivative
+        as a string.
+
+        Parameters
+        ----------
+        deriv : int, optional
+            The order of the derivative of the energy expression wrt electron-number to
+            convert to LaTeX.  Defaults to 0.
+
+        Returns
+        -------
+        latex : str
+            The LaTeX representation of the expression.
+
+        Raises
+        ------
+        AssertionError
+            If the order of derivative specified by 'x' is invalid.
+
+        '''
+
+        assert deriv >= 0, "The order of the derivative cannot be negative."
+        expr = self.d_expr.diff(self._n_symbol, deriv - 1) if deriv else self.expr
+        return sp.latex(expr)
+
+    def plot(self, lbound, ubound, step=1, deriv=0, **kwargs):
+        '''
+        Construct a Matplotlib pyplot of the expression over a range of electron numbers.
+
+        Parameters
+        ----------
+        lbound : number
+            The lower bound on electron-number to plot.
+        ubound : number
+            The upper bound on electron-number to plot.
+        step : number, optional
+            The interval over which points are plotted.  Defaults to 1.
+        order : int, optional
+            The order of the derivative wrt electron-number to take.  Defaults to 0.
+
+        Returns
+        -------
+        plot : list of Matplotlib objects (the plot).
+
+        Raises
+        ------
+        AssertionError
+            If the order of derivative specified by 'x' is invalid.
+
+        Notes
+        -----
+        To view the plot:
+        >>> import matplotlib.pyplot as plt
+        >>> plot = glb.plot(1,5)
+        >>> plt.show(plot)
+
+        '''
+
+        assert deriv >= 0, "The order of the derivative cannot be negative."
+        expr = self.d_expr.diff(self._n_symbol, deriv - 1) if deriv else self.expr
+        fun = np.vectorize(sp.lambdify(self._n_symbol, expr, "numpy"))
+        x = np.arange(lbound, ubound, step)
+        return plt.plot(x, fun(x), **kwargs)
+
 
 
 class ExpGlobalTool(BaseGlobalTool):
@@ -447,7 +539,7 @@ class ExpGlobalTool(BaseGlobalTool):
         """ Number of electrons of the system at ground state
         """
         return self._num_elec_zero
-    
+
     @property
     def gamma(self):
         """ First parameter of exponential energy model
@@ -497,14 +589,14 @@ class ExpGlobalTool(BaseGlobalTool):
 
     def grand_potential(self, num_elec):
         """Grand potential for system with arbitrary number of election
-        
+
         ..math::
             \omega = E - \miu * N
         Parameters
         ----------
         num_elec : float
             Number of electrons
-        
+
         Returns
         -------
         name : float
