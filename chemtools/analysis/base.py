@@ -4,15 +4,15 @@
 
 import numpy as np
 from horton import BeckeMolGrid
-from chemtools.tools.globaltools import QuadraticGlobalTool
-from chemtools.tools.localtools import QuadraticLocalTool
+from chemtools.tool.globaltool import QuadraticGlobalTool
+from chemtools.tool.localtool import QuadraticLocalTool
 
 
 class Analyze(object):
     '''
     Conceptual DFT Ananlysis of molecule.
     '''
-    def __init__(self, molecule, grid=None):
+    def __init__(self, molecule, approx='FMO', model='quadratic', grid=None):
         '''
         Parameters
         ----------
