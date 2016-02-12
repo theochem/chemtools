@@ -3,3 +3,5 @@
 
 from chemtools.tool.globaltool import *
 from chemtools.tool.localtool import *
+from chemtools.tool.densitytool import *
+from chemtools.tool.condensedtool import *
