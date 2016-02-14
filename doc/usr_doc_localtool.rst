@@ -25,9 +25,6 @@
 Local Descriptive Tools
 #######################
 
- .. image:: _static/under_construction.gif
-    :scale: 75 %
-    :align: center
 
 Local descriptive tools assign a value to every point in space. In conceptual DFT,
 local descriptors arise as functional derivatives of global descriptors with respect
