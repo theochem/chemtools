@@ -1,7 +1,28 @@
 # -*- coding: utf-8 -*-
+# ChemTools is a collection of interpretive chemical tools for
+# analyzing outputs of the quantum chemistry calculations.
+#
+# Copyright (C) 2014-2015 The ChemTools Development Team
+#
+# This file is part of ChemTools.
+#
+# ChemTools is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 3
+# of the License, or (at your option) any later version.
+#
+# ChemTools is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>
+#
+# --
 #
 # ChemTools documentation build configuration file, created by
-# sphinx-quickstart on Sun Feb 14 18:07:15 2016.
+# sphinx-quickstart on Wed Dec 16 17:02:24 2015.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -18,7 +39,7 @@ import os
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('..'))
 
 # -- General configuration ------------------------------------------------
 
@@ -32,9 +53,12 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.todo',
+    'sphinx.ext.napoleon',
     'sphinx.ext.mathjax',
+    'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
 ]
+mathjax_path = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -52,8 +76,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'ChemTools'
-copyright = u'2016, Ayers\' Group'
-author = u'Ayers\' Group'
+copyright = u'2016, Ayers\' Group @ McMaster University'
+author = u'Ayers\' Group @ McMaster University'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -113,7 +137,7 @@ todo_include_todos = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -132,7 +156,7 @@ html_theme = 'alabaster'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-#html_logo = None
+html_logo = '_static/chemtools_logo.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -227,8 +251,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'ChemTools.tex', u'ChemTools Documentation',
-     u'Ayers\' Group', 'manual'),
+  (master_doc, 'ChemTools.tex', u'ChemTools Documentation',
+   u'Ayers\' Group @ McMaster University', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -271,9 +295,9 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'ChemTools', u'ChemTools Documentation',
-     author, 'ChemTools', 'One line description of project.',
-     'Miscellaneous'),
+  (master_doc, 'ChemTools', u'ChemTools Documentation',
+   author, 'ChemTools', 'One line description of project.',
+   'Miscellaneous'),
 ]
 
 # Documents to append as an appendix to all manuals.
@@ -287,3 +311,13 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
+
+
+# -- Custom ChemTools-specific settings -------------------------------------------
+
+# Put class docstring and the __init__ docstring together in the documentation
+# for your class when you use the autoclass directive.
+autoclass_content = 'both'
+
+autodoc_member_order = 'bysource'
+#autodoc_default_flags = ['members', 'undoc-members', 'inherited-members', 'show-inheritance']
