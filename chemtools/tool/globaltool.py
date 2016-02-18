@@ -341,7 +341,7 @@ class BaseGlobalTool(object):
         to the :attr:`chemical_softness`, :attr:`hyper_softness`, respectively.
         '''
         # implementing the Faa di Bruno identity
-        # decide whether we use sympy to evaluate Bell polynomilas or code our own Bell polynomial
+        # decide whether we use sympy to evaluate Bell polynomials or code our own Bell polynomial
         pass
 
 
@@ -566,7 +566,7 @@ class GeneralGlobalTool(BaseGlobalTool):
 
     The energy is approximated as a symbolic function of the number of electrons,
     and the unknown parameters are obtained by fitting to the given values of energy; i.e.
-    the number of parameters in the molde should equal the number of given energy values and
+    the number of parameters in the model should equal the number of given energy values and
     the corresponding number of electrons.
 
     The :math:`n^{th}` -order derivative of the symbolic energy model with respect to the number
@@ -594,7 +594,7 @@ class GeneralGlobalTool(BaseGlobalTool):
             keys, float values.
         opts : dict, optional
             Optional keyword arguments to pass to the :py:meth:`scipy.optimimze.root` solver
-            that is used to solve for the prameters in the model.
+            that is used to solve for the parameters in the model.
         '''
         # Make sure that the energy expression depends on number of electrons
         if n_symbol not in expr.atoms(sp.Symbol):
@@ -618,7 +618,7 @@ class GeneralGlobalTool(BaseGlobalTool):
         energy_zero = self.energy(n0)
         energy_plus = self.energy(n0 + 1)
         energy_minus = self.energy(n0 - 1)
-        # Initilaze the base class based on the known energy values
+        # Initialize the base class based on the known energy values
         super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0)
 
     @doc_inherit(BaseGlobalTool)
@@ -663,7 +663,7 @@ class GeneralGlobalTool(BaseGlobalTool):
 
         # Set the initial guess of the parameters not specified to 0.
         guess.update({param: 0. for param in params if param not in guess})
-        # intial guess for the parameters in the energy model
+        # initial guess for the parameters in the energy model
         guess = np.array([guess[param] for param in params])
 
         # Construct system of equations to solve

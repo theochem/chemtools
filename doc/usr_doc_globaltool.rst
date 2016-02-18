@@ -30,7 +30,7 @@ The global reactivity indicators from conceptual DFT are either :ref:`fundamenta
 or :ref:`derived <derived_indicators>`. As explained below, obtaining these global tools requires selecting
 an energy model, :math:`E(N; \{\alpha_1, \alpha_2, ..., \alpha_n\})`,  which represents the dependence of energy on the
 number electrons, :math:`N`. The set :math:`{\{\alpha_1, \alpha_2, ..., \alpha_n\}}` denotes the parameters
-of the energy model whihc are determined by fitting the energy expression to the known values of the energy for :math:`n` different numbers of electrons,
+of the energy model which are determined by fitting the energy expression to the known values of the energy for :math:`n` different numbers of electrons,
 :math:`{\{E(N_i)\}}_{i=1}^n`. Commonly, the values of energy for systems with :math:`N_0 - 1`, :math:`N_0` and :math:`N_0 + 1` are used, :math:`{\{E(N_0 - 1), E(N_0), E(N_0 + 1)\}}`; however, other values of energy can be used to parametrized the model as well. Needless to say, the number of required energy values to solve for the parameters depends on the complexity of the energy model, i.e. the number of parameters in the model.
 The implemented energy models and the corresponding global reactivity descriptors in ChemTools include:
 
@@ -72,7 +72,7 @@ with respect to the chemical potential :math:`\mu` at fixed external potential :
           = \left( \frac{\partial^n N}{\partial \mu^n} \right)_{v(r)}
 
 More specifically, these fundamental global indicators are the first, second and
-higher order derivatives evalued at :math:`N_0` which result in the number of electrons
+higher order derivatives evaluated at :math:`N_0` which result in the number of electrons
 denoted by :math:`N`, **chemical softness** denoted by :math:`S`, and :math:`n^{(\text th)}`
 **-order hyper-softness**, respectively:
 
@@ -99,7 +99,7 @@ using the recursive formula,
     S^{(n)} = \frac{-\sum_{k=1}^{n-1} S^k \cdot B_{n,k}
           \left(\eta^{(1)}, \eta^{(2)}, ..., \eta^{(n-k+1)} \right)}{B_{n,n}\left( \eta^{(1)}\right)}
 
-It is clear that fundamental global descriptors based in the grand canonical ensemble can be calculted
+It is clear that fundamental global descriptors based in the grand canonical ensemble can be calculated
 based on the fundamental global descriptors in the canonical ensemble.
 
 .. _derived_indicators:
@@ -107,7 +107,7 @@ based on the fundamental global descriptors in the canonical ensemble.
 **Derived Global Reactivity Descriptors:**
 These reactivity indicators are derived based on some handwaving analysis,
 or merely based on correlation. The most important one is the maximum number
-of electrons that can be accepted and the related energetic quatities like
+of electrons that can be accepted and the related energetic quantities like
 **electrophilicity**, **nucleofugality**, and **electrofugality**.
 
  .. TODO::
@@ -124,8 +124,8 @@ of electrons that can be accepted and the related energetic quatities like
 
 .. _linear_energy:
 
-Linear Enery Model: :class:`chemtools.tool.globaltool.LinearGlobalTool`
-=======================================================================
+Linear Energy Model: :class:`chemtools.tool.globaltool.LinearGlobalTool`
+========================================================================
 
 In this model, energy is approximated as a piece-wise linear function of the number of electrons:
 
@@ -192,7 +192,7 @@ Fitting the energy expression to the given energy values results in three equati
           E(N_0 + 1) &= a + b (N_0 + 1) + c {(N_0 + 1) ^2}
     \end{cases}
 
-This allows us to solve for the three unknonws:
+This allows us to solve for the three unknowns:
 
  .. math::
 
@@ -205,9 +205,9 @@ Eq. :eq:`quadratic`, gives the fitted energy model as:
 
  .. math::
 
-          E(N) &= E(N_0) + (N - N_0) \left( \frac{E(N_0 + 1) - E(N_0 - 1)}{2} \right) + \\
-                           {(N - N_0) ^2} \left( \frac{E(N_0 - 1) - 2 E(N_0) + E(N_0 + 1)}{2} \right) \\
-	       &= E(N_0) - (N - N_0) \left( \frac{IP + EA}{2} \right) + {(N - N_0) ^2} \left( \frac{IP - EA}{2} \right) \\
+          E(N) &=& E(N_0) + (N - N_0) \left( \frac{E(N_0 + 1) - E(N_0 - 1)}{2} \right)  \\
+                       & & +    {(N - N_0) ^2} \left( \frac{E(N_0 - 1) - 2 E(N_0) + E(N_0 + 1)}{2} \right) \\
+	       &=& E(N_0) - (N - N_0) \left( \frac{IP + EA}{2} \right) + {(N - N_0) ^2} \left( \frac{IP - EA}{2} \right) \\
 
 where :math:`IP = E(N_0 - 1) - E(N_0)` and :math:`EA = E(N_0) - E(N_0 + 1)` are the
 ionization potential and electron affinity of the :math:`N_0` -electron system, respectively.
@@ -288,7 +288,7 @@ Sample Code:
 
  .. TODO::
     #. It would be nice to have the actual values showing up; something like IPython, or at least comment the results that should
-       be ontained.
+       be obtained.
 
  .. code-block:: python
     :linenos:
@@ -342,7 +342,7 @@ This allows us to solve for the three unknonws:
     B      &= E(N_0) - A  \\
     \gamma &= \ln \left( 1 - \frac{E(N_0 - 1) - 2E(N_0) + E(N_0 + 1)}{E(N_0 + 1) - E(N_0)} \right) \\
 
-Due to the complexiy of the obtained parameters, we skip substituting them into the energy expression.
+Due to the complexity of the obtained parameters, we skip substituting them into the energy expression.
 However, at this stage, the energy expression can be evaluated for any given number of electrons as
 implemented in :class:`chemtools.tool.globaltool.ExponentialGlobalTool.energy`.
 
@@ -416,7 +416,7 @@ In the most general form, this model can be written as:
 
 The number of unknown parameters in this model depends on the :math:`m` and :math:`n` values.
 Having a set of :math:`m+n` values of :math:`N` for which the energy is known, the model can be parametrized
-by solving a system of linear equations. By rearranging the rational energy expresion above,
+by solving a system of linear equations. By rearranging the rational energy expression above,
 the equations can be written as:
 
  .. math::
@@ -454,7 +454,7 @@ This allows us to solve for the three unknonws:
     a_1 &= \frac{2 N_0 E(N_0 + 1) + (2 N_0 - 1) E(N_0)}{N_0 + 1} \\
     b_1 &= - \frac{1}{N_0 + 1}
 
-Due to the complexiy of the obtained parameters, we skip substituting them into the energy expression.
+Due to the complexity of the obtained parameters, we skip substituting them into the energy expression.
 However, at this stage, the energy expression can be evaluated for any given number of electrons as
 implemented in :class:`chemtools.tool.globaltool.RationalGlobalTool.energy`.
 
@@ -548,5 +548,5 @@ Example: Build a quadratic energy model:
      energies = {}
      # parametrize energy model
      model = GeneralizedGlobalTool(expression, energies, n)
-     # ready to retrive any global tool
+     # ready to retrieve any global tool
      print model.mu
