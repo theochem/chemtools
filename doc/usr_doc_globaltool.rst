@@ -263,8 +263,8 @@ This is obtained by setting the first order derivative of energy, derived in Eq.
 
  .. math::
 
-    \left( \frac{\partial E}{\partial N} \right)_{v(r)} = 0 \to
-         N_{max} &= \frac{-b}{2c} = \frac{IP + EA}{2 (IP - EA)} = - \frac{\mu}{\eta}
+    \left( \frac{\partial E}{\partial N} \right)_{v(r)} = 0 &= b + 2cN = -\left( \frac{IP + EA}{2} \right) + (N - N_0) (IP - EA) \\
+    & \to N_{max} = \frac{-b}{2c} = N_{0} + \frac{IP + EA}{2 \left(IP - EA \right)} = N_{0} - \frac{\mu}{\eta}
 
 The related derived global reactivity indicators for the quadratic energy model are:
 
