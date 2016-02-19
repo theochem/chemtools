@@ -31,3 +31,8 @@ Deriving Global Hyper-Softness
 ==============================
 Faa di Bruno stuff...
 
+
+.. _derivation_local_softness:
+
+Deriving Local Hyper-Softness
+=============================

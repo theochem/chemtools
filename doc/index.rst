@@ -56,7 +56,6 @@ calculations from any standard quantum chemistry program output.
    usr_getting_started
    usr_doc_globaltool
    usr_doc_localtool
-   usr_doc_densitytool
    usr_doc_condensedtool
 
 .. toctree::

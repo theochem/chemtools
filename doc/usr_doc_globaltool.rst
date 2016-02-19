@@ -21,6 +21,7 @@
     :
     : --
 
+.. _global_tools:
 
 Global Descriptive Tools :mod:`chemtools.tool.globaltool`
 #########################################################
