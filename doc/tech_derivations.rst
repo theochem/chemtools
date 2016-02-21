@@ -25,9 +25,9 @@
 Derivations
 ###########
 
-.. _derivation_softness:
+.. _derivation_global_softness:
 
-Deriving Hyper-Softness
-=======================
+Deriving Global Hyper-Softness
+==============================
 Faa di Bruno stuff...
 
