@@ -539,9 +539,10 @@ class RationalGlobalTool(BaseGlobalTool):
         #
         # calculate the a0, a1, b1 parameters of the model and N_max
         #
-        self._b1 = -1 / (n0 + 1)
-        self._a1 = (2 * n0 * energy_plus + (2 * n0 - 1) * energy_zero) / (n0 + 1)
-        self._a0 = energy_zero * (1 + self._b1 * n0) - (self._a1 * n0)
+        self._b1 = - (energy_plus - 2 * energy_zero + energy_minus)
+        self._b1 /= ( (n0 + 1) * energy_plus - 2 * n0 * energy_zero + (n0 - 1) * energy_minus )
+        self._a1 = (1 + self._b1 * n0) * (energy_plus - energy_zero) + (self._b1 * energy_plus)
+        self._a0 = - self._a1 * n0 + energy_zero * (1 + self._b1 * n0)
         self._n_max = 0
         super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0)
 
@@ -555,7 +556,7 @@ class RationalGlobalTool(BaseGlobalTool):
         if not(isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
         deriv = math.pow(self._b1, order - 1) * (self._a1 - self._a0 * self._b1) * math.factorial(order)
-        deriv /= math.pow(1 + self._b1 * n_elec, 2 * order)
+        deriv /= math.pow(1 + self._b1 * n_elec, order + 1)
         return deriv
 
 

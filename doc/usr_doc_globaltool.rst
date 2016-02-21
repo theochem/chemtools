@@ -579,9 +579,10 @@ This allows us to solve for the three unknonws:
 
  .. math::
 
-    a_0 &= \frac{N_0 E\left(N_0\right) - 2 N_0^2 E\left(N_0 + 1\right)}{N_0 + 1} \\
-    a_1 &= \frac{2 N_0 E\left(N_0 + 1\right) + \left(2 N_0 - 1\right) E\left(N_0\right)}{N_0 + 1} \\
-    b_1 &= - \frac{1}{N_0 + 1}
+    b_1 &= -\frac{E\left(N_0 + 1\right) - 2 E\left(N_0\right) + E\left(N_0 - 1\right)}
+                 {\left(N_0 + 1\right) E\left(N_0 + 1\right) - 2 N_0 E\left(N_0\right) + \left(N_0 - 1\right) E\left(N_0 - 1\right)} \\
+    a_1 &= \left(1 + b_1 N_0\right) \left(E\left(N_0 + 1\right) - E\left(N_0\right)\right) + b_1 E\left(N_0 + 1\right) \\
+    a_0 &= - a_1 N_0 + \left(1 + b_1 N_0\right) E\left(N_0\right)
 
 Due to the complexity of the obtained parameters, we skip substituting them into the energy expression.
 However, at this stage, the energy expression can be evaluated for any given number of electrons as
