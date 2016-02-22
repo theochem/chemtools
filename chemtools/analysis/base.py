@@ -20,73 +20,86 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-'''Analyze Output Module.'''
+'''Analyze Quantum Chemistry Output Files Module.'''
 
 
 import numpy as np
-from horton import BeckeMolGrid
-from chemtools.tool.globaltool import QuadraticGlobalTool
-from chemtools.tool.localtool import QuadraticLocalTool
+from horton import IOData
+from chemtools.tool.globaltool import LinearGlobalTool, QuadraticGlobalTool, ExponentialGlobalTool, RationalGlobalTool
 
 
-class Analyze(object):
+class Analyze_1File(object):
     '''
-    Conceptual DFT Ananlysis of molecule.
+    Class for analyzing one quantum chemistry output file.
     '''
-    def __init__(self, molecule, approx='FMO', model='quadratic', grid=None):
+    def __init__(self, molecule_filename, model='quadratic', energy_expr=None):
         '''
         Parameters
         ----------
-        mol :
-            instance of ``horton.IOData``.
-        grid :
-            instance of ``horton.BeckeMolGrid``.
+        molecule_filename : str
+            The path to the molecule's file.
+        model : str, default='quadratic'
+            Energy model used to calculate descriptive tools.
+            The available models include:
+            * 'linear'; refer to :py:class:`chemtools.tool.globaltool.LinearGlobalTool` for more information.
+            * 'quadratic'; refer to :py:class:`chemtools.tool.globaltool.QuadraticGlobalTool` for more information.
+            * 'exponential'; refer to :py:class:`chemtools.tool.globaltool.ExponentialGlobalTool` for more information.
+            * 'rational'; refer to :py:class:`chemtools.tool.globaltool.RationalGlobalTool` for more information.
+            * 'general'; refer to :py:class:`chemtools.tool.globaltool.GeneralGlobalTool` for more information.
+            If 'general' model is selected, an energy expression should be given.
+        energy_expr : ``Sympy.expr``, default=None
+            Energy expresion used, if 'general' model is selected.
         '''
-        self._mol = molecule
-        if grid is None:
-            # Set up the default grid
-            self._grid = BeckeMolGrid(self._mol.coordinates, self._mol.numbers,
-                                      self._mol.pseudo_numbers, 'fine',
-                                      random_rotate=False, mode='keep')
-        else:
-            # Check the consistency of grid and molecule
-            assert (abs(grid.numbers - self._mol.numbers) < 1.e-6).all()
-            assert (abs(grid.coordinates - self._mol.coordinates) < 1.e-6).all()
-            self._grid = grid
+        mol = IOData.from_file(molecule_filename)
+        self._mol = mol
+        if model not in ['linear', 'quadratic', 'exponential', 'rational', 'general']:
+            raise ValueError('Argument model={0} is not supported.'.format(model))
+        if model is 'general' and energy_expr is None:
+            raise ValueError('Argument energy_expr is required when model=\'general\'.')
+        self._model = model
+        self.energy_expr = energy_expr
 
-        # Get energy and density of HOMO and LUMO
+        # TODO: Some attributes of the self._mol should become the class attribute
+        #       like coordinates, numbers, energy, etc.
+
+        # Get E(HOMO), E(LUMO) & number of electrons
         homo_energy = self._mol.exp_alpha.homo_energy
         lumo_energy = self._mol.exp_alpha.lumo_energy
-        homo_index = self._mol.exp_alpha.get_homo_index()
-        lumo_index = self._mol.exp_alpha.get_lumo_index()
-        homo_density = self._mol.obasis.compute_grid_orbitals_exp(
-            self._mol.exp_alpha, self._grid.points, np.array([homo_index]))**2
-        lumo_density = self._mol.obasis.compute_grid_orbitals_exp(
-            self._mol.exp_alpha, self._grid.points, np.array([lumo_index]))**2
+        n_elec = int(np.sum(self._mol.exp_alpha.occupations))
+        if self._mol.exp_beta is not None:
+            n_elec += int(np.sum(self._mol.exp_beta.occupations))
+            if self._mol.exp_beta.homo_energy > homo_energy:
+                homo_energy = self._mol.exp_beta.homo_energy
+            if self._mol.exp_beta.lumo_energy < lumo_energy:
+                lumo_energy = self._mol.exp_beta.lumo_energy
 
-        # Make instances of the ConceptualTools
-        # self._glob = QuadraticGlobalTool(0, ip=-homo_energy, ea=-lumo_energy)
-        self._glob = QuadraticGlobalTool(0, lumo_energy, -homo_energy)
-        self._local = QuadraticLocalTool(ff_plus=homo_density,
-                                          ff_minus=lumo_density,
-                                          global_instance=self._glob)
+        # Compute E(N), E(N+1), & E(N-1)
+        energy_zero = self._mol.energy
+        energy_plus = energy_zero - lumo_energy
+        energy_minus = energy_zero - homo_energy
 
-    @property
-    def mol(self):
-        ''''Instance of ``IOData`` class.'''
-        return self._mol
-
-    @property
-    def grid(self):
-        ''''Instance of ``BeckeMolGrid`` class.'''
-        return self._grid
-
-    @property
-    def glob(self):
-        '''Instance of ``GlobalConceptualTool`` class.'''
-        return self._glob
+        # Define global tool
+        if model == 'linear':
+            self._globaltool = LinearGlobalTool(energy_zero, energy_plus, energy_minus, n_elec)
+        elif model == 'quadratic':
+            self._globaltool = QuadraticGlobalTool(energy_zero, energy_plus, energy_minus, n_elec)
+        elif model == 'exponential':
+            self._globaltool = ExponentialGlobalTool(energy_zero, energy_plus, energy_minus, n_elec)
+        elif model == 'rational':
+            self._globaltool = RationalGlobalTool(energy_zero, energy_plus, energy_minus, n_elec)
+        elif model == 'general':
+            pass
 
     @property
-    def local(self):
-        '''Instance of ``LocalConceptualTool`` class.'''
-        return self._local
+    def model(self):
+        '''
+        Energy model used to calculate descriptive tools.
+        '''
+        return self._model
+
+    @property
+    def globaltool(self):
+        '''
+        Instance of one of the gloabl reactivity tool classes.
+        '''
+        return self._globaltool

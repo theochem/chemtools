@@ -134,9 +134,17 @@ class BaseGlobalTool(object):
 
         ..math:: \omega_{\text {electrophile}} &= \text {sgn}(N_0 - N_{max}) (E(N_0) - E(N_{max}))
         '''
-        sign = math.copysign(1, self._n0 - self._n_max)
-        value = sign * (self._energy_zero - self.energy(self._n_max))
-        #value = math.pow(self.mu, 2) / (2 * self.eta)
+        # sign = math.copysign(1, self._n0 - self._n_max)
+        # value = sign * (self._energy_zero - self.energy(self._n_max))
+        value = self._energy_zero - self.energy(self._n_max)
+        return value
+
+    @property
+    def nucleoophilicity(self):
+        r'''
+        Nucleophilicity defined as:
+        '''
+        value = 1.0 / self.electrophilicity
         return value
 
     @property
@@ -146,10 +154,9 @@ class BaseGlobalTool(object):
 
         .. math:: \nu_{\text {nucleofuge}} &= \text {sgn}(N_0 + 1 - N_{max}) (E(N_0 + 1) - E(N_{max}))
         '''
-        sign = math.copysign(1, self._n0 + 1 - self._n_max)
-        value = sign * (self.energy(self._n0 + 1) - self.energy(self._n_max))
-        # value = math.pow(self._ip - 3 * self._ea, 2)
-        # value /= (8 * (self._ip - self._ea))
+        # sign = math.copysign(1, self._n0 + 1 - self._n_max)
+        # value = sign * (self.energy(self._n0 + 1) - self.energy(self._n_max))
+        value = self.energy(self._n0 + 1) - self.energy(self._n_max)
         return value
 
     @property
@@ -159,10 +166,9 @@ class BaseGlobalTool(object):
 
         .. math:: \nu_{\text {electrofuge}} &= \text {sgn}(N_0 - 1 - N_{max}) (E(N_0 - 1) - E(N_{max}))
         '''
-        sign = math.copysign(1, self._n0 - 1 - self._n_max)
-        value = sign * (self.energy(self._n0 - 1) - self.energy(self._n_max))
-        # value = math.pow(3 * self._ip - self._ea, 2)
-        # value /= (8 * (self._ip - self._ea))
+        # sign = math.copysign(1, self._n0 - 1 - self._n_max)
+        # value = sign * (self.energy(self._n0 - 1) - self.energy(self._n_max))
+        value = self.energy(self._n0 - 1) - self.energy(self._n_max)
         return value
 
     @property
@@ -412,15 +418,16 @@ class LinearGlobalTool(BaseGlobalTool):
 
     @doc_inherit(BaseGlobalTool)
     def energy_derivative(self, n_elec, order=1):
-        assert isinstance(order, int) and order > 0
-        if order >= 2:
+        if not(isinstance(order, int) and order > 0):
+            raise ValueError('Argument order should be an integer greater than or equal to 1.')
+        if n_elec == self._n0:
             return None
-        if n_elec < self._n0:
+        elif order >= 2:
+            return 0.0
+        elif n_elec < self._n0:
             return - self._ip
         elif n_elec > self._n0:
             return - self._ea
-        elif n_elec == self._n0:
-            return None
         else:
             raise ValueError('')
 
