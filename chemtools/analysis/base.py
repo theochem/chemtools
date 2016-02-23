@@ -26,6 +26,7 @@
 import numpy as np
 from horton import IOData
 from chemtools.tool.globaltool import LinearGlobalTool, QuadraticGlobalTool, ExponentialGlobalTool, RationalGlobalTool
+from chemtools.tool.densitytool import DensityLocalTool
 
 
 class Analyze_1File(object):
@@ -90,6 +91,19 @@ class Analyze_1File(object):
         elif model == 'general':
             pass
 
+        # Compute electron density (of the N electron system)
+        # density = None
+
+        # Compute gradient of electron density
+        # gradient = None
+
+        # Compute Hessian of electron density
+        # hessian = None
+
+        # Define density-based local tool
+        # self._localtool = DensityLocalTool(density, gradient, hessian)
+
+
     @property
     def model(self):
         '''
@@ -103,3 +117,17 @@ class Analyze_1File(object):
         Instance of one of the gloabl reactivity tool classes.
         '''
         return self._globaltool
+
+    # @property
+    # def localtool(self):
+    #     '''
+    #     Instance of one of the local reactivity tools classes.
+    #     '''
+    #     return self._localtool
+
+    # def make_scripts_nci(self):
+    #     '''
+    #     Genrate scripts to plot NCI through VMD.
+    #     '''
+    #     # uses self._localtool.compute_nci() and then write scripts.
+    #     pass
