@@ -30,38 +30,75 @@ class DensityLocalTool(object):
     '''
     Class of desnity-based local descriptive tools.
     '''
-    def __init__(self, density, gradient=None, laplacian=None):
+    def __init__(self, density, gradient, hessian):
         '''
         Parameters
         ----------
         density : np.ndarray
-            Density of the system evaluated on a grid
-        gradient : np.ndarray, default=None
-            Gradient of the density evaluated on a grid
-        laplacian : np.ndarray, default=None
-            Laplacian density evaluated on a grid
+            Electron density of the system evaluated on a grid
+        gradient : np.ndarray
+            Gradient vector of electron density evaluated on a grid
+        hessian : np.ndarray
+            Hessian matrix of electron density evaluated on a grid
         '''
+        if density.ndim != 1:
+            raise ValueError('Argument desnity should be a 1-dimensioanl array.')
+        if gradient.shape != (density.size, 3):
+            raise ValueError('Argument gradient should have same shape as density arrary. {0}!={1}'.format(gradient.shape, density.shape))
+        if hessian.shape != (density.size, 3, 3):
+            raise ValueError('Argument hessian\'s shape is not consistent with the density array. {0}!={1}'.format(hessian.shape, (density.size, 3, 3)))
+
         self._density = density
         self._gradient = gradient
-        self._laplacian = laplacian
+        self._hessian = hessian
 
     @property
     def density(self):
-        '''
+        r'''
+        Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on a grid.
         '''
         return self._density
 
     @property
     def gradient(self):
-        '''
+        r'''
+        Gradient vector of electron :math:`\nabla \rho\left(\mathbf{r}\right)`
+        defined as the first-order partial derivatives of electron density w.r.t. coordinate
+        :math:`\mathbf{r} = \left(x\mathbf{i}, y\mathbf{j}, z\mathbf{k}\right)`:
+
+         .. math::
+
+            \nabla\rho\left(\mathbf{r}\right) =
+            \left(\frac{\partial}{\partial x}\mathbf{i}, \frac{\partial}{\partial y}\mathbf{j},
+                  \frac{\partial}{\partial z}\mathbf{k}\right) \rho\left(\mathbf{r}\right)
         '''
         return self._gradient
 
     @property
+    def hessian(self):
+        r'''
+        Hessian matrix of electron density :math:`\nabla^2 \rho\left(\mathbf{r}\right)`
+        defined as the second-order partial derivatives of electron density w.r.t coordinate
+        :math:`\mathbf{r} = \left(x\mathbf{i}, y\mathbf{j}, z\mathbf{k}\right)`:
+        '''
+        return self._hessian
+
+    @property
     def laplacian(self):
+        r'''
+        Laplacian of electron density :math:`\nabla ^2 \rho\left(\mathbf{r}\right)` defined
+        as the trace of Hessian matrix of electron desnity which is equal to the sum of
+        :math:`\left(\lambda_1, \lambda_2, \lambda_3\right)` eigen-values of Hessian matrix:
+
+        .. math::
+           \nabla^2 \rho\left(\mathbf{r}\right) = \nabla\cdot\nabla\rho\left(\mathbf{r}\right) =
+                     \frac{\partial^2\rho\left(\mathbf{r}\right)}{\partial x^2} +
+                     \frac{\partial^2\rho\left(\mathbf{r}\right)}{\partial y^2} +
+                     \frac{\partial^2\rho\left(\mathbf{r}\right)}{\partial z^2} =
+                     \lambda_1 + \lambda_2 + \lambda_3
         '''
-        '''
-        return self._laplacian
+        # This is not a local tool!
+        pass
 
     @property
     def shanon_information(self):
@@ -71,3 +108,20 @@ class DensityLocalTool(object):
         # masking might be needed
         value = self._density * np.log(self._density)
         return value
+
+    def compute_nci(self):
+        r'''
+        Return non-covalent interactions (NCI) defined as ...
+        '''
+        pass
+
+    @property
+    def electrostatic_potential(self):
+        r'''
+        Electrostatic potential defined as:
+
+        .. math::
+           \Phi\left(\mathbf{r}\right) = - v \left(\mathbf{r}\right) - \int \frac{\rho\left(\mathbf{r}'\right)}{|\mathbf{r} - \mathbf{r}'|} d \mathbf{r}'
+        '''
+        # You need v(r)
+        pass

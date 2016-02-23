@@ -115,5 +115,26 @@ Quadratic Local Model:
 ----------------------
 
 
-Density Based Local Descriptors: :class:`chemtools.tool.densitytool`
+Density-Based Local Descriptors: :class:`chemtools.tool.densitytool`
 ====================================================================
+
+All the tools for calculating wich the electron density :math:`\rho\left(\mathbf{r}\right)`, gradianet and hessian
+of the :math:`N` electron reference state is enough.
+
+**Electron density** :math:`\rho\left(\mathbf{r}\right)` represents ...
+
+**Gradient of electron density** :math:`\nabla \rho\left(\mathbf{r}\right)` represents the first-order partial
+derivatives of electron density with respect to coordinates:
+
+ .. math:: \nabla \rho\left(\mathbf{r}\right) =
+           \left( \frac{\partial}{\partial x}\mathbf{i}, \frac{\partial}{\partial y}\mathbf{j}, \frac{\partial}{\partial z}\mathbf{k}\right) \rho\left(\mathbf{r}\right)
+
+**Hessian of electron density** :math:`\nabla^2 \rho\left(\mathbf{r}\right)` represents the second-order
+partial derivative of electron density with respect to coordinates:
+
+
+
+Orbital-Based Local Descriptors: :class:`chemtools.tool.orbitaltool`
+====================================================================
+
+All the tools for calculating which the orbital information of the :math:`N` electron reference state is enough.
