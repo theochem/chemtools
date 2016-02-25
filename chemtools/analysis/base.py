@@ -145,20 +145,20 @@ class Analyze_1File(object):
         rdgfile  = filename + '-grad.cube'    # name of the reduced density gradient cube file
         vmdfile  = filename + '.vmd'          # name of the reduced vmd script file
 
-        if cube == None:
+        if cube is None:
             cube = CubeGen.from_molecule(self._mol.numbers, self._mol.pseudo_numbers, self._mol.coordinates, spacing=0.1,threshold=2.0)
 
         dm_full = self._mol.get_dm_full()
 
-        dens = self._compute_density(dm_full, cube.gridpoints)
-        grad = self._compute_gradient(dm_full, cube.gridpoints)
+        dens = self._mol.obasis.compute_grid_density_dm(dm_full, cube.gridpoints)
+        grad = self._mol.obasis.compute_grid_gradient_dm(dm_full, cube.gridpoints)
         dloctool = DensityLocalTool(dens, grad)
-        rdgrad = dloctool.compute_rdg()
+        rdgrad = dloctool.reduced_density_gradient
 
         #mask rdgrad:
         rdgrad[abs(dens) > denscut] = 100.0
 
-        hess = self._compute_hessian(dm_full, cube.gridpoints)
+        hess = self._compute_hessian(self._mol, cube.gridpoints)
         dens = np.sign(np.linalg.eigvalsh(hess)[:,1])*dens
 
         cube.dump_cube(densfile ,dens*100.0)
@@ -172,25 +172,20 @@ class Analyze_1File(object):
 
     # ???: ok to put it here?
 
-    def _compute_density(self, dm, x):
-        return self._mol.obasis.compute_grid_density_dm(dm, x)
+def _compute_hessian(mol, x):
+    #untill the electronic Hessian is included in HORTON, we do it by finite difference:
+    dm = mol.get_dm_full()
+    eps = 1.0e-5
+    dx = x + np.array([[eps, 0.0, 0.0]])
+    dy = x + np.array([[0.0, eps, 0.0]])
+    dz = x + np.array([[0.0, 0.0, eps]])
+    hess = np.zeros((x.shape[0], 3, 3), float)
+    gpnt = mol.obasis._compute_gradient(dm, x)
+    hess[:,:,0] = (mol.obasis._compute_gradient(dm, dx) - gpnt) / eps
+    hess[:,:,1] = (mol.obasis._compute_gradient(dm, dy) - gpnt) / eps
+    hess[:,:,2] = (mol.obasis._compute_gradient(dm, dz) - gpnt) / eps
 
-    def _compute_gradient(self, dm, x):
-        return self._mol.obasis.compute_grid_gradient_dm(dm, x)
-
-    def _compute_hessian(self, dm, x):
-        #untill the electronic Hessian is included in HORTON, we do it by finite difference:
-        eps = 1.0e-5
-        dx = x + np.ndarray((1,3), buffer=np.array([eps,0.0,0.0]))
-        dy = x + np.ndarray((1,3), buffer=np.array([0.0,eps,0.0]))
-        dz = x + np.ndarray((1,3), buffer=np.array([0.0,0.0,eps]))
-        hess = np.zeros((x.shape[0], 3, 3), float)
-        gpnt = self._compute_gradient(dm, x)
-        hess[:,:,0] = (self._compute_gradient(dm, dx) - gpnt) / eps
-        hess[:,:,1] = (self._compute_gradient(dm, dy) - gpnt) / eps
-        hess[:,:,2] = (self._compute_gradient(dm, dz) - gpnt) / eps
-        
-        return 0.5*(hess + np.transpose(hess, axes=(0, 2, 1)))
+    return 0.5*(hess + np.transpose(hess, axes=(0, 2, 1)))
 
 
 def _print_vmd(file, densfile, rdgfile, isosurf, denscut):

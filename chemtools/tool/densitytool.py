@@ -45,8 +45,7 @@ class DensityLocalTool(object):
             raise ValueError('Argument desnity should be a 1-dimensioanl array.')
         if gradient.shape != (density.size, 3):
             raise ValueError('Argument gradient should have same shape as density arrary. {0}!={1}'.format(gradient.shape, density.shape))
-        if hessian is not None:
-            if hessian.shape != (density.size, 3, 3):
+        if (hessian is not None) and hessian.shape != (density.size, 3, 3):
                 raise ValueError('Argument hessian\'s shape is not consistent with the density array. {0}!={1}'.format(hessian.shape, (density.size, 3, 3)))
 
         self._density = density
@@ -110,9 +109,10 @@ class DensityLocalTool(object):
         value = self._density * np.log(self._density)
         return value
 
-    def compute_rdg(self):
+    @property
+    def reduced_density_gradient(self):
         r'''
-        Return the reduced density gradient (RDG) defined as ...
+        Reduced density gradient (RDG) defined as ...
         '''
         # prefactor and 4/3:
         factor = 2.0*((3.0*(np.pi**2.0))**(1.0/3.0))
