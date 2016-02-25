@@ -20,119 +20,250 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-'''Local Conceptual Density Functional Theory (DFT) Reactivity Tools.'''
+'''Local Conceptual Density Functional Theory (DFT) Reactivity Tools.
+
+   This module contains various local tool classes corresponding to
+   linear, quadratic, exponential, and rational energy models.
+'''
 
 
-from horton import doc_inherit
+import numpy as np
+from chemtools.utils import doc_inherit
 
 
 class BaseLocalTool(object):
     '''
-    Base Class of Local Conceptual DFT Reactivity Descriptors.
+    Base class of local conceptual DFT reactivity descriptors.
     '''
-    def __init__(self, ff_plus=None, ff_minus=None, global_instance=None):
-        '''
+    def __init__(self, density_zero, density_plus, density_minus):
+        r'''
         Parameters
         ----------
-        ff_plus : np.ndarray
-            Positive Fukui Function.
-        ff_minus : np.ndarray
-            Negative Fukui Function.
-        global_instance :
-            Instance of ``GlobalConceptualTool`` class.
+        density_zero : np.ndarray
+            Electron density of :math:`N_0`-electron system, i.e. :math:`\rho_{N_0}\left(\mathbf{r}\right)`.
+        density_plus : np.ndarray
+            Electron density of :math:`(N_0 + 1)`-electron system, i.e. :math:`\rho_{N_0 + 1}\left(\mathbf{r}\right)`.
+        density_minus : np.ndarray
+            Electron density of :math:`(N_0 - 1)`-electron system, i.e. :math:`\rho_{N_0 - 1}\left(\mathbf{r}\right)`.
         '''
-        self._ff_plus = ff_plus
-        self._ff_minus = ff_minus
-        self._global_instance = global_instance
-
-        # Define zero Fukui Functional as the average of FF+ and FF-
-        if (self._ff_plus is not None) and (self._ff_minus is not None):
-            self._ff_zero = 0.5 * (self._ff_plus + self._ff_minus)
-        else:
-            self._ff_zero = None
-
-    @property
-    def ff_plus(self):
-        '''Fukui Function from above (positive Fukui Function).'''
-        return self._ff_plus
+        if np.any(density_zero < 0):
+            raise ValueError('Argument density_zero should be all positive!')
+        if np.any(density_plus < 0):
+            raise ValueError('Argument density_plus should be all positive!')
+        if np.any(density_minus < 0):
+            raise ValueError('Argument density_minus should be all positive!')
+        self._density_zero = density_zero
+        self._density_plus = density_plus
+        self._density_minus = density_minus
 
     @property
-    def ff_minus(self):
-        '''Fukui Function from below (negative Fukui Function).'''
-        return self._ff_minus
-
-    @property
-    def ff_zero(self):
-        '''Fukui Function from center.'''
-        return self._ff_zero
-
-    @property
-    def dual_descriptor(self):
-        '''Dual Descriptor.'''
-        if (self._ff_plus is not None) and (self._ff_minus is not None):
-            value = self._ff_plus - self._ff_minus
-            return value
-
-    def __getattr__(self, attr):
+    def density_zero(self):
+        r'''
+        Electron density of :math:`N_0`-electron system, i.e.
+        :math:`\rho_{N_0}\left(\mathbf{r}\right)`.
         '''
+        return self._density_zero
+
+    @property
+    def density_plus(self):
+        r'''
+        Electron density of :math:`(N_0 + 1)`-electron system, i.e.
+        :math:`\rho_{N_0 + 1}\left(\mathbf{r}\right)`.
         '''
-        # Identify the global property and the type of Fukui Function
-        global_prop, ff_type = attr.rsplit('_', 1)
+        return self._density_plus
 
-        # Check for availability of GlobalConceptualTool instance
-        if self._global_instance is None:
-            raise ValueError('The argument global_instance is None!')
+    @property
+    def density_minus(self):
+        r'''
+        Electron density of :math:`(N_0 - 1)`-electron system, i.e.
+        :math:`\rho_{N_0 - 1}\left(\mathbf{r}\right)`.
+        '''
+        return self._density_minus
 
-        # Check for availability of global property
-        if global_prop not in dir(self._global_instance):
-            raise ValueError('The global property={0} is not known.'.format(global_prop))
+    # def __getattr__(self, attr):
+    #     '''
+    #     '''
+    #     # Identify the global property and the type of Fukui Function
+    #     global_prop, ff_type = attr.rsplit('_', 1)
 
-        # Check for availability of the type of Fukui Function
-        if ff_type not in ['plus', 'minus', 'zero']:
-            raise ValueError('The attribute ff_{0} is not known.'.format(ff_type))
+    #     # Check for availability of GlobalConceptualTool instance
+    #     if self._global_instance is None:
+    #         raise ValueError('The argument global_instance is None!')
 
-        # Get the global property & the Fukui Function
-        global_descriptor = getattr(self._global_instance, global_prop)
-        fukui_function = getattr(self, 'ff_' + ff_type)
-        if fukui_function is None:
-            raise ValueError('The ff_{0} is None!'.format(ff_type))
+    #     # Check for availability of global property
+    #     if global_prop not in dir(self._global_instance):
+    #         raise ValueError('The global property={0} is not known.'.format(global_prop))
 
-        # Compute the local property
-        local_descriptor = global_descriptor * fukui_function
+    #     # Check for availability of the type of Fukui Function
+    #     if ff_type not in ['plus', 'minus', 'zero']:
+    #         raise ValueError('The attribute ff_{0} is not known.'.format(ff_type))
 
-        return local_descriptor
+    #     # Get the global property & the Fukui Function
+    #     global_descriptor = getattr(self._global_instance, global_prop)
+    #     fukui_function = getattr(self, 'ff_' + ff_type)
+    #     if fukui_function is None:
+    #         raise ValueError('The ff_{0} is None!'.format(ff_type))
+
+    #     # Compute the local property
+    #     local_descriptor = global_descriptor * fukui_function
+
+    #     return local_descriptor
 
 
 class LinearLocalTool(BaseLocalTool):
     '''
-    Class of Local Conceptual DFT Reactivity Descriptors based on the Linear Energy Model.
+    Class of local conceptual DFT reactivity descriptors based on the linear energy model.
     '''
-
     @doc_inherit(BaseLocalTool)
-    def __init__(self, ff_plus=None, ff_minus=None, global_instance=None):
-        super(self.__class__, self).__init__(ff_plus, ff_minus, global_instance)
+    def __init__(self, density_zero, density_plus, density_minus):
+        super(self.__class__, self).__init__(density_zero, density_plus, density_minus)
 
     @property
-    def mu_plus(self):
-        '''The local plus chemical potential in the linear model is the positive Fukui function'''
-        return self._ff_plus
+    def ff_plus(self):
+        r'''
+        Fukui Function from above defined as:
+
+        .. math::
+           f^+\left(\mathbf{r}\right) = \rho_{N_0 + 1}\left(\mathbf{r}\right) -
+                                        \rho_{N_0}\left(\mathbf{r}\right)
+        '''
+        ff = self._density_plus - self._density_zero
+        return ff
 
     @property
-    def mu_minus(self):
-        '''The local minus chemical potential in the linear model is the negative Fukui function'''
-        return self._ff_minus
+    def ff_minus(self):
+        r'''
+        Fukui Function from below define as:
+
+        .. math::
+           f^-\left(\mathbf{r}\right) = \rho_{N_0}\left(\mathbf{r}\right) -
+                                        \rho_{N_0 - 1}\left(\mathbf{r}\right)
+        '''
+        ff = self._density_zero - self._density_minus
+        return ff
 
     @property
-    def mu_zero(self):
-        '''The local zero chemical potential in the linear model is the zero Fukui function'''
-        return self._ff_zero
+    def ff_zero(self):
+        r'''
+        Fukui Function from center defined as the average of :attr:`ff_plus` and :attr:`ff_minus`:
+
+        .. math::
+           f^0\left(\mathbf{r}\right) = \frac{f^+\left(\mathbf{r}\right) + f^-\left(\mathbf{r}\right)}{2} =
+                    \frac{\rho_{N_0 + 1}\left(\mathbf{r}\right) - \rho_{N_0 - 1}\left(\mathbf{r}\right)}{2}
+        '''
+        ff = 0.5 * (self._density_plus - self._density_minus)
+        return ff
+
+    @property
+    def dual_descriptor(self):
+        r'''
+        Dual descriptor defined as the difference of :attr:`ff_plus` and :attr:`ff_minus`:
+
+        .. math::
+           d\left(\mathbf{r}\right) = f^+\left(\mathbf{r}\right) - f^-\left(\mathbf{r}\right) =
+            \rho_{N_0 + 1}\left(\mathbf{r}\right) - 2 \rho_{N_0 - 1}\left(\mathbf{r}\right) + \rho_{N_0 - 1}\left(\mathbf{r}\right)
+        '''
+        value = self._density_plus - 2 * self._density_zero + self._density_minus
+        return value
 
 
 class QuadraticLocalTool(BaseLocalTool):
     '''
-    Class of Local Conceptual DFT Reactivity Descriptors based on the Quadratic Energy Model.
+    Class of local conceptual DFT reactivity descriptors based on the quadratic energy model.
     '''
-
     @doc_inherit(BaseLocalTool)
-    def __init__(self, ff_plus=None, ff_minus=None, global_instance=None):
-        super(self.__class__, self).__init__(ff_plus, ff_minus, global_instance)
+    def __init__(self, density_zero, density_plus, density_minus):
+        super(self.__class__, self).__init__(density_zero, density_plus, density_minus)
+
+    @property
+    def fukui_function(self):
+        r'''
+        Fukui function ...
+
+        .. math::
+
+           f\left(\mathbf{r}\right) = f^{(1)}\left(\mathbf{r}\right) &=
+                                      \frac{\rho_{N_0+1}\left(\mathbf{r}\right) -
+                                      \rho_{N_0-1}\left(\mathbf{r}\right)}{2}
+        '''
+        ff = 0.5 * (self._density_plus - self._density_minus)
+        return ff
+
+    @property
+    def hardness(self):
+        r'''
+        Hardness defined as ...
+
+        .. math::
+           \eta\left(\mathbf{r}\right) = f^{(2)}\left(\mathbf{r}\right) =
+               \rho_{N_0 + 1}\left(\mathbf{r}\right) - 2 \rho_{N_0}\left(\mathbf{r}\right) +
+               \rho_{N_0 - 1}\left(\mathbf{r}\right)
+        '''
+        ff2 = self._density_plus - 2 * self._density_zero + self._density_minus
+        return ff2
+
+    def softness(self, global_hardness):
+        r'''
+        Softness defined as ...
+
+        .. math::
+
+           s\left(\mathbf{r}\right) = S \cdot f\left(\mathbf{r}\right) =
+                  \frac{\rho_{N_0+1}\left(\mathbf{r}\right) - \rho_{N_0-1}\left(\mathbf{r}\right)}{2 \eta} =
+                  \frac{\rho_{N_0+1}\left(\mathbf{r}\right) - \rho_{N_0-1}\left(\mathbf{r}\right)}{2 \left(IP - EA\right)}
+
+        Parameters
+        ----------
+        global_hardness : float
+            The value of gloabl hardness.
+        '''
+        s_value = self.fukui_function / global_hardness
+        return s_value
+
+    def hyper_softness(self, global_hardness):
+        r'''
+        Hyper-softness defined as ...
+
+        .. math::
+
+           s^{(2)}\left(\mathbf{r}\right) =
+               \frac{\rho_{N_0 - 1}\left(\mathbf{r}\right) - 2 \rho_{N_0}\left(\mathbf{r}\right) +
+               \rho_{N_0 + 1}\left(\mathbf{r}\right)}{\eta^2} =
+               \frac{\rho_{N_0 - 1}\left(\mathbf{r}\right) - 2 \rho_{N_0}\left(\mathbf{r}\right) +
+               \rho_{N_0 + 1}\left(\mathbf{r}\right)}{\left(IP - EA\right)^2}
+
+        Parameters
+        ----------
+        global_hardness : float
+            The value of gloabl hardness.
+        '''
+        s_value = self.hardness / global_hardness**2
+        return s_value
+
+    # def compute_fukui_function(self, order):
+    #     r'''Fukui Function
+
+    #     .. math::
+
+    #        f^{(0)}\left(\mathbf{r}\right) &= \rho_{N_0}\left(\mathbf{r}\right) \\
+    #        f\left(\mathbf{r}\right) = f^{(1)}\left(\mathbf{r}\right) &=
+    #                                   \frac{\rho_{N_0+1}\left(\mathbf{r}\right) -
+    #                                   \rho_{N_0-1}\left(\mathbf{r}\right)}{2} \\
+    #        f^{(2)}\left(\mathbf{r}\right) &= \rho_{N_0 - 1}\left(\mathbf{r}\right) -
+    #                                        2 \rho_{N_0}\left(\mathbf{r}\right) +
+    #                                          \rho_{N_0 + 1}\left(\mathbf{r}\right) \\
+    #        f^{(n)}\left(\mathbf{r}\right) &= 0 \text{ for } n \geq 3
+    #     '''
+    #     if not (isinstance(order, int) and order >= 0):
+    #         raise ValueError('Argument order should be a positive integer.')
+
+    #     if order == 0:
+    #         ff = self._density_zero
+    #     elif order == 1:
+    #         ff = 0.5 * (self._density_plus - self._density_minus)
+    #     elif order == 2:
+    #         ff = self._density_plus - 2 * self._density_zero + self._density_minus
+    #     else:
+    #         ff = 0
+
+    #     return ff
