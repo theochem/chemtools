@@ -112,7 +112,11 @@ class DensityLocalTool(object):
     @property
     def reduced_density_gradient(self):
         r'''
-        Reduced density gradient (RDG) defined as ...
+        Reduced density gradient (RDG) defined as:
+
+        .. math::
+            \frac{1}{3\left( 3\pi ^2 \right)^{1/3}} \frac{\lvert \nabla \rho \rvert}{\rho^{4/3}}
+
         '''
         # prefactor and 4/3:
         factor = 2.0*((3.0*(np.pi**2.0))**(1.0/3.0))

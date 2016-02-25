@@ -28,8 +28,8 @@ from horton import IOData
 from chemtools.tool.globaltool import LinearGlobalTool, QuadraticGlobalTool, ExponentialGlobalTool, RationalGlobalTool
 from chemtools.tool.densitytool import DensityLocalTool
 from chemtools.utils import CubeGen
+from chemtools.analysis.output import _print_vmd
 import matplotlib.pyplot as plt
-
 
 class Analyze_1File(object):
     '''
@@ -133,11 +133,25 @@ class Analyze_1File(object):
     #     '''
     #     return self._localtool
 
-    def compute_nci(self, filename, isosurf=0.50000, denscut=0.10, cube=None):
-        '''
+    def compute_nci(self, filename, isosurf=0.50, denscut=0.05, cube=None, plot=False):
+        r'''
         Generate all files to plot NCI.
+        
+        Parameters
+        ----------
+        filename : str
+            Name for the outputfiles: *-dens.cube, *-grad.cube and *.vmd.
+        isosurf : float, default=0.5
+            Value of reduced density gradient (RDG) isosurface used in VMD script.
+        denscut : float, default=0.5
+            Density cutoff used in creating cube RDG file. 
+            RDG of points with density > cutoff will be set to 100.
+        cube : instance of CubeGen, default=None
+            Cubic grid used to calculate NCI. 
+            By deafault it is constructed from the molecule with spacing=0.1 and threshold=2.0
+        plot : boolean, default=False
+            Generate a plot of RDG vs. sign(:math:`\lambda_2`):math:`\rho`.
         '''
-        # FIXME: I still have to tweak the cutoffs
         #
         # the files used:
         #
@@ -147,6 +161,9 @@ class Analyze_1File(object):
 
         if cube is None:
             cube = CubeGen.from_molecule(self._mol.numbers, self._mol.pseudo_numbers, self._mol.coordinates, spacing=0.1,threshold=2.0)
+        else:
+            if not isinstance(cube, CubeGen):
+                raise ValueError('cube should be an instance of CubeGen!')
 
         dm_full = self._mol.get_dm_full()
 
@@ -155,22 +172,26 @@ class Analyze_1File(object):
         dloctool = DensityLocalTool(dens, grad)
         rdgrad = dloctool.reduced_density_gradient
 
+        hess = _compute_hessian(self._mol, cube.gridpoints)
+        dens = np.sign(np.linalg.eigvalsh(hess)[:,1])*dens
+
+        if plot:
+            # plotting the reduced density gradient vs. sign(lambda_2)density
+            # FIXME: this might need to go, but I would like to keep it for testing & demo for now.
+            plt.xlim(-0.2, 0.2)
+            plt.ylim(0.0, 2.0)
+            plt.scatter(dens, rdgrad, lw = 0.5)
+            plt.xlabel(r"sign($\lambda_2$)$\rho$ (a.u)")
+            plt.ylabel(r"Reduced gradient")
+            plt.show()
+
         #mask rdgrad:
         rdgrad[abs(dens) > denscut] = 100.0
-
-        hess = self._compute_hessian(self._mol, cube.gridpoints)
-        dens = np.sign(np.linalg.eigvalsh(hess)[:,1])*dens
 
         cube.dump_cube(densfile ,dens*100.0)
         cube.dump_cube(rdgfile,rdgrad)
         _print_vmd(vmdfile, densfile, rdgfile, isosurf, denscut*100.0)
 
-        plt.xlim(-0.1, 0.1)
-        plt.ylim(0.0, 2.0)
-        plt.scatter(dens,rdgrad)
-        plt.show()
-
-    # ???: ok to put it here?
 
 def _compute_hessian(mol, x):
     #untill the electronic Hessian is included in HORTON, we do it by finite difference:
@@ -180,49 +201,9 @@ def _compute_hessian(mol, x):
     dy = x + np.array([[0.0, eps, 0.0]])
     dz = x + np.array([[0.0, 0.0, eps]])
     hess = np.zeros((x.shape[0], 3, 3), float)
-    gpnt = mol.obasis._compute_gradient(dm, x)
-    hess[:,:,0] = (mol.obasis._compute_gradient(dm, dx) - gpnt) / eps
-    hess[:,:,1] = (mol.obasis._compute_gradient(dm, dy) - gpnt) / eps
-    hess[:,:,2] = (mol.obasis._compute_gradient(dm, dz) - gpnt) / eps
+    gpnt = mol.obasis.compute_grid_gradient_dm(dm, x)
+    hess[:,:,0] = (mol.obasis.compute_grid_gradient_dm(dm, dx) - gpnt) / eps
+    hess[:,:,1] = (mol.obasis.compute_grid_gradient_dm(dm, dy) - gpnt) / eps
+    hess[:,:,2] = (mol.obasis.compute_grid_gradient_dm(dm, dz) - gpnt) / eps
 
     return 0.5*(hess + np.transpose(hess, axes=(0, 2, 1)))
-
-
-def _print_vmd(file, densfile, rdgfile, isosurf, denscut):
-    # print out the .vmd file...
-    # FIXEME: The latest version of NCIPLOT uses a slightly different script. I have to see what changed and why
-    with open(file, 'w') as f:
-        print >> f, '#!/usr/local/bin/vmd'
-        print >> f, '# VMD script written by save_state $Revision: 1.10 $'
-        print >> f, '# VMD version: 1.8.6              '
-        print >> f, 'set viewplist                     '
-        print >> f, 'set fixedlist                     '
-        print >> f, '# Display settings                '
-        print >> f, 'display projection   Orthographic '
-        print >> f, 'display nearclip set 0.000000     '
-        print >> f, '# load new molecule               '
-        print >> f, 'mol new {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'.format(densfile)
-        print >> f, 'mol addfile {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'.format(rdgfile)
-        print >> f, '#'
-        print >> f, '# representation of the atoms'
-        print >> f, 'mol delrep 0 top'
-        print >> f, 'mol representation CPK 1.000000 0.300000 118.000000 131.000000'
-        print >> f, 'mol color Name'
-        print >> f, 'mol selection {{all}}'
-        print >> f, 'mol material Opaque'
-        print >> f, 'mol addrep top'
-        print >> f, '#'
-        print >> f, '# add representation of the surface'
-        print >> f, 'mol representation Isosurface {0:.5f} 1 0 0 1 1'.format(isosurf)
-        print >> f, 'mol color Volume 0'
-        print >> f, 'mol selection {all}'
-        print >> f, 'mol material Opaque'
-        print >> f, 'mol addrep top'
-        print >> f, 'mol selupdate 1 top 0'
-        print >> f, 'mol colupdate 1 top 0'
-        print >> f, 'mol scaleminmax top 1 {0:.6f} {1:.6f}'.format(-denscut, denscut)
-        print >> f, 'mol smoothrep top 1 0'
-        print >> f, 'mol drawframes top 1 {now}'
-        print >> f, 'color scale method BGR'
-        print >> f, 'set colorcmds {{color Name {C} gray}}'
-        print >> f, '#some more'
