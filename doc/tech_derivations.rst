@@ -36,3 +36,16 @@ Faa di Bruno stuff...
 
 Deriving Local Hyper-Softness
 =============================
+
+
+ .. _derivation_linear_fukui_function:
+
+Deriving Linear Fukui Functions
+===============================
+
+
+
+ .. _derivation_quadratic_fukui_function:
+
+Deriving Quadratic Fukui Functions
+==================================

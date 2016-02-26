@@ -68,6 +68,8 @@ The implemented energy models and the associated global reactivity descriptors i
 
 **Fundamental Global Reactivity Descriptors**
 
+.. _energy_derivatives:
+
 In the canonical ensemble, the fundamental global reactivity descriptors include the derivatives
 of the energy model with respect to the number of electrons :math:`N` at fixed external potential
 :math:`v(\mathbf{r})`:
@@ -92,6 +94,8 @@ denoted by :math:`\eta ^{(n)} \text{for } n \geq 2`, respectively:
  .. TODO::
     #. Which one is correct: :math:`\equiv` or :math:`=`?
     #. Mention electronegativity; is it negative chemical potential for all energy models?
+
+.. _grand_potential_derivatives:
 
 In the grand canonical ensemble, the fundamental global reactivity descriptors include the derivatives of the grand
 potential model :math:`\Omega = E \left(\left\langle N \right\rangle\right) - \mu \left\langle N \right\rangle`
