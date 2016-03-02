@@ -110,22 +110,35 @@ class DensityLocalTool(object):
         return value
 
     @property
+    def gradient_norm(self):
+        r'''
+        Gradinet norm representing the norm of the gradient vector at every point:
+
+        .. math::
+           \lvert \nabla \rho\left(\mathbf{r}\right) \rvert = \sqrt{
+                  \left(\frac{\partial\rho\left(\mathbf{r}\right)}{\partial x}\right)^2 +
+                  \left(\frac{\partial\rho\left(\mathbf{r}\right)}{\partial y}\right)^2 +
+                  \left(\frac{\partial\rho\left(\mathbf{r}\right)}{\partial z}\right)^2 }
+        '''
+        norm = np.linalg.norm(self._gradient, axis=1)
+        return norm
+
+    @property
     def reduced_density_gradient(self):
         r'''
         Reduced density gradient (RDG) defined as:
 
         .. math::
-            \frac{1}{3\left( 3\pi ^2 \right)^{1/3}} \frac{\lvert \nabla \rho \rvert}{\rho^{4/3}}
-
+           s\left(\mathbf{r}\right) = \frac{1}{3\left(2\pi ^2 \right)^{1/3}}
+           \frac{\lvert \nabla \rho\left(\mathbf{r}\right) \rvert}{\rho\left(\mathbf{r}\right)^{4/3}}
         '''
-        # prefactor and 4/3:
-        factor = 2.0*((3.0*(np.pi**2.0))**(1.0/3.0))
-        fourtird = 4.0/3.0
-        # masking density value's less than 1.0d-30 so we won't devide by 0:
+        # Mask density values less than 1.0d-30 to avoid diving by zero
         mdens = np.ma.masked_less(self._density, 1.0e-30)
         mdens.filled(1.0e-30)
-
-        return np.divide(np.linalg.norm(self._gradient, axis=1),(factor*(mdens**fourtird)))
+        # Compute reduced density gradient
+        prefactor = 0.5 / (3.0 * np.pi**2)**(1.0/3.0)
+        rdg = prefactor * self.gradient_norm / mdens**(4.0/3.0)
+        return rdg
 
     @property
     def electrostatic_potential(self):
