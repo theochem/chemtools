@@ -227,40 +227,46 @@ def test_analyze_nci_h2o_dimer_wfn():
     file_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g.wfn')
     # Build conceptual DFT descriptor tool
     desp = Analyze_1File(file_path)
-    # testing against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
+    # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     dens_cube1_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g-dens.cube')
     cube = CubeGen.from_cube(dens_cube1_path)
-    # testing against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
+    # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     grad_cube1_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g-grad.cube')
     dmol1 = IOData.from_file(dens_cube1_path)
     gmol1 = IOData.from_file(grad_cube1_path)
 
     with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_h2o_dimer_fchk') as dn:
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g')
-        desp.compute_nci(cube2,cube=cube)
+        desp.generate_nci(cube2, cube=cube)
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')
         mol2 = IOData.from_file(cube2)
-
-        assert abs(dmol1.coordinates - mol2.coordinates).max() < 1e-4
-        assert (dmol1.numbers == mol2.numbers).all()
+        # Check coordinates
+        np.testing.assert_array_almost_equal(dmol1.coordinates, mol2.coordinates, decimal=6)
+        np.testing.assert_equal(dmol1.numbers, mol2.numbers)
+        # Check grid data
         ugrid1 = dmol1.grid
         ugrid2 = mol2.grid
-        assert abs(ugrid1.grid_rvecs - ugrid2.grid_rvecs).max() < 1e-4
-        assert (ugrid1.shape == ugrid2.shape).all()
-        assert abs((dmol1.cube_data - mol2.cube_data)/dmol1.cube_data).max() < 1e-4
-        assert abs(dmol1.pseudo_numbers - mol2.pseudo_numbers).max() < 1e-4
+        np.testing.assert_array_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
+        np.testing.assert_equal(ugrid1.shape, ugrid2.shape)
+        data1 = dmol1.cube_data / dmol1.cube_data
+        data2 = mol2.cube_data / dmol1.cube_data
+        np.testing.assert_array_almost_equal(data1, data2, decimal=4)
+        np.testing.assert_equal(dmol1.pseudo_numbers, mol2.pseudo_numbers)
 
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-grad.cube')
         mol2 = IOData.from_file(cube2)
-
-        assert abs(gmol1.coordinates - mol2.coordinates).max() < 1e-4
-        assert (gmol1.numbers == mol2.numbers).all()
+        # Check coordinates
+        np.testing.assert_array_almost_equal(gmol1.coordinates,  mol2.coordinates, decimal=6)
+        np.testing.assert_equal(gmol1.numbers, mol2.numbers)
+        # Check grid data
         ugrid1 = gmol1.grid
         ugrid2 = mol2.grid
-        assert abs(ugrid1.grid_rvecs - ugrid2.grid_rvecs).max() < 1e-4
-        assert (ugrid1.shape == ugrid2.shape).all()
-        assert abs((gmol1.cube_data - mol2.cube_data)/gmol1.cube_data).max() < 1e-4
-        assert abs(gmol1.pseudo_numbers - mol2.pseudo_numbers).max() < 1e-4
+        np.testing.assert_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
+        np.testing.assert_equal(ugrid1.shape, ugrid2.shape)
+        data1 = gmol1.cube_data / gmol1.cube_data
+        data2 = mol2.cube_data / gmol1.cube_data
+        np.testing.assert_array_almost_equal(data1, data2, decimal=4)
+        np.testing.assert_equal(gmol1.pseudo_numbers, mol2.pseudo_numbers)
 
 def test_analyze_nci_h2o_dimer_fchk():
     # Temporary trick to find the data files
@@ -268,37 +274,43 @@ def test_analyze_nci_h2o_dimer_fchk():
     file_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g.fchk')
     # Build conceptual DFT descriptor tool
     desp = Analyze_1File(file_path)
-    # testing against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
+    # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     dens_cube1_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g-dens.cube')
     cube = CubeGen.from_cube(dens_cube1_path)
-    # testing against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
+    # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     grad_cube1_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g-grad.cube')
     dmol1 = IOData.from_file(dens_cube1_path)
     gmol1 = IOData.from_file(grad_cube1_path)
 
     with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_h2o_dimer_fchk') as dn:
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g')
-        desp.compute_nci(cube2,cube=cube)
+        desp.generate_nci(cube2, cube=cube)
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')
         mol2 = IOData.from_file(cube2)
-
-        assert abs(dmol1.coordinates - mol2.coordinates).max() < 1e-4
-        assert (dmol1.numbers == mol2.numbers).all()
+        # Check coordinates
+        np.testing.assert_array_almost_equal(dmol1.coordinates, mol2.coordinates, decimal=6)
+        np.testing.assert_equal(dmol1.numbers, mol2.numbers)
+        # Check grid data
         ugrid1 = dmol1.grid
         ugrid2 = mol2.grid
-        assert abs(ugrid1.grid_rvecs - ugrid2.grid_rvecs).max() < 1e-4
-        assert (ugrid1.shape == ugrid2.shape).all()
-        assert abs((dmol1.cube_data - mol2.cube_data)/dmol1.cube_data).max() < 1e-4
-        assert abs(dmol1.pseudo_numbers - mol2.pseudo_numbers).max() < 1e-4
+        np.testing.assert_array_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
+        np.testing.assert_equal(ugrid1.shape, ugrid2.shape)
+        data1 = dmol1.cube_data / dmol1.cube_data
+        data2 = mol2.cube_data / dmol1.cube_data
+        np.testing.assert_array_almost_equal(data1, data2, decimal=4)
+        np.testing.assert_equal(dmol1.pseudo_numbers, mol2.pseudo_numbers)
 
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-grad.cube')
         mol2 = IOData.from_file(cube2)
-
-        assert abs(gmol1.coordinates - mol2.coordinates).max() < 1e-4
-        assert (gmol1.numbers == mol2.numbers).all()
+        # Check coordinates
+        np.testing.assert_array_almost_equal(gmol1.coordinates,  mol2.coordinates, decimal=6)
+        np.testing.assert_equal(gmol1.numbers, mol2.numbers)
+        # Check grid data
         ugrid1 = gmol1.grid
         ugrid2 = mol2.grid
-        assert abs(ugrid1.grid_rvecs - ugrid2.grid_rvecs).max() < 1e-4
-        assert (ugrid1.shape == ugrid2.shape).all()
-        assert abs((gmol1.cube_data - mol2.cube_data)/gmol1.cube_data).max() < 1e-4
-        assert abs(gmol1.pseudo_numbers - mol2.pseudo_numbers).max() < 1e-4
+        np.testing.assert_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
+        np.testing.assert_equal(ugrid1.shape, ugrid2.shape)
+        data1 = gmol1.cube_data / gmol1.cube_data
+        data2 = mol2.cube_data / gmol1.cube_data
+        np.testing.assert_array_almost_equal(data1, data2, decimal=4)
+        np.testing.assert_equal(gmol1.pseudo_numbers, mol2.pseudo_numbers)
