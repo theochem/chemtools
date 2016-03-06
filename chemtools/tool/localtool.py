@@ -190,12 +190,12 @@ class QuadraticLocalTool(BaseLocalTool):
         return ff
 
     @property
-    def hardness(self):
+    def dual_descriptor(self):
         r'''
-        Hardness defined as ...
+        Dual descriptor defined as ...
 
         .. math::
-           \eta\left(\mathbf{r}\right) = f^{(2)}\left(\mathbf{r}\right) =
+           \d\left(\mathbf{r}\right) = f^{(2)}\left(\mathbf{r}\right) =
                \rho_{N_0 + 1}\left(\mathbf{r}\right) - 2 \rho_{N_0}\left(\mathbf{r}\right) +
                \rho_{N_0 - 1}\left(\mathbf{r}\right)
         '''
@@ -237,7 +237,7 @@ class QuadraticLocalTool(BaseLocalTool):
         global_hardness : float
             The value of gloabl hardness.
         '''
-        s_value = self.hardness / global_hardness**2
+        s_value = self.dual_descriptor / global_hardness**2
         return s_value
 
     # def compute_fukui_function(self, order):

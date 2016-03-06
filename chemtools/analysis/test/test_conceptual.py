@@ -67,6 +67,22 @@ def test_analyze_ch4_fchk_linear():
     np.testing.assert_almost_equal(desp.globaltool.energy_derivative(10.5, 1), -ea, decimal=8)
     # Check softness & hyper-softness
     # Check N_max and related descriptors
+    # Check densities
+    dens = desp.localtool.density_zero
+    np.testing.assert_almost_equal(desp.grid.integrate(dens), 10., decimal=4)
+    dens = desp.localtool.density_plus
+    np.testing.assert_almost_equal(desp.grid.integrate(dens), 11., decimal=4)
+    dens = desp.localtool.density_minus
+    np.testing.assert_almost_equal(desp.grid.integrate(dens), 9., decimal=4)
+    # Check Fukui functions & dual descriptor
+    ff = desp.localtool.ff_plus
+    np.testing.assert_almost_equal(desp.grid.integrate(ff), 1., decimal=4)
+    ff = desp.localtool.ff_minus
+    np.testing.assert_almost_equal(desp.grid.integrate(ff), 1., decimal=4)
+    ff = desp.localtool.ff_zero
+    np.testing.assert_almost_equal(desp.grid.integrate(ff), 1., decimal=4)
+    dd = desp.localtool.dual_descriptor
+    np.testing.assert_almost_equal(desp.grid.integrate(dd), 0., decimal=4)
 
 
 def test_analyze_ch4_fchk_quadratic():
@@ -121,6 +137,23 @@ def test_analyze_ch4_fchk_quadratic():
     np.testing.assert_almost_equal(desp.globaltool.electrofugality, value, decimal=8)
     value = ip + 0.5 * mu * mu / eta
     np.testing.assert_almost_equal(desp.globaltool.electrofugality, value, decimal=8)
+    # Check densities
+    dens = desp.localtool.density_zero
+    np.testing.assert_almost_equal(desp.grid.integrate(dens), 10., decimal=4)
+    dens = desp.localtool.density_plus
+    np.testing.assert_almost_equal(desp.grid.integrate(dens), 11., decimal=4)
+    dens = desp.localtool.density_minus
+    np.testing.assert_almost_equal(desp.grid.integrate(dens), 9., decimal=4)
+    # Check Fukui function, dual descriptor & softness
+    ff = desp.localtool.fukui_function
+    np.testing.assert_almost_equal(desp.grid.integrate(ff), 1., decimal=4)
+    dd = desp.localtool.dual_descriptor
+    np.testing.assert_almost_equal(desp.grid.integrate(dd), 0., decimal=4)
+    # Check local softness
+    ss = desp.localtool.softness(eta)
+    np.testing.assert_almost_equal(desp.grid.integrate(ss), 1./eta, decimal=4)
+    ss = desp.localtool.hyper_softness(eta)
+    np.testing.assert_almost_equal(desp.grid.integrate(ss), 0., decimal=3)
 
 
 def test_analyze_ch4_fchk_exponential():

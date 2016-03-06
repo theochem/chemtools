@@ -23,11 +23,7 @@
 #pylint: skip-file
 
 
-import math
-import sympy as sp
-import numpy as np
 from chemtools import *
-import numpy as np
 
 
 def test_global_quadratic1():

@@ -22,7 +22,7 @@
 # --
 #pylint: skip-file
 
-import numpy as np
+
 from chemtools import *
 
 
@@ -63,7 +63,7 @@ def test_local_quadratic():
     expected = np.array([-0.25, 0.25, 1.5, -0.5, -1.5])
     np.testing.assert_almost_equal(model.fukui_function, expected, decimal=8)
     expected = np.array([-0.5, 2.5, -1.0, -1.0, -1.0])
-    np.testing.assert_almost_equal(model.hardness, expected, decimal=8)
+    np.testing.assert_almost_equal(model.dual_descriptor, expected, decimal=8)
     expected = np.array([-0.25, 0.25, 1.5, -0.5, -1.5]) / 3.5
     np.testing.assert_almost_equal(model.softness(3.5), expected, decimal=8)
     expected = np.array([-0.25, 0.25, 1.5, -0.5, -1.5]) / 0.5
