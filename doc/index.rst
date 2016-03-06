@@ -48,15 +48,15 @@ calculations from any standard quantum chemistry program output.
    intro_contact_information
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :numbered:
    :caption: User Documentation
 
    usr_download_and_install
    usr_getting_started
-   usr_doc_globaltool
-   usr_doc_localtool
-   usr_doc_condensedtool
+   usr_doc_conceptualdft
+   usr_doc_densitytool
+   usr_doc_orbitaltool
 
 .. toctree::
    :maxdepth: 2

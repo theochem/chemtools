@@ -188,8 +188,8 @@ a electroguge (a leaving group which leaves an electron behind),
 
 .. _linear_energy:
 
-Linear Energy Model: :class:`chemtools.tool.globaltool.LinearGlobalTool`
-========================================================================
+Linear Energy Model :class:`chemtools.tool.globaltool.LinearGlobalTool`
+=======================================================================
 
 In this model, energy is approximated as a piece-wise linear function of the number of electrons:
 
@@ -256,8 +256,8 @@ The related :ref:`derived global reactivity indicators <derived_indicators>` for
 
 .. _quadratic_energy:
 
-Quadratic Energy Model: :class:`chemtools.tool.globaltool.QuadraticGlobalTool`
-==============================================================================
+Quadratic Energy Model :class:`chemtools.tool.globaltool.QuadraticGlobalTool`
+=============================================================================
 
 In this model, energy is approximated as a quadratic function of the number of electrons:
 
@@ -433,8 +433,8 @@ Sample Code:
 
 .. _exponential_energy:
 
-Exponential Energy Model: :class:`chemtools.tool.globaltool.ExponentialGlobalTool`
-==================================================================================
+Exponential Energy Model :class:`chemtools.tool.globaltool.ExponentialGlobalTool`
+=================================================================================
 
 In this model, energy is approximated by an exponential function of the number of electrons:
 
@@ -700,3 +700,9 @@ Example: Build a quadratic energy model:
      model = GeneralizedGlobalTool(expression, energies, n)
      # ready to retrieve any global tool
      print model.mu
+
+
+Analytical
+==========
+
+Here the analytical evaluation of chemical potential and hardness, etc. will be discussed!

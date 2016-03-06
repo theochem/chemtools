@@ -24,16 +24,12 @@
 
 .. _local_tools:
 
-Local Descriptive Tools
-#######################
+Local Descriptive Tools :class:`chemtools.tool.localtool`
+#########################################################
 
 Local descriptive tools :math:`p (\mathbf{r}) = p_{\text local} \left(\mathbf{r}\right)`
 assign a value to every point in space.
 In other words, these tools describe how a molecule react at point :math:`\mathbf{r}`.
-
-
-Conceptual DFT Local Descriptors: :class:`chemtools.tool.localtool`
-===================================================================
 
 In conceptual DFT, local descriptors arise as functional derivatives of :ref:`global descriptive tools <global_tools>`
 with respect to local quantities, typically the external potential :math:`v(\mathbf{r})` at fixed number of
@@ -116,8 +112,8 @@ and the corresponding local descriptors will be introduced.
 
 .. _local_linear:
 
-Linear Local Model: :class:`chemtools.tool.localtool.LinearLocalTool`
----------------------------------------------------------------------
+Linear Energy Model :class:`chemtools.tool.localtool.LinearLocalTool`
+=====================================================================
 
 Complementing the :ref:`linear global model <linear_energy>`, the piece-wise linear
 energy model :math:`E\left(N\right) = a + b N` alongside the electron density of
@@ -175,8 +171,8 @@ Dual descriptor is defined as:
 
 .. _local_quadratic:
 
-Quadratic Local Model: :class:`chemtools.tool.localtool.QuadraticLocalTool`
----------------------------------------------------------------------------
+Quadratic Energy Model :class:`chemtools.tool.localtool.QuadraticLocalTool`
+===========================================================================
 
 Complementing the :ref:`quadratic global model <quadratic_energy>`, the :math:`E\left(N\right) = a + b N + c N^2`
 energy model alongside the electron density of systems with :math:`N_0 - 1`, :math:`N_0` and
@@ -218,26 +214,9 @@ The local softness is easily found by substituting the Fukui functions in Eq. (?
 where :math:`\eta` represents the gloabl chemical hardness in quadratic energy model.
 
 
-Density-Based Local Descriptors: :class:`chemtools.tool.densitytool`
-====================================================================
+Analytical
+==========
 
-All the tools for calculating wich the electron density :math:`\rho\left(\mathbf{r}\right)`, gradianet and hessian
-of the :math:`N` electron reference state is enough.
-
-**Electron density** :math:`\rho\left(\mathbf{r}\right)` represents ...
-
-**Gradient of electron density** :math:`\nabla \rho\left(\mathbf{r}\right)` represents the first-order partial
-derivatives of electron density with respect to coordinates:
-
- .. math:: \nabla \rho\left(\mathbf{r}\right) =
-           \left( \frac{\partial}{\partial x}\mathbf{i}, \frac{\partial}{\partial y}\mathbf{j}, \frac{\partial}{\partial z}\mathbf{k}\right) \rho\left(\mathbf{r}\right)
-
-**Hessian of electron density** :math:`\nabla^2 \rho\left(\mathbf{r}\right)` represents the second-order
-partial derivative of electron density with respect to coordinates:
+Here the analytical evaluation of fukui function, dual descriptor, etc. will be described!
 
 
-
-Orbital-Based Local Descriptors: :class:`chemtools.tool.orbitaltool`
-====================================================================
-
-All the tools for calculating which the orbital information of the :math:`N` electron reference state is enough.
