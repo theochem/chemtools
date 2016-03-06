@@ -22,5 +22,6 @@
 # --
 '''The Analysis Module.'''
 
-from chemtools.analysis.base import *
+from chemtools.analysis.conceptual import *
+from chemtools.analysis.others import *
 from chemtools.analysis.output import *

@@ -24,18 +24,8 @@
 
 
 import os
-import numpy as np, tempfile, shutil
-from horton import IOData
 from chemtools import *
-from contextlib import contextmanager
 
-@contextmanager
-def tmpdir(name):
-    dn = tempfile.mkdtemp(name)
-    try:
-        yield dn
-    finally:
-        shutil.rmtree(dn)
 
 def test_analyze_ch4_fchk_linear():
     # Temporary trick to find the data files
@@ -44,7 +34,7 @@ def test_analyze_ch4_fchk_linear():
     # IP = -E(HOMO) & EA = E(LUMO)
     ip, ea, energy = -(-5.43101269E-01), 1.93295185E-01, -4.019868797400735E+01
     # Build conceptual DFT descriptor tool
-    desp = Analyze_1File(file_path, model='linear')
+    desp = ConceptualDFT_1File(file_path, model='linear')
     np.testing.assert_almost_equal(desp.globaltool.energy(10.), energy, decimal=8)
     np.testing.assert_almost_equal(desp.globaltool.energy(9.), energy + ip, decimal=8)
     np.testing.assert_almost_equal(desp.globaltool.energy(11.), energy - ea, decimal=8)
@@ -86,7 +76,7 @@ def test_analyze_ch4_fchk_quadratic():
     # IP = -E(HOMO) & EA = E(LUMO)
     ip, ea, energy = -(-5.43101269E-01), 1.93295185E-01, -4.019868797400735E+01
     # Build conceptual DFT descriptor tool
-    desp = Analyze_1File(file_path, model='quadratic')
+    desp = ConceptualDFT_1File(file_path, model='quadratic')
     np.testing.assert_almost_equal(desp.globaltool.energy(10.), energy, decimal=8)
     np.testing.assert_almost_equal(desp.globaltool.energy(9.), energy + ip, decimal=8)
     np.testing.assert_almost_equal(desp.globaltool.energy(11.), energy - ea, decimal=8)
@@ -140,7 +130,7 @@ def test_analyze_ch4_fchk_exponential():
     # IP = -E(HOMO) & EA = E(LUMO)
     ip, ea, energy = -(-5.43101269E-01), 1.93295185E-01, -4.019868797400735E+01
     # Build conceptual DFT descriptor tool
-    desp = Analyze_1File(file_path, model='exponential')
+    desp = ConceptualDFT_1File(file_path, model='exponential')
     np.testing.assert_almost_equal(desp.globaltool.energy(10.), energy, decimal=8)
     np.testing.assert_almost_equal(desp.globaltool.energy(9.), energy + ip, decimal=8)
     np.testing.assert_almost_equal(desp.globaltool.energy(11.), energy - ea, decimal=8)
@@ -177,7 +167,7 @@ def test_analyze_ch4_fchk_rational():
     # IP = -E(HOMO) & EA = E(LUMO)
     ip, ea, energy = -(-5.43101269E-01), 1.93295185E-01, -4.019868797400735E+01
     # Build conceptual DFT descriptor tool
-    desp = Analyze_1File(file_path, model='rational')
+    desp = ConceptualDFT_1File(file_path, model='rational')
     np.testing.assert_almost_equal(desp.globaltool.energy(10.), energy, decimal=8)
     np.testing.assert_almost_equal(desp.globaltool.energy(9.), energy + ip, decimal=8)
     np.testing.assert_almost_equal(desp.globaltool.energy(11.), energy - ea, decimal=8)
@@ -220,97 +210,3 @@ def test_analyze_ch4_fchk_rational():
     # value =
     # np.testing.assert_almost_equal(desp.globaltool.hyper_softness(3), value, decimal=8)
     # Check N_max and related descriptors
-
-def test_analyze_nci_h2o_dimer_wfn():
-    # Temporary trick to find the data files
-    path = os.path.abspath(os.path.dirname(__file__)).rsplit('/', 3)[0]
-    file_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g.wfn')
-    # Build conceptual DFT descriptor tool
-    desp = Analyze_1File(file_path)
-    # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-    dens_cube1_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g-dens.cube')
-    cube = CubeGen.from_cube(dens_cube1_path)
-    # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-    grad_cube1_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g-grad.cube')
-    dmol1 = IOData.from_file(dens_cube1_path)
-    gmol1 = IOData.from_file(grad_cube1_path)
-
-    with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_h2o_dimer_fchk') as dn:
-        cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g')
-        desp.generate_nci(cube2, cube=cube)
-        cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')
-        mol2 = IOData.from_file(cube2)
-        # Check coordinates
-        np.testing.assert_array_almost_equal(dmol1.coordinates, mol2.coordinates, decimal=6)
-        np.testing.assert_equal(dmol1.numbers, mol2.numbers)
-        # Check grid data
-        ugrid1 = dmol1.grid
-        ugrid2 = mol2.grid
-        np.testing.assert_array_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
-        np.testing.assert_equal(ugrid1.shape, ugrid2.shape)
-        data1 = dmol1.cube_data / dmol1.cube_data
-        data2 = mol2.cube_data / dmol1.cube_data
-        np.testing.assert_array_almost_equal(data1, data2, decimal=4)
-        np.testing.assert_equal(dmol1.pseudo_numbers, mol2.pseudo_numbers)
-
-        cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-grad.cube')
-        mol2 = IOData.from_file(cube2)
-        # Check coordinates
-        np.testing.assert_array_almost_equal(gmol1.coordinates,  mol2.coordinates, decimal=6)
-        np.testing.assert_equal(gmol1.numbers, mol2.numbers)
-        # Check grid data
-        ugrid1 = gmol1.grid
-        ugrid2 = mol2.grid
-        np.testing.assert_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
-        np.testing.assert_equal(ugrid1.shape, ugrid2.shape)
-        data1 = gmol1.cube_data / gmol1.cube_data
-        data2 = mol2.cube_data / gmol1.cube_data
-        np.testing.assert_array_almost_equal(data1, data2, decimal=4)
-        np.testing.assert_equal(gmol1.pseudo_numbers, mol2.pseudo_numbers)
-
-def test_analyze_nci_h2o_dimer_fchk():
-    # Temporary trick to find the data files
-    path = os.path.abspath(os.path.dirname(__file__)).rsplit('/', 3)[0]
-    file_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g.fchk')
-    # Build conceptual DFT descriptor tool
-    desp = Analyze_1File(file_path)
-    # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-    dens_cube1_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g-dens.cube')
-    cube = CubeGen.from_cube(dens_cube1_path)
-    # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-    grad_cube1_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g-grad.cube')
-    dmol1 = IOData.from_file(dens_cube1_path)
-    gmol1 = IOData.from_file(grad_cube1_path)
-
-    with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_h2o_dimer_fchk') as dn:
-        cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g')
-        desp.generate_nci(cube2, cube=cube)
-        cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')
-        mol2 = IOData.from_file(cube2)
-        # Check coordinates
-        np.testing.assert_array_almost_equal(dmol1.coordinates, mol2.coordinates, decimal=6)
-        np.testing.assert_equal(dmol1.numbers, mol2.numbers)
-        # Check grid data
-        ugrid1 = dmol1.grid
-        ugrid2 = mol2.grid
-        np.testing.assert_array_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
-        np.testing.assert_equal(ugrid1.shape, ugrid2.shape)
-        data1 = dmol1.cube_data / dmol1.cube_data
-        data2 = mol2.cube_data / dmol1.cube_data
-        np.testing.assert_array_almost_equal(data1, data2, decimal=4)
-        np.testing.assert_equal(dmol1.pseudo_numbers, mol2.pseudo_numbers)
-
-        cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-grad.cube')
-        mol2 = IOData.from_file(cube2)
-        # Check coordinates
-        np.testing.assert_array_almost_equal(gmol1.coordinates,  mol2.coordinates, decimal=6)
-        np.testing.assert_equal(gmol1.numbers, mol2.numbers)
-        # Check grid data
-        ugrid1 = gmol1.grid
-        ugrid2 = mol2.grid
-        np.testing.assert_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
-        np.testing.assert_equal(ugrid1.shape, ugrid2.shape)
-        data1 = gmol1.cube_data / gmol1.cube_data
-        data2 = mol2.cube_data / gmol1.cube_data
-        np.testing.assert_array_almost_equal(data1, data2, decimal=4)
-        np.testing.assert_equal(gmol1.pseudo_numbers, mol2.pseudo_numbers)
