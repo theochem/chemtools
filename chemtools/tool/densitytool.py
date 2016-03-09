@@ -141,6 +141,38 @@ class DensityLocalTool(object):
         return rdg
 
     @property
+    def weizsacker_kinetic_energy_density(self):
+        r'''
+        Weizsacker kinetic energy/local steric energy/Fisher information density defined as:
+
+        .. math::
+           T\left(\mathbf{r}\right) =
+           \frac{\lvert \nabla \rho\left(\mathbf{r}\right) \rvert ^2}{8 \rho\left(\mathbf{r}\right)}
+        '''
+        # Mask density values less than 1.0d-30 to avoid diving by zero
+        mdens = np.ma.masked_less(self._density, 1.0e-30)
+        mdens.filled(1.0e-30)
+        # Compute Weizsacker kinetic energy
+        wke = self.gradient_norm**2.0 / (8.0 * mdens)
+        return wke
+
+    @property
+    def thomas_fermi_kinetic_energy_density(self):
+        r'''
+            Thomas-Fermi kinetic energy density defined as:
+
+        .. math::
+            T\left(\mathbf{r}\right) = \frac{3}{10} \left( 6 \pi ^2 \right)^{2/3}
+            \left( \frac{\rho\left(\mathbf{r}\right)}{2} \right)^{5/3}
+            '''
+        # Compute Thomas-Fermi kinetic energy
+        prefactor = 0.3 * (3.0 * (np.pi**2.0))**(2.0/3.0)
+        fivethird = 5.0 / 3.0
+        tfke =  prefactor * (self._density**fivethird)
+        return tfke
+
+
+    @property
     def electrostatic_potential(self):
         r'''
         Electrostatic potential defined as:
