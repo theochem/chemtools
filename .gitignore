@@ -51,10 +51,14 @@ coverage.xml
 *.log
 
 # Sphinx documentation
-docs/_build/
+doc/_build/
+doc/source/
 
 # PyBuilder
 target/
 
 #PyCharm
 .idea/
+
+#Mac .DS_Store
+.DS_Store
