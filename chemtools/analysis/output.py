@@ -28,11 +28,11 @@
 
 
 def _print_vmd_script_nci(scriptfile, densfile, rdgfile, isosurf=0.5, denscut=0.05):
-    '''
+    r'''
     Generate VMD (Visual Molecular Dynamics) script for visualizing NCI
     (non-covalent interactions) iso-surfaces subject to the constraint of
     density(r) < denscut, i.e. low-density, and colored based on the
-    sign(:math:`\lambda_2`):math:`\rho`.
+    sign(:math:`\lambda_2`) :math:`\rho`.
 
     Parameters
     ----------
@@ -89,5 +89,86 @@ def _print_vmd_script_nci(scriptfile, densfile, rdgfile, isosurf=0.5, denscut=0.
         print >> f, 'mol smoothrep top 1 0'
         print >> f, 'mol drawframes top 1 {now}'
         print >> f, 'color scale method BGR'
+        print >> f, 'set colorcmds {{color Name {C} gray}}'
+        print >> f, '#some more'
+
+def print_vmd_script(scriptfile, isofile, colorfile, isosurf=0.5, material='Opaque', scalemin=-0.05, scalemax=0.05,colorscheme='RGB'):
+    '''
+    Generate VMD (Visual Molecular Dynamics) script for visualizing 
+    the isosurface of one cube file, colored by the value of another.
+
+    Parameters
+    ----------
+    scriptfile : str
+        Name of VMD script.
+    isofile : str
+        Name of cube file for which the isosurface is to be plotted.
+    colorfile : str
+        Name of cube file used to color the isosurface.
+    isosurf : float, default=0.5
+        The value of the iso-surface to visualize.
+    material : str, default=Opaque
+        The material seting of the isosurface. This can be:
+        Opaque, Transparent, BrushedMetal, Diffuse, Ghost,
+        Glass1, Glass2, Glass3, Glossy, HardPlastic, MetallicPastel,
+        Steel, Translucent, Edgy, EdgyShiny, EdgyGlass, Goodsell,
+        AOShiny, AOChalky, AOEdgy, BlownGlass, GlassBubble, RTChrome.
+    scalemin : float, default=-0.05
+        Smallest value to start coloring the iso-surface.
+    scalemax : float, default=0.05
+        Largest value to color the iso-surface.
+    colorscheme : str, default=RGB
+        Color scheme to be use to color the iso-surface. This can be:
+
+        ======  =====================================
+        Method  Description
+        ======  =====================================
+        RGB     small=red, middle=green, large=blue
+        BGR     small=blue, middle=green, large=red
+        RWB     small=red, middle=white, large=blue
+        BWR     small=blue, middle=white, large=red
+        RWG     small=red, middle=white, large=green
+        GWR     small=green, middle=white, large=red
+        GWB     small=green, middle=white, large=blue
+        BWG     small=blue, middle=white, large=green
+        BlkW    small=black, large=white
+        WBlk    small=white, large=black
+        ======  =====================================
+    '''
+    with open(scriptfile, 'w') as f:
+        print >> f, '#!/usr/local/bin/vmd'
+        print >> f, '# VMD script written by save_state $Revision: 1.41 $'
+        print >> f, '# VMD version: 1.8.6               '
+        print >> f, 'set viewplist                      '
+        print >> f, 'set fixedlist                      '
+        print >> f, '#'
+        print >> f, '# Display settings                 '
+        print >> f, 'display projection   Orthographic  '
+        print >> f, 'display nearclip set 0.000000      '
+        print >> f, '#'
+        print >> f, '# load new molecule                '
+        print >> f, 'mol new {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'.format(colorfile)
+        print >> f, 'mol addfile {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'.format(isofile)
+        print >> f, '#'
+        print >> f, '# representation of the atoms'
+        print >> f, 'mol delrep 0 top'
+        print >> f, 'mol representation CPK 1.000000 0.300000 118.000000 131.000000'
+        print >> f, 'mol color Name'
+        print >> f, 'mol selection {all}'
+        print >> f, 'mol material Opaque'
+        print >> f, 'mol addrep top'
+        print >> f, '#'
+        print >> f, '# add representation of the surface'
+        print >> f, 'mol representation Isosurface {0:.5f} 1.0 0.0 0.0 1 1'.format(isosurf)
+        print >> f, 'mol color Volume 0'
+        print >> f, 'mol selection {all}'
+        print >> f, 'mol material {0}'.format(material)
+        print >> f, 'mol addrep top'
+        print >> f, 'mol selupdate 1 top 0'
+        print >> f, 'mol colupdate 1 top 0'
+        print >> f, 'mol scaleminmax top 1 {0:.6f} {1:.6f}'.format(scalemin, scalemax)
+        print >> f, 'mol smoothrep top 1 0'
+        print >> f, 'mol drawframes top 1 {now}'
+        print >> f, 'color scale method {0}'.format(colorscheme)
         print >> f, 'set colorcmds {{color Name {C} gray}}'
         print >> f, '#some more'
