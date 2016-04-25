@@ -23,33 +23,24 @@
 '''Condensed Conceptual Density Functional Theory (DFT) Reactivity Tools.'''
 
 
-class BaseCondensedTool(object):
+import numpy as np
+from chemtools.utils import doc_inherit
+
+
+class CondensedTool(object):
     '''
-    Base class of condensed conceptual DFT reactivity descriptors.
+    Class to condense any local reactivity descriptor to atoms.
+    So far only the Fragment of Molecular Response is used,
+    where the weights do not depend on the number of electrons.
     '''
-    def __init__(self, weights, grid):
+    def __init__(self, dens_part):
         '''
         Parameters
         ----------
-        weights :
-            List of atomic weights
-        grid :
-            Molecular grid
+        dens_part:
+            A WPartClass object obtained from partitioning the molecule
         '''
-        self._weights = weights
-        self._grid = grid
-
-    @property
-    def weights(self):
-        '''
-        '''
-        return self._weights
-
-    @property
-    def grid(self):
-        '''
-        '''
-        return self._grid
+        self._dens_part = dens_part
 
     def condense_atoms(self, local_property):
         r'''
@@ -65,7 +56,16 @@ class BaseCondensedTool(object):
         local_property : np.ndarray
             Local descriptor evaluated on grid.
         '''
-        pass
+        natom = self._dens_part._get_natom()
+        property_condensed = np.zeros(natom)
+        for i in xrange(natom):
+            int_grid = self._dens_part.get_grid(i)
+            at = self._dens_part.cache.load('at_weights',i)
+            wcor = self._dens_part.get_wcor(i)
+            dens = self._dens_part.to_atomic_grid(i, local_property)
+            property_condensed[i] = int_grid.integrate(at, dens, wcor)
+
+        return property_condensed
 
     def condese_pairs(self, response):
         r'''

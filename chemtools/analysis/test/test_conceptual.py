@@ -81,6 +81,14 @@ def test_analyze_ch4_fchk_linear():
     np.testing.assert_almost_equal(desp.grid.integrate(ff), 1., decimal=4)
     ff = desp.localtool.ff_zero
     np.testing.assert_almost_equal(desp.grid.integrate(ff), 1., decimal=4)
+    # # Check condensed dual descriptors (Becke part only)
+    # c, h1, h2, h3, h4 = -0.26854311,  0.05276027,  0.09886118, -0.03029482,  0.14726817
+    # condens = desp.condensedtool
+    # np.testing.assert_almost_equal(condens.condense_atoms(desp.localtool.dual_descriptor)[0],c,decimal=4)
+    # np.testing.assert_almost_equal(condens.condense_atoms(desp.localtool.dual_descriptor)[1],h1,decimal=4)
+    # np.testing.assert_almost_equal(condens.condense_atoms(desp.localtool.dual_descriptor)[2],h2,decimal=4)
+    # np.testing.assert_almost_equal(condens.condense_atoms(desp.localtool.dual_descriptor)[3],h3,decimal=4)
+    # np.testing.assert_almost_equal(condens.condense_atoms(desp.localtool.dual_descriptor)[4],h4,decimal=4)
 
 
 def test_analyze_ch4_fchk_quadratic():
@@ -170,6 +178,14 @@ def test_analyze_ch4_fchk_quadratic():
     np.testing.assert_almost_equal(desp.grid.integrate(ss), 0., decimal=3)
     ss = desp.localtool.hyper_softness(eta, 9.91)
     np.testing.assert_almost_equal(desp.grid.integrate(ss), 0., decimal=3)
+    # Check condensed dual descriptors (Becke part only)
+    c, h1, h2, h3, h4 = -0.26854311,  0.05276027,  0.09886118, -0.03029482,  0.14726817
+    condens = desp.condensedtool.condense_atoms(desp.localtool.dual_descriptor())
+    np.testing.assert_almost_equal(condens[0], c, decimal=4)
+    np.testing.assert_almost_equal(condens[1], h1, decimal=4)
+    np.testing.assert_almost_equal(condens[2], h2, decimal=4)
+    np.testing.assert_almost_equal(condens[3], h3, decimal=4)
+    np.testing.assert_almost_equal(condens[4], h4, decimal=4)
 
 
 def test_analyze_ch4_fchk_exponential():

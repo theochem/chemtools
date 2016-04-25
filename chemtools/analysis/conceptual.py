@@ -27,17 +27,17 @@
 '''
 
 import numpy as np
-from horton import IOData, BeckeMolGrid
+from horton import IOData, BeckeMolGrid, part
 from chemtools.tool.globaltool import LinearGlobalTool, QuadraticGlobalTool, ExponentialGlobalTool, RationalGlobalTool
 from chemtools.tool.localtool import LinearLocalTool, QuadraticLocalTool
-
+from chemtools.tool.condensedtool import CondensedTool
 
 class ConceptualDFT_1File(object):
     '''
     Class for conceptual density functional theory (DFT) analysis of one quantum
     chemistry output file using the frontiner molecular orbital (FMO) approach.
     '''
-    def __init__(self, molecule_filename, model='quadratic', energy_expr=None, grid=None):
+    def __init__(self, molecule_filename, model='quadratic', energy_expr=None, grid=None, proatomdb=None):
         '''
         Parameters
         ----------
@@ -136,6 +136,24 @@ class ConceptualDFT_1File(object):
         density_plus = density + lumo_dens
         density_minus = density - homo_dens
 
+        # Do a partitioning of the electron density
+        # Compute the density of the pro atoms
+        #atom_dens = ProAtomDB.from_file('atoms.h5')
+        #atom_dens.normalize()
+        # Select your favourite partition scheme and calculate the populations
+        # So far only with Becke since no atom density is needed
+        if proatomdb is None:
+            WPartClass = part.becke.BeckeWPart
+            dens_part = WPartClass(self._mol.coordinates,self._mol.numbers,self._mol.pseudo_numbers,
+                                  self._grid,density,None,local=True,lmax=3,k=3)
+            dens_part.do_populations()
+        else:
+            WPartClass = part.hirshfeld_i.HirshfeldIWPart
+            dens_part = WPartClass(self._mol.coordinates,self._mol.numbers,self._mol.pseudo_numbers,
+                                  self._grid,density,proatomdb,None,local=True,lmax=3)
+            dens_part.do_populations()
+
+
         # Define global tool
         if model == 'linear':
             self._globaltool = LinearGlobalTool(energy, energy_plus, energy_minus, n_elec)
@@ -152,6 +170,9 @@ class ConceptualDFT_1File(object):
         elif model == 'general':
             self._globaltool = None
             self._localtool = None
+        self._condensedtool = CondensedTool(dens_part)
+        #self._homo_condensed = self._condensedtool.condense_atoms(homo_dens)
+        #self._lumo_condensed = self._condensedtool.condense_atoms(lumo_dens)
 
     @property
     def model(self):
@@ -180,3 +201,10 @@ class ConceptualDFT_1File(object):
         Instance of :mod:`chemtools.tool.localtool`.
         '''
         return self._localtool
+
+    @property
+    def condensedtool(self):
+        '''
+        Instance of :mod:`chemtools.tool.localtool`.
+        '''
+        return self._condensedtool
