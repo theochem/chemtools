@@ -30,25 +30,25 @@
 def _print_vmd_script_nci(scriptfile, densfile, rdgfile, isosurf=0.5, denscut=0.05):
     r'''
     Generate VMD (Visual Molecular Dynamics) script for visualizing NCI
-    (non-covalent interactions) iso-surfaces subject to the constraint of
+    (non-covalent interactions) isosurfaces subject to the constraint of
     density(r) < denscut, i.e. low-density, and colored based on the
     sign(:math:`\lambda_2`) :math:`\rho`.
 
     Parameters
     ----------
     scriptfile : str
-        Name of VMD script.
+        Name of VMD script file to generate.
     densfile : str
         Name of density cube file.
     rdgfile : str
         Name of reduced density gradient cube file.
     isosurf : float, default=0.5
-        Reduced density gradient iso-surface to visualize.
+        Reduced density gradient isosurface to visualize.
     denscut : float, default=0.05
         Density cutoff used in creating reduced density gradient cube file.
         Similar to NCIPlot program, reduced density gradient of points with
         density > denscut will be set to 100.0 to display reduced density gradient
-        iso-surface subject to the constraint of low density.
+        isosurface subject to the constraint of low density.
 
     Note
     ----
@@ -92,49 +92,58 @@ def _print_vmd_script_nci(scriptfile, densfile, rdgfile, isosurf=0.5, denscut=0.
         print >> f, 'set colorcmds {{color Name {C} gray}}'
         print >> f, '#some more'
 
-def print_vmd_script(scriptfile, isofile, colorfile, isosurf=0.5, material='Opaque', scalemin=-0.05, scalemax=0.05,colorscheme='RGB'):
+
+def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5, material='Opaque',
+                                scalemin=-0.05, scalemax=0.05, colorscheme='RGB'):
     '''
-    Generate VMD (Visual Molecular Dynamics) script for visualizing 
-    the isosurface of one cube file, colored by the value of another.
+    Generate VMD (Visual Molecular Dynamics) script for visualizing the isosurface based on
+    one cube file when coloring by the value of another cube file on the isosurface.
 
     Parameters
     ----------
     scriptfile : str
-        Name of VMD script.
+        Name of VMD script file to generate.
     isofile : str
-        Name of cube file for which the isosurface is to be plotted.
-    colorfile : str
-        Name of cube file used to color the isosurface.
+        Name of cube file used in VMD script for visualizing the isosurface.
+    colorfile : str, default=None
+        Name of cube file used in VMD script for coloring the isosurface.
+        If None, the isofile is used for coloring.
     isosurf : float, default=0.5
-        The value of the iso-surface to visualize.
-    material : str, default=Opaque
-        The material seting of the isosurface. This can be:
-        Opaque, Transparent, BrushedMetal, Diffuse, Ghost,
-        Glass1, Glass2, Glass3, Glossy, HardPlastic, MetallicPastel,
-        Steel, Translucent, Edgy, EdgyShiny, EdgyGlass, Goodsell,
-        AOShiny, AOChalky, AOEdgy, BlownGlass, GlassBubble, RTChrome.
+        The value of the isosurface to visualize used in VMD script.
+    material : str, default='Opaque'
+        The material setting of the isosurface used in VMD script.
+        Options:
+        'Opaque', 'Transparent', 'BrushedMetal', 'Diffuse', 'Ghost',
+        'Glass1', 'Glass2', 'Glass3', 'Glossy', 'HardPlastic', 'MetallicPastel',
+        'Steel', 'Translucent', 'Edgy', 'EdgyShiny', 'EdgyGlass', 'Goodsell',
+        'AOShiny', 'AOChalky', 'AOEdgy', 'BlownGlass', 'GlassBubble', 'RTChrome'.
     scalemin : float, default=-0.05
-        Smallest value to start coloring the iso-surface.
+        Smallest value to color on the isosurface used in VMD script.
     scalemax : float, default=0.05
-        Largest value to color the iso-surface.
-    colorscheme : str, default=RGB
-        Color scheme to be use to color the iso-surface. This can be:
+        Largest value to color on the isosurface used in VMD script.
+    colorscheme : str, default='RGB'
+        Color scheme used in VMD script for coloring the isosurface.
+        Available options are described in the table below.
 
-        ======  =====================================
-        Method  Description
-        ======  =====================================
-        RGB     small=red, middle=green, large=blue
-        BGR     small=blue, middle=green, large=red
-        RWB     small=red, middle=white, large=blue
-        BWR     small=blue, middle=white, large=red
-        RWG     small=red, middle=white, large=green
-        GWR     small=green, middle=white, large=red
-        GWB     small=green, middle=white, large=blue
-        BWG     small=blue, middle=white, large=green
-        BlkW    small=black, large=white
-        WBlk    small=white, large=black
-        ======  =====================================
+        =======  =====================================
+        Options  Description
+        =======  =====================================
+        'RGB'    small=red, middle=green, large=blue
+        'BGR'    small=blue, middle=green, large=red
+        'RWB'    small=red, middle=white, large=blue
+        'BWR'    small=blue, middle=white, large=red
+        'RWG'    small=red, middle=white, large=green
+        'GWR'    small=green, middle=white, large=red
+        'GWB'    small=green, middle=white, large=blue
+        'BWG'    small=blue, middle=white, large=green
+        'BlkW'   small=black, large=white
+        'WBlk'   small=white, large=black
+        =======  =====================================
     '''
+    # If colorfile is not provided, the isofile is used for coloring.
+    if colorfile is None:
+        colorfile = isofile
+
     with open(scriptfile, 'w') as f:
         print >> f, '#!/usr/local/bin/vmd'
         print >> f, '# VMD script written by save_state $Revision: 1.41 $'
