@@ -98,15 +98,15 @@ class CubeGen(object):
         # Total number of grid points
         self._npoints = npoints_x * npoints_y * npoints_z
         # Make an array to store coordinates of grid points
-        self._gridpoints = np.zeros((self._npoints, 3))
+        self._points = np.zeros((self._npoints, 3))
         # Compute coordinates of grid points relative to the origin
-        self._gridpoints += self._origin
+        self._points += self._origin
         count = 0
         for nx in range(npoints_x):
             for ny in range(npoints_y):
                 for nz in range(npoints_z):
                     coordinate = np.dot(np.array([nx, ny, nz]), self._axes)
-                    self._gridpoints[count, :] += coordinate
+                    self._points[count, :] += coordinate
                     count += 1
 
     @classmethod
@@ -211,11 +211,11 @@ class CubeGen(object):
         return self._npoints
 
     @property
-    def gridpoints(self):
+    def points(self):
         '''
         Cartesian coordinates of the cubic grid points.
         '''
-        return self._gridpoints
+        return self._points
 
 
     def dump_cube(self, filename, data):

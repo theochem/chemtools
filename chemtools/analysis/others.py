@@ -84,13 +84,13 @@ class DensityBased_1File(object):
 
         # Compute density & gradient on cubic grid
         dm_full = self._mol.get_dm_full()
-        dens = self._mol.obasis.compute_grid_density_dm(dm_full, cube.gridpoints)
-        grad = self._mol.obasis.compute_grid_gradient_dm(dm_full, cube.gridpoints)
+        dens = self._mol.obasis.compute_grid_density_dm(dm_full, cube.points)
+        grad = self._mol.obasis.compute_grid_gradient_dm(dm_full, cube.points)
         # Calculate reduced density gradient on cubic grid
         localtool = DensityLocalTool(dens, grad, hessian=None)
         rdgrad = localtool.reduced_density_gradient
         # Compute hessian and its eigenvalues on cubuc grid
-        hess = _compute_hessian(self._mol, cube.gridpoints)
+        hess = _compute_hessian(self._mol, cube.points)
         eigvalues = np.linalg.eigvalsh(hess)
         # Use sign of second eigenvalue to distinguish interaction types
         dens = np.sign(eigvalues[:, 1]) * dens
