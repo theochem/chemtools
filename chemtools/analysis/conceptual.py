@@ -139,10 +139,10 @@ class ConceptualDFT_1File(object):
         # Define global tool
         if model == 'linear':
             self._globaltool = LinearGlobalTool(energy, energy_plus, energy_minus, n_elec)
-            self._localtool = LinearLocalTool(density, density_plus, density_minus)
+            self._localtool = LinearLocalTool(density, density_plus, density_minus, n_elec)
         elif model == 'quadratic':
             self._globaltool = QuadraticGlobalTool(energy, energy_plus, energy_minus, n_elec)
-            self._localtool = QuadraticLocalTool(density, density_plus, density_minus)
+            self._localtool = QuadraticLocalTool(density, density_plus, density_minus, n_elec)
         elif model == 'exponential':
             self._globaltool = ExponentialGlobalTool(energy, energy_plus, energy_minus, n_elec)
             self._localtool = None

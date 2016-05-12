@@ -81,8 +81,6 @@ def test_analyze_ch4_fchk_linear():
     np.testing.assert_almost_equal(desp.grid.integrate(ff), 1., decimal=4)
     ff = desp.localtool.ff_zero
     np.testing.assert_almost_equal(desp.grid.integrate(ff), 1., decimal=4)
-    dd = desp.localtool.dual_descriptor
-    np.testing.assert_almost_equal(desp.grid.integrate(dd), 0., decimal=4)
 
 
 def test_analyze_ch4_fchk_quadratic():
@@ -144,15 +142,33 @@ def test_analyze_ch4_fchk_quadratic():
     np.testing.assert_almost_equal(desp.grid.integrate(dens), 11., decimal=4)
     dens = desp.localtool.density_minus
     np.testing.assert_almost_equal(desp.grid.integrate(dens), 9., decimal=4)
+    dens = desp.localtool.density(10.62)
+    np.testing.assert_almost_equal(desp.grid.integrate(dens), 10.62, decimal=4)
+    dens = desp.localtool.density(9.78)
+    np.testing.assert_almost_equal(desp.grid.integrate(dens), 9.78, decimal=4)
+    dens = desp.localtool.density(10.0)
+    np.testing.assert_almost_equal(desp.grid.integrate(dens), 10.0, decimal=4)
     # Check Fukui function, dual descriptor & softness
-    ff = desp.localtool.fukui_function
+    ff = desp.localtool.fukui_function()
     np.testing.assert_almost_equal(desp.grid.integrate(ff), 1., decimal=4)
-    dd = desp.localtool.dual_descriptor
+    ff = desp.localtool.fukui_function(10.5)
+    np.testing.assert_almost_equal(desp.grid.integrate(ff), 1., decimal=4)
+    ff = desp.localtool.fukui_function(9.50)
+    np.testing.assert_almost_equal(desp.grid.integrate(ff), 1., decimal=4)
+    dd = desp.localtool.dual_descriptor()
+    np.testing.assert_almost_equal(desp.grid.integrate(dd), 0., decimal=4)
+    dd = desp.localtool.dual_descriptor(10.79)
     np.testing.assert_almost_equal(desp.grid.integrate(dd), 0., decimal=4)
     # Check local softness
-    ss = desp.localtool.softness(eta)
+    ss = desp.localtool.softness(1./eta)
+    np.testing.assert_almost_equal(desp.grid.integrate(ss), 1./eta, decimal=4)
+    ss = desp.localtool.softness(1./eta, 10.3)
+    np.testing.assert_almost_equal(desp.grid.integrate(ss), 1./eta, decimal=4)
+    ss = desp.localtool.softness(1./eta, 9.1)
     np.testing.assert_almost_equal(desp.grid.integrate(ss), 1./eta, decimal=4)
     ss = desp.localtool.hyper_softness(eta)
+    np.testing.assert_almost_equal(desp.grid.integrate(ss), 0., decimal=3)
+    ss = desp.localtool.hyper_softness(eta, 9.91)
     np.testing.assert_almost_equal(desp.grid.integrate(ss), 0., decimal=3)
 
 
