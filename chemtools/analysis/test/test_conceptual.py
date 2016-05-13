@@ -98,7 +98,8 @@ def test_analyze_ch4_fchk_quadratic():
     # IP = -E(HOMO) & EA = E(LUMO)
     ip, ea, energy = -(-5.43101269E-01), 1.93295185E-01, -4.019868797400735E+01
     # Build conceptual DFT descriptor tool
-    desp = ConceptualDFT_1File(file_path, model='quadratic')
+    desp = ConceptualDFT_1File(file_path, model='quadratic', part_scheme='b', proatoms=None)
+    # Check energy
     np.testing.assert_almost_equal(desp.globaltool.energy(10.), energy, decimal=8)
     np.testing.assert_almost_equal(desp.globaltool.energy(9.), energy + ip, decimal=8)
     np.testing.assert_almost_equal(desp.globaltool.energy(11.), energy - ea, decimal=8)
@@ -179,6 +180,7 @@ def test_analyze_ch4_fchk_quadratic():
     ss = desp.localtool.hyper_softness(eta, 9.91)
     np.testing.assert_almost_equal(desp.grid.integrate(ss), 0., decimal=3)
     # Check condensed dual descriptors (Becke part only)
+    # TODO: How were the expected values calculated?
     c, h1, h2, h3, h4 = -0.26854311,  0.05276027,  0.09886118, -0.03029482,  0.14726817
     condens = desp.condensedtool.condense_atoms(desp.localtool.dual_descriptor())
     np.testing.assert_almost_equal(condens[0], c, decimal=4)

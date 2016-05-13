@@ -29,7 +29,8 @@ from chemtools.utils import doc_inherit
 
 class CondensedTool(object):
     '''
-    Class to condense any local reactivity descriptor to atoms.
+    Class of condensed conceptual DFT reactivity descriptors.
+
     So far only the Fragment of Molecular Response is used,
     where the weights do not depend on the number of electrons.
     '''
@@ -44,8 +45,8 @@ class CondensedTool(object):
 
     def condense_atoms(self, local_property):
         r'''
-        Condense local descriptor :math:`p_{\text{local}}\left(\mathbf{r}\right)` into
-        atomic contribution :math:`P_A` defined as:
+        Return condensed values of the local descriptor :math:`p_{\text{local}}\left(\mathbf{r}\right)`
+        into atomic contribution :math:`P_A` defined as:
 
         .. math::
 
@@ -56,21 +57,20 @@ class CondensedTool(object):
         local_property : np.ndarray
             Local descriptor evaluated on grid.
         '''
-        natom = self._dens_part._get_natom()
-        property_condensed = np.zeros(natom)
-        for i in xrange(natom):
-            int_grid = self._dens_part.get_grid(i)
-            at = self._dens_part.cache.load('at_weights',i)
-            wcor = self._dens_part.get_wcor(i)
-            dens = self._dens_part.to_atomic_grid(i, local_property)
-            property_condensed[i] = int_grid.integrate(at, dens, wcor)
-
-        return property_condensed
+        natom = self._dens_part.natom
+        local_condensed = np.zeros(natom)
+        for index in xrange(natom):
+            at_grid = self._dens_part.get_grid(index)
+            at_weight = self._dens_part.cache.load('at_weights',index)
+            wcor = self._dens_part.get_wcor(index)
+            local_prop = self._dens_part.to_atomic_grid(index, local_property)
+            local_condensed[index] = at_grid.integrate(at_weight, local_prop, wcor)
+        return local_condensed
 
     def condese_pairs(self, response):
         r'''
-        Condense response function :math:`f_{\text{response}}\left(\mathbf{r}, \mathbf{r'}\right)` into
-        atomic pair contribution :math:`P_{AB}` defined as:
+        Return condensed values of the response function :math:`f_{\text{response}}\left(\mathbf{r}, \mathbf{r'}\right)`
+        into atomic pair contribution :math:`P_{AB}` defined as:
 
         .. math::
 
