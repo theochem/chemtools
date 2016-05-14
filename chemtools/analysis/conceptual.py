@@ -40,7 +40,8 @@ class BaseConceptualDFT(object):
     Base class for conceptual density functional theory (DFT) analysis of quantum
     chemistry output file(s).
     '''
-    def __init__(self, numbers, pseudo_numbers, coordinates, grid, model, energy_0, energy_p, energy_m, density_0, density_p, density_m, n_elec):
+    def __init__(self, numbers, pseudo_numbers, coordinates, grid, model, energy_0, energy_p, energy_m,
+                 density_0, density_p, density_m, n_elec, part_scheme, proatoms):
         '''
         Parameters
         ----------
@@ -81,6 +82,7 @@ class BaseConceptualDFT(object):
         #     raise ValueError('Argument energy_expr is required when model=\'general\'.')
         self._model = model
 
+        # Build global & local tools instance
         dict_global = {'linear':LinearGlobalTool, 'quadratic':QuadraticGlobalTool,
                        'exponential':ExponentialGlobalTool, 'rational':RationalGlobalTool}
         dict_local = {'linear':LinearLocalTool, 'quadratic':QuadraticLocalTool}
@@ -94,6 +96,30 @@ class BaseConceptualDFT(object):
             self._localtool = dict_local[self._model](density_0, density_p, density_m, n_elec)
         else:
             self._localtool = None
+
+        # Build condense tool instance: Fragment of Molecular Response
+        # Paritition electron density of N-electron system
+        if isinstance(grid, BeckeMolGrid):
+            if part_scheme not in wpart_schemes:
+                raise ValueError('Argument part_scheme={0} should be one of wpart_schemes={1}.'.format(part_scheme, wpart_schemes))
+            wpart = wpart_schemes[part_scheme]
+            # TODO: add wpart.options to the kwargs
+            kwargs = {}
+            if isinstance(proatoms, ProAtomDB):
+                kwargs['proatomdb'] = proatoms
+            elif proatoms is not None:
+                proatomdb = ProAtomDB.from_file(proatoms)
+                proatomdb.normalize()
+                kwargs['proatomdb'] = proatoms
+            dens_part = wpart(coordinates, numbers, pseudo_numbers, grid, density_0, **kwargs)
+            dens_part.do_all()
+            print 'charges:', dens_part['charges']
+        elif isinstance(grid, CubeGen):
+            raise NotImplementedError('Should implement partitioning with cubic grid!')
+        else:
+            raise ValueError('Argument grid={0} is not supported by partitioning class.'.format(grid))
+
+        self._condensedtool = CondensedTool(dens_part)
 
     @property
     def model(self):
@@ -183,18 +209,7 @@ class ConceptualDFT_1File(BaseConceptualDFT):
         if not isinstance(molecule, IOData):
             molecule = IOData.from_file(molecule)
         self._mol = molecule
-        numbers = self._mol.numbers
-        pseudo_numbers = self._mol.pseudo_numbers
-        coordinates = self._mol.coordinates
-
-        # Check or setup a default grid
-        if grid is None:
-            grid = BeckeMolGrid(coordinates, numbers, pseudo_numbers, agspec='fine',
-                                random_rotate=False, mode='keep')
-        else:
-            assert np.all(abs(grid.numbers - numbers) < 1.e-6)
-            assert np.all(abs(grid.pseudo_numbers - pseudo_numbers) < 1.e-6)
-            assert np.all(abs(grid.coordinates - coordinates) < 1.e-6)
+        grid, numbers, pseudo_numbers, coordinates = check_molecules(grid, self._mol)
 
         #
         # Frontiner Molecular Orbital (FMO) Approach
@@ -245,43 +260,77 @@ class ConceptualDFT_1File(BaseConceptualDFT):
         energy_plus = energy - lumo_energy
         energy_minus = energy - homo_energy
 
-        # Compute rho(N), i.e. molecule's density
+        # Compute rho(N), rho(N+1) & rho(N-1)
         dm_full = self._mol.get_dm_full()
         density = self._mol.obasis.compute_grid_density_dm(dm_full, grid.points)
-        # Compute rho(N+1) & rho(N-1)
         density_plus = density + lumo_dens
         density_minus = density - homo_dens
 
-        # Paritition electron density of N-electron system
-        if isinstance(grid, BeckeMolGrid):
-            if part_scheme not in wpart_schemes:
-                raise ValueError('Argument part_scheme={0} should be one of wpart_schemes={1}.'.format(part_scheme, wpart_schemes))
-            wpart = wpart_schemes[part_scheme]
-            # TODO: add wpart.options to the kwargs
-            kwargs = {}
-            if isinstance(proatoms, ProAtomDB):
-                kwargs['proatomdb'] = proatoms
-            elif proatoms is not None:
-                proatomdb = ProAtomDB.from_file(proatoms)
-                proatomdb.normalize()
-                kwargs['proatomdb'] = proatoms
-            dens_part = wpart(coordinates, numbers, pseudo_numbers, grid, density, **kwargs)
-            dens_part.do_all()
+        BaseConceptualDFT.__init__(self, numbers, pseudo_numbers, coordinates, grid, model,
+                                   energy, energy_plus, energy_minus, density, density_plus,
+                                   density_minus, n_elec, part_scheme=part_scheme, proatoms=proatoms)
 
-        elif isinstance(grid, CubeGen):
-            raise NotImplementedError('Should implement partitioning with cubic grid!')
 
-        else:
-            raise ValueError('Argument grid={0} is not supported by partitioning class.'.format(grid))
+class ConceptualDFT_3File(BaseConceptualDFT):
+    '''
+    Class for conceptual density functional theory (DFT) analysis of three quantum
+    chemistry output files using the finite differene (FD) approach.
+    '''
+    def __init__(self, molecule_0, molecule_p, molecule_m, model='quadratic',
+                 grid=None, part_scheme='b', proatoms=None):
+        '''
+        '''
+        # Load molecules
+        load_molecule = lambda mol: IOData.from_file(mol) if not isinstance(mol, IOData) else mol
+        self._mol0 = load_molecule(molecule_0)
+        self._molp = load_molecule(molecule_p)
+        self._molm = load_molecule(molecule_m)
+        grid, numbers, pseudo_numbers, coordinates = check_molecules(grid, self._mol0, self._molp, self._molm)
 
-        self._condensedtool = CondensedTool(dens_part)
+        n_elec = int(np.sum(self._mol0.exp_alpha.occupations))
+        # HACK: self._mol might not have the exp_beta attribute, making it crash
+        if hasattr(self._mol0, 'exp_beta'):
+            if self._mol0.exp_beta is not None:
+                n_elec += int(np.sum(self._mol0.exp_beta.occupations))
+
+        #
+        # Finite Difference (FD) Approach
+        #
+
+        # Compute E(N), E(N+1), & E(N-1)
+        energy0 = self._mol0.energy
+        energyp = self._molp.energy
+        energym = self._molm.energy
+        # Compute rho(N), rho(N+1) & rho(N-1)
+        density0 = self._mol0.obasis.compute_grid_density_dm(self._mol0.get_dm_full(), grid.points)
+        densityp = self._molp.obasis.compute_grid_density_dm(self._molp.get_dm_full(), grid.points)
+        densitym = self._molm.obasis.compute_grid_density_dm(self._molm.get_dm_full(), grid.points)
+        # Check number of electrons of each density
+        assert abs(grid.integrate(density0) - n_elec) < 1.e-4
+        assert abs(grid.integrate(densityp) - n_elec - 1.) < 1.e-4
+        assert abs(grid.integrate(densitym) - n_elec + 1.) < 1.e-4
 
         BaseConceptualDFT.__init__(self, numbers, pseudo_numbers, coordinates, grid, model,
-                                   energy, energy_plus, energy_minus, density, density_plus, density_minus, n_elec)
+                                   energy0, energyp, energym, density0, densityp, densitym, n_elec,
+                                   part_scheme=part_scheme, proatoms=proatoms)
 
-    @property
-    def condensedtool(self):
-        '''
-        Instance of :mod:`chemtools.tool.localtool`.
-        '''
-        return self._condensedtool
+
+def check_molecules(grid, *args):
+    '''
+    '''
+    numbers, pseudo_numbers, coordinates = args[0].numbers, args[0].pseudo_numbers, args[0].coordinates
+    # Check consistency of structure & atomic number
+    for mol in args[1:]:
+        assert np.all(abs(mol.numbers - numbers) < 1.e-6)
+        assert np.all(abs(mol.pseudo_numbers - pseudo_numbers) < 1.e-6)
+        assert np.all(abs(mol.coordinates - coordinates) < 1.e-6)
+    # Check or setup a default grid
+    if grid is None:
+        grid = BeckeMolGrid(coordinates, numbers, pseudo_numbers, agspec='exp:5e-4:2e1:175:434',
+                            random_rotate=False, mode='keep')
+    else:
+        assert np.all(abs(grid.numbers - numbers) < 1.e-6)
+        assert np.all(abs(grid.pseudo_numbers - pseudo_numbers) < 1.e-6)
+        assert np.all(abs(grid.coordinates - coordinates) < 1.e-6)
+
+    return grid, numbers, pseudo_numbers, coordinates
