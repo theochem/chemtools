@@ -182,7 +182,7 @@ def test_analyze_ch4_fchk_quadratic():
     # Check condensed dual descriptors (Becke part only)
     # TODO: How were the expected values calculated?
     c, h1, h2, h3, h4 = -0.26854311,  0.05276027,  0.09886118, -0.03029482,  0.14726817
-    condens = desp.condensedtool.condense_atoms(desp.localtool.dual_descriptor())
+    condens = desp.condensedtool.dual_descriptor()
     np.testing.assert_almost_equal(condens[0], c, decimal=4)
     np.testing.assert_almost_equal(condens[1], h1, decimal=4)
     np.testing.assert_almost_equal(condens[2], h2, decimal=4)

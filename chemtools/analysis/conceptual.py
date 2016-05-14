@@ -41,7 +41,7 @@ class BaseConceptualDFT(object):
     chemistry output file(s).
     '''
     def __init__(self, numbers, pseudo_numbers, coordinates, grid, model, energy_0, energy_p, energy_m,
-                 density_0, density_p, density_m, n_elec, part_scheme, proatoms):
+                 density_0, density_p, density_m, n_elec, condense_scheme, part_scheme, proatoms):
         '''
         Parameters
         ----------
@@ -82,28 +82,12 @@ class BaseConceptualDFT(object):
         #     raise ValueError('Argument energy_expr is required when model=\'general\'.')
         self._model = model
 
-        # Build global & local tools instance
-        dict_global = {'linear':LinearGlobalTool, 'quadratic':QuadraticGlobalTool,
-                       'exponential':ExponentialGlobalTool, 'rational':RationalGlobalTool}
-        dict_local = {'linear':LinearLocalTool, 'quadratic':QuadraticLocalTool}
-
-        if self._model in dict_global.keys():
-            self._globaltool = dict_global[self._model](energy_0, energy_p, energy_m, n_elec)
-        else:
-            self._globaltool = None
-
-        if self._model in dict_local.keys():
-            self._localtool = dict_local[self._model](density_0, density_p, density_m, n_elec)
-        else:
-            self._localtool = None
-
-        # Build condense tool instance: Fragment of Molecular Response
-        # Paritition electron density of N-electron system
+        # Partition electron density
         if isinstance(grid, BeckeMolGrid):
             if part_scheme not in wpart_schemes:
                 raise ValueError('Argument part_scheme={0} should be one of wpart_schemes={1}.'.format(part_scheme, wpart_schemes))
-            wpart = wpart_schemes[part_scheme]
             # TODO: add wpart.options to the kwargs
+            wpart = wpart_schemes[part_scheme]
             kwargs = {}
             if isinstance(proatoms, ProAtomDB):
                 kwargs['proatomdb'] = proatoms
@@ -111,15 +95,48 @@ class BaseConceptualDFT(object):
                 proatomdb = ProAtomDB.from_file(proatoms)
                 proatomdb.normalize()
                 kwargs['proatomdb'] = proatoms
-            dens_part = wpart(coordinates, numbers, pseudo_numbers, grid, density_0, **kwargs)
-            dens_part.do_all()
-            print 'charges:', dens_part['charges']
+            # Paritition electron density of N-electron system
+            part_0 = wpart(coordinates, numbers, pseudo_numbers, grid, density_0, **kwargs)
+            part_0.do_all()
+            pop_0 = part_0['populations']
+            if condense_scheme == 'FMR':
+                print '<><> FMR <><>'
+                # Fragment of Molecular Response
+                pop_p = condense_to_atoms(part_0, density_p)
+                pop_m = condense_to_atoms(part_0, density_m)
+            elif condense_scheme == 'RMF':
+                print '<><> RMF <><>'
+                # Response of Molecular Fragment
+                part_p = wpart(coordinates, numbers, pseudo_numbers, grid, density_p, **kwargs)
+                part_p.do_all()
+                pop_p = part_p['populations']
+                part_m = wpart(coordinates, numbers, pseudo_numbers, grid, density_m, **kwargs)
+                part_m.do_all()
+                pop_m = part_m['populations']
+            else:
+                raise ValueError('Argument condense_scheme={0} is not identified!'.format(condense_scheme))
+            print 'pop0 = ', pop_0
+            print 'popp = ', pop_p
+            print 'popm = ', pop_m
+
         elif isinstance(grid, CubeGen):
             raise NotImplementedError('Should implement partitioning with cubic grid!')
         else:
             raise ValueError('Argument grid={0} is not supported by partitioning class.'.format(grid))
 
-        self._condensedtool = CondensedTool(dens_part)
+        # Build global & local tools instance
+        dict_global = {'linear':LinearGlobalTool, 'quadratic':QuadraticGlobalTool,
+                       'exponential':ExponentialGlobalTool, 'rational':RationalGlobalTool}
+        dict_local = {'linear':LinearLocalTool, 'quadratic':QuadraticLocalTool}
+
+        self._globaltool = dict_global[self._model](energy_0, energy_p, energy_m, n_elec)
+        #self._condensedtool = CondensedTool(dens_part)
+        if self._model in dict_local.keys():
+            self._localtool = dict_local[self._model](density_0, density_p, density_m, n_elec)
+            self._condensedtool = dict_local[self._model](pop_0, pop_p, pop_m, n_elec)
+        else:
+            self._localtool = None
+            self._condensedtool = None
 
     @property
     def model(self):
@@ -183,7 +200,7 @@ class ConceptualDFT_1File(BaseConceptualDFT):
     Class for conceptual density functional theory (DFT) analysis of one quantum
     chemistry output file using the frontiner molecular orbital (FMO) approach.
     '''
-    def __init__(self, molecule, model='quadratic', grid=None, part_scheme='b', proatoms=None):
+    def __init__(self, molecule, model='quadratic', grid=None, condense_scheme='FMR', part_scheme='b', proatoms=None):
         '''
         Parameters
         ----------
@@ -268,7 +285,8 @@ class ConceptualDFT_1File(BaseConceptualDFT):
 
         BaseConceptualDFT.__init__(self, numbers, pseudo_numbers, coordinates, grid, model,
                                    energy, energy_plus, energy_minus, density, density_plus,
-                                   density_minus, n_elec, part_scheme=part_scheme, proatoms=proatoms)
+                                   density_minus, n_elec, condense_scheme=condense_scheme,
+                                   part_scheme=part_scheme, proatoms=proatoms)
 
 
 class ConceptualDFT_3File(BaseConceptualDFT):
@@ -277,7 +295,7 @@ class ConceptualDFT_3File(BaseConceptualDFT):
     chemistry output files using the finite differene (FD) approach.
     '''
     def __init__(self, molecule_0, molecule_p, molecule_m, model='quadratic',
-                 grid=None, part_scheme='b', proatoms=None):
+                 grid=None, condense_scheme='FMR', part_scheme='b', proatoms=None):
         '''
         '''
         # Load molecules
@@ -312,7 +330,7 @@ class ConceptualDFT_3File(BaseConceptualDFT):
 
         BaseConceptualDFT.__init__(self, numbers, pseudo_numbers, coordinates, grid, model,
                                    energy0, energyp, energym, density0, densityp, densitym, n_elec,
-                                   part_scheme=part_scheme, proatoms=proatoms)
+                                   condense_scheme=condense_scheme, part_scheme=part_scheme, proatoms=proatoms)
 
 
 def check_molecules(grid, *args):
@@ -334,3 +352,28 @@ def check_molecules(grid, *args):
         assert np.all(abs(grid.coordinates - coordinates) < 1.e-6)
 
     return grid, numbers, pseudo_numbers, coordinates
+
+
+def condense_to_atoms(partitioning, local_property):
+    r'''
+    Return condensed values of the local descriptor :math:`p_{\text{local}}\left(\mathbf{r}\right)`
+    into atomic contribution :math:`P_A` defined as:
+
+    .. math::
+
+       P_A = \int \omega_A\left(\mathbf{r}\right) p_{\text{local}}\left(\mathbf{r}\right) d\mathbf{r}
+
+    Parameters
+    ----------
+    local_property : np.ndarray
+        Local descriptor evaluated on grid.
+    '''
+    natom = partitioning.natom
+    local_condensed = np.zeros(natom)
+    for index in xrange(natom):
+        at_grid = partitioning.get_grid(index)
+        at_weight = partitioning.cache.load('at_weights',index)
+        wcor = partitioning.get_wcor(index)
+        local_prop = partitioning.to_atomic_grid(index, local_property)
+        local_condensed[index] = at_grid.integrate(at_weight, local_prop, wcor)
+    return local_condensed

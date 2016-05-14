@@ -49,12 +49,12 @@ class BaseLocalTool(object):
             Reference number of electrons, i.e. :math:`N_0`, which corresponds
             to the integral of density_zero over all space.
         '''
-        if np.any(density_zero < 0):
-            raise ValueError('Argument density_zero should be all positive!')
-        if np.any(density_plus < 0):
-            raise ValueError('Argument density_plus should be all positive!')
-        if np.any(density_minus < 0):
-            raise ValueError('Argument density_minus should be all positive!')
+        # if np.any(density_zero < 0):
+        #     raise ValueError('Argument density_zero should be all positive!')
+        # if np.any(density_plus < 0):
+        #     raise ValueError('Argument density_plus should be all positive!')
+        # if np.any(density_minus < 0):
+        #     raise ValueError('Argument density_minus should be all positive!')
         self._density_zero = density_zero
         self._density_plus = density_plus
         self._density_minus = density_minus
