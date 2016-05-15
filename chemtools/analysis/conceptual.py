@@ -92,25 +92,25 @@ class BaseConceptualDFT(object):
             if isinstance(proatoms, ProAtomDB):
                 kwargs['proatomdb'] = proatoms
             elif proatoms is not None:
-                proatomdb = ProAtomDB.from_file(proatoms)
+                proatomdb = ProAtomDB.from_files(proatoms)
                 proatomdb.normalize()
-                kwargs['proatomdb'] = proatoms
+                kwargs['proatomdb'] = proatomdb
             # Paritition electron density of N-electron system
-            part_0 = wpart(coordinates, numbers, pseudo_numbers, grid, density_0, **kwargs)
+            part_0 = wpart(coordinates, numbers, pseudo_numbers, grid, density_0, local=False, **kwargs)
             part_0.do_all()
             pop_0 = part_0['populations']
             if condense_scheme == 'FMR':
                 print '<><> FMR <><>'
                 # Fragment of Molecular Response
-                pop_p = condense_to_atoms(part_0, density_p)
-                pop_m = condense_to_atoms(part_0, density_m)
+                pop_p = self.condense_to_atoms(density_p, part_0)
+                pop_m = self.condense_to_atoms(density_m, part_0)
             elif condense_scheme == 'RMF':
                 print '<><> RMF <><>'
                 # Response of Molecular Fragment
-                part_p = wpart(coordinates, numbers, pseudo_numbers, grid, density_p, **kwargs)
+                part_p = wpart(coordinates, numbers, pseudo_numbers, grid, density_p, local=False, **kwargs)
                 part_p.do_all()
                 pop_p = part_p['populations']
-                part_m = wpart(coordinates, numbers, pseudo_numbers, grid, density_m, **kwargs)
+                part_m = wpart(coordinates, numbers, pseudo_numbers, grid, density_m, local=False, **kwargs)
                 part_m.do_all()
                 pop_m = part_m['populations']
             else:
@@ -118,8 +118,10 @@ class BaseConceptualDFT(object):
             print 'pop0 = ', pop_0
             print 'popp = ', pop_p
             print 'popm = ', pop_m
+            self._part = part_0
 
         elif isinstance(grid, CubeGen):
+            self._condensedtool = None
             raise NotImplementedError('Should implement partitioning with cubic grid!')
         else:
             raise ValueError('Argument grid={0} is not supported by partitioning class.'.format(grid))
@@ -130,10 +132,10 @@ class BaseConceptualDFT(object):
         dict_local = {'linear':LinearLocalTool, 'quadratic':QuadraticLocalTool}
 
         self._globaltool = dict_global[self._model](energy_0, energy_p, energy_m, n_elec)
-        #self._condensedtool = CondensedTool(dens_part)
         if self._model in dict_local.keys():
             self._localtool = dict_local[self._model](density_0, density_p, density_m, n_elec)
-            self._condensedtool = dict_local[self._model](pop_0, pop_p, pop_m, n_elec)
+            if not isinstance(grid, CubeGen):
+                self._condensedtool = dict_local[self._model](pop_0, pop_p, pop_m, n_elec)
         else:
             self._localtool = None
             self._condensedtool = None
@@ -194,6 +196,32 @@ class BaseConceptualDFT(object):
         '''
         return self._condensedtool
 
+    def condense_to_atoms(self, local_property, partitioning=None):
+        r'''
+        Return condensed values of the local descriptor :math:`p_{\text{local}}\left(\mathbf{r}\right)`
+        into atomic contribution :math:`P_A` defined as:
+
+        .. math::
+
+           P_A = \int \omega_A\left(\mathbf{r}\right) p_{\text{local}}\left(\mathbf{r}\right) d\mathbf{r}
+
+        Parameters
+        ----------
+        local_property : np.ndarray
+            Local descriptor evaluated on grid.
+        '''
+        if partitioning is None:
+            partitioning = self._part
+        natom = partitioning.natom
+        local_condensed = np.zeros(natom)
+        for index in xrange(natom):
+            at_grid = partitioning.get_grid(index)
+            at_weight = partitioning.cache.load('at_weights',index)
+            wcor = partitioning.get_wcor(index)
+            local_prop = partitioning.to_atomic_grid(index, local_property)
+            local_condensed[index] = at_grid.integrate(at_weight, local_prop, wcor)
+        return local_condensed
+
 
 class ConceptualDFT_1File(BaseConceptualDFT):
     '''
@@ -243,6 +271,7 @@ class ConceptualDFT_1File(BaseConceptualDFT):
         lumo_dens = self._mol.obasis.compute_grid_orbitals_exp(self._mol.exp_alpha,
                                                                grid.points,
                                                                np.array([lumo_index]))**2
+        #n_elec = self._mol.n_elec
         n_elec = int(np.sum(self._mol.exp_alpha.occupations))
         # HACK: self._mol might not have the exp_beta attribute, making it crash
         beta = False
@@ -265,6 +294,8 @@ class ConceptualDFT_1File(BaseConceptualDFT):
                 lumo_dens = self._mol.obasis.compute_grid_orbitals_exp(self._mol.exp_beta,
                                                                        grid.points,
                                                                        np.array([lumo_index]))**2
+        else:
+            n_elec *= 2
         homo_dens = homo_dens.flatten()
         lumo_dens = lumo_dens.flatten()
 
@@ -274,7 +305,7 @@ class ConceptualDFT_1File(BaseConceptualDFT):
             energy = self._mol.energy
         else:
             raise ValueError('Argument molecule_filename does not contain energy value!')
-        energy_plus = energy - lumo_energy
+        energy_plus = energy + lumo_energy
         energy_minus = energy - homo_energy
 
         # Compute rho(N), rho(N+1) & rho(N-1)
@@ -305,11 +336,13 @@ class ConceptualDFT_3File(BaseConceptualDFT):
         self._molm = load_molecule(molecule_m)
         grid, numbers, pseudo_numbers, coordinates = check_molecules(grid, self._mol0, self._molp, self._molm)
 
-        n_elec = int(np.sum(self._mol0.exp_alpha.occupations))
+        n_elec = self._mol0.n_elec
+        # n_elec = int(np.sum(self._mol0.exp_alpha.occupations))
         # HACK: self._mol might not have the exp_beta attribute, making it crash
         if hasattr(self._mol0, 'exp_beta'):
             if self._mol0.exp_beta is not None:
-                n_elec += int(np.sum(self._mol0.exp_beta.occupations))
+                pass
+                # n_elec += int(np.sum(self._mol0.exp_beta.occupations))
 
         #
         # Finite Difference (FD) Approach
@@ -324,9 +357,9 @@ class ConceptualDFT_3File(BaseConceptualDFT):
         densityp = self._molp.obasis.compute_grid_density_dm(self._molp.get_dm_full(), grid.points)
         densitym = self._molm.obasis.compute_grid_density_dm(self._molm.get_dm_full(), grid.points)
         # Check number of electrons of each density
-        assert abs(grid.integrate(density0) - n_elec) < 1.e-4
-        assert abs(grid.integrate(densityp) - n_elec - 1.) < 1.e-4
-        assert abs(grid.integrate(densitym) - n_elec + 1.) < 1.e-4
+        assert abs(grid.integrate(density0) - n_elec) < 1.e-3, grid.integrate(density0)
+        assert abs(grid.integrate(densityp) - n_elec - 1.) < 1.e-3, grid.integrate(densityp)
+        assert abs(grid.integrate(densitym) - n_elec + 1.) < 1.e-3, grid.integrate(densitym)
 
         BaseConceptualDFT.__init__(self, numbers, pseudo_numbers, coordinates, grid, model,
                                    energy0, energyp, energym, density0, densityp, densitym, n_elec,
@@ -349,31 +382,6 @@ def check_molecules(grid, *args):
     else:
         assert np.all(abs(grid.numbers - numbers) < 1.e-6)
         assert np.all(abs(grid.pseudo_numbers - pseudo_numbers) < 1.e-6)
-        assert np.all(abs(grid.coordinates - coordinates) < 1.e-6)
+        assert np.all(abs(grid.centers - coordinates) < 1.e-6)
 
     return grid, numbers, pseudo_numbers, coordinates
-
-
-def condense_to_atoms(partitioning, local_property):
-    r'''
-    Return condensed values of the local descriptor :math:`p_{\text{local}}\left(\mathbf{r}\right)`
-    into atomic contribution :math:`P_A` defined as:
-
-    .. math::
-
-       P_A = \int \omega_A\left(\mathbf{r}\right) p_{\text{local}}\left(\mathbf{r}\right) d\mathbf{r}
-
-    Parameters
-    ----------
-    local_property : np.ndarray
-        Local descriptor evaluated on grid.
-    '''
-    natom = partitioning.natom
-    local_condensed = np.zeros(natom)
-    for index in xrange(natom):
-        at_grid = partitioning.get_grid(index)
-        at_weight = partitioning.cache.load('at_weights',index)
-        wcor = partitioning.get_wcor(index)
-        local_prop = partitioning.to_atomic_grid(index, local_property)
-        local_condensed[index] = at_grid.integrate(at_weight, local_prop, wcor)
-    return local_condensed
