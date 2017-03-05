@@ -22,15 +22,29 @@
     : --
 
 
-ChemTools Overview
-##################
+About ChemTools
+###############
 
-The topics that should be addressed:
+ChemTools is a free and open source Python library for interpreting the results of
+quantum chemistry calculations. The goal of ChemTools is to provide a toolbox by which
+the quantitative output of electronic structure theory calculations can be expressed in
+chemical language. ChemTools provides easy-to-use core functionality to compute fundamental
+descriptors of conceptual quantum chemistry, together with a flexible set
+of utilities allowing scientists to easily test their own discoveries.
+ChemTools is designed as a module of the `HORTON package <http://theochem.github.io/horton/>`_,
+but can also be used independently to post-process output files of many standard quantum chemistry programs.
 
-#. Why we are developing ChemTools?
-#. What are the main features of ChemTools?
-#. Where is it heading?
-#. Having a word cloud image of the conceptual DFT terms! :-)
+Motivated by our interests and our assessment of which portions of the conceptual quantum
+chemistry community are most underserved, the current version of ChemTools emphasizes on
+conceptual tools associated with, or at least inspired by, density-functional theory (DFT)
+and density-matrix theory.
+Future developments will include orbital-based tools, information-theoretic methods, and various types
+of population and bonding analysis, and quantum chemical topology (including the quantum theory
+of atoms in molecules, QTAIM). We also aim to make it easier for theorists to test, implement, and disseminate
+new ideas, and to help non-specialists use the most powerful and most recent tools from conceptual
+quantum chemistry.
+
+** Main Features **
 
 Conceptual tools (mostly density-based tools will be considered here, so this is often called “conceptual DFT”) can be divided into three main categories:
 

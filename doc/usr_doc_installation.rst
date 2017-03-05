@@ -22,24 +22,7 @@
     : --
 
 
-Conceptual Density Functional Theory
-====================================
+.. _usr_installation:
 
-Conceptual Density Functional Theory (DFT) provides chemists with a series of well-defined chemical
-concepts which contributes to the qualitative and quantitative understanding and ultimately predicting
-of chemical reactivity.
-
-
-.. toctree::
-   :maxdepth: 2
-   :numbered:
-
-   usr_doc_globaltool
-   usr_doc_localtool
-   usr_doc_condensedtool
-
-
-
-
-
-
+Installation
+############

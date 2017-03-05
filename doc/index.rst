@@ -29,42 +29,61 @@
 ChemTools |version|
 ###################
 
-ChemTools is free and open source Python package for interpreting the results of
-molecular quantum chemistry calculations, emphasizing conceptual tools associated
-with, or at least inspired by, density-functional theory (DFT) and density-matrix theory.
-ChemTools provides easy-to-use core functionality for the fundamental descriptors
-from conceptual DFT, quantum chemical topology, etc., together with a flexible set
-of utilities that scientists can use to easily test and contribute their own discoveries.
-ChemTools is designed as a module of the HORTON package, but can post-process
-calculations from any standard quantum chemistry program output.
+ChemTools is a free and open source Python library for interpreting the results of
+quantum chemistry calculations. The goal of ChemTools is to provide a toolbox by which
+the quantitative output of electronic structure theory calculations can be expressed in
+chemical language. ChemTools provides easy-to-use core functionality to compute fundamental
+descriptors of conceptual quantum chemistry, together with a flexible set
+of utilities allowing scientists to easily test their own discoveries.
+ChemTools is designed as a module of the `HORTON package <http://theochem.github.io/horton/>`_,
+but can also be used independently to post-process output files of many standard quantum chemistry programs.
+
+Motivated by our interests and our assessment of which portions of the conceptual quantum
+chemistry community are most underserved, the current version of ChemTools emphasizes on
+conceptual tools associated with, or at least inspired by, density-functional theory (DFT)
+and density-matrix theory.
+Future developments will include orbital-based tools, information-theoretic methods, and various types
+of population and bonding analysis, and quantum chemical topology (including the quantum theory
+of atoms in molecules, QTAIM). We also aim to make it easier for theorists to test, implement, and disseminate
+new ideas, and to help non-specialists use the most powerful and most recent tools from conceptual
+quantum chemistry.
 
 
 .. toctree::
    :maxdepth: 2
 
-   intro_overview
+   intro_about
    intro_citing
-   intro_license_information
-   intro_contact_information
+   intro_license
+   intro_contact
 
 .. toctree::
    :maxdepth: 3
    :numbered:
    :caption: User Documentation
 
-   usr_download_and_install
-   usr_getting_started
-   usr_doc_conceptualdft
-   usr_doc_densitytool
-   usr_doc_orbitaltool
+   usr_doc_installation
+   usr_doc_quick_start
+   usr_doc_tutorials
+   usr_doc_examples
+
+.. toctree::
+   :maxdepth: 3
+   :numbered:
+   :caption: Scientific Documentation
+
+   sci_doc_conceptualdft
+   sci_doc_densitytool
+   sci_doc_orbitaltool
 
 .. toctree::
    :maxdepth: 2
-   :caption: Technical Stuff
+   :caption: Advanced Documentation
 
+   tech_dev
    tech_api
    tech_derivations
-   todo
+
 
 Indices and tables
 ==================

@@ -22,35 +22,23 @@
     : --
 
 
-Getting Started
-###############
+Conceptual Density Functional Theory
+####################################
 
-Under Construction
-
-Code block
-
-  .. code-block:: python
-     :linenos:
-     :emphasize-lines: 2,4,7
-     :caption: sample.py
-
-     import chemtools
-     descriptor = Analyze('h2o.fchk', model='quadratic', approx='FMO')
-     # 1st derivative of energy w.r.t. N
-     print descriptor.glob.chemical_potential
-     print descriptor.glob.mu
-     # 2nd derivative of energy w.r.t N
-     print descriptor.glob.chemical_hardness
-     print descriptor.glob.eta
+Conceptual Density Functional Theory (DFT) provides chemists with a series of well-defined chemical
+concepts which contributes to the qualitative and quantitative understanding and ultimately predicting
+of chemical reactivity.
 
 
-Code block::
+.. toctree::
+   :maxdepth: 2
 
-     import chemtools
-     descriptor = Analyze('h2o.fchk', model='quadratic', approx='FMO')
-     # 1st derivative of energy w.r.t. N
-     print descriptor.glob.chemical_potential
-     print descriptor.glob.mu
-     # 2nd derivative of energy w.r.t N
-     print descriptor.glob.chemical_hardness
-     print descriptor.glob.eta
+   sci_doc_globaltool
+   sci_doc_localtool
+   sci_doc_condensedtool
+
+
+
+
+
+
