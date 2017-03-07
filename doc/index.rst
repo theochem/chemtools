@@ -65,7 +65,7 @@ quantum chemistry.
    usr_doc_installation
    usr_doc_quick_start
    usr_doc_tutorials
-   usr_doc_examples
+   ./auto_examples/index
 
 .. toctree::
    :maxdepth: 3

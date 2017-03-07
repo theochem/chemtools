@@ -57,8 +57,18 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
+    'sphinx_gallery.gen_gallery',
 ]
 mathjax_path = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+
+
+sphinx_gallery_conf = {
+    # path to examples scripts
+    'examples_dirs' : '../examples',
+    # path where to save the generated examples
+    'gallery_dirs' : 'auto_examples',
+}
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
