@@ -244,36 +244,31 @@ def test_analyze_ch4_fchk_rational():
     np.testing.assert_almost_equal(desp.globaltool.ea, ea, decimal=8)
     np.testing.assert_almost_equal(desp.globaltool.electron_affinity, ea, decimal=8)
     # Check chemical-potential & chemical-hardness
-    a0, a1, b1 = -40.958945888, 5.16779063198, -0.126664950953
-    mu = (a1 - a0 * b1) / (1 + b1 * 10)**2
-    eta = 2 * b1 * (a1 - a0 * b1) / (1 + b1 * 10)**3
+    # solve for parameters with np.linalg.solve
+    a0, a1, b1 = -39.8993538175, 4.19041197078, -0.104987142594
+    # expected derivative values were computed symbolically
+    mu, eta = 0.600211746260527, -2.52707898353937
     np.testing.assert_almost_equal(desp.globaltool.mu, mu, decimal=8)
     np.testing.assert_almost_equal(desp.globaltool.chemical_potential, mu, decimal=8)
     np.testing.assert_almost_equal(desp.globaltool.eta, eta, decimal=8)
     np.testing.assert_almost_equal(desp.globaltool.chemical_hardness, eta, decimal=8)
-    # Check derivative of E(N)
-    value = lambda N, n: math.factorial(n) * (a1 - a0 * b1) * b1**(n - 1) / (1 + b1 * N)**(n + 1)
-    np.testing.assert_almost_equal(desp.globaltool.energy_derivative(10, 1), value(10, 1), decimal=8)
+    # Check derivative of E(N); expected derivative values were computed symbolically
     np.testing.assert_almost_equal(desp.globaltool.energy_derivative(10, 1), mu, decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.energy_derivative(10, 2), value(10, 2), decimal=8)
     np.testing.assert_almost_equal(desp.globaltool.energy_derivative(10, 2), eta, decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.energy_derivative(9.6, 1), value(9.6, 1), decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.energy_derivative(9.1, 2), value(9.1, 2), decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.energy_derivative(8.5, 1), value(8.5, 1), decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.energy_derivative(10.3, 1), value(10.3, 1), decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.energy_derivative(10.8, 2), value(10.8, 2), decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.energy_derivative(11.5, 1), value(11.5, 1), decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.energy_derivative(10.2, 3), value(10.2, 3), decimal=8)
-    # Check hyper-hardness
-    value = lambda n: math.factorial(n + 1) * (a1 - a0 * b1) * b1**n / (1 + b1 * 10)**(n + 2)
-    np.testing.assert_almost_equal(desp.globaltool.hyper_hardness(2), value(2), decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.hyper_hardness(3), value(3), decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.hyper_hardness(4), value(4), decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.hyper_hardness(5), value(5), decimal=8)
-    # Check softness & hyper-softness
+    np.testing.assert_almost_equal(desp.globaltool.energy_derivative(9.60, 1), 24.0621211372066, decimal=8)
+    np.testing.assert_almost_equal(desp.globaltool.energy_derivative(9.10, 2), 3.52917348462076, decimal=8)
+    np.testing.assert_almost_equal(desp.globaltool.energy_derivative(8.50, 1), 0.128916512086747, decimal=8)
+    np.testing.assert_almost_equal(desp.globaltool.energy_derivative(10.3, 1), 0.225478627953592, decimal=8)
+    np.testing.assert_almost_equal(desp.globaltool.energy_derivative(10.8, 2), -0.130680448326993, decimal=8)
+    np.testing.assert_almost_equal(desp.globaltool.energy_derivative(11.5, 1), 0.0347209036078056, decimal=8)
+    np.testing.assert_almost_equal(desp.globaltool.energy_derivative(10.2, 3), 3.91390151199886, decimal=8)
+    # Check hyper-hardness; expected derivative values were computed symbolically
+    np.testing.assert_almost_equal(desp.globaltool.hyper_hardness(2), 15.9596881321556, decimal=8)
+    np.testing.assert_almost_equal(desp.globaltool.hyper_hardness(3), -134.390547049114, decimal=8)
+    np.testing.assert_almost_equal(desp.globaltool.hyper_hardness(4), 1414.56548105706, decimal=8)
+    np.testing.assert_almost_equal(desp.globaltool.hyper_hardness(5), -17867.2879377639, decimal=8)
+    # Check softness & hyper-softness; expected derivative values were computed symbolically
     np.testing.assert_almost_equal(desp.globaltool.softness, 1.0 / eta, decimal=8)
-    # value =
     # np.testing.assert_almost_equal(desp.globaltool.hyper_softness(2), value, decimal=8)
-    # value =
     # np.testing.assert_almost_equal(desp.globaltool.hyper_softness(3), value, decimal=8)
     # Check N_max and related descriptors

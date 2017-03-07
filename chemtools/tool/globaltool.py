@@ -562,7 +562,7 @@ class RationalGlobalTool(BaseGlobalTool):
     def energy_derivative(self, n_elec, order=1):
         if not(isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
-        deriv = math.pow(self._b1, order - 1) * (self._a1 - self._a0 * self._b1) * math.factorial(order)
+        deriv = math.pow(-self._b1, order - 1) * (self._a1 - self._a0 * self._b1) * math.factorial(order)
         deriv /= math.pow(1 + self._b1 * n_elec, order + 1)
         return deriv
 

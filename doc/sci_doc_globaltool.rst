@@ -577,7 +577,7 @@ Fitting the energy expression to the given energy values results in three equati
     \begin{cases}
      \left(1 + b_1 \left(N_0 - 1\right)\right) & E\left(N_0-1\right) &&= a_0 + a_1 \left(N_0 - 1\right)  \\
      \left(1 + b_1 N_0\right) & E\left(N_0\right) &&= a_0 + a_1 N_0 \\
-     \left(1 + b_1 \left(N_0 + 1\right)\right) & E\left(N_0-1\right) &&= a_0 + a_1 \left(N_0 + 1\right) \\
+     \left(1 + b_1 \left(N_0 + 1\right)\right) & E\left(N_0+1\right) &&= a_0 + a_1 \left(N_0 + 1\right) \\
     \end{cases}
 
 This allows us to solve for the three unknonws:
@@ -601,9 +601,9 @@ fixed external potential are:
     \left( \frac{\partial E}{\partial N} \right)_{v(\mathbf{r})}
 	 &= \frac{a_1 - a_0 b_1}{\left(1 + b_1 N\right)^2} \\
     \left( \frac{\partial^2 E}{\partial N^2} \right)_{v(\mathbf{r})}
-         &= \frac{2 b_1 \left(a_1 - a_0 b_1\right)}{\left(1 + b_1 N\right)^3} \\
+         &= \frac{-2 b_1 \left(a_1 - a_0 b_1\right)}{\left(1 + b_1 N\right)^3} \\
     \left( \frac{\partial^n E}{\partial N^n} \right)_{v(\mathbf{r})}
-         &= \frac{b_1^{n - 1} \left(a_1 - a_0 b_1\right) n!}{\left(1 + b_1 N\right)^{n+1}}
+         &= \frac{(-b_1)^{n - 1} \left(a_1 - a_0 b_1\right) n!}{\left(1 + b_1 N\right)^{n+1}}
 
 These derivatives can be evaluated for any number of electrons as implemented
 in :class:`chemtools.tool.globaltool.RationalGlobalTool.energy_derivative`.
@@ -615,11 +615,11 @@ the so-called chemical potential and chemical hardness and hyper-hardness, equal
     \mu = \left. \left( \frac{\partial E}{\partial N} \right)_{v(\mathbf{r})} \right|_{N = N_0}
        &= \frac{a_1 - a_0 b_1}{\left(1 + b_1 N_0\right)^2} \\
     \eta = \left. \left( \frac{\partial^2 E}{\partial N^2} \right)_{v(\mathbf{r})} \right|_{N = N_0}
-        &= \frac{2 b_1 \left(a_1 - a_0 b_1\right)}{\left(1 + b_1 N_0\right)^3} \\
+        &= \frac{-2 b_1 \left(a_1 - a_0 b_1\right)}{\left(1 + b_1 N_0\right)^3} \\
     \eta^{(2)} = \left. \left( \frac{\partial^3 E}{\partial N^3} \right)_{v(\mathbf{r})} \right|_{N = N_0}
          &= \frac{6 b_1^2 \left(a_1 - a_0 b_1\right)}{\left(1 + b_1 N_0\right)^4} \\
     \eta^{(n)} = \left. \left( \frac{\partial^{n+1} E}{\partial N^{n+1}} \right)_{v(\mathbf{r})} \right|_{N = N_0}
-         &= \frac{b_1^n \left(a_1 - a_0 b_1\right) \left(n+1\right)!}{\left(1 + b_1 N_0\right)^{n+2}} \text{   for } n\geq2
+         &= \frac{(-b_1)^n \left(a_1 - a_0 b_1\right) \left(n+1\right)!}{\left(1 + b_1 N_0\right)^{n+2}} \text{   for } n\geq2
 
 These are implemented in :class:`chemtools.tool.globaltool.RationalGlobalTool.chemical_potential`
 and :class:`chemtools.tool.globaltool.RationalGlobalTool.chemical_hardness`.
