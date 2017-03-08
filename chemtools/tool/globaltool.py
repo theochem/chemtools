@@ -498,6 +498,11 @@ class ExponentialGlobalTool(BaseGlobalTool):
     '''
     @doc_inherit(BaseGlobalTool)
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
+        # check energy values are monotonic, i.e. E(N-1) > E(N) > E(N+1)
+        if not (energy_minus > energy_zero and energy_zero > energy_plus):
+            energies = [energy_minus, energy_zero, energy_plus]
+            raise ValueError('To fit exponential energy model, energy values should change monotonically! Given E={0}'.format(energies))
+
         # calculate the A, B, gamma parameters of the model and N_max
         self._A = (energy_minus - energy_zero) * (energy_zero - energy_plus)
         self._A /= (energy_minus - 2 * energy_zero + energy_plus)

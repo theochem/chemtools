@@ -190,43 +190,6 @@ def test_analyze_ch4_fchk_quadratic():
     np.testing.assert_almost_equal(condens[4], h4, decimal=4)
 
 
-def test_analyze_ch4_fchk_exponential():
-    # Temporary trick to find the data files
-    path = os.path.abspath(os.path.dirname(__file__)).rsplit('/', 3)[0]
-    file_path = os.path.join(path, 'data/test/ch4_uhf_ccpvdz.fchk')
-    # IP = -E(HOMO) & EA = E(LUMO)
-    ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
-    # Build conceptual DFT descriptor tool
-    desp = ConceptualDFT_1File(file_path, model='exponential')
-    np.testing.assert_almost_equal(desp.globaltool.energy(10.), energy, decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.energy(9.), energy + ip, decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.energy(11.), energy - ea, decimal=8)
-    # Check ionization potential and electron affinity
-    np.testing.assert_almost_equal(desp.globaltool.ip, ip, decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.ionization_potential, ip, decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.ea, ea, decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.electron_affinity, ea, decimal=8)
-    # Check chemical-potential, chemical-hardness & hyper-hardness
-    a, g, b = 0.30010587313, 1.03307732519, -40.4987938471
-    mu, eta = -a * g, a * g**2
-    print 'A, gamma, B:', a, g, desp.globaltool._B
-    np.testing.assert_almost_equal(desp.globaltool.mu, mu, decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.chemical_potential, mu, decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.eta, eta, decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.chemical_hardness, eta, decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.hyper_hardness(2), a * (-g)**3, decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.hyper_hardness(3), a * (-g)**4, decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.hyper_hardness(4), a * (-g)**5, decimal=8)
-    np.testing.assert_almost_equal(desp.globaltool.hyper_hardness(10), a * (-g)**11, decimal=8)
-    # Check softness & hyper-softness
-    np.testing.assert_almost_equal(desp.globaltool.softness, 1.0/eta, decimal=8)
-    # value = 1. / (a**2 * g**3)
-    # np.testing.assert_almost_equal(desp.globaltool.hyper_softness(2), value, decimal=8)
-    # value = -4.0 / (a**3 * g**4)
-    # np.testing.assert_almost_equal(desp.globaltool.hyper_softness(3), value, decimal=8)
-    # Check N_max and related descriptors
-
-
 def test_analyze_ch4_fchk_rational():
     # Temporary trick to find the data files
     path = os.path.abspath(os.path.dirname(__file__)).rsplit('/', 3)[0]
