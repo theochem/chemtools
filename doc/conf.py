@@ -73,6 +73,8 @@ sphinx_gallery_conf = {
     'gallery_dirs' : 'auto_examples',
     # path to the default thumb pics
     'default_thumb_file' : './_static/chemtools_white_bg_logo.png',
+    # set the plot file pattern
+    'filename_pattern'  : '/(plot_.*|.*_plot.py$)',
 }
 
 
