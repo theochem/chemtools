@@ -148,7 +148,7 @@ These reactivity indicators are derived based on some handwaving analysis,
 or merely based on correlation. The most important one in the maximum number of electrons that can be
 accepted by the system denoted by :math:`N_{\text{max}}`.
 
- .. math:: N_{\text{max}} &= \underbrace {\min }_N E(N)
+ .. math:: N_{\text{max}} = \underbrace {\min }_N E(N)
 
 **Electrophilicity index** :math:`\omega_{\text{electrophilicity}}` measures the capability
 of an agent to accept electrons from the environment. However, in contrast to electron affinity :math:`EA`
@@ -197,6 +197,18 @@ In this model, energy is approximated as a piece-wise linear function of the num
 
  .. TODO::
     Technically, linear model has two parameters, so providing two E values is enough to fit the model.
+
+ .. math::
+
+    \text{For } N \leq N_0: E\left(N\right) &= a + b N \\
+         a &= E\left(N_0\right) - N_0 \left(E\left(N_0\right) - E\left(N_0 - 1\right)\right) \\
+         b &= E\left(N_0\right) - E\left(N_0 - 1\right)
+
+ .. math::
+
+    \text{For } N \geq N_0: E\left(N\right) &= a + b N \\
+         a &= E\left(N_0\right) - N_0 \left(E\left(N_0 + 1\right) - E\left(N_0\right)\right) \\
+         b &= E\left(N_0 + 1\right) - E\left(N_0\right)
 
 The model requires three values of :math:`E(N)` to interpolate energy. Commonly, the energy of the system
 with :math:`N_0 - 1`, :math:`N_0` and :math:`N_0 + 1` electrons are provided.
@@ -589,6 +601,13 @@ This allows us to solve for the three unknonws:
     a_1 &= \left(1 + b_1 N_0\right) \left(E\left(N_0 + 1\right) - E\left(N_0\right)\right) + b_1 E\left(N_0 + 1\right) \\
     a_0 &= - a_1 N_0 + \left(1 + b_1 N_0\right) E\left(N_0\right)
 
+ .. math::
+
+    a0 &=  \frac{E\left(N_0\right) E\left(N_0-1\right) N_{0} + E\left(N_0\right) E\left(N_0-1\right) + E\left(N_0\right) E\left(N_0+1\right) N_{0} -
+                E\left(N_0\right) E\left(N_0+1\right) - 2 E\left(N_0-1\right) E\left(N_0+1\right) N_{0}}{2 E\left(N_0\right) N_{0} - E\left(N_0-1\right) N_{0} + E\left(N_0-1\right) - E\left(N_0+1\right) N_{0} - E\left(N_0+1\right)} \\
+    a1 &=  \frac{- E\left(N_0\right) E\left(N_0-1\right) - E\left(N_0\right) E\left(N_0+1\right) + 2 E\left(N_0-1\right) E\left(N_0+1\right)}{2 E\left(N_0\right) N_{0} - E\left(N_0-1\right) N_{0} + E\left(N_0-1\right) - E\left(N_0+1\right) N_{0} - E\left(N_0+1\right)} \\
+    b1 &=  \frac{- 2 E\left(N_0\right) + E\left(N_0-1\right) + E\left(N_0+1\right)}{2 E\left(N_0\right) N_{0} - E\left(N_0-1\right) N_{0} + E\left(N_0-1\right) - E\left(N_0+1\right) N_{0} - E\left(N_0+1\right)}
+
 Due to the complexity of the obtained parameters, we skip substituting them into the energy expression.
 However, at this stage, the energy expression can be evaluated for any given number of electrons as
 implemented in :class:`chemtools.tool.globaltool.RationalGlobalTool.energy`.
@@ -680,28 +699,6 @@ The energy expression should be specified symbolically through `Sympy <http://ww
 
  .. TODO::
     12. Elaborate more on this model.
-    #. Add sample code!
-
-Example: Build a quadratic energy model:
-
-  .. ipython:: python
-
-     import chemtools
-     import sympy
-
-  .. ipython:: python
-
-     # define symbols used in the energy expression
-     n, a, b, c = sympy.symbols('N, a, b, c')
-     # define the energy expression
-     expression = a + b * n + c * (n**2)
-     # dictionary {N : E(N)}
-     energies = {}
-     # parametrize energy model
-     model = GeneralizedGlobalTool(expression, energies, n)
-     # ready to retrieve any global tool
-     print model.mu
-
 
 Analytical
 ==========

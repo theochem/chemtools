@@ -140,7 +140,7 @@ class BaseGlobalTool(object):
         return value
 
     @property
-    def nucleoophilicity(self):
+    def nucleophilicity(self):
         r'''
         Nucleophilicity defined as:
         '''
