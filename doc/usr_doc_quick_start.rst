@@ -76,7 +76,7 @@ It is more convenient to make the script executable (which only needs to be done
      $ ./script.py
 
 Please see :ref:`Tutorials <tutorials>` to learn more about various functionality of ChemTools library
-and :ref:`Examples Gallery <examples_gallery>` for specific examples and scripts.
+and :ref:`Examples Gallery <examples gallery>` for specific examples and scripts.
 
 
 ChemTools as Python Scripts

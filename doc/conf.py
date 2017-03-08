@@ -60,6 +60,8 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
     'sphinx_gallery.gen_gallery',
+    'IPython.sphinxext.ipython_console_highlighting',
+    'IPython.sphinxext.ipython_directive',
 ]
 mathjax_path = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
 
@@ -69,6 +71,8 @@ sphinx_gallery_conf = {
     'examples_dirs' : '../examples',
     # path where to save the generated examples
     'gallery_dirs' : 'auto_examples',
+    # path to the default thumb pics
+    'default_thumb_file' : './_static/chemtools_logo.png',
 }
 
 

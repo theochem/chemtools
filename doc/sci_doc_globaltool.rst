@@ -684,11 +684,12 @@ The energy expression should be specified symbolically through `Sympy <http://ww
 
 Example: Build a quadratic energy model:
 
-  .. code-block:: python
-     :linenos:
+  .. ipython:: python
 
      import chemtools
      import sympy
+
+  .. ipython:: python
 
      # define symbols used in the energy expression
      n, a, b, c = sympy.symbols('N, a, b, c')
