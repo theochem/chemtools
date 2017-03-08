@@ -70,7 +70,7 @@ quantum chemistry.
    :maxdepth: 3
    :caption: Scientific Documentation
 
-   sci_doc_conceptualdft
+   sci_doc_conceptual
    sci_doc_densitytool
    sci_doc_orbitaltool
 
