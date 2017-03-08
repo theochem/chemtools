@@ -138,7 +138,7 @@ class NCI(object):
         # Name of output files:
         densfile = filename + '-dens.cube'    # density cube file
         rdgfile  = filename + '-grad.cube'    # reduced density gradient cube file
-        vmdfile  = filename + '.vmd'          # reduced vmd script file
+        vmdfile  = filename + '.vmd'          # vmd script file
         # Dump density & reduced density gradient cube files
         cube.dump_cube(densfile, dens)
         cube.dump_cube(rdgfile, rdgrad)

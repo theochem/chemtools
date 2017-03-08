@@ -43,7 +43,7 @@ def test_analyze_nci_h2o_dimer_wfn():
     # Temporary trick to find the data files
     path = os.path.abspath(os.path.dirname(__file__)).rsplit('/', 3)[0]
     file_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g.wfn')
-    # Build conceptual DFT descriptor tool
+    # Build the NCI tool
     desp = NCI.from_file(file_path)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     dens_cube1_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g-dens.cube')
@@ -92,7 +92,7 @@ def test_analyze_nci_h2o_dimer_fchk():
     path = os.path.abspath(os.path.dirname(__file__)).rsplit('/', 3)[0]
     file_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g.fchk')
     mol = IOData.from_file(file_path)
-    # Build conceptual DFT descriptor tool
+    # Build the NCI tool
     desp = NCI.from_iodata(mol)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     dens_cube1_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g-dens.cube')
