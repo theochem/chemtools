@@ -36,7 +36,7 @@ import matplotlib.pyplot as plt
 
 class NCI(object):
     '''
-    Class for density-based analysis of one quantum chemistry output file.
+    Class for the Non-Covalent Interactions (NCI).
     '''
     def __init__(self, iodata):
         '''
