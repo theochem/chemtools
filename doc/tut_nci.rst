@@ -22,18 +22,24 @@
     : --
 
 
-.. _tutorials:
+.. _tutorial_nci:
 
-Tutorials
-#########
+Tutorial on Non Covalent Interactions (NCI)
+###########################################
 
-Explain some ...
+The easiest way to calculate the Non Covalent Interactions, by using the default settings is as follows:
 
-.. toctree::
-   :maxdepth: 3
+Code block::
 
-   tut_conceptual
-   tut_orbital
-   tut_density
-   tut_nci
+     import chemtools
+     # Build the NCI tool
+     nci = NCI.from_file(('h2o_dimer_pbe_sto3g.fchk')
+     # dump the files needed for the visualisation by giving a filename for the cube files
+     nci.dump_files('h2o_dimer')
+
+this generates three files:
+  - h2o_dimer_pbe_sto3g-dens.cube (a density cube file)
+  - h2o_dimer_pbe_sto3g-grad.cube (a reduced density gradient cube file)
+  - h2o_dimer_pbe_sto3g.vmd  (a vmd script file)
+
 
