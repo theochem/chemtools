@@ -24,14 +24,14 @@
 
 .. _tutorial_nci:
 
-Tutorial on Non Covalent Interactions (NCI)
-###########################################
+Non-Covalent Interactions (NCI)
+###############################
 
-The easiest way to calculate the Non Covalent Interactions, by using the default settings is as follows:
+The easiest way to calculate the Non-Covalent Interaction (NCI), by using the default settings is as follows:
 
 Code block::
 
-     import chemtools
+     from chemtools NCI
      # Build the NCI tool
      nci = NCI.from_file(('h2o_dimer_pbe_sto3g.fchk')
      # dump the files needed for the visualisation by giving a filename for the cube files

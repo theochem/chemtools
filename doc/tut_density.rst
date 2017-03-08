@@ -24,5 +24,5 @@
 
 .. _tutorial_density:
 
-Tutorial on Density-Based Tools
+Density-Based Local Descriptors
 ###############################

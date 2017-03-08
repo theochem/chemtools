@@ -24,92 +24,92 @@
 
 .. _orbital_tools:
 
-Orbital-Based Local Descriptors :class:`chemtools.tool.orbitaltool`
-###################################################################
+Orbital-Based Local Descriptors
+###############################
 
 All the tools for calculating which the orbital information of the :math:`N` electron reference state is enough.
 
 Positive Definite Kinetic Energy Density: :class:`chemtools.tool.orbitaltool.kinetic_energy_density`
 ----------------------------------------------------------------------------------------------------
 
-.. math:: 
+.. math::
 
-    \tau_{\sigma} (\mathbf{r}) = 
-        \sum_i^{\sigma} \lvert \nabla \phi_i (\mathbf{r}) \rvert^2 
+    \tau_{\sigma} (\mathbf{r}) =
+        \sum_i^{\sigma} \lvert \nabla \phi_i (\mathbf{r}) \rvert^2
 
 
 Electron Localisation Function: :class:`chemtools.tool.orbitaltool.elf`
 -----------------------------------------------------------------------
 
-The concepts of chemical bonds and electron pairs are fundamental in our 
-understanding of chemistry. Quantum chemical calculations, however, 
-yield canonical orbitals which are delocalized in space and do not contain this 
+The concepts of chemical bonds and electron pairs are fundamental in our
+understanding of chemistry. Quantum chemical calculations, however,
+yield canonical orbitals which are delocalized in space and do not contain this
 *chemical* information at first sight. There are different schemes to generate
 *localized* orbitals by means of an unitary transformation of the canonical orbitals,
 but none of these schemes are unique.
 
-The Electron Localization Function (ELF), introduced by A. D. Becke and K. E. Edgecombe, 
+The Electron Localization Function (ELF), introduced by A. D. Becke and K. E. Edgecombe,
 was introduced as an alternative to these unitary transformations.
-It measures the likelihood of finding an electron with the same spin 
+It measures the likelihood of finding an electron with the same spin
 in the neighbourhood of a reference electron.
-The derivation of ELF starts from the conditional probability 
-:math:`P^{\sigma \sigma}_{cond} (\mathbf{r}, \mathbf{r}')` 
-to find an electron with :math:`\sigma` spin at position :math:`\mathbf{r}'` 
+The derivation of ELF starts from the conditional probability
+:math:`P^{\sigma \sigma}_{cond} (\mathbf{r}, \mathbf{r}')`
+to find an electron with :math:`\sigma` spin at position :math:`\mathbf{r}'`
 when a reference electron with the same spin is found at :math:`\mathbf{r}`.
-A. D. Becke showed that, when :math:`\mathbf{r}'` approaches :math:`\mathbf{r}`, 
-the leading term in the *Taylor expansion* of the *spherically averaged* pair probability 
+A. D. Becke showed that, when :math:`\mathbf{r}'` approaches :math:`\mathbf{r}`,
+the leading term in the *Taylor expansion* of the *spherically averaged* pair probability
 is:
 
- .. math:: 
+ .. math::
 
-    P^{\sigma \sigma}_{cond} (\mathbf{r},s) = \frac{1}{3} 
-        \lbrack \tau_{\sigma} (\mathbf{r}) - 
+    P^{\sigma \sigma}_{cond} (\mathbf{r},s) = \frac{1}{3}
+        \lbrack \tau_{\sigma} (\mathbf{r}) -
 	\frac{1}{4} \frac{(\nabla \rho_{\sigma})^2}{\rho_{\sigma}} \rbrack s^2
 
-where :math:`(\mathbf{r},s)` denotes the average on a sphere of radius :math:`s` 
+where :math:`(\mathbf{r},s)` denotes the average on a sphere of radius :math:`s`
 around the reference electron at :math:`(\mathbf{r}` and :math:`\tau_{\sigma}` is the positive definite kinetic energy density:
 
-.. math:: 
+.. math::
 
-    \tau_{\sigma} (\mathbf{r}) = 
-        \sum_i^{\sigma} \lvert \nabla \phi_i (\mathbf{r}) \rvert^2 
+    \tau_{\sigma} (\mathbf{r}) =
+        \sum_i^{\sigma} \lvert \nabla \phi_i (\mathbf{r}) \rvert^2
 
-The smaller the probability of finding a second electron with the same spin 
-near the reference electron, the more localized the reference electron, 
+The smaller the probability of finding a second electron with the same spin
+near the reference electron, the more localized the reference electron,
 so the information on the electron localisation can thus be found by:
 
- .. math:: 
+ .. math::
 
-    D_{\sigma} (\mathbf{r}) =  \tau_{\sigma} (\mathbf{r}) - 
+    D_{\sigma} (\mathbf{r}) =  \tau_{\sigma} (\mathbf{r}) -
 	\frac{1}{4} \frac{(\nabla \rho_{\sigma})^2}{\rho_{\sigma}} .
 
-There is an inverse relation between the electron localisation and :math:`D_{\sigma}`: 
-highly localized electrons can be found in regions of small :math:`D_{\sigma}`. 
-Moreover, :math:`D_{\sigma}` is not bounded from above. 
+There is an inverse relation between the electron localisation and :math:`D_{\sigma}`:
+highly localized electrons can be found in regions of small :math:`D_{\sigma}`.
+Moreover, :math:`D_{\sigma}` is not bounded from above.
 For these reasons A. D. Becke and K. E. Edgecombe proposed the following formula
 for the Electron Localization Function:
 
- .. math:: 
+ .. math::
 
-    ELF (\mathbf{r}) = 
+    ELF (\mathbf{r}) =
         \frac{1}{\left( 1 + \left(\frac{D_{\sigma}(\mathbf{r})}
-        {D_{\sigma}^0 (\mathbf{r})} \right)^2\right)} , 
+        {D_{\sigma}^0 (\mathbf{r})} \right)^2\right)},
 
 where :math:`D_{\sigma}^0` corresponds to the *uniform electron gas*:
 
- .. math:: 
+ .. math::
 
-    D_{\sigma}^0 (\mathbf{r}) =  
+    D_{\sigma}^0 (\mathbf{r}) =
         \frac{3}{5} (6 \pi^2)^{2/3} \rho_{\sigma}^{5/3} (\mathbf{r}) ,
 
-making the ratio of :math:`D_{\sigma} / D_{\sigma}^0` dimensionless and scaled with 
+making the ratio of :math:`D_{\sigma} / D_{\sigma}^0` dimensionless and scaled with
 respect to the uniform electron gas. As such, the ELF is always in the range
 
- .. math:: 
+ .. math::
 
-    0 \leq ELF \leq 1 , 
+    0 \leq ELF \leq 1 ,
 
-with ELF = 1 corresponding to the perfectly localised reference electron and 
+with ELF = 1 corresponding to the perfectly localised reference electron and
 ELF = :math:`^1/_2` to the uniform electron gas-like correlation.
 
 

@@ -24,8 +24,8 @@
 
 .. _density_tools:
 
-Density-Based Local Descriptors :class:`chemtools.tool.densitytool`
-###################################################################
+Density-Based Local Descriptors
+###############################
 
 All the tools for calculating wich the electron density :math:`\rho\left(\mathbf{r}\right)`, gradianet and hessian
 of the :math:`N` electron reference state is enough.

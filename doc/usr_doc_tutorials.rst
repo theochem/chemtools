@@ -33,7 +33,7 @@ Explain some ...
    :maxdepth: 3
 
    tut_conceptual
-   tut_orbital
    tut_density
+   tut_orbital
    tut_nci
 

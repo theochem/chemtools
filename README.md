@@ -1,2 +1,3 @@
-# chemtools
-Conceptual Density Functional Theory (DFT) Reactivity Descriptors Package.
+ChemTools
+#########
+Chemical tools for interpreting quantum chemistry calculations.

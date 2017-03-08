@@ -24,8 +24,8 @@
 
 .. _tutorial_conceptual:
 
-Tutorial on Conceptual Density Functional Theory
-################################################
+Conceptual Density Functional Theory
+####################################
 
 An extensive set of examples are presented to demonstrate how to compute various descriptors with ChemTools.
 

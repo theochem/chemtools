@@ -59,7 +59,6 @@ quantum chemistry.
 
 .. toctree::
    :maxdepth: 3
-   :numbered:
    :caption: User Documentation
 
    usr_doc_installation
@@ -69,7 +68,6 @@ quantum chemistry.
 
 .. toctree::
    :maxdepth: 3
-   :numbered:
    :caption: Scientific Documentation
 
    sci_doc_conceptualdft

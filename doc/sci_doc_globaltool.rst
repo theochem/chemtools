@@ -418,30 +418,6 @@ The related :ref:`derived global reactivity indicators <derived_indicators>` for
 **References:**
   * `Parr R. G., Pearson R. G., J. Am. Chem. Soc. (1983), 105, 7512 <http://pubs.acs.org/doi/abs/10.1021/ja00364a005>`_.
 
-Sample Code:
-
- .. TODO::
-    #. It would be nice to have the actual values showing up; something like IPython, or at least comment the results that should
-       be obtained.
-
- .. code-block:: python
-    :linenos:
-    :emphasize-lines: 6
-
-    import chemtools
-    # H2O molecule with N0=10 electrons, & E(9)= , E(10)= , E(11)=
-    energy_zero = 0.0  # E(N0) = E(10) =
-    energy_plus = 0.0
-    energy_minus = 0.0
-    model = QuadraticGlobalTool(energy_zero, energy_plus, energy_minus, 10)
-    # Retrieve global descriptors
-    print model.chemical_potential
-    print model.mu
-    print model.chemical_hardness
-    print model.eta
-    print model.softness
-    print model.hyper_hardness(2)
-
 
 .. _exponential_energy:
 
@@ -540,11 +516,6 @@ the exponential energy model, the maximum number of electrons accepted by the sy
 
  .. TODO::
     #. Add references
-
-Sample Code:
-
- .. TODO::
-    #. Add sample code!
 
 
 .. _rational_energy:
@@ -676,11 +647,6 @@ the exponential energy model, the maximum number of electrons accepted by the sy
  .. TODO::
     #. Add references
 
-Sample Code:
-
- .. TODO::
-    #. Add sample code!
-
 
 .. _general_energy:
 
@@ -699,8 +665,3 @@ The energy expression should be specified symbolically through `Sympy <http://ww
 
  .. TODO::
     12. Elaborate more on this model.
-
-Analytical
-==========
-
-Here the analytical evaluation of chemical potential and hardness, etc. will be discussed!

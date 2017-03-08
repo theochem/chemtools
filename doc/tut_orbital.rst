@@ -24,6 +24,6 @@
 
 .. _tutorial_orbital:
 
-Tutorial on Orbital-Based Tools
+Orbital-Based Local Descriptors
 ###############################
 
