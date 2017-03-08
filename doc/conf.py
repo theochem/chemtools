@@ -72,7 +72,7 @@ sphinx_gallery_conf = {
     # path where to save the generated examples
     'gallery_dirs' : 'auto_examples',
     # path to the default thumb pics
-    'default_thumb_file' : './_static/chemtools_logo.png',
+    'default_thumb_file' : './_static/chemtools_white_bg_logo.png',
 }
 
 
