@@ -34,22 +34,43 @@ from chemtools.analysis.output import _print_vmd_script_nci
 import matplotlib.pyplot as plt
 
 
-
-class DensityBased_1File(object):
+class NCI(object):
     '''
     Class for density-based analysis of one quantum chemistry output file.
     '''
-    def __init__(self, molecule_filename):
+    def __init__(self, iodata):
         '''
         Parameters
         ----------
-        molecule_filename : str
-            The path to the molecule's file.
+        iodata : IOData
+            The molecule's IOData.
         '''
-        mol = IOData.from_file(molecule_filename)
-        self._mol = mol
+        if not isinstance(iodata, IOData):
+            raise ValueError('Argument cube should be an instance of IOData!')
 
-    def generate_nci(self, filename, isosurf=0.50, denscut=0.05, cube=None, plot=False):
+        self._mol = iodata
+
+    @classmethod
+    def from_file(cls, filename):
+        '''
+        Initialize class from files.
+        '''
+        # case of one file not given as a list
+        if isinstance(filename, (str, unicode)):
+            return cls(IOData.from_file(filename))
+        # case of list of file(s)
+        for file in filename:
+            raise ValueError('Multiple files are not suported')
+
+    @classmethod
+    def from_iodata(cls, iodata):
+        '''
+        Initialize class from `IOData` objects.
+        '''
+        # This classmethod is redundant, but just included for uniformity
+        return cls(iodata)
+
+    def dump_files(self, filename, isosurf=0.50, denscut=0.05, cube=None, plot=False):
         r'''
         Generate density and reduced density gradient cube files, as well as a VMD (Visual
         Molecular Dynamics) script to visualize non-covalnet inteactions (NCI).
