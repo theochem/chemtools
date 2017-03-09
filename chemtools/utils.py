@@ -88,8 +88,14 @@ class CubeGen(object):
         self._numbers = numbers
         self._pseudo_numbers = pseudo_numbers
         self._coordinates = coordinates
+        if origin.shape[0] != 3:
+            raise ValueError('Arguemnt origin should be an np.ndarray with shape=(3,)')
         self._origin = origin
+        if axes.shape[0] != 3 or axes.shape[1] != 3:
+            raise ValueError('Arguemnt axes should be an np.ndarray with shape=(3, 3)')
         self._axes = axes
+        if shape.shape[0] != 3:
+            raise ValueError('Arguemnt shape should be an np.ndarray with shape=(3,)')
         self._shape = shape
         #
         # Make cubic grid
@@ -135,28 +141,25 @@ class CubeGen(object):
         totz = np.sum(pseudo_numbers)
         com = np.dot(pseudo_numbers, coordinates)/totz
 
-        if rotate == True:
+        if rotate:
             # calculate moment of inertia tensor:
-            itensor = np.zeros([3,3])
-            for i in range(0,pseudo_numbers.shape[0]):
-                xyz = coordinates[i]-com
-                r = (np.linalg.norm(xyz)**2.0)
+            itensor = np.zeros([3, 3])
+            for i in range(pseudo_numbers.shape[0]):
+                xyz = coordinates[i] - com
+                r = np.linalg.norm(xyz)**2.0
                 tempitens = np.diag([r, r, r])
-                tempitens -= np.outer(xyz.T,xyz)
-
+                tempitens -= np.outer(xyz.T, xyz)
                 itensor += pseudo_numbers[i]*tempitens
 
             w, v = np.linalg.eigh(itensor)
-
-            new_coordinates = np.dot((coordinates-com),v)
-            axes = spacing*v
+            new_coordinates = np.dot((coordinates - com), v)
+            axes = spacing * v
 
         else:
             # Just use the original coordinates
             new_coordinates = coordinates
             # Compute the unit vectors of the cubic grid's coordinate system
             axes = np.diag([spacing, spacing, spacing])
-
 
         # maximum and minimum value of x, y and z coordinates
         max_coordinate = np.amax(new_coordinates, axis=0)
@@ -165,7 +168,7 @@ class CubeGen(object):
         shape = (max_coordinate - min_coordinate + 2.0 * threshold) / spacing
         shape = np.ceil(shape)
         shape = np.array(shape, int)
-
+        # Compute origin
         origin = com - np.dot((0.5 * shape), axes)
 
         return cls(numbers, pseudo_numbers, coordinates, origin, axes, shape)
@@ -202,9 +205,8 @@ class CubeGen(object):
         threshold : float, default=5.0
             The extension of the cube on each side of the molecule.
         '''
-
+        # Load file
         mol = IOData.from_file(filename)
-
         return cls.from_molecule(mol.numbers, mol.pseudo_numbers, mol.coordinates, spacing, threshold)
 
     @property
@@ -266,7 +268,7 @@ class CubeGen(object):
 
     def _log_init(self):
         '''
-        Print an overview od the cube's properties.
+        Print an overview of the cube's properties.
         '''
         if log.do_medium:
             log('Initialized cube: %s' % self.__class__)
