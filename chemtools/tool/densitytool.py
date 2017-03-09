@@ -172,13 +172,52 @@ class DensityLocalTool(object):
         return tfke
 
 
-    @property
-    def electrostatic_potential(self):
+    def electrostatic_potential(self, numbers, coordinates, int_weights, int_points, points):
         r'''
         Electrostatic potential defined as:
 
         .. math::
            \Phi\left(\mathbf{r}\right) = - v \left(\mathbf{r}\right) - \int \frac{\rho\left(\mathbf{r}'\right)}{|\mathbf{r} - \mathbf{r}'|} d \mathbf{r}'
+
+        Parameters
+        ----------
+        numbers : np.ndarray
+            The atomic numbers of the system
+        coordinates : np.ndarray
+            The coordinates of the (nuclear) charges of the system
+        int_weights : np.ndarray
+            The integration weights.
+            This should have the same dimension as the density used to initialize the class.
+        int_points : np.ndarray
+            The coordinates of the integration points.
+        points : np.ndarray
+            The coordinates of the point(s) on which to calculate the electrostatic potential.
         '''
-        # You need v(r)
-        pass
+        # check consistency of arrays
+        if len(coordinates) != len(numbers):
+            raise ValueError('Argument numbers & coordinates should have the same length. {0}!={1}'.format(len(coordinates), len(numbers)))
+        if len(int_weights) != len(self._density):
+            raise ValueError('Argument int_weights & density should have the same shape. {0}!={1}'.format(int_weights.shape, self._density.shape))
+        if len(int_points) != len(self._density):
+            raise ValueError('Argument int_points & density should have the same shape. {0}!={1}'.format(int_weights.shape, self._density.shape))
+
+        # array to store esp
+        esp = np.zeros(points.shape[0])
+
+        # compute esp at every point
+        for n, point in enumerate(points):
+            # esp at a given point from nuclei
+            for index, number in enumerate(numbers):
+                delta = point - coordinates[index, :]
+                distance = np.linalg.norm(delta)
+                esp[n] += number / distance
+
+            # esp at a given point from electron density multiplied by integration weight
+            for index, density in enumerate(self._density):
+                delta = point - int_points[index, :]
+                distance = np.linalg.norm(delta)
+                # avoid computing esp, if points are very close
+                if distance > 1.e-6:
+                   esp[n] -= density * int_weights[index] / distance
+
+        return esp
