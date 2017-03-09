@@ -160,6 +160,25 @@ class CubeGen(object):
 
         return cls(numbers, pseudo_numbers, coordinates, origin, axes, shape)
 
+    @classmethod
+    def from_file(cls, filename, spacing=0.2, threshold=5.0):
+        '''
+        Initialize ``CubeGen`` class based on the grid specifications of a file
+
+        Parameters
+        ----------
+        filename : str
+            file name with, readable with HORTON's IOData.
+        spacing : float, default=0.2
+            Increment between grid points along `x`, `y` and `z` direction.
+        threshold : float, default=5.0
+            The extension of the cube on each side of the molecule.
+        '''
+
+        mol = IOData.from_file(filename)
+
+        return cls.from_molecule(mol.numbers, mol.pseudo_numbers, mol.coordinates, spacing, threshold)
+
     @property
     def numbers(self):
         '''
