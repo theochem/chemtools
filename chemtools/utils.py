@@ -24,6 +24,7 @@
 
 
 import numpy as np
+from horton import log, IOData
 
 
 __all__ = ['doc_inherit', 'CubeGen']
@@ -109,8 +110,11 @@ class CubeGen(object):
                     self._points[count, :] += coordinate
                     count += 1
 
+        # print information
+        self._log_init()
+
     @classmethod
-    def from_molecule(cls, numbers, pseudo_numbers, coordinates, spacing=0.2, threshold=5.0):
+    def from_molecule(cls, numbers, pseudo_numbers, coordinates, spacing=0.2, threshold=5.0, rotate=True):
         '''
         Initialize ``CubeGen`` class based on the Cartesian coordinates of the molecule.
 
@@ -127,18 +131,42 @@ class CubeGen(object):
         threshold : float, default=5.0
             The extension of the cube on each side of the molecule.
         '''
+        # calculate center of mass of the nuclear charges:
+        totz = np.sum(pseudo_numbers)
+        com = np.dot(pseudo_numbers, coordinates)/totz
+
+        if rotate == True:
+            # calculate moment of inertia tensor:
+            itensor = np.zeros([3,3])
+            for i in range(0,pseudo_numbers.shape[0]):
+                xyz = coordinates[i]-com
+                r = (np.linalg.norm(xyz)**2.0)
+                tempitens = np.diag([r, r, r])
+                tempitens -= np.outer(xyz.T,xyz)
+
+                itensor += pseudo_numbers[i]*tempitens
+
+            w, v = np.linalg.eigh(itensor)
+
+            new_coordinates = np.dot((coordinates-com),v)
+            axes = spacing*v
+
+        else:
+            # Just use the original coordinates
+            new_coordinates = coordinates
+            # Compute the unit vectors of the cubic grid's coordinate system
+            axes = np.diag([spacing, spacing, spacing])
+
+
         # maximum and minimum value of x, y and z coordinates
-        max_coordinate = np.amax(coordinates, axis=0)
-        min_coordinate = np.amin(coordinates, axis=0)
+        max_coordinate = np.amax(new_coordinates, axis=0)
+        min_coordinate = np.amin(new_coordinates, axis=0)
         # Compute the required number of points along x, y, and z axis
         shape = (max_coordinate - min_coordinate + 2.0 * threshold) / spacing
         shape = np.ceil(shape)
         shape = np.array(shape, int)
-        # Compute coordinates of the cubic grid origin
-        middle = (max_coordinate + min_coordinate) / 2.0
-        origin = middle - 0.5 * shape * spacing
-        # Compute the unit vectors of the cubic grid's coordinate system
-        axes = np.diag([spacing, spacing, spacing])
+
+        origin = com - np.dot((0.5 * shape), axes)
 
         return cls(numbers, pseudo_numbers, coordinates, origin, axes, shape)
 
@@ -235,6 +263,20 @@ class CubeGen(object):
         Cartesian coordinates of the cubic grid points.
         '''
         return self._points
+
+    def _log_init(self):
+        '''
+        Print an overview od the cube's properties.
+        '''
+        if log.do_medium:
+            log('Initialized cube: %s' % self.__class__)
+            log.deflist([('Origin ', self._origin),
+                         ('Axes[0]', self._axes[0]),
+                         ('Axes[1]', self._axes[1]),
+                         ('Axes[2]', self._axes[2]),
+                         ('Shape  ', self._shape)
+                        ])
+            log.blank()
 
 
     def dump_cube(self, filename, data):
