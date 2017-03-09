@@ -322,6 +322,41 @@ class CubeGen(object):
                     f.write('\n')
                 counter += 1
 
+    def weights(self, method='R0'):
+        '''
+        Generate VMD (Visual Molecular Dynamics) script for visualizing the isosurface based on
+        one cube file when coloring by the value of another cube file on the isosurface.
+
+        Parameters
+        ----------
+        method : str, default='R0'
+            The method for constucting the weights on the grid.
+            Options:
+            R0 : rectangle/trapezoidal rule, assuming that the function is very close to zero
+                 at the edges of the grid.
+            R  : rectangle/trapezoidal rule, without assuming that the function is close to zero
+                 at the edges of the grid.
+        '''
+        volume = np.linalg.norm(self._shape[0] * self._axes[0])
+        volume *= np.linalg.norm(self._shape[1] * self._axes[1])
+        volume *= np.linalg.norm(self._shape[2] * self._axes[2])
+
+        if method == 'R0':
+            numpnt = (1.0*self._shape[0] + 1.0)*(1.0*self._shape[1] + 1.0)*(1.0*self._shape[2] + 1.0)
+            return np.full((self._npoints), volume/numpnt)
+
+        elif method == 'R':
+            numpnt = 1.0 * self._npoints
+            return np.full((self._npoints), volume/numpnt)
+
+        else:
+            raise ValueError('Argument method {0} is not known.'.format(method))
+
+    def integrate(self, data):
+        '''
+        '''
+        raise NotImplementedError('This method will be implemented in near future!')
+
     @staticmethod
     def _read_cube_header(filename):
         '''
