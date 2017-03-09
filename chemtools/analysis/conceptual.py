@@ -37,7 +37,7 @@ from chemtools.utils import CubeGen
 
 
 
-class ConceptualDFTGlobal(object):
+class GlobalConceptualDFT(object):
     '''
     Class for global conceptual density functional theory (DFT) analysis of molecular quantum
     chemistry output file(s). If only one molecule is provided, the frontiner molecular orbital
@@ -206,7 +206,7 @@ class ConceptualDFTGlobal(object):
         return cls(dict_values, model, **kwargs)
 
 
-class ConceptualDFTLocal(object):
+class LocalConceptualDFT(object):
     '''
     Class for local conceptual density functional theory (DFT) analysis of molecular quantum
     chemistry output file(s). If only one molecule is provided, the frontiner molecular orbital

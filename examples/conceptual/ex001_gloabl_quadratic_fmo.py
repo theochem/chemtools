@@ -8,14 +8,14 @@ EX1: Global Quadratic Reactivity Descriptors (FMO Approach)
 2. Print all global reactivity descriptors.
 '''
 
-from chemtools import ConceptualDFTGlobal
+from chemtools import GlobalConceptualDFT
 
 # 1. Build quadratic energy model
 
 # relative path to molecule's file
 file_path = '../../data/test/ch4_uhf_ccpvdz.fchk'
 # build quadratic gloabl conceptual DFT tool (one file is passed, so FMO approach is taken)
-tool = ConceptualDFTGlobal.from_file(file_path, model='quadratic')
+tool = GlobalConceptualDFT.from_file(file_path, model='quadratic')
 
 # 2. Print all global reactivity descriptors
 

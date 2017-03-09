@@ -34,7 +34,7 @@ def test_global_linear_ch4_fchk():
     # ip = -E(homo) & ea = E(lumo)
     ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
     # build global conceptual DFT tool
-    desp = ConceptualDFTGlobal.from_file(file_path, model='linear')
+    desp = GlobalConceptualDFT.from_file(file_path, model='linear')
     # check energy values
     np.testing.assert_almost_equal(desp.energy(10.), energy, decimal=8)
     np.testing.assert_almost_equal(desp.energy(9.), energy + ip, decimal=8)
@@ -78,7 +78,7 @@ def test_local_linear_ch4_fchk():
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec='exp:5e-4:2e1:175:434',
                         random_rotate=False, mode='keep')
     # build local conceptual DFT tool
-    desp = ConceptualDFTLocal.from_file(file_path, model='linear', points=grid.points)
+    desp = LocalConceptualDFT.from_file(file_path, model='linear', points=grid.points)
     # check shape of density
     np.testing.assert_equal(desp.density_zero.shape, grid.shape)
     np.testing.assert_equal(desp.density_plus.shape, grid.shape)
@@ -105,7 +105,7 @@ def test_gloabl_quadratic_ch4_fchk():
     # ip = -E(homo) & ea = E(lumo)
     ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
     # build global conceptual DFT tool
-    desp = ConceptualDFTGlobal.from_file(file_path, model='quadratic')
+    desp = GlobalConceptualDFT.from_file(file_path, model='quadratic')
     # check energy
     np.testing.assert_almost_equal(desp.energy(10.), energy, decimal=8)
     np.testing.assert_almost_equal(desp.energy(9.), energy + ip, decimal=8)
@@ -165,7 +165,7 @@ def test_local_quadratic_ch4_fchk():
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec='exp:5e-4:2e1:175:434',
                         random_rotate=False, mode='keep')
     # build global conceptual DFT tool
-    desp = ConceptualDFTLocal.from_file(file_path, model='quadratic', points=grid.points)
+    desp = LocalConceptualDFT.from_file(file_path, model='quadratic', points=grid.points)
     # check shape of density
     np.testing.assert_equal(desp.density_zero.shape, grid.shape)
     np.testing.assert_equal(desp.density_plus.shape, grid.shape)
@@ -200,7 +200,7 @@ def test_local_quadratic_ch4_fchk():
 #     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec='exp:5e-4:2e1:175:434',
 #                         random_rotate=False, mode='keep')
 #     # build global conceptual DFT tool
-#     desp = ConceptualDFTLocal.from_file([file_path], model='quadratic', points=grid.points)
+#     desp = LocalConceptualDFT.from_file([file_path], model='quadratic', points=grid.points)
 #     # Check condensed dual descriptors (Becke part only)
 #     # TODO: How were the expected values calculated?
 #     c, h1, h2, h3, h4 = -0.26854311,  0.05276027,  0.09886118, -0.03029482,  0.14726817
@@ -219,7 +219,7 @@ def test_global_rational_ch4_fchk():
     # ip = -E(homo) & ea = E(lumo)
     ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
     # build global conceptual DFT tool
-    desp = ConceptualDFTGlobal.from_file(file_path, model='rational')
+    desp = GlobalConceptualDFT.from_file(file_path, model='rational')
     np.testing.assert_almost_equal(desp.energy(10.), energy, decimal=8)
     np.testing.assert_almost_equal(desp.energy(9.), energy + ip, decimal=8)
     np.testing.assert_almost_equal(desp.energy(11.), energy - ea, decimal=8)
