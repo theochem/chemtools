@@ -94,35 +94,36 @@ def _print_vmd_script_nci(scriptfile, densfile, rdgfile, isosurf=0.5, denscut=0.
 
 
 def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5, material='Opaque',
-                                scalemin=-0.05, scalemax=0.05, colorscheme='RGB'):
+                                scalemin=-0.05, scalemax=0.05, colorscheme='RGB', negative=False):
     '''
-    Generate VMD (Visual Molecular Dynamics) script for visualizing the isosurface based on
-    one cube file when coloring by the value of another cube file on the isosurface.
+        Generate VMD (Visual Molecular Dynamics) script for visualizing the isosurface based on
+        one cube file when coloring by the value of another cube file on the isosurface.
 
-    Parameters
-    ----------
-    scriptfile : str
+        Parameters
+        ----------
+        scriptfile : str
         Name of VMD script file to generate.
-    isofile : str
+        isofile : str
         Name of cube file used in VMD script for visualizing the isosurface.
-    colorfile : str, default=None
+        colorfile : str, default=None
         Name of cube file used in VMD script for coloring the isosurface.
         If None, the isofile is used for coloring.
-    isosurf : float, default=0.5
+        isosurf : float, default=0.5
         The value of the isosurface to visualize used in VMD script.
-    material : str, default='Opaque'
+        material : str, default='Opaque'
         The material setting of the isosurface used in VMD script.
         Options:
         'Opaque', 'Transparent', 'BrushedMetal', 'Diffuse', 'Ghost',
         'Glass1', 'Glass2', 'Glass3', 'Glossy', 'HardPlastic', 'MetallicPastel',
         'Steel', 'Translucent', 'Edgy', 'EdgyShiny', 'EdgyGlass', 'Goodsell',
         'AOShiny', 'AOChalky', 'AOEdgy', 'BlownGlass', 'GlassBubble', 'RTChrome'.
-    scalemin : float, default=-0.05
+        scalemin : float, default=-0.05
         Smallest value to color on the isosurface used in VMD script.
-    scalemax : float, default=0.05
+        scalemax : float, default=0.05
         Largest value to color on the isosurface used in VMD script.
-    colorscheme : str, default='RGB'
+        colorscheme : str or int, default='RGB'
         Color scheme used in VMD script for coloring the isosurface.
+        For color-scale, a sting is needed specifying the color scheme. The default is 'RGB'
         Available options are described in the table below.
 
         =======  =====================================
@@ -139,10 +140,19 @@ def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5
         'BlkW'   small=black, large=white
         'WBlk'   small=white, large=black
         =======  =====================================
-    '''
-    # If colorfile is not provided, the isofile is used for coloring.
-    if colorfile is None:
-        colorfile = isofile
+
+        Alternatively, the isosurface can be colored with just one color.
+        For this option, an integer is needed specifying the color.
+        1057 colors are available in VMD, check the program or website for more details.
+
+        If you want to plot the negative isosurface as well, a list of two colors can be given. e.g. [0,1]
+
+        negative : bool, default=False
+        Determines if you want to plot the negative of the isosurface as well. The default is false.
+        '''
+
+    if isinstance(colorscheme, int):
+        colorscheme = [colorscheme]
 
     with open(scriptfile, 'w') as f:
         print >> f, '#!/usr/local/bin/vmd'
@@ -156,8 +166,11 @@ def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5
         print >> f, 'display nearclip set 0.000000      '
         print >> f, '#'
         print >> f, '# load new molecule                '
-        print >> f, 'mol new {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'.format(colorfile)
-        print >> f, 'mol addfile {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'.format(isofile)
+        if colorfile is not None:
+            print >> f, 'mol new {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'.format(colorfile)
+            print >> f, 'mol addfile {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'.format(isofile)
+        else :
+            print >> f, 'mol new {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'.format(isofile)
         print >> f, '#'
         print >> f, '# representation of the atoms'
         print >> f, 'mol delrep 0 top'
@@ -168,16 +181,83 @@ def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5
         print >> f, 'mol addrep top'
         print >> f, '#'
         print >> f, '# add representation of the surface'
-        print >> f, 'mol representation Isosurface {0:.5f} 1.0 0.0 0.0 1 1'.format(isosurf)
-        print >> f, 'mol color Volume 0'
-        print >> f, 'mol selection {all}'
-        print >> f, 'mol material {0}'.format(material)
-        print >> f, 'mol addrep top'
-        print >> f, 'mol selupdate 1 top 0'
-        print >> f, 'mol colupdate 1 top 0'
-        print >> f, 'mol scaleminmax top 1 {0:.6f} {1:.6f}'.format(scalemin, scalemax)
-        print >> f, 'mol smoothrep top 1 0'
-        print >> f, 'mol drawframes top 1 {now}'
-        print >> f, 'color scale method {0}'.format(colorscheme)
-        print >> f, 'set colorcmds {{color Name {C} gray}}'
+        if colorfile is not None:
+            print >> f, 'mol representation Isosurface {0:.5f} 1.0 0.0 0.0 1 1'.format(isosurf)
+            print >> f, 'mol color Volume 0'
+            print >> f, 'mol selection {all}'
+            print >> f, 'mol material {0}'.format(material)
+            print >> f, 'mol addrep top'
+            print >> f, 'mol selupdate 1 top 0'
+            print >> f, 'mol colupdate 1 top 0'
+            print >> f, 'mol scaleminmax top 1 {0:.6f} {1:.6f}'.format(scalemin, scalemax)
+            print >> f, 'mol smoothrep top 1 0'
+            print >> f, 'mol drawframes top 1 {now}'
+            print >> f, 'color scale method {0}'.format(colorscheme)
+            print >> f, 'set colorcmds {{color Name {C} gray}}'
+        elif isinstance(colorscheme, str):
+            print >> f, 'mol representation Isosurface {0:.5f} 0 0 0 1 1'.format(isosurf)
+            print >> f, 'mol color Volume 0'
+            print >> f, 'mol selection {all}'
+            print >> f, 'mol material {0}'.format(material)
+            print >> f, 'mol addrep top'
+            print >> f, 'mol selupdate 1 top 0'
+            print >> f, 'mol colupdate 1 top 0'
+            print >> f, 'mol scaleminmax top 1 {0:.6f} {1:.6f}'.format(scalemin, scalemax)
+            print >> f, 'mol smoothrep top 1 0'
+            print >> f, 'mol drawframes top 1 {now}'
+            print >> f, 'color scale method {0}'.format(colorscheme)
+            print >> f, 'set colorcmds {{color Name {C} gray}}'
+        elif isinstance(colorscheme[0], int):
+            print >> f, 'mol representation Isosurface {0:.5f} 0 0 0 1 1'.format(isosurf)
+            print >> f, 'mol color ColorID {0}'.format(colorscheme[0])
+            print >> f, 'mol selection {all}'
+            print >> f, 'mol material Opaque'
+            print >> f, 'mol addrep top'
+            print >> f, 'mol selupdate 1 top 0'
+            print >> f, 'mol colupdate 1 top 0'
+            print >> f, 'mol scaleminmax top 1 0.000000 0.000000'
+            print >> f, 'mol smoothrep top 1 0'
+            print >> f, 'mol drawframes top 1 {now}'
+            print >> f, 'color scale method RGB'
+            print >> f, 'set colorcmds {{color Name {C} gray}}'
+        if negative:
+            if colorfile is not None:
+                print >> f, 'mol representation Isosurface {0:.5f} 1.0 0.0 0.0 1 1'.format(-isosurf)
+                print >> f, 'mol color Volume 0'
+                print >> f, 'mol selection {all}'
+                print >> f, 'mol material {0}'.format(material)
+                print >> f, 'mol addrep top'
+                print >> f, 'mol selupdate 1 top 0'
+                print >> f, 'mol colupdate 1 top 0'
+                print >> f, 'mol scaleminmax top 1 {0:.6f} {1:.6f}'.format(scalemin, scalemax)
+                print >> f, 'mol smoothrep top 1 0'
+                print >> f, 'mol drawframes top 1 {now}'
+                print >> f, 'color scale method {0}'.format(colorscheme)
+                print >> f, 'set colorcmds {{color Name {C} gray}}'
+            elif isinstance(colorscheme, str):
+                print >> f, 'mol representation Isosurface {0:.5f} 0 0 0 1 1'.format(-isosurf)
+                print >> f, 'mol color Volume 0'
+                print >> f, 'mol selection {all}'
+                print >> f, 'mol material {0}'.format(material)
+                print >> f, 'mol addrep top'
+                print >> f, 'mol selupdate 1 top 0'
+                print >> f, 'mol colupdate 1 top 0'
+                print >> f, 'mol scaleminmax top 1 {0:.6f} {1:.6f}'.format(scalemin, scalemax)
+                print >> f, 'mol smoothrep top 1 0'
+                print >> f, 'mol drawframes top 1 {now}'
+                print >> f, 'color scale method {0}'.format(colorscheme)
+                print >> f, 'set colorcmds {{color Name {C} gray}}'
+            elif isinstance(colorscheme[1], int):
+                print >> f, 'mol representation Isosurface {0:.5f} 0 0 0 1 1'.format(-isosurf)
+                print >> f, 'mol color ColorID {0}'.format(colorscheme[1])
+                print >> f, 'mol selection {all}'
+                print >> f, 'mol material Opaque'
+                print >> f, 'mol addrep top'
+                print >> f, 'mol selupdate 1 top 0'
+                print >> f, 'mol colupdate 1 top 0'
+                print >> f, 'mol scaleminmax top 1 0.000000 0.000000'
+                print >> f, 'mol smoothrep top 1 0'
+                print >> f, 'mol drawframes top 1 {now}'
+                print >> f, 'color scale method RGB'
+                print >> f, 'set colorcmds {{color Name {C} gray}}'
         print >> f, '#some more'
