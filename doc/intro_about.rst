@@ -55,12 +55,12 @@ Conceptual tools (mostly density-based tools will be considered here, so this is
 * **Local tools:** Every point in space, r, has a value. Examples: electron density, electrostatic potential, Fukui function.
 * **Nonlocal tools:** There is a value for pairs (or triples, quadruples, etc.) of points. For example, the linear response function measure the change in electron density at r due to a change in external potential at r’.
 
-.. math::
-     \begin{array}{ccccccccc}
-     & & & &  \scriptsize E[N,v(\mathbf{r})]  & & & & \\
-     & & & \swarrow & & \searrow   & & & \\
-     & & \scriptsize \left( \frac{\partial E}{\partial N} \right)_{v(\mathbf{r})} = \mu  & & & & \scriptsize \left( \frac{\delta E}{\delta v(\mathbf{r})} \right)_N = \rho (\mathbf{r}) & & \\
-     & \swarrow & & \searrow & & \swarrow   & & \searrow & \\
-      \scriptsize  \left( \frac{\partial^2 E}{\partial N^2} \right)_{v(\mathbf{r})} = \eta  & & & & \scriptsize \left( \frac{\partial^2 E}{\partial N \delta v(\mathbf{r})} \right) = f (\mathbf{r})  & & & & \scriptsize \left( \frac{\delta^2 E}{\delta v(\mathbf{r}) \delta v(\mathbf{r} ')} \right)_N = \chi (\mathbf{r} ,  \mathbf{r}') &\\
-    \end{array}
+For canonical ensemble,
 
+ .. image:: ./_static/CDFT.png
+     :align: center
+
+For grand-canonical ensemble,
+
+ .. image:: ./_static/CDFT-GCP.png
+     :align: center
