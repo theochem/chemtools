@@ -26,3 +26,27 @@
 
 Installation
 ############
+
+
+`Git Large File Storage (LFS) <https://git-lfs.github.com/>`_ has been used to store the files
+and images used in the examples' gallery. In order words, all files in ``doc/examples/*`` are
+stored remotely, and only a text pointer to these files exists in the repository.
+These files need to be downloaded separately, if you would like to run the example scripts or
+make Chemtools' HTML with sphinx. To do so, first you need to install Git LFS using:
+
+  .. code-block:: bash
+
+     $ port install git-lfs
+     $ brew install git-lfs
+
+Then go to the repository's directory to download the files by running:
+
+  .. code-block:: bash
+
+     $ git lfs pull
+
+To get a list of all the files tracked with Git LFS, use:
+
+  .. code-block:: bash
+
+     $ git lfs ls-files
