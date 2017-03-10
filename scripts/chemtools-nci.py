@@ -25,23 +25,30 @@
 
 import argparse
 from chemtools import NCI
-
+from argparse import RawTextHelpFormatter
 
 def parse_args_nci():
     '''
     Parse command-line arguments for computing NCI.
     '''
     parser = argparse.ArgumentParser(prog='chemtools-nci.py',
-        description='Generate density & reduced density gradient cube files, as well'
-                    'as a VMD (Visual Molecular Dynamics) script to visualize non-covalnet'
-                    'inteactions (NCI).\n'
-                    'This script will generate 3 files which includes:'
-                    'filename_output-dens.cube, filename_output-grad.cube, and filename_output.vmd\n'
-                    'If VMD is setup on your system, you can visualize NCI with the command below:\n'
-                    '$ vmd -e filename_output.vmd\n'
-                    'Note: The filename_output.vmd scripts, requires filename_output-dens.cube & '
-                    'filename_output-grad.cube to plot NCI.'
-                    'Note: The generated VMD script is the same as the NCIPlot software version 1.0.'
+        description='Generate density & reduced density gradient cube files,\nas well'
+                    'as a VMD (Visual Molecular Dynamics) script to\n'
+                    'visualize non-covalnetinteactions (NCI).\n\n'
+                    'This script will generate 3 files which includes:\n'
+                    '    filename_output-dens.cube\n'
+                    '    filename_output-grad.cube\n'
+                    '    filename_output.vmd\n\n'
+                    'If VMD is setup on your system,\n'
+                    'you can visualize NCI with the command below:\n'
+                    '    $ vmd -e filename_output.vmd\n\n'
+                    'Note: The filename_output.vmd scripts,requires\n'
+                    '    filename_output-dens.cube\n'
+                    '    filename_output-grad.cube\nto plot NCI.\n\n'
+                    'Note: The generated VMD script is the same as the'
+                    ' NCIPlot\n\n'
+                    'Software version 1.0.',
+        formatter_class=RawTextHelpFormatter,
                                      )
     # parser.add_argument('-V', '--version', action='version',
     #     version="%%(prog)s (ChemTools version %s)" % __version__)
