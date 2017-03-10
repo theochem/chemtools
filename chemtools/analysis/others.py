@@ -37,40 +37,112 @@ import matplotlib.pyplot as plt
 class NCI(object):
     '''
     Class for the Non-Covalent Interactions (NCI).
+
     '''
-    def __init__(self, iodata):
+    def __init__(self, density, rdgradient, cube, hessian=None):
         '''
         Parameters
         ----------
         iodata : IOData
             The molecule's IOData.
+        cube : instance of `CubeGen`, default=None
+            Cubic grid used for calculating and visualizating the NCI.
+            If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
         '''
-        if not isinstance(iodata, IOData):
-            raise ValueError('Argument cube should be an instance of IOData!')
 
-        self._mol = iodata
+        if hessian is not None:
+            # Compute hessian and its eigenvalues on cubuc grid
+            eigvalues = np.linalg.eigvalsh(hessian)
+
+            # Use sign of second eigenvalue to distinguish interaction types
+            sdens = np.sign(eigvalues[:, 1]) * density
+
+            self._signed_density = sdens
+            self._eigvalues = eigvalues
+
+        else:
+            self._signed_density = None
+            self._eigvalues = None
+
+        self._density = density
+        self._rdgrad = rdgradient
+        self._cube = cube
 
     @classmethod
-    def from_file(cls, filename):
+    def from_file(cls, filename, cube=None):
         '''
-        Initialize class from files.
+        Initialize class from file.
+
+        Parameters
+        ----------
+        filename : str
+            Path to molecule's files.
         '''
         # case of one file not given as a list
         if isinstance(filename, (str, unicode)):
-            return cls(IOData.from_file(filename))
+            return cls.from_iodata(IOData.from_file(filename), cube)
         # case of list of file(s)
-        for file in filename:
+        for _ in filename:
             raise ValueError('Multiple files are not suported')
 
     @classmethod
-    def from_iodata(cls, iodata):
+    def from_iodata(cls, iodata, cube=None):
         '''
-        Initialize class from `IOData` objects.
-        '''
-        # This classmethod is redundant, but just included for uniformity
-        return cls(iodata)
+        Initialize class from `IOData` object.
 
-    def dump_files(self, filename, isosurf=0.50, denscut=0.05, cube=None, plot=False):
+        Parameters
+        ----------
+        iodata : `IOData`
+            Instance of `IOData`.
+        '''
+        # Generate or check cubic grid
+        if cube is None:
+            cube = CubeGen.from_molecule(iodata.numbers, iodata.pseudo_numbers,
+                                         iodata.coordinates, spacing=0.1, threshold=2.0)
+        elif not isinstance(cube, CubeGen):
+            raise ValueError('Argument cube should be an instance of CubeGen!')
+
+        # Compute density & gradient on cubic grid
+        dm_full = iodata.get_dm_full()
+        dens = iodata.obasis.compute_grid_density_dm(dm_full, cube.points)
+        grad = iodata.obasis.compute_grid_gradient_dm(dm_full, cube.points)
+        # Compute hessian on cubuc grid
+        hess = _compute_hessian(iodata, cube.points)
+
+        # initialize DensityLocalTool & compute reduced gradient
+        temp = DensityLocalTool(dens, grad)
+        rdgrad = temp.reduced_density_gradient
+
+        return cls(dens, rdgrad, cube, hessian=hess)
+
+    @property
+    def signed_density(self):
+        r'''
+        Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on a grid,
+        signed by the second eigenvalue of the Hessian at that point.
+        '''
+        return self._signed_density
+
+    @property
+    def eigvalues(self):
+        r'''
+        Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on a grid,
+        signed by the second eigenvalue of the Hessian at that point.
+        '''
+        return self._eigvalues
+
+    def plot(self, filename):
+        r'''
+        # Plot reduced density gradient vs. sign(lambda_2)*density
+        '''
+        plt.scatter(self._signed_density, self._rdgrad, lw = 0.5)
+        plt.xlim(-0.2, 0.2)
+        plt.ylim(0.0, 2.0)
+        plt.xlabel(r'sign($\lambda_2$)$\rho$ (a.u)')
+        plt.ylabel('Reduced Density Gradient')
+        plt.savefig(filename)
+
+    def dump_files(self, filename, isosurf=0.50, denscut=0.05):
         r'''
         Generate density and reduced density gradient cube files, as well as a VMD (Visual
         Molecular Dynamics) script to visualize non-covalnet inteactions (NCI).
@@ -86,62 +158,32 @@ class NCI(object):
             Similar to NCIPlot program, reduced density gradient of points with
             density > denscut will be set to 100.0 to display reduced density gradient
             iso-surface subject to the constraint of low density.
-        cube : instance of `CubeGen`, default=None
-            Cubic grid used for calculating and visualizating the NCI.
-            If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
-        plot : boolean, default=False
-            Generate a plot of reduced density gradient RDG vs. sign(:math:`\lambda_2`):math:`\rho`.
 
         Note
         ----
         The generated cube files and script imitate the NCIPlot software version 1.0.
         '''
-        # Generate or check cubic grid
-        if cube is None:
-            cube = CubeGen.from_molecule(self._mol.numbers, self._mol.pseudo_numbers,
-                                         self._mol.coordinates, spacing=0.1, threshold=2.0)
-        elif not isinstance(cube, CubeGen):
-            raise ValueError('Argument cube should be an instance of CubeGen!')
-
-        # Compute density & gradient on cubic grid
-        dm_full = self._mol.get_dm_full()
-        dens = self._mol.obasis.compute_grid_density_dm(dm_full, cube.points)
-        grad = self._mol.obasis.compute_grid_gradient_dm(dm_full, cube.points)
-        # Calculate reduced density gradient on cubic grid
-        localtool = DensityLocalTool(dens, grad, hessian=None)
-        rdgrad = localtool.reduced_density_gradient
-        # Compute hessian and its eigenvalues on cubuc grid
-        hess = _compute_hessian(self._mol, cube.points)
-        eigvalues = np.linalg.eigvalsh(hess)
-        # Use sign of second eigenvalue to distinguish interaction types
-        dens = np.sign(eigvalues[:, 1]) * dens
-
-        # Plot reduced density gradient vs. sign(lambda_2)*density
-        if plot:
-            plt.scatter(dens, rdgrad, lw = 0.5)
-            plt.xlim(-0.2, 0.2)
-            plt.ylim(0.0, 2.0)
-            plt.xlabel(r'sign($\lambda_2$)$\rho$ (a.u)')
-            plt.ylabel('Reduced Density Gradient')
-            plt.show()
 
         # Similar to NCIPlot program, reduced density gradient of points with
         # density > cutoff will be set to 100.0 before generating cube file to
         # display reduced density gradient iso-surface subject to the constraint
         # of low density, i.e. density < denscut.
-        rdgrad[abs(dens) > denscut] = 100.0
+        self._rdgrad[abs(self._density) > denscut] = 100.0
         # Similar to NCIPlot program, sign(hessian second eigenvalue)*density is
         # multiplied by 100.0 before genetaing cube file used for coloring the
         # reduced density gradient iso-surface.
-        dens *= 100.0
+        if self._signed_density is not None:
+            dens = 100.0 * self._signed_density
+        else:
+            dens = 100.0 * self._density
 
         # Name of output files:
         densfile = filename + '-dens.cube'    # density cube file
         rdgfile  = filename + '-grad.cube'    # reduced density gradient cube file
         vmdfile  = filename + '.vmd'          # vmd script file
         # Dump density & reduced density gradient cube files
-        cube.dump_cube(densfile, dens)
-        cube.dump_cube(rdgfile, rdgrad)
+        self._cube.dump_cube(densfile, dens)
+        self._cube.dump_cube(rdgfile, self._rdgrad)
         # Make VMD scripts for visualization
         _print_vmd_script_nci(vmdfile, densfile, rdgfile, isosurf, denscut*100.0)
 

@@ -41,11 +41,11 @@ def tmpdir(name):
 
 def test_analyze_nci_h2o_dimer_wfn():
     file_path = context.get_fn('test/h2o_dimer_pbe_sto3g.wfn')
-    # Build the NCI tool
-    desp = NCI.from_file(file_path)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     dens_cube1_path = context.get_fn('test/h2o_dimer_pbe_sto3g-dens.cube')
     cube = CubeGen.from_cube(dens_cube1_path)
+    # Build the NCI tool
+    desp = NCI.from_file(file_path, cube)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     grad_cube1_path = context.get_fn('test/h2o_dimer_pbe_sto3g-grad.cube')
     dmol1 = IOData.from_file(dens_cube1_path)
@@ -53,7 +53,7 @@ def test_analyze_nci_h2o_dimer_wfn():
 
     with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_h2o_dimer_fchk') as dn:
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g')
-        desp.dump_files(cube2, cube=cube)
+        desp.dump_files(cube2)
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')
         mol2 = IOData.from_file(cube2)
         # Check coordinates
@@ -88,11 +88,11 @@ def test_analyze_nci_h2o_dimer_wfn():
 def test_analyze_nci_h2o_dimer_fchk():
     file_path = context.get_fn('test/h2o_dimer_pbe_sto3g.fchk')
     mol = IOData.from_file(file_path)
-    # Build the NCI tool
-    desp = NCI.from_iodata(mol)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     dens_cube1_path = context.get_fn('test/h2o_dimer_pbe_sto3g-dens.cube')
     cube = CubeGen.from_cube(dens_cube1_path)
+    # Build the NCI tool
+    desp = NCI.from_iodata(mol, cube)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     grad_cube1_path = context.get_fn('test/h2o_dimer_pbe_sto3g-grad.cube')
     dmol1 = IOData.from_file(dens_cube1_path)
@@ -100,7 +100,7 @@ def test_analyze_nci_h2o_dimer_fchk():
 
     with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_h2o_dimer_fchk') as dn:
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g')
-        desp.dump_files(cube2, cube=cube)
+        desp.dump_files(cube2)
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')
         mol2 = IOData.from_file(cube2)
         # Check coordinates
