@@ -23,21 +23,22 @@
 # --
 
 from distutils.core import setup
-
+from glob import glob
 
 setup(
-    name='cdft',
-    version='0.0',
+    name='chemtools',
+    version='0.9.0',
     description='Conceptual Density Functional Theory (DFT) Reactivity Descriptors Package.',
-    author='Farnaz Heidar-Zadeh',
-    author_email='heidarf@mcmaster.ca',
-    package_dir = {'cdft': 'cdft'},
-    packages=['cdft', 'cdft.tools', 'cdft.tools.tests',
-              'cdft.analyze', 'cdft.analyze.tests'],
+    author='Ayers Group',
+    author_email='horton.chemtools@gmail.com',
+    package_dir={'chemtools': 'chemtools'},
+    packages=['chemtools', 'chemtools.tool', 'chemtools.tool.test',
+              'chemtools.analysis', 'chemtools.analysis.test'],
+    scripts=glob("scripts/*.py"),
     classifiers=[
         'Environment :: Console',
         'Intended Audience :: Science/Research',
         'Programming Language :: Python :: 2',
         'Topic :: Science/Engineering :: Molecular Science'
         ],
-     )
+    )
