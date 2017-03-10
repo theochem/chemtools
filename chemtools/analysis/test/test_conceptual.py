@@ -28,9 +28,8 @@ from chemtools import *
 
 
 def test_global_linear_ch4_fchk():
-    # Temporary trick to find the data files
-    path = os.path.abspath(os.path.dirname(__file__)).rsplit('/', 3)[0]
-    file_path = os.path.join(path, 'data/test/ch4_uhf_ccpvdz.fchk')
+    # use context to get path
+    file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
     # ip = -E(homo) & ea = E(lumo)
     ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
     # build global conceptual DFT tool
@@ -70,9 +69,7 @@ def test_global_linear_ch4_fchk():
 def test_local_linear_ch4_fchk():
     # Check softness & hyper-softness
     # Check N_max and related descriptors
-    # temporary trick to find the data files
-    path = os.path.abspath(os.path.dirname(__file__)).rsplit('/', 3)[0]
-    file_path = os.path.join(path, 'data/test/ch4_uhf_ccpvdz.fchk')
+    file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
     # make molecular grid
     mol = IOData.from_file(file_path)
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec='exp:5e-4:2e1:175:434',
@@ -99,9 +96,7 @@ def test_local_linear_ch4_fchk():
 
 
 def test_gloabl_quadratic_ch4_fchk():
-    # Temporary trick to find the data files
-    path = os.path.abspath(os.path.dirname(__file__)).rsplit('/', 3)[0]
-    file_path = os.path.join(path, 'data/test/ch4_uhf_ccpvdz.fchk')
+    file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
     # ip = -E(homo) & ea = E(lumo)
     ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
     # build global conceptual DFT tool
@@ -154,9 +149,7 @@ def test_gloabl_quadratic_ch4_fchk():
 
 
 def test_local_quadratic_ch4_fchk():
-    # Temporary trick to find the data files
-    path = os.path.abspath(os.path.dirname(__file__)).rsplit('/', 3)[0]
-    file_path = os.path.join(path, 'data/test/ch4_uhf_ccpvdz.fchk')
+    file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
     # ip = -E(homo) & ea = E(lumo)
     ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
     mu, eta = -0.5 * (ip + ea), ip - ea
@@ -192,9 +185,7 @@ def test_local_quadratic_ch4_fchk():
 
 
 # def test_condense_quadratic_ch4_fchk():
-#     # Temporary trick to find the data files
-#     path = os.path.abspath(os.path.dirname(__file__)).rsplit('/', 3)[0]
-#     file_path = os.path.join(path, 'data/test/ch4_uhf_ccpvdz.fchk')
+#     file_path = context.get_fn('data/test/ch4_uhf_ccpvdz.fchk')
 #     # make molecular grid
 #     mol = IOData.from_file(file_path)
 #     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec='exp:5e-4:2e1:175:434',
@@ -213,9 +204,7 @@ def test_local_quadratic_ch4_fchk():
 
 
 def test_global_rational_ch4_fchk():
-    # Temporary trick to find the data files
-    path = os.path.abspath(os.path.dirname(__file__)).rsplit('/', 3)[0]
-    file_path = os.path.join(path, 'data/test/ch4_uhf_ccpvdz.fchk')
+    file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
     # ip = -E(homo) & ea = E(lumo)
     ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
     # build global conceptual DFT tool

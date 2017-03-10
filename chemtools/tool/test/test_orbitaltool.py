@@ -24,12 +24,13 @@
 
 import numpy as np
 import os
-from chemtools import *
 from horton import *
+from chemtools import *
+# here both chemtools and horton has context
+# import chemtools later to overwrite horton one
 
 def test_orbital_tool_ch4_uhf_ccpvdz():
-    path = os.path.abspath(os.path.dirname(__file__)).rsplit('/', 3)[0]
-    path_file = os.path.join(path, 'data/test/ch4_uhf_ccpvdz.fchk')
+    path_file = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
     mol = IOData.from_file(path_file)
 
     #creating cube file:
@@ -113,13 +114,11 @@ def test_orbital_tool_ch4_uhf_ccpvdz():
     np.testing.assert_array_almost_equal(test, result, decimal=7)
 
 def test_orbital_tool_elf_h2o_dimer():
-    # Temporary trick to find the data files
-    path = os.path.abspath(os.path.dirname(__file__)).rsplit('/', 3)[0]
-    file_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g.fchk')
+    file_path = context.get_fn('test/h2o_dimer_pbe_sto3g.fchk')
     # load fchk
     mol = IOData.from_file(file_path)
     # Check against elf created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-    elf_cube_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g-elf.cube')
+    elf_cube_path = context.get_fn('test/h2o_dimer_pbe_sto3g-elf.cube')
     elf = IOData.from_file(elf_cube_path)
     result = elf.cube_data.flatten()
     #Build OrbitalLocal tool

@@ -22,8 +22,41 @@
 #
 # --
 
+import os
+from distutils.command.install_data import install_data
 from distutils.core import setup
 from glob import glob
+
+
+class my_install_data(install_data):
+    """Add a datadir.txt file that points to the root for the data files. It is
+       otherwise impossible to figure out the location of these data files at
+       runtime.
+    """
+
+    def run(self):
+        # Do the normal install_data
+        install_data.run(self)
+        # Create the file datadir.txt. It's exact content is only known
+        # at installation time. By default, it is the installation prefix
+        # passed to setup.py, but one can override it using the env var
+        # INSTALL_DATA, which may be useful for packaging, or any other
+        # situation where the installed files are moved to a new location
+        # afterwards.
+        my_install_dir = os.getenv("INSTALL_DIR", self.install_dir)
+        # Loop over all packages in this project and write the data_dir.txt
+        # file only in the main package. Usualy, there is only one that matters.
+        dist = self.distribution
+        libdir = dist.command_obj["install_lib"].install_dir
+        for name in dist.packages:
+            # If a package contains a dot, e.g. horton.test, then don't write
+            # the file data_dir.txt.
+            if '.' not in name:
+                destination = os.path.join(libdir, name, "data_dir.txt")
+                print "Creating %s" % destination
+                if not self.dry_run:
+                    with open(destination, "w") as f:
+                        print >> f, my_install_dir
 
 setup(
     name='chemtools',
@@ -35,6 +68,14 @@ setup(
     packages=['chemtools', 'chemtools.tool', 'chemtools.tool.test',
               'chemtools.analysis', 'chemtools.analysis.test'],
     scripts=glob("scripts/*.py"),
+    cmdclass={
+        'install_data' : my_install_data,
+	},
+    data_files=[
+        ('share/chemtools', glob('data/*.*')),
+        ('share/chemtools/test', glob('data/test/*.*')),
+        ('share/chemtools/examples', glob('data/examples/*.*')),
+        ],
     classifiers=[
         'Environment :: Console',
         'Intended Audience :: Science/Research',

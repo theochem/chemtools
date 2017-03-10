@@ -40,16 +40,14 @@ def tmpdir(name):
 
 
 def test_analyze_nci_h2o_dimer_wfn():
-    # Temporary trick to find the data files
-    path = os.path.abspath(os.path.dirname(__file__)).rsplit('/', 3)[0]
-    file_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g.wfn')
+    file_path = context.get_fn('test/h2o_dimer_pbe_sto3g.wfn')
     # Build the NCI tool
     desp = NCI.from_file(file_path)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-    dens_cube1_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g-dens.cube')
+    dens_cube1_path = context.get_fn('test/h2o_dimer_pbe_sto3g-dens.cube')
     cube = CubeGen.from_cube(dens_cube1_path)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-    grad_cube1_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g-grad.cube')
+    grad_cube1_path = context.get_fn('test/h2o_dimer_pbe_sto3g-grad.cube')
     dmol1 = IOData.from_file(dens_cube1_path)
     gmol1 = IOData.from_file(grad_cube1_path)
 
@@ -88,17 +86,15 @@ def test_analyze_nci_h2o_dimer_wfn():
 
 
 def test_analyze_nci_h2o_dimer_fchk():
-    # Temporary trick to find the data files
-    path = os.path.abspath(os.path.dirname(__file__)).rsplit('/', 3)[0]
-    file_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g.fchk')
+    file_path = context.get_fn('test/h2o_dimer_pbe_sto3g.fchk')
     mol = IOData.from_file(file_path)
     # Build the NCI tool
     desp = NCI.from_iodata(mol)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-    dens_cube1_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g-dens.cube')
+    dens_cube1_path = context.get_fn('test/h2o_dimer_pbe_sto3g-dens.cube')
     cube = CubeGen.from_cube(dens_cube1_path)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-    grad_cube1_path = os.path.join(path, 'data/test/h2o_dimer_pbe_sto3g-grad.cube')
+    grad_cube1_path = context.get_fn('test/h2o_dimer_pbe_sto3g-grad.cube')
     dmol1 = IOData.from_file(dens_cube1_path)
     gmol1 = IOData.from_file(grad_cube1_path)
 
