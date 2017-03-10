@@ -59,11 +59,17 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
+    'sphinx.ext.autosummary',
     'sphinx_gallery.gen_gallery',
     'IPython.sphinxext.ipython_console_highlighting',
     'IPython.sphinxext.ipython_directive',
     'sphinxcontrib.bibtex',
 ]
+
+# Add any paths that contain templates here, relative to this directory.
+templates_path = ['_templates']
+
+
 mathjax_path = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
 
 sphinx_gallery_conf = {
@@ -339,3 +345,8 @@ autoclass_content = 'both'
 
 autodoc_member_order = 'bysource'
 # autodoc_default_flags = ['members', 'undoc-members', 'inherited-members', 'show-inheritance']
+
+# -----------------------------------------------------------------------------
+# Autosummary
+# -----------------------------------------------------------------------------
+autosummary_generate = ['tech_api.rst']
