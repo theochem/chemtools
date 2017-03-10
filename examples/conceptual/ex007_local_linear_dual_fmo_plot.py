@@ -39,5 +39,5 @@ print_vmd_script_isosurface('coh2_dual_fmo.vmd', 'coh2_dual_fmo.cube', isosurf=0
 
 # the code below is for displaying the dual descriptor image on the website, you should remove it
 # when running the script on your machine.
-# from tools.rug import plot_existing_image
-# plot_existing_image('ch2o_dual_fmo.jpg')
+from tools.rug import plot_existing_image
+plot_existing_image('ch2o_dual_fmo.jpg')

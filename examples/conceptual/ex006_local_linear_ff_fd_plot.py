@@ -55,5 +55,5 @@ print_vmd_script_isosurface('coh2_ff0_fd.vmd', 'coh2_ff0_fd.cube', isosurf=0.005
 
 # the code below is for displaying the ff image on the website, you should remove it
 # when running the script on your machine.
-# from tools.rug import plot_existing_image
-# plot_existing_image('ch2o-ffp_fd.jpg')
+from tools.rug import plot_existing_image
+plot_existing_image('ch2o-ffm_fd.jpg')
