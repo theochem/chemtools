@@ -130,7 +130,7 @@ denoted by :math:`N`, **chemical softness** denoted by :math:`S`, and :math:`n^{
               \left(\eta^{(1)}, \eta^{(2)}, ..., \eta^{(n-k+1)} \right)}{B_{n,n}\left( \eta^{(1)}\right)}
 
 The explicit formulas for softness and hyper-softness are obtained using chain rule;
-please reafer to :ref:`derivation_global_softness` for details.
+please refer to :ref:`derivation_global_softness` for details.
 
  .. TODO::
     #. Work on the derivation so explicit formula for hyper_softness :ref:`derivation_global_softness`
@@ -162,7 +162,7 @@ which measures the energy loweing due to adding one electron to the system, elec
  .. math:: \omega_{\text{nucleophilicity}} = ?
 
  .. TODO::
-    #. Talk about nucleophilicity; is it related to IP in the same way that electrophilicity is realted to EA.
+    #. Talk about nucleophilicity; is it related to IP in the same way that electrophilicity is related to EA.
 
 **Nucleofugality index** :math:`\nu_{\text{nucleofugality}}` measures the susceptibility/quality/ability of the system for being
 a nucleofuge (a leaving group which takes an electron with it) which is quantified by the energy penalty associated with forcing
@@ -171,7 +171,7 @@ a molecular fragment to accept an electron; the lower values of :math:`\nu_{\tex
  .. math:: \nu_{\text{nucleofugality}} = E(N_0 + 1) - E(N_0 + \Delta N_{\text{max}}) = E(N_0 + 1) - E(N_{\text{max}})
 
 **Electrofugality index** :math:`\nu_{\text{electrofugality}}` measures the susceptibility/quality/ability of the system for being
-a electroguge (a leaving group which leaves an electron behind),
+a electrofuge (a leaving group which leaves an electron behind),
 
  .. math:: \nu_{\text{electrofugality}} = E(N_0 - 1) - E(N_0 + \Delta N_{\text{max}}) = E(N_0 - 1) - E(N_{\text{max}})
 
