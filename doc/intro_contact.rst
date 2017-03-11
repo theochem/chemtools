@@ -25,14 +25,51 @@
 Contact Information
 ###################
 
-ChemTools mailing list
+If you have questions, please post them on the `ChemTools Google Group <https://groups.google.com/forum/#!forum/chemtools>`_.
 
-Contact Authors
+For general inquiries, please contact:
 
-**Prof. Paul W. Ayers**
+**Farnaz Heidar-Zadeh**
+    | Department of Chemistry & Chemical Biology
+    | `McMaster University <http://www.mcmaster.ca/>`_
+    | 25-1280 Main Street West
+    | L8S 4M1 Hamilton, ON, Canada
+    | farnazhz@gmail.com
+
+**Stijn Fias**
+    | Department of Chemistry & Chemical Biology
+    | `McMaster University <http://www.mcmaster.ca/>`_
+    | 25-1280 Main Street West
+    | L8S 4M1 Hamilton, ON, Canada
+    | stijn.fias@gmail.com
+
+**Paul W. Ayers**
    | `The Ayers group <http://www.chemistry.mcmaster.ca/ayers/>`_
    | Department of Chemistry & Chemical Biology
    | `McMaster University <http://www.mcmaster.ca/>`_
    | 25-1280 Main Street West
    | L8S 4M1 Hamilton, ON, Canada
    | ayers@mcmaster.ca
+
+**Esteban Vöhringer-Martinez**
+   | The Vöhringer-Martinez group
+   | Departamento de Físico-Química
+   | Facultad de Ciencias Químicas
+   | Universidad de Concepción
+   | Concepción, Chile
+   | evohringer@udec.cl
+
+**Carlos Cárdenas**
+   | `The Cárdenas Group <http://macul.ciencias.uchile.cl/personal/academicos/ccardenas_n.htm>`_
+   | Departamento de Física
+   | Facultad de Ciencias
+   | `vUniversidad de Chile <http://www.uchile.cl/>`_
+   | Casilla 653, Santiago, Chile
+   | cardena@macul.ciencias.uchile.cl
+
+**Toon Verstraelen**
+   | `Center for Molecular Modeling (CMM) <http://molmod.ugent.be/>`_
+   | `Ghent University <http://www.ugent.be/>`_
+   | Technologiepark 903
+   | B-9052 Zwijnaarde
+   | Toon.Verstraelen@UGent.be
