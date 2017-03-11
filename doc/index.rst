@@ -73,6 +73,7 @@ quantum chemistry.
    sci_doc_conceptual
    sci_doc_densitytool
    sci_doc_orbitaltool
+   sci_doc_nci
 
 .. toctree::
    :maxdepth: 2
