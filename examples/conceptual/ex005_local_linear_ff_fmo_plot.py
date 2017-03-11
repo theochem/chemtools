@@ -7,8 +7,8 @@ EX3: Plot Linear Fukui function (FMO Approach)
 2. Build linear energy model for Formaldehyde, :math:`\mathbf{CH_2O}`,
    using frontier molecular orbital (FMO) theory.
 3. Compute Fukui functions (f+, f- and f0) using linear energy model.
-4. Generate VMD (Visual Molecular Dynamics) scripts to plot Fukui function
-   iso-surfaces.
+4. Make cube files & generate VMD (Visual Molecular Dynamics) scripts
+   to plot Fukui function iso-surfaces.
 '''
 
 from chemtools import LocalConceptualDFT, CubeGen, print_vmd_script_isosurface
@@ -34,13 +34,18 @@ ffp = tool.ff_plus
 # Fukui function zero
 ff0 = tool.ff_zero
 
-# 4. Generate VMD (Visual Molecular Dynamics) scripts to plot Fukui function iso-surfaces.
+# 4. Make cube files & generate VMD scripts to plot Fukui function iso-surfaces.
 
 # dump Fukui function cubes files
-cube.dump_cube('coh2-ffm.cube', ffm)
-cube.dump_cube('coh2-ffp.cube', ffp)
-cube.dump_cube('coh2-ff0.cube', ff0)
-# construct VMD scripts for visualizing the iso-surfaces with VMD
-print_vmd_script_isosurface('coh2-ffm.vmd', 'coh2-ffm.cube', isosurf=0.005)
-print_vmd_script_isosurface('coh2-ffp.vmd', 'coh2-ffp.cube', isosurf=0.005)
-print_vmd_script_isosurface('coh2-ff0.vmd', 'coh2-ff0.cube', isosurf=0.005)
+cube.dump_cube('coh2_ffm_fmo.cube', ffm)
+cube.dump_cube('coh2_ffp_fmo.cube', ffp)
+cube.dump_cube('coh2_ff0_fmo.cube', ff0)
+# generate VMD scripts for visualizing iso-surfaces with VMD
+print_vmd_script_isosurface('coh2_ffm_fmo.vmd', 'coh2_ffm_fmo.cube', isosurf=0.005)
+print_vmd_script_isosurface('coh2_ffp_fmo.vmd', 'coh2_ffp_fmo.cube', isosurf=0.005)
+print_vmd_script_isosurface('coh2_ff0_fmo.vmd', 'coh2_ff0_fmo.cube', isosurf=0.005)
+
+# the code below is for displaying the ff image on the website, you should remove it
+# when running the script on your machine.
+# from tools.rug import plot_existing_image
+# plot_existing_image('ch2o-ffp.jpg')
