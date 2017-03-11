@@ -53,7 +53,7 @@ class BaseGlobalTool(object):
             Reference number of electrons, i.e. :math:`N_0`.
         '''
         if n0 <= 0:
-            raise ValueError('Argument n0 should be positive.')
+            raise ValueError('Argument n0 should be positive! Given n0={0}'.format(n0))
         self._n0 = n0
         self._energy_zero = energy_zero
         self._energy_plus = energy_plus
@@ -72,9 +72,9 @@ class BaseGlobalTool(object):
     @property
     def n_max(self):
         r'''
-        Maximum number of electrons that the system can accept, defined as:
+        Maximum number of electrons that the system can accept, defined as,
 
-        .. math:: N_{max} = \text{argmin} E(N)
+        .. math:: N_{\text{max}} = \underbrace {\min }_N E(N)
         '''
         return self._n_max
 
@@ -88,7 +88,7 @@ class BaseGlobalTool(object):
     @property
     def ionization_potential(self):
         '''
-        Ionization potential (IP) of the :math:`N_0` -electron system defined as:
+        Ionization potential (IP) of the :math:`N_0` -electron system defined as,
 
         .. math:: I = E(N_0 - 1) - E(N_0)
         '''
@@ -104,7 +104,7 @@ class BaseGlobalTool(object):
     @property
     def electron_affinity(self):
         '''
-        Electron affinity (EA) of the :math:`N_0` -electron system defined as:
+        Electron affinity (EA) of the :math:`N_0` -electron system defined as,
 
         .. math:: A = E(N_0) - E(N_0 + 1)
         '''
@@ -120,54 +120,66 @@ class BaseGlobalTool(object):
     @property
     def electronegativity(self):
         r'''
-        Mulliken electronegativity defined as negative :attr:`chemical_potential`.
+        Mulliken electronegativity defined as negative :attr:`chemical_potential`,
 
         .. math:: \chi_{Mulliken} = - \mu
         '''
+        if self.chemical_potential is None:
+            return None
         value = -1 * self.chemical_potential
         return value
 
     @property
     def electrophilicity(self):
         r'''
-        Electrophilicity defined as:
+        Electrophilicity defined as,
 
-        ..math:: \omega_{\text {electrophile}} &= \text {sgn}(N_0 - N_{max}) (E(N_0) - E(N_{max}))
+        .. math:: \omega_{\text{electrophile}} = \text{sgn}(N_0 - N_{max}) (E(N_0) - E(N_{max}))
         '''
         # sign = math.copysign(1, self._n0 - self._n_max)
         # value = sign * (self._energy_zero - self.energy(self._n_max))
+        if self._n_max is None:
+            return None
         value = self._energy_zero - self.energy(self._n_max)
         return value
 
     @property
     def nucleophilicity(self):
         r'''
-        Nucleophilicity defined as:
+        Nucleophilicity defined as,
         '''
+        if self.electrophilicity is None:
+            return None
+        if self.electrophilicity == 0.0:
+            return None
         value = 1.0 / self.electrophilicity
         return value
 
     @property
     def nucleofugality(self):
         r'''
-        Nucleofugality defined as:
+        Nucleofugality defined as,
 
-        .. math:: \nu_{\text {nucleofuge}} &= \text {sgn}(N_0 + 1 - N_{max}) (E(N_0 + 1) - E(N_{max}))
+        .. math:: \nu_{\text {nucleofuge}} = \text {sgn}(N_0 + 1 - N_{max}) (E(N_0 + 1) - E(N_{max}))
         '''
         # sign = math.copysign(1, self._n0 + 1 - self._n_max)
         # value = sign * (self.energy(self._n0 + 1) - self.energy(self._n_max))
+        if self.energy(self._n_max) is None:
+            return None
         value = self.energy(self._n0 + 1) - self.energy(self._n_max)
         return value
 
     @property
     def electrofugality(self):
         r'''
-        Electrofugality defined as:
+        Electrofugality defined as,
 
-        .. math:: \nu_{\text {electrofuge}} &= \text {sgn}(N_0 - 1 - N_{max}) (E(N_0 - 1) - E(N_{max}))
+        .. math:: \nu_{\text {electrofuge}} = \text {sgn}(N_0 - 1 - N_{max}) (E(N_0 - 1) - E(N_{max}))
         '''
         # sign = math.copysign(1, self._n0 - 1 - self._n_max)
         # value = sign * (self.energy(self._n0 - 1) - self.energy(self._n_max))
+        if self.energy(self._n_max) is None:
+            return None
         value = self.energy(self._n0 - 1) - self.energy(self._n_max)
         return value
 
@@ -175,7 +187,7 @@ class BaseGlobalTool(object):
     def chemical_potential(self):
         r'''
         Chemical potential defined as the first derivative of the energy model w.r.t.
-        the number of electrons at fixed external potential evaluated at :math:`N_0`:
+        the number of electrons at fixed external potential evaluated at :math:`N_0`,
 
         .. math::
 
@@ -195,7 +207,7 @@ class BaseGlobalTool(object):
     def chemical_hardness(self):
         r'''
         Chemical hardness defined as the second derivative of the energy model w.r.t.
-        the number of electrons at fixed external potential evaluated at :math:`N_0`:
+        the number of electrons at fixed external potential evaluated at :math:`N_0`,
 
         .. math::
 
@@ -223,6 +235,8 @@ class BaseGlobalTool(object):
            S = - \left. \left( \frac{\partial^2\Omega}{\partial\mu^2} \right)_{v(r)} \right|_{N = N_0} = \frac{1}{\eta}
         '''
         hardness = self.chemical_hardness
+        if hardness is None:
+            return None
         if hardness != 0.0:
             value = 1.0 / self.chemical_hardness
         else:
@@ -311,7 +325,7 @@ class BaseGlobalTool(object):
 
     def grand_potential(self, n_elec):
         r'''
-        Return the grand potential model defined as:
+        Return the grand potential model defined as,
 
         .. math:: \Omega = E(\left\langle N \right\rangle) - \mu \cdot \left\langle N \right\rangle
 
@@ -376,7 +390,10 @@ class LinearGlobalTool(BaseGlobalTool):
     '''
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
         super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0)
-        self._n_max = self._n0
+        if energy_zero < energy_plus:
+            self._n_max = self._n0
+        else:
+            self._n_max = None
 
     @property
     def mu_minus(self):
@@ -409,6 +426,10 @@ class LinearGlobalTool(BaseGlobalTool):
 
     @doc_inherit(BaseGlobalTool)
     def energy(self, n_elec):
+        if n_elec is None:
+            return None
+        if n_elec < 0.0:
+            raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
         if n_elec < self._n0:
             return (self._n0 - n_elec) * self._ip + self._energy_zero
         elif n_elec > self._n0:
@@ -418,6 +439,10 @@ class LinearGlobalTool(BaseGlobalTool):
 
     @doc_inherit(BaseGlobalTool)
     def energy_derivative(self, n_elec, order=1):
+        if n_elec is None:
+            return None
+        if n_elec < 0.0:
+            raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
         if not(isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
         if n_elec == self._n0:
@@ -462,11 +487,15 @@ class QuadraticGlobalTool(BaseGlobalTool):
 
     @doc_inherit(BaseGlobalTool)
     def energy(self, n_elec):
+        if n_elec < 0.0:
+            raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
         value = self._a + self._b * n_elec + self._c * n_elec**2
         return value
 
     @doc_inherit(BaseGlobalTool)
     def energy_derivative(self, n_elec, order=1):
+        if n_elec < 0.0:
+            raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
         if not(isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
         if order == 1:
@@ -514,12 +543,16 @@ class ExponentialGlobalTool(BaseGlobalTool):
 
     @doc_inherit(BaseGlobalTool)
     def energy(self, n_elec):
+        if n_elec < 0.0:
+            raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
         dN = n_elec - self._n0
         value = self._A * math.exp(- self._gamma * dN) + self._B
         return value
 
     @doc_inherit(BaseGlobalTool)
     def energy_derivative(self, n_elec, order=1):
+        if n_elec < 0.0:
+            raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
         if not(isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
         dN = n_elec - self._n0
@@ -560,11 +593,15 @@ class RationalGlobalTool(BaseGlobalTool):
 
     @doc_inherit(BaseGlobalTool)
     def energy(self, n_elec):
+        if n_elec < 0.0:
+            raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
         value = (self._a0 + self._a1 * n_elec) / (1 + self._b1 * n_elec)
         return value
 
     @doc_inherit(BaseGlobalTool)
     def energy_derivative(self, n_elec, order=1):
+        if n_elec < 0.0:
+            raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
         if not(isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
         deriv = math.pow(-self._b1, order - 1) * (self._a1 - self._a0 * self._b1) * math.factorial(order)

@@ -106,7 +106,9 @@ class GlobalConceptualDFT(object):
         '''
         Return class attribute.
         '''
-        if not hasattr(self._tool, attr):
+        # if not hasattr(self._tool, attr):
+        value = getattr(self._tool, attr, 'error')
+        if value == 'error':
             raise AttributeError('Attribute {0} does not exist!'.format(attr))
         return getattr(self._tool, attr)
 
@@ -117,10 +119,14 @@ class GlobalConceptualDFT(object):
         attrs = [attr for attr in available if not callable(getattr(self, attr)) and not attr.startswith('_')]
         attrs.sort()
         methods = [attr for attr in available if callable(getattr(self, attr)) and not attr.startswith('_')]
-        content = 'Available attributes in {0} global model:\n{1}\n'.format(self._model, '-' * 40)
-        content += '\n'.join(attrs)
-        content += '\n\nAvailable methods in {0} global model:\n{1}\n'.format(self._model, '-' * 40)
-        content += '\n'.join(methods)
+        content = 'Available attributes in {0} global model:\n{1}\n'.format(self._model, '-' * 50)
+        for attr in attrs:
+            if getattr(self._tool, attr) is not None:
+                content += '\n%s   % .6f' % (attr.ljust(25), getattr(self._tool, attr))
+            else:
+                content += '\n%s   %s' % (attr.ljust(25), ' ---')
+        content += '\n\nAvailable methods in {0} global model:\n{1}\n'.format(self._model, '-' * 50)
+        content += '\n'.join(methods) + '\n'
         return content
 
     def _log_init(self):
