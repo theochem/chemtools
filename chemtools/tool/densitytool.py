@@ -112,7 +112,7 @@ class DensityLocalTool(object):
     @property
     def gradient_norm(self):
         r'''
-        Gradinet norm representing the norm of the gradient vector at every point:
+        Gradient norm representing the norm of the gradient vector at every point:
 
         .. math::
            \lvert \nabla \rho\left(\mathbf{r}\right) \rvert = \sqrt{

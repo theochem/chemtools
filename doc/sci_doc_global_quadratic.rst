@@ -27,7 +27,7 @@
 Quadratic Energy Model :class:`chemtools.tool.globaltool.QuadraticGlobalTool`
 =============================================================================
 
-In this model, energy is approximated as a quadratic function of the number of electrons:
+In this model, the energy is approximated as a quadratic function of the number of electrons:
 
  .. TODO::
     #. Fix Equation number here, and assign number to other equations
@@ -41,7 +41,7 @@ In this model, energy is approximated as a quadratic function of the number of e
     \end{eqnarray}
 
 Containing three parameters, :math:`a`, :math:`b` and :math:`c`, this model requires
-three values of :math:`E\left(N\right)` to interpolate energy. Commonly, the energy of the system
+three values of :math:`E\left(N\right)` to interpolate energy. Commonly, the energies of the system
 with :math:`N_0 - 1`, :math:`N_0` and :math:`N_0 + 1` electrons are provided.
 Fitting the energy expression to the given energy values results in three equations:
 
@@ -83,17 +83,14 @@ is fixed, is given by:
 
  .. math::
 
-    \Delta E = \left(\frac{IP + EA}{2}\right) \Delta N + \left(\frac{IP - EA}{2}\right) (\Delta N)^2
+    \Delta E = -\left(\frac{IP + EA}{2}\right) \Delta N + \left(\frac{IP - EA}{2}\right) (\Delta N)^2
 
 As detailed below, the prefactor of :math:`\Delta N` is the first derivative of energy with respect to :math:`N`
-and the prefactor of :math:`(\Delta N)^2` is one-half the second order derivatives of energy with
+and the prefactor of :math:`(\Delta N)^2` is one-half the second order derivatives of the energy with
 respect to :math:`N` at fixed external potential
 :math:`v(\mathbf{r})` evaluated at :math:`N = N_0`. As a result, this energy model is equivalent
 to the second-order Taylor expansion of the energy as a function of :math:`N` around the reference
 state :math:`N_0`.
-
- .. TODO::
-    Check! The sings would not match the Tylor series...
 
 To obtain the :ref:`fundamental global reactivity indicators <fundamental_indicators>` for the
 quadratic energy model, the derivatives of the energy with respect to the number of electrons at
@@ -103,7 +100,7 @@ fixed external potential :math:`v(\mathbf{r})` should be calculated. These are g
 
     \left( \frac{\partial E}{\partial N} \right)_{v(\mathbf{r})}
          &= b + 2cN \\
-	 &= \frac{E(N_0 + 1) - E(N_0 - 1)}{2} + \left(\frac{E(N_0 - 1) - 2 E(N_0) + E(N_0 + 1)}{2}\right) \left(N - N_0\right) \\
+	 &= \frac{E(N_0 + 1) - E(N_0 - 1)}{2} + \left(E(N_0 - 1) - 2 E(N_0) + E(N_0 + 1)\right) \left(N - N_0\right) \\
 	 &= -\frac{IP + EA}{2} + (IP - EA) \left(N - N_0\right) \\
     \left( \frac{\partial^2 E}{\partial N^2} \right)_{v(\mathbf{r})}
          &= 2c \\
@@ -114,7 +111,7 @@ fixed external potential :math:`v(\mathbf{r})` should be calculated. These are g
 
 These derivatives can be evaluated for any number of electrons as implemented
 in :class:`chemtools.tool.globaltool.QuadraticGlobalTool.energy_derivative`.
-In this model, the first, second and higher order derivatives of energy evaluated at :math:`N_0`,
+In this model, the first, second and higher order derivatives of the energy evaluated at :math:`N_0`,
 the so-called chemical potential and chemical hardness and hyper-hardness, equal:
 
  .. math::
@@ -140,7 +137,7 @@ Accordingly, given the quadratic energy model, chemical softness and hyper-softn
 
 To obtain the :ref:`derived global reactivity indicators <derived_indicators>` for
 the quadratic energy model, the maximum number of electrons to saturate the system should be calculated.
-This is obtained by setting the first order derivative of energy, derived in Eq. ???, equal to zero:
+This is obtained by setting the first order derivative of the energy, derived in Eq. ???, equal to zero:
 
  .. math::
 
