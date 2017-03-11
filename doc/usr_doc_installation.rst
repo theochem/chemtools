@@ -27,6 +27,49 @@
 Installation
 ############
 
+Downloading Code
+================
+
+The latest code can be obtained through Github (private at present),
+
+  .. code-block:: bash
+
+     $ git clone https://github.com/QuantumElephant/chemtools.git chemtools
+
+
+Dependencies
+============
+
+The following dependencies will be necessary for chemtools to build properly,
+
+  .. code-block:: bash
+
+
+Installation
+============
+
+To install chemtools run:
+
+  .. code-block:: bash
+
+     $ ./setup.py install --user
+
+If you prefer to run chemtools from source folder, ``PYTHONPATH`` and ``CTDATA`` paths
+need to be add into your **~/.bashrc** (Linux) or **~/.profile** (MacOS)
+
+  .. code-block:: bash
+
+     $ export PYTHONPATH=$PYTHONPATH:{path_to_chemtools_repo}/chemtools
+     $ export CTDATA={path_to_chemtools_repo}/chemtools/data
+
+Tests
+=====
+
+To ensue all the parts of chemtools work properly, you are suggested to run the nosetests:
+
+  .. code-block:: bash
+
+     $ nosetests -v chemtools
 
 LFS Installation
 ================
