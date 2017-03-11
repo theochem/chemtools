@@ -22,6 +22,8 @@
     : --
 
 
+.. _condensed_tools:
+
 Condensed Descriptive Tools :mod:`chemtools.tool.condensedtool`
 ###############################################################
 

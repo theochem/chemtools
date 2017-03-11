@@ -25,10 +25,40 @@
 Conceptual Density Functional Theory
 ####################################
 
-Conceptual Density Functional Theory (DFT) provides chemists with a series of well-defined chemical
-concepts which contributes to the qualitative and quantitative understanding and ultimately predicting
-of chemical reactivity.
+Conceptual Density Functional Theory (DFT) provides chemists with a hierarchy of well-defined chemical
+concepts that contribute to the qualitative understanding and quantitative prediction of chemical reactivity.
 
+ .. image:: ./_static/CDFT.png
+     :align: center
+
+:ref:`Global descriptors <global_tools>` measure the overall susceptibility of a system to different types
+of reactions, e.g., electrophilic or nucleophilic attacks. :ref:`Local descriptors <local_tools>`
+show where a molecule is most susceptible to different types of reagents. Coarse-graining of local descriptors
+(by integrating their values over atomic or functional-group regions) gives
+:ref:`condensed descriptors <condensed_tools>`, which identify the atoms, functional groups,
+or bonds that are most susceptible to reactions. **Non-local descriptors** provided information about how the
+properties/reactivity of a molecule at one point change due to changes (e.g., due to an attacking reagent) at
+a different point in the molecule. They can also be condensed, giving response matrices (2nd-order non-local
+descriptors) and response tensors (high-order responses).
+
+When computing conceptual DFT descriptors associated with electron transfer, one must choose an energy model
+for the dependence of the energy upon the number of electrons. At the simplest level, one can choose to describe
+these changes using the **frontier molecular orbital (FMO)** energies. Alternatively, one can compute the change in
+energy due to electron donation/acceptance directly, as **finite differences (FD)** between the :math:`N-` electron
+system’s energy and the energies of the :math:`\left(N-1\right)` and :math:`\left(N+1\right)` electron systems,
+
+ .. math::
+    IP = E\left(N - 1\right) - E\left(N\right) \approx -\varepsilon_{\text{HOMO}}  \\
+    EA = E\left(N\right) - E\left(N + 1\right) \approx -\varepsilon_{\text{LUMO}}
+
+where HOMO denotes the highest occupied molecular orbital and LUMO denotes the lowest unoccupied molecular orbital.
+
+Once energies for the systems with integer electron number have been modelled, using either FMO or FD approaches
+, a continuous model for the energy as a function of the number of electrons should be considered.
+Popular choices include the piecewise linear model, the quadratic model, the exponential model, and the rational
+model. Of these, the piecewise linear model is the most mathematically rigorous and the quadratic model is the most
+popular (and perhaps the most useful). The exponential and rational models have undesirable mathematical properties
+and one should be especially wary about using them for local descriptors.
 
 .. toctree::
    :maxdepth: 2
