@@ -151,7 +151,7 @@ accepted by the system denoted by :math:`N_{\text{max}}`.
 
  .. math:: N_{\text{max}} = \underbrace {\min }_N E(N)
 
-**Electrophilicity index** :math:`\omega_{\text{electrophilicity}}` measures the capability
+**Electrophilicity Index** :math:`\omega_{\text{electrophilicity}}` measures the capability
 of an agent to accept electrons from the environment. However, in contrast to electron affinity :math:`EA`
 which measures the energy loweing due to adding one electron to the system, electrophilicity index
 :math:`\omega_{\text{electrophilicity}}` measures the energy lowering due to maximal electron flow
@@ -159,19 +159,31 @@ which measures the energy loweing due to adding one electron to the system, elec
 
  .. math:: \omega_{\text{electrophilicity}} = E(N_0) - E(N_0 + \Delta N_{\text{max}}) = E(N_0) - E(N_{\text{max}})
 
- .. math:: \omega_{\text{nucleophilicity}} = ?
+**Nucleophilicity Index** :math:`\omega_{\text{nucleophilicity}}` measures the capacity of a reagent to donate
+electrons to its environment. Unlike the electrophilicity, there is not a strong consensus about how one should
+define the nucleophilicity: none of the existing definitions is very convincing, perhaps because electrostatic
+interactions are often important for nucleophiles, which tend to be locally harder (because nucleophilic sites
+tend to be positively charged) than electrophiles. A reasonable definition for nucleophilicity, perhaps first
+suggested by Contreras et al., is the effective ionization potential. The effective ionization potential is
+closely related to the adiabatic ionization potential: the idea is to include the effects of the environment
+(e.g., solvation, surrounding molcules) and geometric relaxation. Given the simplifications inherent in this
+description, it is usually reasonable to  simply use the vertical ionization potential,
 
- .. TODO::
-    #. Talk about nucleophilicity; is it related to IP in the same way that electrophilicity is related to EA.
+ .. math:: \omega_{\text{nucleophilicity}} : I_{\text{eff}} : I
 
-**Nucleofugality index** :math:`\nu_{\text{nucleofugality}}` measures the susceptibility/quality/ability of the system for being
-a nucleofuge (a leaving group which takes an electron with it) which is quantified by the energy penalty associated with forcing
-a molecular fragment to accept an electron; the lower values of :math:`\nu_{\text{nucleofugality}}` are associated with high nucleofugality.
+Sometimes the electrofugality (which is closely related) is also identified as the nucleophilicity,
+
+ .. math:: \omega_{\text{nucleophilicity}} : \frac{\left(3I - A\right)^2}{8\left(I - A\right)}
+
+**Nucleofugality Index** :math:`\nu_{\text{nucleofugality}}` measures the susceptibility/quality/ability
+of the system for being a nucleofuge (a leaving group which takes an electron with it) which is quantified
+by the energy penalty associated with forcing a molecular fragment to accept an electron; the lower
+values of :math:`\nu_{\text{nucleofugality}}` are associated with high nucleofugality.
 
  .. math:: \nu_{\text{nucleofugality}} = E(N_0 + 1) - E(N_0 + \Delta N_{\text{max}}) = E(N_0 + 1) - E(N_{\text{max}})
 
-**Electrofugality index** :math:`\nu_{\text{electrofugality}}` measures the susceptibility/quality/ability of the system for being
-a electrofuge (a leaving group which leaves an electron behind),
+**Electrofugality Index** :math:`\nu_{\text{electrofugality}}` measures the susceptibility/quality/ability
+of the system for being a electrofuge (a leaving group which leaves an electron behind),
 
  .. math:: \nu_{\text{electrofugality}} = E(N_0 - 1) - E(N_0 + \Delta N_{\text{max}}) = E(N_0 - 1) - E(N_{\text{max}})
 
@@ -186,7 +198,8 @@ a electrofuge (a leaving group which leaves an electron behind),
     {\Delta E}_{\text {nucleofuge}} &= \text {sgn}(N_0 + 1 - N_{max}) (E(N_0 + 1) - E(N_{max})) \\
     {\Delta E}_{\text {electrofuge}} &= \text {sgn}(N_0 - 1 - N_{max}) (E(N_0 - 1) - E(N_{max}))
 
-In the following sections, various energy models are considered and the corresponding global reactivity descriptors are obtained.
+In the following sections, various energy models are considered and the corresponding global reactivity
+descriptors are obtained.
 
 .. toctree::
    :maxdepth: 2
