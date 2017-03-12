@@ -217,8 +217,10 @@ class LocalConceptualDFT(object):
     Class for local conceptual density functional theory (DFT) analysis of molecular quantum
     chemistry output file(s). If only one molecule is provided, the frontiner molecular orbital
     (FMO) approach is invoked, otherwise finite difference (FD) approach is taken.
+
+    Note: If FD approach is taken, the geometries of all molecules need to be the same.
     '''
-    def __init__(self, dict_values, model='quadratic', **kwargs):
+    def __init__(self, dict_values, model='quadratic', coordinates=None, **kwargs):
         '''
         Parameters
         ----------
@@ -235,6 +237,10 @@ class LocalConceptualDFT(object):
         if model not in select_tool.keys():
             raise ValueError('Model={0} is not available!'.format(model))
         self._model = model
+
+        if coordinates is not None and coordinates.shape[1] != 3:
+            raise ValueError('Argument coordinate should be a 2D array with 3 columns! shape={0}'.format(coordinates.shape))
+        self._coordiantes = coordinates
 
         if self._model != 'general':
             # get sorted number of electrons
@@ -269,6 +275,16 @@ class LocalConceptualDFT(object):
 
         # print screen information
         self._log_init()
+
+    @property
+    def model(self):
+        '''Energy model.'''
+        return self._model
+
+    @property
+    def coordinates(self):
+        '''Cartesian coordinates of atoms.'''
+        return self._coordiantes
 
     def __getattr__(self, attr):
         '''
@@ -352,10 +368,18 @@ class LocalConceptualDFT(object):
             dict_values = dict([(nelec, dens),
                                 (nelec + 1, dens + lumo_dens),
                                 (nelec - 1, dens - homo_dens)])
+            # get coordinates of the molecule
+            coordinates = mol.coordinates
+
         else:
             # Finite Difference (FD) Approach
             dict_values = {}
-            for iodata in iodatas:
+            for index, iodata in enumerate(iodatas):
+                # check coordinates
+                if index == 0:
+                    coordinates = iodata.coordinates
+                elif not np.all(abs(coordinates - iodata.coordinates) < 1.e-6):
+                    raise ValueError('Molecule 1 & {0} have different geometries!'.format(index))
                 # get number of electrons
                 nelec = int(np.sum(iodata.exp_alpha.occupations))
                 if hasattr(iodata, 'exp_beta') and iodata.exp_beta is not None:
@@ -368,5 +392,7 @@ class LocalConceptualDFT(object):
                 dens = iodata.obasis.compute_grid_density_dm(iodata.get_dm_full(), points)
                 # store number of electron and density in a dictionary
                 dict_values[nelec] = dens
+            # get coordinates of the molecule
+            coordinates = None
 
-        return cls(dict_values, model, **kwargs)
+        return cls(dict_values, model, coordinates, **kwargs)
