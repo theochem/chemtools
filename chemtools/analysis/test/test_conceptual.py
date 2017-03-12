@@ -24,6 +24,7 @@
 
 
 import os
+from horton import BeckeMolGrid
 from chemtools import *
 
 
@@ -182,25 +183,6 @@ def test_local_quadratic_ch4_fchk():
     np.testing.assert_almost_equal(grid.integrate(desp.softness(1./eta, 9.1)), 1./eta, decimal=4)
     np.testing.assert_almost_equal(grid.integrate(desp.hyper_softness(eta)), 0., decimal=3)
     np.testing.assert_almost_equal(grid.integrate(desp.hyper_softness(eta, 9.91)), 0., decimal=3)
-
-
-# def test_condense_quadratic_ch4_fchk():
-#     file_path = context.get_fn('data/test/ch4_uhf_ccpvdz.fchk')
-#     # make molecular grid
-#     mol = IOData.from_file(file_path)
-#     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec='exp:5e-4:2e1:175:434',
-#                         random_rotate=False, mode='keep')
-#     # build global conceptual DFT tool
-#     desp = LocalConceptualDFT.from_file([file_path], model='quadratic', points=grid.points)
-#     # Check condensed dual descriptors (Becke part only)
-#     # TODO: How were the expected values calculated?
-#     c, h1, h2, h3, h4 = -0.26854311,  0.05276027,  0.09886118, -0.03029482,  0.14726817
-#     condens = desp.condensedtool.dual_descriptor()
-#     np.testing.assert_almost_equal(condens[0], c, decimal=4)
-#     np.testing.assert_almost_equal(condens[1], h1, decimal=4)
-#     np.testing.assert_almost_equal(condens[2], h2, decimal=4)
-#     np.testing.assert_almost_equal(condens[3], h3, decimal=4)
-#     np.testing.assert_almost_equal(condens[4], h4, decimal=4)
 
 
 def test_global_rational_ch4_fchk():

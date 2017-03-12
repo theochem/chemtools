@@ -28,12 +28,9 @@
 
 import numpy as np
 from horton import log
-from horton import IOData, BeckeMolGrid, ProAtomDB
-from horton.scripts.wpart import wpart_schemes
+from horton import IOData
 from chemtools.tool.globaltool import LinearGlobalTool, QuadraticGlobalTool, ExponentialGlobalTool, RationalGlobalTool, GeneralGlobalTool
 from chemtools.tool.localtool import LinearLocalTool, QuadraticLocalTool
-from chemtools.tool.condensedtool import CondensedTool
-from chemtools.utils import CubeGen
 
 
 
@@ -147,6 +144,16 @@ class GlobalConceptualDFT(object):
     def from_file(cls, filenames, model, **kwargs):
         '''
         Initialize class from files.
+
+        Parameters
+        ----------
+        filenames : list,tuple
+            List/tuple containing the path to molecule's files.
+        model : str
+            Energy model used to calculate local descriptive tools.
+            Available models are 'linear' and 'quadratic'.
+        points : np.array
+            Points on which the local descriptive tools is evalauted.
         '''
         # case of one file not given as a list
         if isinstance(filenames, (str, unicode)):
@@ -161,6 +168,16 @@ class GlobalConceptualDFT(object):
     def from_iodata(cls, iodatas, model, **kwargs):
         '''
         Initialize class from `IOData` objects.
+
+        Parameters
+        ----------
+        iodatas : list,tuple
+            List/tuple containing `IOData` objects.
+        model : str
+            Energy model used to calculate local descriptive tools.
+            Available models are 'linear' and 'quadratic'.
+        points : np.array
+            Points on which the local descriptive tools is evalauted.
         '''
         # case of one IOData object not given as a list
         if isinstance(iodatas, IOData):
@@ -194,7 +211,12 @@ class GlobalConceptualDFT(object):
         else:
             # Finite Difference (FD) Approach
             dict_values = {}
-            for iodata in iodatas:
+            for index, iodata in enumerate(iodatas):
+                # check atomic numbers
+                if index == 0:
+                    atomic_numbers = iodata.numbers
+                elif not np.all(abs(atomic_numbers - iodata.numbers) < 1.e-6):
+                    raise ValueError('Molecule 1 & {0} have different atomic numbers!'.format(index + 1))
                 # get the number of electrons
                 nelec = int(np.sum(iodata.exp_alpha.occupations))
                 if hasattr(iodata, 'exp_beta') and iodata.exp_beta is not None:
@@ -220,7 +242,7 @@ class LocalConceptualDFT(object):
 
     Note: If FD approach is taken, the geometries of all molecules need to be the same.
     '''
-    def __init__(self, dict_values, model='quadratic', coordinates=None, **kwargs):
+    def __init__(self, dict_values, model='quadratic', coordinates=None, numbers=None):
         '''
         Parameters
         ----------
@@ -238,9 +260,22 @@ class LocalConceptualDFT(object):
             raise ValueError('Model={0} is not available!'.format(model))
         self._model = model
 
+        # check shape of coordinates
         if coordinates is not None and coordinates.shape[1] != 3:
-            raise ValueError('Argument coordinate should be a 2D array with 3 columns! shape={0}'.format(coordinates.shape))
+            raise ValueError('Argument coordinate should be a 2D-array with 3 columns! shape={0}'.format(coordinates.shape))
+        # check number of atoms given by numbers and coordinates match
+        if len(numbers) != len(coordinates):
+            raise ValueError(
+                'Numbers & coordinates should represent same number of atoms! {0}!={1}'.format(len(numbers), len(coordinates)))
         self._coordiantes = coordinates
+        self._numbers = numbers
+
+        # check densities shape
+        for index, value in enumerate(dict_values.values()):
+            if index == 0:
+                shape = value.shape
+            elif value.shape != shape:
+                raise ValueError('Densities should have the same shape! {1}!={2}'.format(shape, value.shape))
 
         if self._model != 'general':
             # get sorted number of electrons
@@ -270,7 +305,7 @@ class LocalConceptualDFT(object):
             args = [densities[1], densities[2], densities[0], reference]
             self._tool = select_tool[model](*args)
         else:
-            self._tool = select_tool[model](*args)
+            # self._tool = select_tool[model](*args)
             raise NotImplementedError('Model={0} is not covered yet!'.format(self._model))
 
         # print screen information
@@ -282,17 +317,46 @@ class LocalConceptualDFT(object):
         return self._model
 
     @property
+    def n0(self):
+        '''
+        Reference number of electrons, i.e. :math:`N_0`.
+        '''
+        return self._tool.n0
+
+    @property
     def coordinates(self):
         '''Cartesian coordinates of atoms.'''
         return self._coordiantes
+
+    @property
+    def numbers(self):
+        '''Atomic numbers.'''
+        return self._numbers
 
     def __getattr__(self, attr):
         '''
         Return class attribute.
         '''
-        if not hasattr(self._tool, attr):
+        # if not hasattr(self._tool, attr):
+        value = getattr(self._tool, attr, None)
+        if value is None:
             raise AttributeError('Attribute {0} does not exist!'.format(attr))
         return getattr(self._tool, attr)
+
+    def __repr__(self):
+        '''
+        Return string when class is printed.
+        '''
+        available = dir(self._tool) + dir(self)
+        attrs = [attr for attr in available if not callable(getattr(self, attr)) and not attr.startswith('_')]
+        attrs.sort()
+        attrs.remove('n0')   # b/c it is both an attr of self._tool and self
+        methods = [attr for attr in available if callable(getattr(self, attr)) and not attr.startswith('_')]
+        content = 'Available attributes in {0} global model:\n{1}\n'.format(self._model, '-' * 50)
+        content += '\n'.join(attrs)
+        content += '\n\nAvailable methods in {0} global model:\n{1}\n'.format(self._model, '-' * 50)
+        content += '\n'.join(methods) + '\n'
+        return content
 
     def _log_init(self):
         '''
@@ -306,24 +370,48 @@ class LocalConceptualDFT(object):
             log.blank()
 
     @classmethod
-    def from_file(cls, filenames, model, points=None, **kwargs):
+    def from_file(cls, filenames, model, points):
         '''
         Initialize class from files.
+
+        Parameters
+        ----------
+        filenames : list,tuple
+            List/tuple containing the path to molecule's files.
+        model : str
+            Energy model used to calculate local descriptive tools.
+            Available models are 'linear' and 'quadratic'.
+        points : np.array
+            Points on which the local descriptive tools is evalauted.
         '''
         # case of one file not given as a list
         if isinstance(filenames, (str, unicode)):
-            return cls.from_iodata(IOData.from_file(filenames), model, points, **kwargs)
+            return cls.from_iodata(IOData.from_file(filenames), model, points)
         # case of list of file(s)
         iodatas = []
         for filename in filenames:
             iodatas.append(IOData.from_file(filename))
-        return cls.from_iodata(iodatas, model, points, **kwargs)
+        return cls.from_iodata(iodatas, model, points)
 
     @classmethod
-    def from_iodata(cls, iodatas, model, points=None, **kwargs):
+    def from_iodata(cls, iodatas, model, points):
         '''
         Initialize class from `IOData` objects.
+
+        Parameters
+        ----------
+        iodatas : list,tuple
+            List/tuple containing `IOData` objects.
+        model : str
+            Energy model used to calculate local descriptive tools.
+            Available models are 'linear' and 'quadratic'.
+        points : np.array
+            Points on which the local descriptive tools is evalauted.
         '''
+        # check points array
+        if points.ndim != 2 or points.shape[1] != 3:
+            raise ValueError('Argument points should be a 2D array with 3 columns! given shape={0}'.format(points.shape))
+
         # case of one IOData object not given as a list
         if isinstance(iodatas, IOData):
             iodatas = [iodatas]
@@ -368,18 +456,26 @@ class LocalConceptualDFT(object):
             dict_values = dict([(nelec, dens),
                                 (nelec + 1, dens + lumo_dens),
                                 (nelec - 1, dens - homo_dens)])
-            # get coordinates of the molecule
+            # get coordinates of molecule
             coordinates = mol.coordinates
+            # get atomic numbers of molecule
+            atomic_numbers = mol.numbers
 
         else:
             # Finite Difference (FD) Approach
             dict_values = {}
             for index, iodata in enumerate(iodatas):
+                # check atomic numbers
+                if index == 0:
+                    atomic_numbers = iodata.numbers
+                elif not np.all(abs(atomic_numbers - iodata.numbers) < 1.e-6):
+                    raise ValueError('Molecule 1 & {0} have different atomic numbers!'.format(index + 1))
                 # check coordinates
                 if index == 0:
+                    # get coordinates of molecule
                     coordinates = iodata.coordinates
-                elif not np.all(abs(coordinates - iodata.coordinates) < 1.e-6):
-                    raise ValueError('Molecule 1 & {0} have different geometries!'.format(index))
+                elif not np.all(abs(coordinates - iodata.coordinates) < 1.e-4):
+                    raise ValueError('Molecule 1 & {0} have different geometries!'.format(index + 1))
                 # get number of electrons
                 nelec = int(np.sum(iodata.exp_alpha.occupations))
                 if hasattr(iodata, 'exp_beta') and iodata.exp_beta is not None:
@@ -392,7 +488,5 @@ class LocalConceptualDFT(object):
                 dens = iodata.obasis.compute_grid_density_dm(iodata.get_dm_full(), points)
                 # store number of electron and density in a dictionary
                 dict_values[nelec] = dens
-            # get coordinates of the molecule
-            coordinates = None
 
-        return cls(dict_values, model, coordinates, **kwargs)
+        return cls(dict_values, model, coordinates, atomic_numbers)
