@@ -194,7 +194,7 @@ class CubeGen(object):
         return cls(numbers, pseudo_numbers, coordinates, origin, axes, shape)
 
     @classmethod
-    def from_file(cls, filename, spacing=0.2, threshold=5.0):
+    def from_file(cls, filename, spacing=0.2, threshold=5.0, rotate=True):
         '''
         Initialize ``CubeGen`` class based on the grid specifications of a file
 
@@ -209,7 +209,7 @@ class CubeGen(object):
         '''
         # Load file
         mol = IOData.from_file(filename)
-        return cls.from_molecule(mol.numbers, mol.pseudo_numbers, mol.coordinates, spacing, threshold)
+        return cls.from_molecule(mol.numbers, mol.pseudo_numbers, mol.coordinates, spacing, threshold, rotate)
 
     @property
     def numbers(self):
@@ -324,13 +324,49 @@ class CubeGen(object):
                     f.write('\n')
                 counter += 1
 
-    def weights(self, method='R0'):
+    def weights(self, method='R'):
         '''
-        Generate VMD (Visual Molecular Dynamics) script for visualizing the isosurface based on
-        one cube file when coloring by the value of another cube file on the isosurface.
+        Generate the waights for the integration of the cubic grid.
 
         Parameters
         ----------
+        method : str, default='R0'
+            The method for constucting the weights on the grid.
+            Options:
+            R  : rectangle/trapezoidal rule for integration of the cubic grid.
+            R0 : rectangle/trapezoidal rule, assuming that the function is very close to zero
+                 at the edges of the grid.
+
+        '''
+
+        if method == 'R':
+            volume = np.linalg.norm(self._shape[0] * self._axes[0])
+            volume *= np.linalg.norm(self._shape[1] * self._axes[1])
+            volume *= np.linalg.norm(self._shape[2] * self._axes[2])
+            numpnt = 1.0 * self._npoints
+            return np.full((self._npoints), volume/numpnt)
+
+        elif method == 'R0':
+            volume = np.linalg.norm((self._shape[0] + 1.0) * self._axes[0])
+            volume *= np.linalg.norm((self._shape[1] + 1.0) * self._axes[1])
+            volume *= np.linalg.norm((self._shape[2] + 1.0) * self._axes[2])
+
+            numpnt = (1.0*self._shape[0] + 1.0)*(1.0*self._shape[1] + 1.0)*(1.0*self._shape[2] + 1.0)
+            return np.full((self._npoints), volume/numpnt)
+
+        else:
+            raise ValueError('Argument method {0} is not known.'.format(method))
+
+    def integrate(self, data, method='R0'):
+        '''
+        Integrate the data on a cubic grid.
+
+        Parameters
+        ----------
+
+        data : np.ndarray, shape=(npoints,m)
+            Data must be arrays with the size the numbet of points of the grid as size fot axis=0
+
         method : str, default='R0'
             The method for constucting the weights on the grid.
             Options:
@@ -338,26 +374,12 @@ class CubeGen(object):
                  at the edges of the grid.
             R  : rectangle/trapezoidal rule, without assuming that the function is close to zero
                  at the edges of the grid.
+
         '''
-        volume = np.linalg.norm(self._shape[0] * self._axes[0])
-        volume *= np.linalg.norm(self._shape[1] * self._axes[1])
-        volume *= np.linalg.norm(self._shape[2] * self._axes[2])
 
-        if method == 'R0':
-            numpnt = (1.0*self._shape[0] + 1.0)*(1.0*self._shape[1] + 1.0)*(1.0*self._shape[2] + 1.0)
-            return np.full((self._npoints), volume/numpnt)
-
-        elif method == 'R':
-            numpnt = 1.0 * self._npoints
-            return np.full((self._npoints), volume/numpnt)
-
-        else:
-            raise ValueError('Argument method {0} is not known.'.format(method))
-
-    def integrate(self, data):
-        '''
-        '''
-        raise NotImplementedError('This method will be implemented in near future!')
+        if data.shape[0] != self._npoints:
+            raise ValueError('Argument data should have the same size as the grid for axis=0. {0}!={1}'.format(data.shape[0], self._npoints))
+        return np.tensordot(self.weights(method=method), data, axes=(0,0))
 
     @staticmethod
     def _read_cube_header(filename):
