@@ -29,14 +29,16 @@ from chemtools.tool.densitytool import DensityLocalTool
 
 class OrbitalLocalTool(DensityLocalTool):
     '''
-    Class of orbital-based local descriptive tools.
+    Class of orbital-based descriptive tools.
     '''
-    def __init__(self, obasis, exp_alpha, exp_beta=None, points=None):
+    def __init__(self, points, obasis, exp_alpha, exp_beta=None):
         r'''
         Parameters
         ----------
+        points : np.ndarray
+            Gridpoints used to calculate the properties.
         obasis :
-            A HORTON ''obasis'' object, an orbital basis and 
+            A HORTON ''obasis'' object, an orbital basis and
             instance of the GOBasis class.
         exp_alpha :
             An expansion of the alpha orbitals in a basis set,
@@ -44,18 +46,16 @@ class OrbitalLocalTool(DensityLocalTool):
         exp_beta : default=None
             An expansion of the beta orbitals in a basis set,
             with orbital energies and occupation numbers.
-        points : default=None
-            Gridpoints used to calculate the properties.
         '''
 
         self._obasis = obasis
         self._exp_alpha = exp_alpha
 
         if exp_beta is None:
-            self._dm =  self._exp_alpha.to_dm(factor=2.0)
+            self._dm = self._exp_alpha.to_dm(factor=2.0)
         else:
             self._exp_beta = exp_beta
-            self._dm =  self._exp_alpha.to_dm(factor=1.0)
+            self._dm = self._exp_alpha.to_dm(factor=1.0)
             self._exp_beta.to_dm(self._dm, factor=1.0, clear=False)
 
         self._points = points
@@ -73,7 +73,7 @@ class OrbitalLocalTool(DensityLocalTool):
         positive definite kinetic energy density defined as:
 
         .. math::
-           \tau \left(\mathbf{r}\right) = 
+           \tau \left(\mathbf{r}\right) =
            \sum_i^N n_i \frac{1}{2} \rvert \nabla \phi_i \left(\mathbf{r}\right) \lvert^2
         '''
         return self._obasis.compute_grid_kinetic_dm(self._dm, self._points)
@@ -88,7 +88,7 @@ class OrbitalLocalTool(DensityLocalTool):
                 \frac{1}{\left( 1 + \left(\frac{D_{\sigma}(\mathbf{r})}
                 {D_{\sigma}^0 (\mathbf{r})} \right)^2\right)} ,
         with
-        
+
         .. math::
             D_{\sigma} (\mathbf{r}) =  \tau_{\sigma} (\mathbf{r}) -
                 \frac{1}{4} \frac{(\nabla \rho_{\sigma})^2}{\rho_{\sigma}} .
@@ -122,3 +122,27 @@ class OrbitalLocalTool(DensityLocalTool):
         #compute mep
         return self._obasis.compute_grid_esp_dm(self._dm, coordinates, pseudo_numbers, self._points)
 
+    def orbitals_exp(self, iorbs, spin='alpha'):
+        r'''
+        Compute the orbital expectation value on the grid.
+
+        Parameters
+        ----------
+        iorbs : np.ndarray, int, list, tuple
+            The indexes of the orbitals to be computed.
+            As is common in chemistry we start the orbital numbering at 1 and
+            are not using the python numbering.
+        spin : str
+            the spin of the orbitals to be calculated.
+        '''
+        iorbs = np.asarray(iorbs)
+        # Our orbital numbering starts at 1, but HORTON starts at 0.
+        iorbs -= 1
+        if iorbs.ndim == 0:
+            iorbs = np.array([iorbs])
+        if spin == 'alpha':
+            return self._obasis.compute_grid_orbitals_exp(self._exp_alpha, self._points, iorbs)
+        elif spin == 'beta':
+            return self._obasis.compute_grid_orbitals_exp(self._exp_beta, self._points, iorbs)
+        else:
+            raise ValueError('Argument spin {0} is not known.'.format(spin))

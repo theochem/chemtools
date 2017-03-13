@@ -65,7 +65,7 @@ grid = AtomicGrid(mol.numbers[0], mol.pseudo_numbers[0], mol.coordinates[0],
 radii = grid.rgrid.radii
 
 # construce an OrbitalLocalTool
-tool = OrbitalLocalTool(obasis, exp_alpha, points=grid.points)
+tool = OrbitalLocalTool(grid.points, obasis, exp_alpha)
 
 # calculate spherically-averaged density & Electron Localization Function (ELF)
 dens = grid.get_spherical_average(tool.density)

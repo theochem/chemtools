@@ -30,6 +30,7 @@ import numpy as np
 from horton import IOData
 from chemtools.tool.densitytool import DensityLocalTool
 from chemtools.utils import CubeGen
+from chemtools.tool.orbitaltool import OrbitalLocalTool
 from chemtools.analysis.output import _print_vmd_script_nci
 import matplotlib.pyplot as plt
 
@@ -220,3 +221,49 @@ def _compute_hessian(mol, points):
     # Make Hessian symmetric to avoid complex eigenvalues
     hess = 0.5 * (hess + np.transpose(hess, axes=(0, 2, 1)))
     return hess
+
+
+class OrbitalAnalysis(OrbitalLocalTool):
+    '''
+    Class for orbital-based analysis.
+    '''
+    def __init__(self, points, obasis, exp_alpha, exp_beta=None):
+        super(OrbitalAnalysis, self).__init__(points, obasis, exp_alpha, exp_beta=None)
+
+    @classmethod
+    def from_file(cls, filename, points):
+        '''
+        Initialize class from file.
+
+        Parameters
+        ----------
+        filename : str
+            Path to molecule's files.
+        '''
+        # case of one file not given as a list
+        if isinstance(filename, (str, unicode)):
+            mol = IOData.from_file(filename)
+            if hasattr(mol, 'exp_beta'):
+                return cls(points, mol.obasis, mol.exp_alpha, mol.exp_beta)
+            else:
+                return cls(points, mol.obasis, mol.exp_alpha)
+        # case of list of file(s)
+        for _ in filename:
+            raise ValueError('Multiple files are not suported')
+
+    @classmethod
+    def from_iodata(cls, iodata, points):
+        '''
+        Initialize class from `IOData` object.
+
+        Parameters
+        ----------
+        iodata : `IOData`
+            Instance of `IOData`.
+        '''
+        # check if iodata has exp_beta
+
+        if hasattr(iodata, 'exp_beta'):
+            return cls(points, iodata.obasis, iodata.exp_alpha, iodata.exp_beta)
+        else:
+            return cls(points, iodata.obasis, iodata.exp_alpha)

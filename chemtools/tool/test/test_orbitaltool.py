@@ -43,7 +43,7 @@ def test_orbital_tool_ch4_uhf_ccpvdz():
     cube = CubeGen(mol.numbers, mol.pseudo_numbers, mol.coordinates, ori , ax , sh)
 
     # initialyze OrbitalLocalTool:
-    orbtool = OrbitalLocalTool(mol.obasis, mol.exp_alpha, points=cube.points)
+    orbtool = OrbitalLocalTool(cube.points, mol.obasis, mol.exp_alpha)
 
     # density results obtained from Fortran code:
     result = [  0.00003304,   0.00053319,   0.00019292,   0.00111552,   0.00679461,
@@ -123,9 +123,8 @@ def test_orbital_tool_elf_h2o_dimer():
     result = elf.cube_data.flatten()
     #Build OrbitalLocal tool
     cube = CubeGen.from_cube(elf_cube_path)
-    orbtool = OrbitalLocalTool(mol.obasis, mol.exp_alpha, points=cube.points)
+    orbtool = OrbitalLocalTool(cube.points, mol.obasis, mol.exp_alpha)
     test = orbtool.elf
 
     np.testing.assert_equal(test.shape, result.shape)
     np.testing.assert_array_almost_equal(test, result, decimal=5)
-
