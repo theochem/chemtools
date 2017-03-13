@@ -28,9 +28,11 @@
 
 import numpy as np
 from horton import log
-from horton import IOData
+from horton import IOData, BeckeMolGrid, ProAtomDB
+from horton.scripts.wpart import wpart_schemes
 from chemtools.tool.globaltool import LinearGlobalTool, QuadraticGlobalTool, ExponentialGlobalTool, RationalGlobalTool, GeneralGlobalTool
 from chemtools.tool.localtool import LinearLocalTool, QuadraticLocalTool
+from chemtools.utils import CubeGen
 
 
 
@@ -86,9 +88,9 @@ class GlobalConceptualDFT(object):
 
             # make a list of arguments for global tool
             args = [energies[1], energies[2], energies[0], reference]
-            self._tool = select_tool[model](*args)
+            self._tool = select_tool[self._model](*args)
         else:
-            self._tool = select_tool[model](*args, **kwargs)
+            # self._tool = select_tool[model](*args, **kwargs)
             raise NotImplementedError('Model={0} is not covered yet!'.format(self._model))
 
         # print screen information
@@ -256,9 +258,9 @@ class LocalConceptualDFT(object):
         # available models for local tools
         select_tool = {'linear':LinearLocalTool, 'quadratic':QuadraticLocalTool}
 
-        if model not in select_tool.keys():
+        if model.lower() not in select_tool.keys():
             raise ValueError('Model={0} is not available!'.format(model))
-        self._model = model
+        self._model = model.lower()
 
         # check shape of coordinates
         if coordinates is not None and coordinates.shape[1] != 3:
@@ -303,7 +305,7 @@ class LocalConceptualDFT(object):
 
             # make a list of arguments for local tool
             args = [densities[1], densities[2], densities[0], reference]
-            self._tool = select_tool[model](*args)
+            self._tool = select_tool[self._model](*args)
         else:
             # self._tool = select_tool[model](*args)
             raise NotImplementedError('Model={0} is not covered yet!'.format(self._model))
@@ -490,3 +492,365 @@ class LocalConceptualDFT(object):
                 dict_values[nelec] = dens
 
         return cls(dict_values, model, coordinates, atomic_numbers)
+
+
+class CondensedConceptualDFT(object):
+    '''
+    Class for condensed conceptual density functional theory (DFT) analysis of molecular quantum
+    chemistry output file(s). If only one molecule is provided, the frontiner molecular orbital
+    (FMO) approach is invoked, otherwise finite difference (FD) approach is taken.
+
+    Note: If FD approach is taken, the geometries of molecules can be different only for RMF approach.
+    '''
+    def __init__(self, dict_values, model='quadratic'):
+        '''
+        Parameters
+        ----------
+        dict_value : dict
+            Dictionary of number_electron:atomic_populations
+        model : str, default='quadratic'
+            Energy model used to calculate local descriptive tools.
+            The available models include: 'linear', 'quadratic', and 'general'.
+            Please see '' for more information.
+        '''
+        # available models for local tools
+        select_tool = {'linear':LinearLocalTool, 'quadratic':QuadraticLocalTool}
+
+        if model.lower() not in select_tool.keys():
+            raise ValueError('Model={0} is not available!'.format(model))
+        self._model = model.lower()
+
+        if self._model != 'general':
+            # get sorted number of electrons
+            nelectrons = sorted(dict_values.keys())
+            # get energy values of sorted number of electrons (from small to big)
+            populations = [dict_values[key] for key in nelectrons]
+
+            if len(nelectrons) != 3:
+                raise NotImplementedError('For model={0}, three densities are required!'.format(self._model))
+
+            # check number of electrons are integers
+            if not all(isinstance(item, int) for item in nelectrons):
+                raise ValueError('For model={0}, integer number of electrons are required! #electrons={1}'.format(self._model, nelectrons))
+
+            # check consecutive number of elctrons change by one
+            if not all([y - x == 1 for x, y in zip(nelectrons[:-1], nelectrons[1:])]):
+                raise ValueError('For model={0}, consecutive number of electrons should differ by 1! #electrons={1}'.format(self._model, nelectrons))
+
+            # obtain reference number of electrons
+            if len(nelectrons) % 2 == 0:
+                raise NotImplementedError('Even number of molecules is not implemented yet!')
+            else:
+                # consider the middle system as reference
+                reference = nelectrons[len(nelectrons) // 2]
+
+            # make a list of arguments for condense tool
+            args = [populations[1], populations[2], populations[0], reference]
+            self._tool = select_tool[self._model](*args)
+        else:
+            # self._tool = select_tool[model](*args)
+            raise NotImplementedError('Model={0} is not covered yet!'.format(self._model))
+
+        # print screen information
+        self._log_init()
+
+    def __getattr__(self, attr):
+        '''
+        Return class attribute.
+        '''
+        # if not hasattr(self._tool, attr):
+        value = getattr(self._tool, attr, None)
+        if value is None:
+            raise AttributeError('Attribute {0} does not exist!'.format(attr))
+        return getattr(self._tool, attr)
+
+    def __repr__(self):
+        '''
+        Return string when class is printed.
+        '''
+        available = dir(self._tool)
+        attrs = [attr for attr in available if not callable(getattr(self, attr)) and not attr.startswith('_')]
+        attrs.sort()
+        attrs.remove('n0')
+        methods = [attr for attr in available if callable(getattr(self, attr)) and not attr.startswith('_')]
+        content = 'Available attributes in {0} global model:\n{1}\n'.format(self._model, '-' * 50)
+        content += '\n'.join(attrs)
+        content += '\n\nAvailable methods in {0} global model:\n{1}\n'.format(self._model, '-' * 50)
+        content += '\n'.join(methods) + '\n'
+        return content
+
+    def _log_init(self):
+        '''
+        Print an initial informative message.
+        '''
+        if log.do_medium:
+            log('Initialize: Condensed Class')
+            # log('Initialize: %s' % self.__class__)
+            log.deflist([('Energy Model', self._model),
+                         ('Reference #Electrons', self._tool.n0),
+                        ])
+            log.blank()
+
+    @classmethod
+    def from_file(cls, filenames, model, approach='FMR', scheme='h', grid=None, proatomdb=None):
+        '''
+        Initialize class from files.
+
+        Parameters
+        ----------
+        filenames : list,tuple
+            List/tuple containing the path to molecule's files.
+        model : str
+            Energy model used to calculate local descriptive tools.
+            Available models are 'linear' and 'quadratic'.
+        approach : str
+            Choose between 'FMR' (fragment of molecular response) or 'RMF' (response of molecular fragment).
+        scheme: str
+            Partitioning scheme. Options: 'h', 'hi', 'mbis'.
+        grid: instance of ``BeckeMolGrid``
+            Grid used for partitioning
+        proatomdb: instance of ``ProAtomDB``
+            Proatom database used for partitioning. Only 'h' and 'hi' requires that.
+        '''
+        # case of one file not given as a list
+        if isinstance(filenames, (str, unicode)):
+            return cls.from_iodata(IOData.from_file(filenames), model, grid, approach, scheme, proatomdb)
+        # case of list of file(s)
+        iodatas = []
+        for filename in filenames:
+            iodatas.append(IOData.from_file(filename))
+        return cls.from_iodata(iodatas, model, grid, approach, scheme, proatomdb)
+
+    @classmethod
+    def from_iodata(cls, iodatas, model, grid=None, approach='FMR', scheme='mbis', proatomdb=None, **kwargs):
+        '''
+        Initialize class from `IOData` objects.
+
+        Parameters
+        ----------
+        filenames : list,tuple
+            List/tuple containing the path to molecule's files.
+        model : str
+            Energy model used to calculate local descriptive tools.
+            Available models are 'linear' and 'quadratic'.
+        approach : str
+            Choose between 'FMR' (fragment of molecular response) or 'RMF' (response of molecular fragment).
+        scheme: str
+            Partitioning scheme. Options: 'h', 'hi', 'mbis'.
+        grid: instance of ``BeckeMolGrid``
+            Grid used for partitioning
+        proatomdb: instance of ``ProAtomDB``
+            Proatom database used for partitioning. Only 'h' and 'hi' requires that.
+        '''
+        if grid is not None:
+            if not isinstance(grid, BeckeMolGrid):
+                raise ValueError('Currently, only BeckeMolGrid is supported for condensing!')
+
+        # case of one IOData object not given as a list
+        if isinstance(iodatas, IOData):
+            iodatas = [iodatas]
+
+        if len(iodatas) == 1:
+            # Frontiner Molecular Orbital (FMO) Approach
+            mol = iodatas[0]
+            if grid is None:
+                grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
+                                    agspec='fine', random_rotate=False, mode='keep')
+            points = grid.points
+            # get homo & lumo index & energy of alpha electrons
+            homo_index = mol.exp_alpha.get_homo_index()
+            lumo_index = mol.exp_alpha.get_lumo_index()
+            homo_energy = mol.exp_alpha.homo_energy
+            lumo_energy = mol.exp_alpha.lumo_energy
+            # set homo & lumo expasion to alpha orbitals
+            homo_exp, lumo_exp = 'exp_alpha', 'exp_alpha'
+
+            # get number of alpha electrons
+            nelec = int(np.sum(mol.exp_alpha.occupations))
+            if hasattr(mol, 'exp_beta') and mol.exp_beta is not None:
+                # add number of beta electrons
+                nelec += int(np.sum(mol.exp_beta.occupations))
+                # use homo energy of beta electrons, if it has higher energy
+                if mol.exp_beta.homo_energy > homo_energy:
+                    homo_energy = mol.exp_beta.homo_energy
+                    homo_index = mol.exp_beta.get_homo_index()
+                    homo_exp = 'exp_beta'
+                # use lumo energy of beta electrons, if it has lower energy
+                if mol.exp_beta.lumo_energy < lumo_energy:
+                    lumo_energy = mol.exp_beta.lumo_energy
+                    lumo_index = mol.exp_beta.get_lumo_index()
+                    lumo_exp = 'exp_beta'
+            else:
+                nelec *= 2
+            # compute homo & lumo density
+            homo_dens = mol.obasis.compute_grid_orbitals_exp(getattr(mol, homo_exp), points,
+                                                             np.array([homo_index]))**2
+            lumo_dens = mol.obasis.compute_grid_orbitals_exp(getattr(mol, lumo_exp), points,
+                                                             np.array([lumo_index]))**2
+            homo_dens = homo_dens.flatten()
+            lumo_dens = lumo_dens.flatten()
+
+            # compute density of reference molecule
+            dens = mol.obasis.compute_grid_density_dm(mol.get_dm_full(), points)
+            # partitioning
+            if scheme.lower() not in wpart_schemes:
+                raise ValueError('Partitioning scheme={0} not supported! Select from: {1}'.format(scheme, wpart_schemes))
+            wpart = wpart_schemes[scheme]
+            if isinstance(grid, BeckeMolGrid):
+                # compute population of reference system
+                if scheme.lower() not in ['mbis', 'b']:
+                    if proatomdb is None:
+                        proatomdb = ProAtomDB.from_refatoms(mol.numbers)
+                    kwargs = {'proatomdb':proatomdb}
+                else:
+                    kwargs = {}
+                part0 = wpart(mol.coordinates, mol.numbers, mol.pseudo_numbers, grid, dens, **kwargs)
+                part0.do_all()
+                pops0 = part0['populations']
+                # compute population of N+1 and N-1 electron system
+                if approach.lower() == 'fmr':
+                    # fragment of molecular response
+                    popsp = cls.condense_to_atoms(dens + lumo_dens, part0)
+                    popsm = cls.condense_to_atoms(dens - homo_dens, part0)
+                elif approach.lower() == 'rmf':
+                    # response of molecular fragment
+                    partp = wpart(mol.coordinates, mol.numbers, mol.pseudo_numbers, grid, dens + lumo_dens, **kwargs)
+                    partp.do_all()
+                    popsp = partp['populations']
+                    partm = wpart(mol.coordinates, mol.numbers, mol.pseudo_numbers, grid, dens - homo_dens, **kwargs)
+                    partm.do_all()
+                    popsm = partm['populations']
+            elif isinstance(grid, CubeGen):
+                raise NotImplementedError('Condensing with CubGen will be implemented in near future!')
+            else:
+                raise NotImplementedError('Condensing does not support grid={0}!'.format(grid))
+
+            # Store number of electron and populations in a dictionary
+            dict_values = dict([(nelec, pops0),
+                                (nelec + 1, popsp),
+                                (nelec - 1, popsm)])
+        else:
+            # Finite Difference (FD) Approach
+            dict_values = {}
+            same_coordinates = True
+            for index, iodata in enumerate(iodatas):
+                # check atomic numbers
+                if index == 0:
+                    atomic_numbers = iodata.numbers
+                elif not np.all(abs(atomic_numbers - iodata.numbers) < 1.e-6):
+                    raise ValueError('Molecule 1 & {0} have different atomic numbers!'.format(index + 1))
+                # check coordinates of grid and molecule match
+                if grid is not None:
+                    if not np.all(abs(grid.centers - iodata.coordinates) < 1.e-4):
+                        print abs(grid.centers - iodata.coordinates)
+                        raise ValueError('Coordinates of grid and molecule {0} should match!'.format(index))
+                if index == 0:
+                    coordinates = iodata.coordinates
+                elif not np.all(abs(coordinates - iodata.coordinates) < 1.e-4):
+                    print coordinates - iodata.coordinates
+                    same_coordinates = False
+                    # if geometries are not the same, only rmf can be done.
+                    if approach.lower() == 'fmr':
+                        raise ValueError('When geoemtries of molecules are different only approach=RMF is possible!')
+
+                # get number of electrons
+                nelec = int(np.sum(iodata.exp_alpha.occupations))
+                if hasattr(iodata, 'exp_beta') and iodata.exp_beta is not None:
+                    nelec += int(np.sum(iodata.exp_beta.occupations))
+                else:
+                    nelec *= 2
+                if nelec in dict_values.keys():
+                    raise ValueError('Two molecules have {0} electrons!'.format(nelec))
+                # store number of electron and iodata in a dictionary
+                dict_values[nelec] = iodata
+
+            # Get sorted number of electrons
+            nelectrons = sorted(dict_values.keys())
+            if len(nelectrons) != 3:
+                raise ValueError('Condensed conceptual DFT within FD approach, currently only works for 3 molecules!')
+            reference = nelectrons[1]
+            # get energy values of sorted number of electrons (from small to big)
+            molm, mol0, molp = [dict_values[key] for key in nelectrons]
+
+            # compute density of reference molecule
+            if grid is None:
+                grid = BeckeMolGrid(mol0.coordinates, mol0.numbers, mol0.pseudo_numbers,
+                                    agspec='fine', random_rotate=False, mode='keep')
+            points = grid.points
+            dens0 = mol0.obasis.compute_grid_density_dm(mol0.get_dm_full(), points)
+
+            # partitioning
+            if scheme.lower() not in wpart_schemes:
+                raise ValueError('Partitioning scheme={0} not supported! Select from: {1}'.format(scheme, wpart_schemes))
+            wpart = wpart_schemes[scheme]
+            if isinstance(grid, BeckeMolGrid):
+                # compute population of reference system
+                if scheme.lower() not in ['mbis', 'b']:
+                    if proatomdb is None:
+                        proatomdb = ProAtomDB.from_refatoms(mol0.numbers)
+                    kwargs = {'proatomdb':proatomdb}
+                else:
+                    kwargs = {}
+                part0 = wpart(mol0.coordinates, mol0.numbers, mol0.pseudo_numbers, grid, dens0, **kwargs)
+                part0.do_all()
+                pops0 = part0['populations']
+                # compute population of N+1 and N-1 electron system
+                if approach.lower() == 'fmr':
+                    # fragment of molecular response
+                    assert same_coordinates
+                    densp = molp.obasis.compute_grid_density_dm(molp.get_dm_full(), points)
+                    densm = molm.obasis.compute_grid_density_dm(molm.get_dm_full(), points)
+                    popsp = cls.condense_to_atoms(densp, part0)
+                    popsm = cls.condense_to_atoms(densm, part0)
+                elif approach.lower() == 'rmf':
+                    # response of molecular fragment
+                    if not same_coordinates:
+                        grid = BeckeMolGrid(molp.coordinates, molp.numbers, molp.pseudo_numbers,
+                                            agspec='fine', random_rotate=False, mode='keep')
+                        points = grid.points
+                    densp = molp.obasis.compute_grid_density_dm(molp.get_dm_full(), points)
+                    partp = wpart(molp.coordinates, molp.numbers, molp.pseudo_numbers, grid, densp, **kwargs)
+                    partp.do_all()
+                    popsp = partp['populations']
+                    if not same_coordinates:
+                        grid = BeckeMolGrid(molm.coordinates, molm.numbers, molm.pseudo_numbers,
+                                            agspec='fine', random_rotate=False, mode='keep')
+                        points = grid.points
+                    densm = molm.obasis.compute_grid_density_dm(molm.get_dm_full(), points)
+                    partm = wpart(molm.coordinates, molm.numbers, molm.pseudo_numbers, grid, densm, **kwargs)
+                    partm.do_all()
+                    popsm = partm['populations']
+            elif isinstance(grid, CubeGen):
+                raise NotImplementedError('Condensing with CubGen will be implemented in near future!')
+            else:
+                raise NotImplementedError('Condensing does not support grid={0}!'.format(grid))
+
+            # Store number of electron and populations in a dictionary
+            dict_values = dict([(reference, pops0),
+                                (reference + 1, popsp),
+                                (reference - 1, popsm)])
+        return cls(dict_values, model)
+
+    @staticmethod
+    def condense_to_atoms(local_property, part):
+        r'''
+        Return condensed values of the local descriptor :math:`p_{\text{local}}\left(\mathbf{r}\right)`
+        into atomic contribution :math:`P_A` defined as:
+
+        .. math::
+
+           P_A = \int \omega_A\left(\mathbf{r}\right) p_{\text{local}}\left(\mathbf{r}\right) d\mathbf{r}
+
+        Parameters
+        ----------
+        local_property : np.ndarray
+            Local descriptor evaluated on grid.
+        '''
+        condensed = np.zeros(part.natom)
+        for index in xrange(part.natom):
+            at_grid = part.get_grid(index)
+            at_weight = part.cache.load('at_weights',index)
+            wcor = part.get_wcor(index)
+            local_prop = part.to_atomic_grid(index, local_property)
+            condensed[index] = at_grid.integrate(at_weight, local_prop, wcor)
+        return condensed
