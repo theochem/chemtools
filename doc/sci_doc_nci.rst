@@ -34,7 +34,7 @@ the density and its derivatives.
 The reduced density gradient, which is calculated using the density and its first derivative,
 
  .. math::
-    s\left(\mathbf{r}\right) = \frac{1}{3\left(2\pi ^2 \right)^{1/3}}
+    s\left(\mathbf{r}\right) = \frac{1}{2\left(3\pi ^2 \right)^{1/3}}
     \frac{\lvert \nabla \rho\left(\mathbf{r}\right) \rvert}{\rho\left(\mathbf{r}\right)^{4/3}}
 
 is a dimensionless function, used to describe the deviation from a homogeneous electron distribution.

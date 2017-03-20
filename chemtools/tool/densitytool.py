@@ -129,7 +129,7 @@ class DensityLocalTool(object):
         Reduced density gradient (RDG) defined as:
 
         .. math::
-           s\left(\mathbf{r}\right) = \frac{1}{3\left(2\pi ^2 \right)^{1/3}}
+           s\left(\mathbf{r}\right) = \frac{1}{2\left(3\pi ^2 \right)^{1/3}}
            \frac{\lvert \nabla \rho\left(\mathbf{r}\right) \rvert}{\rho\left(\mathbf{r}\right)^{4/3}}
         '''
         # Mask density values less than 1.0d-30 to avoid diving by zero
