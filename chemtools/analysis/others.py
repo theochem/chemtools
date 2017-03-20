@@ -169,7 +169,8 @@ class NCI(object):
         # density > cutoff will be set to 100.0 before generating cube file to
         # display reduced density gradient iso-surface subject to the constraint
         # of low density, i.e. density < denscut.
-        self._rdgrad[abs(self._density) > denscut] = 100.0
+        cutrdg = np.array(self._rdgrad, copy=True)
+        cutrdg[abs(self._density) > denscut] = 100.0
         # Similar to NCIPlot program, sign(hessian second eigenvalue)*density is
         # multiplied by 100.0 before genetaing cube file used for coloring the
         # reduced density gradient iso-surface.
@@ -184,7 +185,7 @@ class NCI(object):
         vmdfile  = filename + '.vmd'          # vmd script file
         # Dump density & reduced density gradient cube files
         self._cube.dump_cube(densfile, dens)
-        self._cube.dump_cube(rdgfile, self._rdgrad)
+        self._cube.dump_cube(rdgfile, cutrdg)
         # Make VMD scripts for visualization
         _print_vmd_script_nci(vmdfile, densfile, rdgfile, isosurf, denscut*100.0)
 
