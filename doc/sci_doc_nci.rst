@@ -43,10 +43,18 @@ will have very large positive values. In regions of covalent bonding and non-cov
 reduced gradient have very small values, close to zero.
 
 To study the non-covalent interactions the plot of the reduced gradients, :math:`s\left(\mathbf{r}\right)`,
-versus :math:`\rho\left(\mathbf{r}\right)` plot is examined at low reduced gradient regions (Figure 1).
-For the separate molecules, the top left points, corresponding to a small density and large reduced density gradient,
+versus :math:`\rho\left(\mathbf{r}\right)` plot is examined at low reduced gradient regions, as in this example for water:
+
+ .. image:: ./_static/H2O_dimer_dens_rdg.jpg
+     :align: center
+
+For the monomer, the top left points, with a small density and large reduced density gradient,
 correspond to the tail regions of the density, far from the nuclei. The points at the lower right correspond to covalent
-bonds, with higher density, but a low reduced density gradient.
+bonds, with higher density (around 0.35 a.u.), but a near-zero reduced density gradient. 
+
+For the dimer, a new structure can be seen, a spike in the low-density, low-gradient region, which is typical of noncovalent interactions. This feature appears because, in the region of the non covalent interaction, the reduced density gradient becomes zero (as in covalent bonds), but, because of the non-covalent nature of this interaction, the density in this region is much lower than in covalent bonds (less then 0.05 a.u.).
+
+To determine the type of the interaction, the sign of the Laplacian of the density, :math:`\nabla^2 \rho\left(\mathbf{r}\right)`, can be used. To do so, the three eigenvalues :math:`\lambda_i` of the Hessian (second derivative) of the electron-density are calculated :math:`( \lambda_1 \leq \lambda_2 \leq \lambda_3)`. At the nuclei, all eigenvalues are negative, since the density is at a local maximum. In covalent bonds, the Hessian has one positive eigenvalue and two negative eigenvalues :math:`( \lambda_1 < 0, \lambda_2 < 0, \lambda_3 > 0)`. On the other hand, in regions of steric clashes or strain in the interatomic region (as in bicyclo[2.2.2]octene and ring or cage critical points), the second eigenvalue will be positive. Therefore, the sign of the second eigenvalue of the Hessian, :math:`\lambda_2`, can be used to distinguish between bonded :math:`(\lambda_2 < 0)` and nonbonded :math:`(\lambda_2 > 0)` interactions. 
 
 to be continued...
 
