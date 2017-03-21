@@ -554,9 +554,9 @@ def test_global_rational_ch4_fchk():
     np.testing.assert_almost_equal(desp.electron_affinity, ea, decimal=6)
     # check parameters; expected parameters were solved for with np.linalg.solve
     a0, a1, b1 = -39.8993538175, 4.19041197078, -0.104987142594
-    np.testing.assert_almost_equal(desp._a0, a0, decimal=6)
-    np.testing.assert_almost_equal(desp._a1, a1, decimal=6)
-    np.testing.assert_almost_equal(desp._b1, b1, decimal=6)
+    np.testing.assert_almost_equal(desp.params[0], a0, decimal=6)
+    np.testing.assert_almost_equal(desp.params[1], a1, decimal=6)
+    np.testing.assert_almost_equal(desp.params[2], b1, decimal=6)
     # Check chemical-potential & chemical-hardness; expected derivative values were computed symbolically
     mu, eta = 0.600211746260527, -2.52707898353937
     np.testing.assert_almost_equal(desp.mu, mu, decimal=6)

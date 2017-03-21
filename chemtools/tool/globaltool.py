@@ -478,18 +478,27 @@ class QuadraticGlobalTool(BaseGlobalTool):
     '''
     @doc_inherit(BaseGlobalTool)
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
-        # calculate the a, b, c parameters of the model and N_max
-        self._c = 0.5 * (energy_minus - 2 * energy_zero + energy_plus)
-        self._b = 0.5 * (energy_plus - energy_minus) - 2 * self._c * n0
-        self._a = energy_zero - self._b * n0 - self._c * (n0**2)
-        self._n_max = - self._b / (2 * self._c)
+        # calculate parameters a, b, c of quadratic energy model
+        c = 0.5 * (energy_minus - 2 * energy_zero + energy_plus)
+        b = 0.5 * (energy_plus - energy_minus) - 2 * c * n0
+        a = energy_zero - b * n0 - c * (n0**2)
+        self._params = [a, b, c]
+        # calculate Nmax (number of electrons for which energy is minimum)
+        self._n_max = - b / (2 * c)
         super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0)
+
+    @property
+    def params(self):
+        '''
+        Parameters :math:`a`, :math:`b` and :math:`c` of energy model.
+        '''
+        return self._params
 
     @doc_inherit(BaseGlobalTool)
     def energy(self, n_elec):
         if n_elec < 0.0:
             raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
-        value = self._a + self._b * n_elec + self._c * n_elec**2
+        value = self._params[0] + self._params[1] * n_elec + self._params[2] * n_elec**2
         return value
 
     @doc_inherit(BaseGlobalTool)
@@ -499,9 +508,9 @@ class QuadraticGlobalTool(BaseGlobalTool):
         if not(isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
         if order == 1:
-            deriv = self._b + 2 * n_elec * self._c
+            deriv = self._params[1] + 2 * n_elec * self._params[2]
         elif order == 2:
-            deriv = 2 * self._c
+            deriv = 2 * self._params[2]
         elif order >= 2:
             deriv = 0.0
         return deriv
@@ -533,20 +542,28 @@ class ExponentialGlobalTool(BaseGlobalTool):
             raise ValueError('To fit exponential energy model, energy values should change monotonically! Given E={0}'.format(energies))
 
         # calculate the A, B, gamma parameters of the model and N_max
-        self._A = (energy_minus - energy_zero) * (energy_zero - energy_plus)
-        self._A /= (energy_minus - 2 * energy_zero + energy_plus)
-        self._B = energy_zero - self._A
-        self._gamma = math.log(1. - (energy_minus - 2 * energy_zero + energy_plus) / (energy_plus - energy_zero))
+        A = (energy_minus - energy_zero) * (energy_zero - energy_plus)
+        A /= (energy_minus - 2 * energy_zero + energy_plus)
+        B = energy_zero - A
+        gamma = math.log(1. - (energy_minus - 2 * energy_zero + energy_plus) / (energy_plus - energy_zero))
+        self._params = [A, gamma, B]
         # Calulate N_max
         self._n_max = 0.0
         super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0)
+
+    @property
+    def params(self):
+        '''
+        Parameters :math:`A`, :math:`\gamma` and :math:`B` of energy model.
+        '''
+        return self._params
 
     @doc_inherit(BaseGlobalTool)
     def energy(self, n_elec):
         if n_elec < 0.0:
             raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
         dN = n_elec - self._n0
-        value = self._A * math.exp(- self._gamma * dN) + self._B
+        value = self._params[0] * math.exp(- self._params[1] * dN) + self._params[2]
         return value
 
     @doc_inherit(BaseGlobalTool)
@@ -556,7 +573,7 @@ class ExponentialGlobalTool(BaseGlobalTool):
         if not(isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
         dN = n_elec - self._n0
-        deriv = self._A * math.pow(- self._gamma, order) * math.exp(- self._gamma * dN)
+        deriv = self._params[0] * math.pow(- self._params[1], order) * math.exp(- self._params[1] * dN)
         return deriv
 
 
@@ -581,21 +598,28 @@ class RationalGlobalTool(BaseGlobalTool):
     '''
     @doc_inherit(BaseGlobalTool)
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
-        #
-        # calculate the a0, a1, b1 parameters of the model and N_max
-        #
-        self._b1 = - (energy_plus - 2 * energy_zero + energy_minus)
-        self._b1 /= ( (n0 + 1) * energy_plus - 2 * n0 * energy_zero + (n0 - 1) * energy_minus )
-        self._a1 = (1 + self._b1 * n0) * (energy_plus - energy_zero) + (self._b1 * energy_plus)
-        self._a0 = - self._a1 * n0 + energy_zero * (1 + self._b1 * n0)
-        self._n_max = 0
+        # calculate parameters a0, a1 and b1 of rational energy model
+        b1 = - (energy_plus - 2 * energy_zero + energy_minus)
+        b1 /= ( (n0 + 1) * energy_plus - 2 * n0 * energy_zero + (n0 - 1) * energy_minus )
+        a1 = (1 + b1 * n0) * (energy_plus - energy_zero) + (b1 * energy_plus)
+        a0 = - a1 * n0 + energy_zero * (1 + b1 * n0)
+        self._params = [a0, a1, b1]
+        # calculate Nmax
+        self._n_max = None
         super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0)
+
+    @property
+    def params(self):
+        '''
+        Parameters :math:`a_0`, :math:`a_1` and :math:`b_1` of energy model.
+        '''
+        return self._params
 
     @doc_inherit(BaseGlobalTool)
     def energy(self, n_elec):
         if n_elec < 0.0:
             raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
-        value = (self._a0 + self._a1 * n_elec) / (1 + self._b1 * n_elec)
+        value = (self._params[0] + self._params[1] * n_elec) / (1 + self._params[2] * n_elec)
         return value
 
     @doc_inherit(BaseGlobalTool)
@@ -604,8 +628,8 @@ class RationalGlobalTool(BaseGlobalTool):
             raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
         if not(isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
-        deriv = math.pow(-self._b1, order - 1) * (self._a1 - self._a0 * self._b1) * math.factorial(order)
-        deriv /= math.pow(1 + self._b1 * n_elec, order + 1)
+        deriv = math.pow(-self._params[2], order - 1) * (self._params[1] - self._params[0] * self._params[2]) * math.factorial(order)
+        deriv /= math.pow(1 + self._params[2] * n_elec, order + 1)
         return deriv
 
 

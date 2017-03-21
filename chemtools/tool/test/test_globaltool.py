@@ -30,9 +30,9 @@ def test_global_quadratic1():
     # E(N) = -9.0 + (-25.0)*N + N^2, N0=15
     model = QuadraticGlobalTool(-159.0, -153.0, -163.0, 15)
     # check parameters
-    np.testing.assert_almost_equal(model._a, -9.0, decimal=6)
-    np.testing.assert_almost_equal(model._b, -25.0, decimal=6)
-    np.testing.assert_almost_equal(model._c, 1.0, decimal=6)
+    np.testing.assert_almost_equal(model.params[0], -9.0, decimal=6)
+    np.testing.assert_almost_equal(model.params[1], -25.0, decimal=6)
+    np.testing.assert_almost_equal(model.params[2], 1.0, decimal=6)
     np.testing.assert_almost_equal(model.n0, 15, decimal=6)
     np.testing.assert_almost_equal(model.n_max, 12.5, decimal=6)
     # check E(N)
@@ -89,9 +89,9 @@ def test_global_quadratic2():
     # E(N) = 30.0 + (-6.0)*N + 3*N^2, N0=10
     model = QuadraticGlobalTool(75.0, 102.0, 54.0, 5)
     # check parameters
-    np.testing.assert_almost_equal(model._a, 30.0, decimal=6)
-    np.testing.assert_almost_equal(model._b, -6.0, decimal=6)
-    np.testing.assert_almost_equal(model._c, 3.0, decimal=6)
+    np.testing.assert_almost_equal(model.params[0], 30.0, decimal=6)
+    np.testing.assert_almost_equal(model.params[1], -6.0, decimal=6)
+    np.testing.assert_almost_equal(model.params[2], 3.0, decimal=6)
     np.testing.assert_almost_equal(model.n0, 5, decimal=6)
     np.testing.assert_almost_equal(model.n_max, 1, decimal=6)
     # check E(N)
@@ -148,9 +148,9 @@ def test_global_quadratic3():
     # E(N) = -100 + 5*N^2, N0=5
     model = QuadraticGlobalTool(25.0, 80.0, -20.0, 5)
     # check parameters
-    np.testing.assert_almost_equal(model._a, -100.0, decimal=6)
-    np.testing.assert_almost_equal(model._b, 0.0, decimal=6)
-    np.testing.assert_almost_equal(model._c, 5.0, decimal=6)
+    np.testing.assert_almost_equal(model.params[0], -100.0, decimal=6)
+    np.testing.assert_almost_equal(model.params[1], 0.0, decimal=6)
+    np.testing.assert_almost_equal(model.params[2], 5.0, decimal=6)
     np.testing.assert_almost_equal(model.n0, 5, decimal=6)
     np.testing.assert_almost_equal(model.n_max, 0.0, decimal=6)
     # check E(N)
@@ -206,9 +206,9 @@ def test_global_quadratic3():
 def test_global_exponential1():
     # E(N) = 5.0 * exp(-0.1 * (N - 10)) + 3.0
     model = ExponentialGlobalTool(8.0, 7.524187090179797, 8.525854590378238, 10)
-    np.testing.assert_almost_equal(model._A, 5.0, decimal=6)
-    np.testing.assert_almost_equal(model._B, 3.0, decimal=6)
-    np.testing.assert_almost_equal(model._gamma, 0.1, decimal=6)
+    np.testing.assert_almost_equal(model.params[0], 5.0, decimal=6)
+    np.testing.assert_almost_equal(model.params[2], 3.0, decimal=6)
+    np.testing.assert_almost_equal(model.params[1], 0.1, decimal=6)
     np.testing.assert_almost_equal(model.n0, 10, decimal=6)
     np.testing.assert_almost_equal(model.n_max, 0.0, decimal=6)   # <-------------
     # check E(N)
