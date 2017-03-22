@@ -413,30 +413,31 @@ def generate_dir_rst(src_dir, target_dir, gallery_conf, seen_backrefs):
         os.makedirs(target_dir)
     sorted_listdir = [fname for fname in sorted(os.listdir(src_dir))
                       if fname.endswith('.py')]
-    entries_text = []
+    # entries_text = []
     computation_times = []
     build_target_dir = os.path.relpath(target_dir, gallery_conf['src_dir'])
     for fname in sorted_listdir:
         amount_of_code, time_elapsed = \
-            generate_file_rst(fname, target_dir, src_dir, gallery_conf)
+        generate_file_rst(fname, target_dir, src_dir, gallery_conf)
         computation_times.append((time_elapsed, fname))
         new_fname = os.path.join(src_dir, fname)
         intro = extract_intro(new_fname)
         write_backreferences(seen_backrefs, gallery_conf,
                              target_dir, fname, intro)
-        this_entry = _thumbnail_div(build_target_dir, fname, intro) + """
+        # this_entry = _thumbnail_div(build_target_dir, fname, intro) + """
+        fhindex += _thumbnail_div(build_target_dir, fname, intro) + """
 
 .. toctree::
    :hidden:
 
    /%s/%s\n""" % (build_target_dir, fname[:-3])
-        entries_text.append((amount_of_code, this_entry))
+    #    entries_text.append((amount_of_code, this_entry))
 
     # sort to have the smallest entries in the beginning
-    entries_text.sort()
+    # entries_text.sort()
 
-    for _, entry_text in entries_text:
-        fhindex += entry_text
+    # for _, entry_text in entries_text:
+    #    fhindex += entry_text
 
     # clear at the end of the section
     fhindex += """.. raw:: html\n
