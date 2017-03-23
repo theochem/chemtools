@@ -78,25 +78,19 @@ is not defined. Instead one calculates the chemical potential from above, below 
     \mu^{-} &= \left( \frac{\partial E}{\partial N} \right)_{v(\mathbf{r})}^- = -IP \\
     \mu^{0} &= \frac{\mu^{+} + \mu^{-}}{2} = \frac{-\left(IP + EA\right)}{2} \\
 
-In this model, second and higher order derivatives of the energy with respect to the number of electrons is zero
-(they are not defined at integer number of electrons, because energy model is not differentiable).
-So, chemical hardness and hyper-hardness are zero, and softness and hyper-softness are not defined.
+In this model, the second- and higher-order derivatives of the energy with respect to the number of
+electrons are zero except when the number of electrons is an integer, where they are undefined
+(because the energy model is nondifferentiable). So the chemical hardness and hyper-hardnesses are all zero,
+and the global softness and global hyper-softness are not defined.
 
- .. TODO::
-    Is it better to skip derived global tools for this model?
-    How the code should handle these?
-
-To obtain the :ref:`derived global reactivity indicators <derived_indicators>` for
-the linear energy model, the maximum number of electrons accepted by the system should be calculated.
-This is obtained by setting the first order derivative of energy equal to zero, however, in this model
-the first derivative of energy is not defined.
-
-The related :ref:`derived global reactivity indicators <derived_indicators>` for the linear energy model are:
+Calculating :ref:`derived global reactivity indicators <derived_indicators>` for the linear energy model
+requires that one first compute the maximum number of electrons that can be accepted by the system.
+It is only possible to do this when the :math:`N_0-` electron system has lower energy than the :math:`(N_0+1)`
+and :math:`(N_0-1)` electron systems. In that case, :math:`N_{\text{max}}=N_0` which gives :math:`\Delta N_{\text{max}}=0`,
+and
 
  .. math::
 
-    \omega_{\text {electrophilicity}} &= E\left(N_0\right) - E\left(N_{\text max}\right) &&= 0 \\
-    \omega_{\text {nucleophilicity}} &= ? \\
-    \nu_{\text {nucleofugality}} &= E\left(N_0 + 1\right) - E\left(N_{\text max}\right)
-                                &&=  \\
-    \nu_{\text {electrofugality}} &= E\left(N_0 - 1\right) - E\left(N_{\text max}\right)
+    \omega_{\text{electrophilicity}} &= E\left(N_0\right) - E\left(N_{\text{max}}\right) = 0 \\
+    \nu_{\text{nucleofugality}} &= E\left(N_0 + 1\right) - E\left(N_{\text{max}}\right) = - EA \\
+    \nu_{\text{electrofugality}} &= E\left(N_0 - 1\right) - E\left(N_{\text{max}}\right) = IP

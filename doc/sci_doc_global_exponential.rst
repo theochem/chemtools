@@ -75,8 +75,9 @@ fixed external potential :math:`v(\mathbf{r})` are:
 
 These derivatives can be evaluated for any number of electrons as implemented
 in :class:`chemtools.tool.globaltool.ExponentialGlobalTool.energy_derivative`.
-In this model, the first, second and higher order derivatives of energy evaluated at :math:`N_0`,
-the so-called chemical potential and chemical hardness and hyper-hardness, equal:
+
+In the exponential model, evaluating the first-, second-, and higher-order derivatives of energy evaluated at
+:math:`N_0` gives the following expressions for the chemical potential, chemical hardness, and hyper-hardnesses:
 
  .. math::
 
@@ -92,8 +93,8 @@ the so-called chemical potential and chemical hardness and hyper-hardness, equal
 These are implemented in :class:`chemtools.tool.globaltool.ExponentialGlobalTool.chemical_potential`
 and :class:`chemtools.tool.globaltool.ExponentialGlobalTool.chemical_hardness`.
 
-Accordingly, given the exponential energy model, chemical softness and :math:`2^{\text{nd}}` and
-:math:`3^{\text{rd}}` -order hyper-softness equal:
+Using these expressions, one can derive the following expressions for the chemical softness and the low-order
+hypersoftnesses,
 
  .. math::
 
@@ -106,14 +107,14 @@ Accordingly, given the exponential energy model, chemical softness and :math:`2^
 	   &= - \left(A\gamma^4\right) \left(\frac{1}{A\gamma^2}\right)^4 +
 	      3 \left(\frac{1}{-A\gamma^3}\right)^2 \left(\frac{1}{A\gamma^2}\right)^5 = \frac{-4}{A^3\gamma^4}\\
 
-The higher order hyper-softness exists and can be evaluated through Eq. ???, as implemented in
-:meth:`chemtools.tool.globaltool.ExponentialGlobalTool.hyper_softness`.
+ChemTools can also compute higher-order hyper-softnesses, using the (extended) inverse function theorem for
+derivatives. Please refer to :ref:`derivation_global_softness` for details.
 
 To obtain the :ref:`derived global reactivity indicators <derived_indicators>` for
 the exponential energy model, the maximum number of electrons accepted by the system should be calculated.
 
  .. TODO::
-    #. Write down the value of N_max and derived global reactivity tools
+    #. Incude :math:`N_{\text{max}}=\infty` and derived global reactivity tools
 
 **References:**
 

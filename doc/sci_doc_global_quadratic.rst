@@ -29,9 +29,6 @@ Quadratic Energy Model :class:`chemtools.tool.globaltool.QuadraticGlobalTool`
 
 In this model, the energy is approximated as a quadratic function of the number of electrons:
 
- .. TODO::
-    #. Fix Equation number here, and assign number to other equations
-
  .. math::
     :nowrap:
     :label: quadratic
@@ -40,10 +37,10 @@ In this model, the energy is approximated as a quadratic function of the number 
      E\left(N\right) = a + b N + c {N^2}
     \end{eqnarray}
 
-Containing three parameters, :math:`a`, :math:`b` and :math:`c`, this model requires
-three values of :math:`E\left(N\right)` to interpolate energy. Commonly, the energies of the system
+As it contains three parameters, :math:`a`, :math:`b` and :math:`c`, this model requires
+three values of :math:`E\left(N\right)` to interpolate the energy. Commonly, the energies of the system
 with :math:`N_0 - 1`, :math:`N_0` and :math:`N_0 + 1` electrons are provided.
-Fitting the energy expression to the given energy values results in three equations:
+Fitting the energy expression to the given energy values results in three equations,
 
  .. math::
 
@@ -53,7 +50,7 @@ Fitting the energy expression to the given energy values results in three equati
           E\left(N_0 + 1\right) &= a + b \left(N_0 + 1\right) + c {\left(N_0 + 1\right) ^2}
     \end{cases}
 
-This allows us to solve for the three unknowns:
+which can be solved for the three unknowns,
 
  .. math::
 
@@ -111,8 +108,9 @@ fixed external potential :math:`v(\mathbf{r})` should be calculated. These are g
 
 These derivatives can be evaluated for any number of electrons as implemented
 in :class:`chemtools.tool.globaltool.QuadraticGlobalTool.energy_derivative`.
-In this model, the first, second and higher order derivatives of the energy evaluated at :math:`N_0`,
-the so-called chemical potential and chemical hardness and hyper-hardness, equal:
+In the quadratic model, evaluating the first-, second-, and higher-order derivatives of
+energy evaluated at :math:`N_0` gives the following expressions for the chemical potential,
+chemical hardness, and hyper-hardnesses,
 
  .. math::
 
@@ -126,7 +124,8 @@ the so-called chemical potential and chemical hardness and hyper-hardness, equal
 These are implemented in :class:`chemtools.tool.globaltool.QuadraticGlobalTool.chemical_potential`
 and :class:`chemtools.tool.globaltool.QuadraticGlobalTool.chemical_hardness`.
 
-Accordingly, given the quadratic energy model, chemical softness and hyper-softness equal:
+Accordingly, within the quadratic energy model, the chemical softness and hyper-softnesses are given
+by the expressions,
 
  .. math::
 
@@ -137,36 +136,28 @@ Accordingly, given the quadratic energy model, chemical softness and hyper-softn
 
 To obtain the :ref:`derived global reactivity indicators <derived_indicators>` for
 the quadratic energy model, the maximum number of electrons to saturate the system should be calculated.
-This is obtained by setting the first order derivative of the energy, derived in Eq. ???, equal to zero:
+This is obtained by setting the first derivative of the energy with respect to the number of electrons equal
+to zero,
 
  .. math::
 
     \left( \frac{\partial E}{\partial N} \right)_{v(\mathbf{r})} = 0 &= b + 2cN = -\frac{IP + EA}{2} + (IP - EA)(N - N_0) \\
-    & \to N_{max} = \frac{-b}{2c} = N_{0} + \frac{IP + EA}{2 \left(IP - EA \right)} = N_{0} - \frac{\mu}{\eta} \\
+    & \to N_{\text{max}} = \frac{-b}{2c} = N_{0} + \frac{IP + EA}{2 \left(IP - EA \right)} = N_{0} - \frac{\mu}{\eta} \\
     & \to \Delta N_{\text{max}} = N_0 - N_{\text{max}} = \frac{IP + EA}{2 \left(IP - EA \right)} = - \frac{\mu}{\eta}
 
 The related :ref:`derived global reactivity indicators <derived_indicators>` for the quadratic energy model are:
 
- .. TODO::
-    #. Show in more detail where these equations are coming from!!!
-    #. Add **Electrodonating power** and **Electroaccepting power** for only quadratic model (in each interval)
-    #. Add chemical potential defined by GV (quadratic model in each interval)
-
  .. math::
 
-    \omega_{\text{electrophilicity}} &= E\left(N_0\right) - E\left(N_{\text max}\right)
+    \omega_{\text{electrophilicity}} &= E\left(N_0\right) - E\left(N_{\text{max}}\right)
                         &&= \frac{\left(IP + EA\right)^2}{8\left(IP - EA\right)}
 		       &&&= \frac{\mu^2}{2 \eta} \\
-    \omega_{\text{nucleophilicity}} &= ? \\
-    \nu_{\text{nucleofugality}} &= E\left(N_0 + 1\right) - E\left(N_{\text max}\right)
+    \nu_{\text{nucleofugality}} &= E\left(N_0 + 1\right) - E\left(N_{\text{max}}\right)
                                 &&= \frac{\left(IP - 3 \cdot EA \right)^2}{8 \left(IP - EA \right)}
 			       &&&=  \frac{\left(\mu + \eta\right)^2}{2\eta} = -EA + \omega_{\text{electrophilicity}} \\
-    \nu_{\text{electrofugality}} &= E\left(N_0 - 1\right) - E\left(N_{\text max}\right)
+    \nu_{\text{electrofugality}} &= E\left(N_0 - 1\right) - E\left(N_{\text{max}}\right)
                                  &&= \frac{\left(3 \cdot IP - EA \right)^2}{8 \left(IP - EA \right)}
 				&&&= \frac{\left(\mu - \eta\right)^2}{2\eta} = IP + \omega_{\text{electrophilicity}}
-
- .. TODO::
-    #. Add references
 
 **References:**
   * `Parr R. G., Pearson R. G., J. Am. Chem. Soc. (1983), 105, 7512 <http://pubs.acs.org/doi/abs/10.1021/ja00364a005>`_.

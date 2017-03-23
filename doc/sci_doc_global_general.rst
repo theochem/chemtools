@@ -26,15 +26,20 @@
 General Energy Model :class:`chemtools.tool.globaltool.GeneralGlobalTool`
 =========================================================================
 
-In this model, energy is approximated by an user-specified energy model. Given the
-known energy values, this model is parametrized and the energy expression can be evaluated
-for any number of electrons.
-Being a generic models, this model can reproduce the results of
+Because it is tedious to implement all the energy models that have been explored in the literature and
+impossible to anticipate all the energy models users may wish to explore, ChemTools allows users to define
+their own energy model.
+As this is a generic models, this model can reproduce the results of
 :ref:`linear <linear_energy>`, :ref:`quadratic <quadratic_energy>`, :ref:`exponential <exponential_energy>`,
 and :ref:`rational <rational_energy>` energy models as special cases.
 
 The energy expression should be specified symbolically through `Sympy <http://www.sympy.org/en/index.html>`_.
+ChemTools then takes the energies for the user-specified electron numbers and solves the (generally nonlinear)
+equations for parameters in the symbolically-defined energy model. The energy model is differentiated symbolically
+to determine the fundamental global reactivity indicators in the canonical and grand canonical ensemble.
+To define derived reactivity indicators, the maximum number of bound electrons, :math:`N_{\text{max}}`, is determined
+by numerical minimization,
 
+ .. math:: N_{\text{max}} = \underbrace {\min }_N E(N)
 
- .. TODO::
-    12. Elaborate more on this model.
+The derived reactivity indicators are then defined using the usual formulas.

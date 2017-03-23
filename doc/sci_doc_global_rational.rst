@@ -35,7 +35,7 @@ In the most general form, this model can be written as:
     E^{(m,n)}\left(N\right) = \left( \frac{a_0 + a_1N + a_2{N^2} + ... + a_m{N^m}}{1 + b_1N + b_2{N^2} + ... + b_n{N^n}} \right)
                  = \frac{\sum_{j=0}^{m} a_j N^j}{1 + \sum_{i=1}^{n} b_i N^i}
 
-The number of unknown parameters in this model depends on the :math:`m` and :math:`n` values.
+The number of unknown parameters in this model depends on the values of :math:`m` and :math:`n`.
 Having a set of :math:`m+n` values of :math:`N` for which the energy is known, the model can be parametrized
 by solving a system of linear equations. By rearranging the rational energy expression above,
 the equations can be written as:
@@ -55,7 +55,7 @@ complex rational energy models, please refer to the :ref:`general energy model <
  .. math:: E\left(N\right) = E^{(2,1)}\left(N\right) = \frac{a_0 + a_1 N}{1 + b_1 N}
 
 Containing three parameters, :math:`a_0`, :math:`a_1` and :math:`b_1`, this model requires
-three values of :math:`E\left(N\right)` to interpolate energy. Commonly, the energy of the system
+three values of :math:`E\left(N\right)` to interpolate the energy. Commonly, the energy of the system
 with :math:`N_0 - 1`, :math:`N_0` and :math:`N_0 + 1` electrons are provided.
 Fitting the energy expression to the given energy values results in three equations:
 
@@ -78,10 +78,10 @@ This allows us to solve for the three unknonws:
 
  .. math::
 
-    a0 &=  \frac{E\left(N_0\right) E\left(N_0-1\right) N_{0} + E\left(N_0\right) E\left(N_0-1\right) + E\left(N_0\right) E\left(N_0+1\right) N_{0} -
+    a_0 &=  \frac{E\left(N_0\right) E\left(N_0-1\right) N_{0} + E\left(N_0\right) E\left(N_0-1\right) + E\left(N_0\right) E\left(N_0+1\right) N_{0} -
                 E\left(N_0\right) E\left(N_0+1\right) - 2 E\left(N_0-1\right) E\left(N_0+1\right) N_{0}}{2 E\left(N_0\right) N_{0} - E\left(N_0-1\right) N_{0} + E\left(N_0-1\right) - E\left(N_0+1\right) N_{0} - E\left(N_0+1\right)} \\
-    a1 &=  \frac{- E\left(N_0\right) E\left(N_0-1\right) - E\left(N_0\right) E\left(N_0+1\right) + 2 E\left(N_0-1\right) E\left(N_0+1\right)}{2 E\left(N_0\right) N_{0} - E\left(N_0-1\right) N_{0} + E\left(N_0-1\right) - E\left(N_0+1\right) N_{0} - E\left(N_0+1\right)} \\
-    b1 &=  \frac{- 2 E\left(N_0\right) + E\left(N_0-1\right) + E\left(N_0+1\right)}{2 E\left(N_0\right) N_{0} - E\left(N_0-1\right) N_{0} + E\left(N_0-1\right) - E\left(N_0+1\right) N_{0} - E\left(N_0+1\right)}
+    a_1 &=  \frac{- E\left(N_0\right) E\left(N_0-1\right) - E\left(N_0\right) E\left(N_0+1\right) + 2 E\left(N_0-1\right) E\left(N_0+1\right)}{2 E\left(N_0\right) N_{0} - E\left(N_0-1\right) N_{0} + E\left(N_0-1\right) - E\left(N_0+1\right) N_{0} - E\left(N_0+1\right)} \\
+    b_1 &=  \frac{- 2 E\left(N_0\right) + E\left(N_0-1\right) + E\left(N_0+1\right)}{2 E\left(N_0\right) N_{0} - E\left(N_0-1\right) N_{0} + E\left(N_0-1\right) - E\left(N_0+1\right) N_{0} - E\left(N_0+1\right)}
 
 Due to the complexity of the obtained parameters, we skip substituting them into the energy expression.
 However, at this stage, the energy expression can be evaluated for any given number of electrons as
@@ -101,8 +101,9 @@ fixed external potential are:
 
 These derivatives can be evaluated for any number of electrons as implemented
 in :class:`chemtools.tool.globaltool.RationalGlobalTool.energy_derivative`.
-In this model, the first, second and higher order derivatives of energy evaluated at :math:`N_0`,
-the so-called chemical potential and chemical hardness and hyper-hardness, equal:
+
+In the 3-point rational model, evaluating the first-, second-, and higher-order derivatives of energy evaluated
+at :math:`N_0` gives the following expressions for the chemical potential, chemical hardness, and hyper-hardnesses,
 
  .. math::
 
@@ -118,7 +119,8 @@ the so-called chemical potential and chemical hardness and hyper-hardness, equal
 These are implemented in :class:`chemtools.tool.globaltool.RationalGlobalTool.chemical_potential`
 and :class:`chemtools.tool.globaltool.RationalGlobalTool.chemical_hardness`.
 
-Accordingly, given the rational energy model, chemical softness and hyper-softness equal:
+Using these expressions, one can derive the following expressions for the chemical softness and the low-order
+hyper-softnesses,
 
  .. math::
 
@@ -137,14 +139,15 @@ Accordingly, given the rational energy model, chemical softness and hyper-softne
 	       \frac{\left(1 + b_1 N_0\right)^15}{2^5 b_1^5 \left(a_1 - a_0 b_1\right)^5} \\
 	   &= \frac{15 \left(1 + b_1 N_0\right)^7}{8 b_1 \left(a_1 - a_0 b_1\right)^3}
 
-The higher order hyper-softness exists and can be evaluated through Eq. ???, as implemented in
-:meth:`chemtools.tool.globaltool.RationalGlobalTool.hyper_softness`.
+
+ChemTools can also compute higher-order hyper-softnesses, using the (extended) inverse function theorem for
+derivatives. Please refer to :ref:`derivation_global_softness` for details.
 
 To obtain the :ref:`derived global reactivity indicators <derived_indicators>` for
-the exponential energy model, the maximum number of electrons accepted by the system should be calculated.
+the rational energy model, the maximum number of electrons accepted by the system should be calculated.
 
  .. TODO::
-    #. Write down the value of N_max and derived global reactivity tools
+    #. Incude :math:`N_{\text{max}}=\infty` and derived global reactivity tools
 
 **References:**
 
