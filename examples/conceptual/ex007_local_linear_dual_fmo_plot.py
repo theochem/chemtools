@@ -37,6 +37,7 @@ cube.dump_cube('coh2_dual_fmo.cube', dual)
 print_vmd_script_isosurface('coh2_dual_fmo.vmd', 'coh2_dual_fmo.cube', isosurf=0.005,
                             scalemin=-0.005, scalemax=0.005, colorscheme=[0, 1], negative=True)
 
+# DISCARD BELOW:
 # the code below is for displaying the dual descriptor image on the website, you should remove it
 # when running the script on your machine.
 from tools.rug import plot_existing_image

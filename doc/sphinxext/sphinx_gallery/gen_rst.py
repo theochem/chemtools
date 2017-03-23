@@ -548,6 +548,15 @@ def generate_file_rst(fname, target_dir, src_dir, gallery_conf):
     src_file = os.path.normpath(os.path.join(src_dir, fname))
     example_file = os.path.join(target_dir, fname)
     shutil.copyfile(src_file, example_file)
+
+    # Edit all example scripts copied into target_dir discarding the
+    # section that starts with a "# DISCARD BELOW" comment.
+    with open(example_file, 'r') as example:
+        content = example.read()
+        content = content.split('# DISCARD BELOW')[0]
+    with open(example_file, 'w') as example:
+        example.write(content.strip())
+
     script_blocks = split_code_and_text_blocks(src_file)
     amount_of_code = sum([len(bcontent)
                           for blabel, bcontent in script_blocks
@@ -602,6 +611,10 @@ def generate_file_rst(fname, target_dir, src_dir, gallery_conf):
 
             time_elapsed += rtime
 
+            # Edit the bcontent before converting the code to rst file
+            # discarding the section that starts with a "# DISCARD BELOW" comment.
+            bcontent = bcontent.split('# DISCARD BELOW')[0]
+
             if is_example_notebook_like:
                 example_rst += codestr2rst(bcontent) + '\n'
                 example_rst += code_output
@@ -614,6 +627,14 @@ def generate_file_rst(fname, target_dir, src_dir, gallery_conf):
 
         else:
             example_rst += bcontent + '\n\n'
+
+    # Edit the bcontents stored in script_blocks before generating the ipython
+    # notebooks discarding the section that start with a "# DISCARD BELOW" comment.
+    script_blocks_edited = []
+    for blabel, bcontent in script_blocks:
+        bcontent = bcontent.split('# DISCARD BELOW')[0]
+        script_blocks_edited.append((blabel, bcontent.strip()))
+    script_blocks = script_blocks_edited
 
     clean_modules()
 

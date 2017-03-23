@@ -21,6 +21,7 @@ nci.dump_files('h2o_dimer')
 # obtain an image like the one displayed on the website above the script.
 # $ vmd -e h2o_dimer.vmd
 
+# DISCARD BELOW:
 # the code below is for displaying the NCI image on the website, you should remove it
 # when running the script on your machine.
 from tools.rug import plot_existing_image

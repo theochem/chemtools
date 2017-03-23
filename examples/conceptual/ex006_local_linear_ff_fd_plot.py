@@ -53,6 +53,7 @@ print_vmd_script_isosurface('coh2_ffm_fd.vmd', 'coh2_ffm_fd.cube', isosurf=0.005
 print_vmd_script_isosurface('coh2_ffp_fd.vmd', 'coh2_ffp_fd.cube', isosurf=0.005)
 print_vmd_script_isosurface('coh2_ff0_fd.vmd', 'coh2_ff0_fd.cube', isosurf=0.005)
 
+# DISCARD BELOW:
 # the code below is for displaying the ff image on the website, you should remove it
 # when running the script on your machine.
 from tools.rug import plot_existing_image
