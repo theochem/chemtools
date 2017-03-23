@@ -26,9 +26,11 @@ Quick Start
 ###########
 
 ChemTools is a package for interpreting the outputs of molecular quantum chemistry calculations.
-So in order to use it, you should first perform an electronic structure calculation on your system(s) of interest
-using either `HORTON <http://theochem.github.io/horton/2.0.0/user_estruct.html>`_ or your software of interest generating
-an output file supported by ChemTools. Data file formats currently supported are:
+
+To use Chemtools, you should first perform an electronic structure calculation on your system(s) of interest
+either by using `HORTON <http://theochem.github.io/horton/2.0.0/user_estruct.html>`_ or by using your preferred
+software package to generate an output file in a format that is supported by ChemTools. Currently supported data
+file formats are:
 
  .. TODO::
     Table of data file formats supported or a link where this information is provided.
@@ -41,8 +43,8 @@ How to use ChemTools?
 
 ChemTools is a Python library for post-processing molecular quantum chemistry calculations. So, like any other library,
 it can be directly imported and used in Python scripts and codes.
-However, this requires knowledge of Python and programming. To circumvent this requirement, for users who are not familiar
-with programming or Python in particular, a set of built-in Python scripts have been provided.
+However, this requires knowledge of Python and programming. For users who are not familiar with programming or Python in
+particular, a set of built-in Python scripts are provided.
 These can be used on a command-line interface and controlled through command-line options and flags.
 
 
@@ -82,7 +84,7 @@ and :ref:`Examples Gallery <examples gallery>` for specific examples and scripts
 ChemTools as Python Scripts
 ---------------------------
 
-The built-in scripts allow using ChemTools through command-line without
+The built-in scripts allow ChemTools to be run on the command-line, without any programming.
 requiring any programming. We have tried to make these scripts as versatile as possible, however, not every
 feature of ChemTools is accessible through scripts. These built-in scripts all have the ``chemtools-*.py``
 filename format, and ``--help`` or ``-h`` flag can be used to learn the arguments required to perform the desired

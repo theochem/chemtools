@@ -77,8 +77,8 @@ LFS Installation
 `Git Large File Storage (LFS) <https://git-lfs.github.com/>`_ has been used to store the files
 and images used in the examples' gallery. In order words, all files in ``doc/examples/*`` are
 stored remotely, and only a text pointer to these files exists in the repository.
-These files need to be downloaded separately, if you would like to run the example scripts or
-make Chemtools' HTML with sphinx.
+These files need to be downloaded separately if you would like to run the example scripts, go through
+tutorials (using exactly the same files used) or make Chemtools HTML with sphinx.
 
 First, you need to install Git LFS.
 
