@@ -11,27 +11,25 @@ EX6: Plot Linear Fukui function (FD Approach)
    to plot Fukui function iso-surfaces.
 '''
 
-from chemtools import LocalConceptualDFT, CubeGen, print_vmd_script_isosurface
+from chemtools import LocalConceptualDFT, CubeGen, print_vmd_script_isosurface, context
 
 # 1. Make a Cubic grid for plotting Fukui functions.
 
-# relative path to molecule's file
-file_path = '../../data/examples/coh2_q+0_ub3lyp_6311g.fchk'
+# make list of path to 3 molecule's fchk files used in finite difference approach.
+file_path = [context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'),
+             context.get_fn('examples/ch2o_q+1_ub3lyp_augccpvtz.fchk'),
+             context.get_fn('examples/ch2o_q-1_ub3lyp_augccpvtz.fchk')]
+
 # make molecular cubic grid  with points spaced by 0.2 a.u. &
 # extending 5.0 a.u. on every side of molecule
-cube = CubeGen.from_file(file_path, spacing=0.2, threshold=5.0)
-
+# all 3 molecules have the same geoemetry (they just differ in the number of electrons
+# and multiplicity), so the cubic grid based on the first molecule works for all.
+cube = CubeGen.from_file(file_path[0], spacing=0.2, threshold=5.0)
 
 # 2. Build linear energy model for Formaldehyde using finite difference (FD) approach.
 
-# make a list of 3 molecules' files used in finite difference approach.
-# these molecules have the same geoemetry (they just differ in the number of electrons
-# and multiplicity), so the cubic grid based on the first molecule made in section 1 works
-# for all of them.
-filenames = ['../../data/examples/coh2_q+0_ub3lyp_6311g.fchk',
-             '../../data/examples/coh2_q+1_ub3lyp_6311g.fchk',
-             '../../data/examples/coh2_q-1_ub3lyp_6311g.fchk']
-tool = LocalConceptualDFT.from_file(filenames, model='linear', points=cube.points)
+# file_path contains 3 files are given, so FD approach is takn
+tool = LocalConceptualDFT.from_file(file_path, model='linear', points=cube.points)
 
 # 3. Compute Fukui functions (f+, f- and f0) using linear energy model.
 
@@ -49,7 +47,7 @@ cube.dump_cube('coh2_ffm_fd.cube', ffm)
 cube.dump_cube('coh2_ffp_fd.cube', ffp)
 cube.dump_cube('coh2_ff0_fd.cube', ff0)
 # generate VMD scripts for visualizing iso-surfaces with VMD
-print_vmd_script_isosurface('coh2_ffm_fd.vmd', 'coh2_ffm_fd.cube', isosurf=0.005)
+print_vmd_script_isosurface('coh2_ffm_fd.vmd', 'coh2_ffm_fd.cube', isosurf=0.005, negative=True, colorscheme=[0, 1])
 print_vmd_script_isosurface('coh2_ffp_fd.vmd', 'coh2_ffp_fd.cube', isosurf=0.005)
 print_vmd_script_isosurface('coh2_ff0_fd.vmd', 'coh2_ff0_fd.cube', isosurf=0.005)
 

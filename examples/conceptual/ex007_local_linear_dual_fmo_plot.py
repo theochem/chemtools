@@ -11,12 +11,12 @@ EX7: Plot Quadratic Dual Descriptor (FMO Approach)
    script to visualize its iso-surface.
 '''
 
-from chemtools import LocalConceptualDFT, CubeGen, print_vmd_script_isosurface
+from chemtools import LocalConceptualDFT, CubeGen, print_vmd_script_isosurface, context
 
 # 1. Make cubic grid for plotting dual descriptor.
 
-# relative path to molecule's file
-file_path = '../../data/examples/coh2_q+0_ub3lyp_6311g.fchk'
+# path to molecule's fchk file
+file_path = context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk')
 # make molecular cubic grid  with points spaced by 0.2 a.u. &
 # extending 5.0 a.u. on every side of molecule
 cube = CubeGen.from_file(file_path, spacing=0.2, threshold=5.0)

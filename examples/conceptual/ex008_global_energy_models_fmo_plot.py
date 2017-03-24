@@ -12,16 +12,12 @@ EX8: Plot Energy Models (FMO Approach)
 
 import numpy as np
 import matplotlib.pyplot as plt
-from chemtools import GlobalConceptualDFT
+from chemtools import GlobalConceptualDFT, context
 
 # 1. Build linear and quadratic energy models using FMO approach
 
-# relative path to molecule's file
-# file_path = ['../../data/examples/ch2o_q+0_ub3lyp_augccpvtz.fchk',
-#              '../../data/examples/ch2o_q+1_ub3lyp_augccpvtz.fchk',
-#              '../../data/examples/ch2o_q-1_ub3lyp_augccpvtz.fchk']
-# relative path to molecule's file
-file_path = '../../data/examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'
+# path to molecule's fchk file
+file_path = context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk')
 # build linear & quadratic gloabl conceptual DFT tool (one file is passed, so FMO approach is taken)
 tool_lin = GlobalConceptualDFT.from_file(file_path, model='linear')
 tool_qua = GlobalConceptualDFT.from_file(file_path, model='quadratic')

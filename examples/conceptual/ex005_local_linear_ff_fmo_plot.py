@@ -11,12 +11,12 @@ EX5: Plot Linear Fukui function (FMO Approach)
    to plot Fukui function iso-surfaces.
 '''
 
-from chemtools import LocalConceptualDFT, CubeGen, print_vmd_script_isosurface
+from chemtools import LocalConceptualDFT, CubeGen, print_vmd_script_isosurface, context
 
 # 1. Make a Cubic grid for plotting Fukui functions.
 
-# relative path to molecule's file
-file_path = '../../data/examples/coh2_q+0_ub3lyp_6311g.fchk'
+# path to molecule's fchk file
+file_path = context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk')
 # make molecular cubic grid  with points spaced by 0.2 a.u. &
 # extending 5.0 a.u. on every side of molecule
 cube = CubeGen.from_file(file_path, spacing=0.2, threshold=5.0)
