@@ -26,13 +26,15 @@
    linear, quadratic, exponential, general energy models.
 '''
 
+
 import math
 import warnings
+from abc import ABCMeta, abstractmethod
 import numpy as np
 import sympy as sp
 from scipy.optimize import root
 from chemtools.utils import doc_inherit
-from abc import ABCMeta, abstractmethod
+
 
 
 class BaseGlobalTool(object):
@@ -59,7 +61,7 @@ class BaseGlobalTool(object):
         self._energy_zero = energy_zero
         self._energy_plus = energy_plus
         self._energy_minus = energy_minus
-        # Calculate ionization potential and electron affinity
+        # calculate ionization potential and electron affinity
         self._ip = energy_minus - energy_zero
         self._ea = energy_zero - energy_plus
 
@@ -91,7 +93,7 @@ class BaseGlobalTool(object):
         '''
         Ionization potential (IP) of the :math:`N_0` -electron system defined as,
 
-        .. math:: I = E(N_0 - 1) - E(N_0)
+        .. math:: IP = E(N_0 - 1) - E(N_0)
         '''
         return self._ip
 
@@ -107,7 +109,7 @@ class BaseGlobalTool(object):
         '''
         Electron affinity (EA) of the :math:`N_0` -electron system defined as,
 
-        .. math:: A = E(N_0) - E(N_0 + 1)
+        .. math:: EA = E(N_0) - E(N_0 + 1)
         '''
         return self._ea
 
@@ -123,7 +125,7 @@ class BaseGlobalTool(object):
         r'''
         Mulliken electronegativity defined as negative :attr:`chemical_potential`,
 
-        .. math:: \chi_{Mulliken} = - \mu
+        .. math:: \chi_{\text{Mulliken}} = - \mu
         '''
         if self.chemical_potential is None:
             return None
@@ -135,25 +137,14 @@ class BaseGlobalTool(object):
         r'''
         Electrophilicity defined as,
 
-        .. math:: \omega_{\text{electrophile}} = \text{sgn}(N_0 - N_{max}) (E(N_0) - E(N_{max}))
+        .. math::
+           \omega_{\text{electrophilicity}} = \text{sgn}\left(N_0 - N_{\text{max}}\right)
+                                              \times \left(E(N_0) - E(N_{\text{max}})\right)
         '''
-        # sign = math.copysign(1, self._n0 - self._n_max)
-        # value = sign * (self._energy_zero - self.energy(self._n_max))
         if self._n_max is None:
             return None
-        value = self._energy_zero - self.energy(self._n_max)
-        return value
-
-    @property
-    def nucleophilicity(self):
-        r'''
-        Nucleophilicity defined as,
-        '''
-        if self.electrophilicity is None:
-            return None
-        if self.electrophilicity == 0.0:
-            return None
-        value = 1.0 / self.electrophilicity
+        sign = np.sign(self._n0 - self._n_max)
+        value = sign * (self._energy_zero - self.energy(self._n_max))
         return value
 
     @property
@@ -161,13 +152,14 @@ class BaseGlobalTool(object):
         r'''
         Nucleofugality defined as,
 
-        .. math:: \nu_{\text {nucleofuge}} = \text {sgn}(N_0 + 1 - N_{max}) (E(N_0 + 1) - E(N_{max}))
+        .. math::
+           \nu_{\text{nucleofugality}} = \text{sgn}\left(N_0 + 1 - N_{\text{max}}\right)
+                                         \times \left(E(N_0 + 1) - E(N_{\text{max}})\right)
         '''
-        # sign = math.copysign(1, self._n0 + 1 - self._n_max)
-        # value = sign * (self.energy(self._n0 + 1) - self.energy(self._n_max))
-        if self.energy(self._n_max) is None:
+        if self._n_max is None:
             return None
-        value = self.energy(self._n0 + 1) - self.energy(self._n_max)
+        sign = np.sign(self._n0 + 1 - self._n_max)
+        value = sign * (self.energy(self._n0 + 1) - self.energy(self._n_max))
         return value
 
     @property
@@ -175,13 +167,14 @@ class BaseGlobalTool(object):
         r'''
         Electrofugality defined as,
 
-        .. math:: \nu_{\text {electrofuge}} = \text {sgn}(N_0 - 1 - N_{max}) (E(N_0 - 1) - E(N_{max}))
+        .. math::
+           \nu_{\text{electrofugality}} = \text{sgn}\left(N_0 - 1 - N_{\text{max}}\right)
+                                          \times \left(E(N_0 - 1) - E(N_{\text{max}})\right)
         '''
-        # sign = math.copysign(1, self._n0 - 1 - self._n_max)
-        # value = sign * (self.energy(self._n0 - 1) - self.energy(self._n_max))
-        if self.energy(self._n_max) is None:
+        if self._n_max is None:
             return None
-        value = self.energy(self._n0 - 1) - self.energy(self._n_max)
+        sign = np.sign(self._n0 - 1 - self._n_max)
+        value = sign * (self.energy(self._n0 - 1) - self.energy(self._n_max))
         return value
 
     @property
@@ -191,8 +184,8 @@ class BaseGlobalTool(object):
         the number of electrons at fixed external potential evaluated at :math:`N_0`,
 
         .. math::
-
-           \mu  = {\left. {\left( {\frac{{\partial E}}{{\partial N}}} \right)_{v(r)}} \right|_{N = N_0}}
+           \mu = \left. \left(\frac{\partial E}{\partial N}
+                        \right)_{v(\mathbf{r})} \right|_{N = N_0}
         '''
         value = self.energy_derivative(self._n0, order=1)
         return value
@@ -211,8 +204,8 @@ class BaseGlobalTool(object):
         the number of electrons at fixed external potential evaluated at :math:`N_0`,
 
         .. math::
-
-           \eta  = {\left. {\left( {\frac{{{\partial ^2}E}}{{\partial {N^2}}}} \right)_{v(r)}} \right|_{N = N_0}}
+           \eta  = \left. \left(\frac{\partial^2 E}{\partial N^2}
+                          \right)_{v(\mathbf{r})} \right|_{N = N_0}
         '''
         value = self.energy_derivative(self._n0, order=2)
         return value
@@ -232,8 +225,8 @@ class BaseGlobalTool(object):
         equal to the inverse chemical hardness.
 
         .. math::
-
-           S = - \left. \left( \frac{\partial^2\Omega}{\partial\mu^2} \right)_{v(r)} \right|_{N = N_0} = \frac{1}{\eta}
+           S = - \left. \left(\frac{\partial^2 \Omega}{\partial \mu^2}
+                        \right)_{v(\mathbf{r})}\right|_{N = N_0} = \frac{1}{\eta}
         '''
         hardness = self.chemical_hardness
         if hardness is None:
@@ -242,19 +235,19 @@ class BaseGlobalTool(object):
             value = 1.0 / self.chemical_hardness
         else:
             value = None
-        #TODO: when grand potential derivative is ready, it is better to calculate softness through that.
+        # TODO: when grand potential derivative is ready, it is better to calculate softness through that.
         #value = self.grand_potential_derivative(self._n0, 1)
         return value
 
     def hyper_hardness(self, order=2):
         r'''
-        :math:`n^{th}`-order Hyper hardness defined as the :math:`(n+1)^{th}` -order derivative, where :math:`n \geq 2`,
-        of the energy model w.r.t the number of electrons at fixed external potential evaluated
-        at :math:`N_0`.
+        :math:`n^{\text{th}}`-order hyper hardness defined as the :math:`(n+1)^{\text{th}}`-order
+        derivative, where :math:`n \geq 2`, of the energy model w.r.t the number of electrons at
+        fixed external potential evaluated at :math:`N_0`.
 
         .. math::
-
-           \eta^{(n)} = \left. \left( \frac{\partial^{n+1} E}{\partial N^{n+1}} \right)_{v(r)} \right|_{N = N_0} \text{for } n \geq 2
+           \eta^{(n)} = \left. \left(\frac{\partial^{n+1} E}{\partial N^{n+1}}
+                        \right)_{v(\mathbf{r})} \right|_{N = N_0} \quad \text{for} \quad n \geq 2
 
         Parameters
         ----------
@@ -268,13 +261,13 @@ class BaseGlobalTool(object):
 
     def hyper_softness(self, order):
         r'''
-        :math:`n^{th}`-order Hyper softness defined as the :math:`(n+1)^{th}` -order derivative, where :math:`n \geq 2`,
-        of the grand potential model w.r.t the number of electrons at fixed external potential
-        evaluated at :math:`N_0`.
+        :math:`n^{\text{th}}`-order hyper softness defined as the :math:`(n+1)^{\text{th}}`-order
+        derivative, where :math:`n \geq 2`, of the grand potential model w.r.t the number of
+        electrons at fixed external potential evaluated at :math:`N_0`.
 
         .. math::
-
-           S^{(n)} = - \left. \left( \frac{\partial^{n+1}\Omega}{\partial\mu^{n+1}} \right)_{v(r)} \right|_{N = N_0} \text{for } n \geq 2
+           S^{(n)} = - \left. \left(\frac{\partial^{n+1} \Omega}{\partial \mu^{n+1}}
+                       \right)_{v(\mathbf{r})} \right|_{N = N_0} \quad \text{for} \quad n \geq 2
 
         Parameters
         ----------
@@ -288,9 +281,9 @@ class BaseGlobalTool(object):
 
     @abstractmethod
     def energy(self, n_elec):
-        '''
-        Return the value of energy model for the specified number of electrons,
-        i.e. :math:`E(N_{elec})`.
+        r'''
+        Return energy model :math:`E(N)` evaluated for the specified number of electrons,
+        i.e. :math:`E(N_{\text{elec}})`.
 
         Parameters
         ----------
@@ -302,12 +295,13 @@ class BaseGlobalTool(object):
     @abstractmethod
     def energy_derivative(self, n_elec, order=1):
         r'''
-        Return the :math:`n^{the}` -order derivative of energy model w.r.t. to the number of electrons
-        at fixed chemical potential evaluated for the specified number of electrons.
+        Return the :math:`n^{\text{th}}`-order derivative of energy model :math:`E(N)` w.r.t.
+        to the number of electrons at fixed chemical potential evaluated for the specified number
+        of electrons.
 
         .. math::
-
-           {\left. {\left( {\frac{{\partial^{n} E}}{{\partial N^n}}} \right)_{v(r)}} \right|_{N = N_{elec}}}
+           \left. \left(\frac{\partial^n E}{\partial N^n}
+                  \right)_{v(\mathbf{r})}\right|_{N = N_{\text{elec}}}
 
         Parameters
         ----------
@@ -318,7 +312,7 @@ class BaseGlobalTool(object):
 
         Note
         ----
-        For :math:`N_{elec} = N_0` the first, second and higher order derivatives are equal
+        For :math:`N_{\text{elec}} = N_0` the first, second and higher order derivatives are equal
         to the :attr:`BaseGlobalTool.chemical_potential`, :attr:`BaseGlobalTool.chemical_hardness`
         and :attr:`BaseGlobalTool.hyper_hardness`, respectively.
         '''
@@ -374,20 +368,19 @@ class LinearGlobalTool(BaseGlobalTool):
     The energy is approximated as a piece-wise linear function of the number of electrons:
 
     .. math::
-
        E(N) = \begin{cases}
-                    (N_0 - N) E(N_0 - 1) + (N - (N_0 - 1)) E(N_0) & N < N_0 \\
-                    (N_0 + 1 + N) E(N_0 - 1) + (N - N_0) E(N_0 + 1) & N \geqslant N_0 \\
+               (N_0 - N) \times E(N_0 - 1) + (N - N_0 + 1) \times E(N_0) & N \leqslant N_0 \\
+               (N_0 + 1 - N) \times E(N_0) + (N - N_0) \times E(N_0 + 1) & N \geqslant N_0 \\
               \end{cases}
 
-    Because the energy model is not differentiable at integer number of electrons, the first derivative of the
-    energy w.r.t. number if electrons is calculated from above, from below and averaged:
+    Because the energy model is not differentiable at integer number of electrons, the first
+    derivative of the energy w.r.t. number if electrons is calculated from above, from below
+    and averaged:
 
     .. math::
-
-       \mu^{-} &= -I \\\
+       \mu^{-} &= -IP \\\
        \mu^{0} &= \frac{\mu^{+} + \mu^{-}}{2} \\
-       \mu^{+} &= -A \\
+       \mu^{+} &= -EA \\
     '''
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
         super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0)
@@ -399,29 +392,29 @@ class LinearGlobalTool(BaseGlobalTool):
     @property
     def mu_minus(self):
         r'''
-        Chemical potential from below, i.e. :math:`N_0^{-}`, given by:
+        Chemical potential from below, i.e. :math:`N_0^{-}`, given by,
 
-        .. math:: \mu^{-} = E(N_0) - E(N_0 - 1)  = -I
+        .. math:: \mu^{-} = E\left(N_0\right) - E\left(N_0 - 1\right)  = -IP
         '''
         return -1 * self._ip
 
     @property
     def mu_plus(self):
         r'''
-        Chemical potential from above, i.e. :math:`N_0^{+}`, given by:
+        Chemical potential from above, i.e. :math:`N_0^{+}`, given by,
 
-        .. math:: \mu^{+} = E(N_0 + 1) - E(N_0)  = -A
+        .. math:: \mu^{+} = E\left(N_0 + 1\right) - E\left(N_0\right)  = -EA
         '''
         return -1 * self._ea
 
     @property
     def mu_zero(self):
         r'''
-        Chemical potential averaged, given by:
+        Chemical potential averaged, given by,
 
         .. math::
-
-            \mu^{0} = \frac{\mu^{+} + \mu^{-}}{2} = \frac{E(N_0 + 1) - E(N_0 - 1)}{2} = - \frac{I + A}{2}
+           \mu^{0} = \frac{\mu^{+} + \mu^{-}}{2}
+                   = \frac{E\left(N_0 + 1\right) - E\left(N_0 - 1\right)}{2} = - \frac{IP + EA}{2}
         '''
         return -0.5 * (self._ea + self._ip)
 
@@ -479,10 +472,10 @@ class QuadraticGlobalTool(BaseGlobalTool):
     the number of electrons at fixed external potential are given by:
 
     .. math::
-
-       {\left( {\frac{{\partial E}}{{\partial N}}} \right)_{v(r)}} &= b + 2 c N \\
-       {\left( {\frac{{{\partial ^2}E}}{{\partial {N^2}}}} \right)_{v(r)}} &= 2 c \\
-       {\left( {\frac{{{\partial ^n}E}}{{\partial {N^n}}}} \right)_{v(r)}} &= 0 \text{ for } n \geq 2
+       \left(\frac{\partial E}{\partial N}\right)_{v(\mathbf{r})} &= b + 2 c N \\
+       \left(\frac{\partial^2 E}{\partial N^2}\right)_{v(\mathbf{r})} &= 2 c \\
+       \left(\frac{\partial^n E}{\partial N^n}\right)_{v(\mathbf{r})} &= 0
+             \quad \text{for} \quad n \geq 2
     '''
     @doc_inherit(BaseGlobalTool)
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
@@ -542,12 +535,12 @@ class ExponentialGlobalTool(BaseGlobalTool):
 
     .. math:: E(N) = A \exp(-\gamma(N-N_0)) + B
 
-    The :math:`n^{\text{th}}` -order derivative of the rational energy model with respect to
+    The :math:`n^{\text{th}}`-order derivative of the rational energy model with respect to
     the number of electrons at fixed external potential is given by:
 
     .. math::
-       \left( {\frac{{{\partial ^n}E}}{{\partial {N^n}}}} \right)_{v(\mathbf{r})} =
-               A {(-\gamma) ^n} \exp(-\gamma (N - N_0))
+       \left(\frac{\partial^n E}{\partial N^n}\right)_{v(\mathbf{r})} =
+              A (-\gamma)^n \exp(-\gamma (N - N_0))
     '''
     @doc_inherit(BaseGlobalTool)
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
@@ -626,8 +619,8 @@ class RationalGlobalTool(BaseGlobalTool):
     the number of electrons at fixed external potential is given by:
 
     .. math::
-       \left( {\frac{{{\partial ^n}E}}{{\partial {N^n}}}} \right)_{v(\mathbf{r})} =
-               \frac{b_1^{n - 1} (a_1 - a_0 b_1) n!}{(1 + b_1 N)^{2n}}
+       \left(\frac{\partial^n E}{\partial N^n} \right)_{v(\mathbf{r})} =
+             \frac{b_1^{n - 1} (a_1 - a_0 b_1) n!}{(1 + b_1 N)^{2n}}
     '''
     @doc_inherit(BaseGlobalTool)
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
