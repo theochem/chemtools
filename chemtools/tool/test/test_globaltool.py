@@ -62,11 +62,11 @@ def test_global_quadratic1():
     np.testing.assert_almost_equal(model.ea, ea, decimal=6)
     np.testing.assert_almost_equal(model.electronegativity, 0.5 * (ip + ea), decimal=6)
     electrophil = (-0.5 * (ip + ea))**2 / (2 * (ip - ea))
-    np.testing.assert_almost_equal(model.electrophilicity, electrophil, decimal=6)
+    np.testing.assert_almost_equal(model.electrophilicity, -electrophil, decimal=6)
     nucleofugal = (ip - 3 * ea)**2 / (8 * (ip - ea))
     np.testing.assert_almost_equal(model.nucleofugality, nucleofugal, decimal=6)
     electrofugal = (3 * ip - ea)**2 / (8 * (ip - ea))
-    np.testing.assert_almost_equal(model.electrofugality, electrofugal, decimal=6)
+    np.testing.assert_almost_equal(model.electrofugality, -electrofugal, decimal=6)
     # check chemical potential, chemical hardness, and related tools
     np.testing.assert_almost_equal(model.chemical_potential, -0.5 * (ip + ea), decimal=6)
     np.testing.assert_almost_equal(model.chemical_hardness, ip - ea, decimal=6)
@@ -121,11 +121,11 @@ def test_global_quadratic2():
     np.testing.assert_almost_equal(model.ea, ea, decimal=6)
     np.testing.assert_almost_equal(model.electronegativity, 0.5 * (ip + ea), decimal=6)
     electrophil = (-0.5 * (ip + ea))**2 / (2 * (ip - ea))
-    np.testing.assert_almost_equal(model.electrophilicity, electrophil, decimal=6)
+    np.testing.assert_almost_equal(model.electrophilicity, -electrophil, decimal=6)
     nucleofugal = (ip - 3 * ea)**2 / (8 * (ip - ea))
     np.testing.assert_almost_equal(model.nucleofugality, nucleofugal, decimal=6)
     electrofugal = (3 * ip - ea)**2 / (8 * (ip - ea))
-    np.testing.assert_almost_equal(model.electrofugality, electrofugal, decimal=6)
+    np.testing.assert_almost_equal(model.electrofugality, -electrofugal, decimal=6)
     # check chemical potential, chemical hardness, and related tools
     np.testing.assert_almost_equal(model.chemical_potential, -0.5 * (ip + ea), decimal=6)
     np.testing.assert_almost_equal(model.chemical_hardness, ip - ea, decimal=6)
@@ -180,11 +180,11 @@ def test_global_quadratic3():
     np.testing.assert_almost_equal(model.ea, ea, decimal=6)
     np.testing.assert_almost_equal(model.electronegativity, 0.5 * (ip + ea), decimal=6)
     electrophil = (-0.5 * (ip + ea))**2 / (2 * (ip - ea))
-    np.testing.assert_almost_equal(model.electrophilicity, electrophil, decimal=6)
+    np.testing.assert_almost_equal(model.electrophilicity, -electrophil, decimal=6)
     nucleofugal = (ip - 3 * ea)**2 / (8 * (ip - ea))
     np.testing.assert_almost_equal(model.nucleofugality, nucleofugal, decimal=6)
     electrofugal = (3 * ip - ea)**2 / (8 * (ip - ea))
-    np.testing.assert_almost_equal(model.electrofugality, electrofugal, decimal=6)
+    np.testing.assert_almost_equal(model.electrofugality, -electrofugal, decimal=6)
     # check chemical potential, chemical hardness, and related tools
     np.testing.assert_almost_equal(model.chemical_potential, -0.5 * (ip + ea), decimal=6)
     np.testing.assert_almost_equal(model.chemical_hardness, ip - ea, decimal=6)
@@ -255,7 +255,7 @@ def test_global_exponential1():
     np.testing.assert_almost_equal(model.energy_derivative(model.n_max, 2), 0.0, decimal=6)
     np.testing.assert_almost_equal(model.energy_derivative(model.n_max, 3), 0.0, decimal=6)
     np.testing.assert_almost_equal(model.electrophilicity, 5.0, decimal=6)
-    np.testing.assert_almost_equal(model.nucleofugality, 4.52418709, decimal=6)
+    np.testing.assert_almost_equal(model.nucleofugality, -4.52418709, decimal=6)
     np.testing.assert_almost_equal(model.electrofugality, 5.52585459, decimal=6)
     #np.testing.assert_almost_equal(model.hyper_softness(2), 0.0, decimal=6)
     # check grand potential
@@ -325,7 +325,7 @@ def test_global_rational1():
     np.testing.assert_almost_equal(model.energy_derivative(model.n_max, 2), 0.0, decimal=6)
     np.testing.assert_almost_equal(model.energy_derivative(model.n_max, 3), 0.0, decimal=6)
     np.testing.assert_almost_equal(model.electrophilicity, 1.51785714, decimal=6)
-    np.testing.assert_almost_equal(model.nucleofugality, 1.17511520, decimal=6)
+    np.testing.assert_almost_equal(model.nucleofugality, -1.17511520, decimal=6)
     np.testing.assert_almost_equal(model.electrofugality, 2.14285714, decimal=6)
 
 
@@ -373,7 +373,7 @@ def test_global_rational2():
     np.testing.assert_almost_equal(model.energy_derivative(model.n_max, 2), 0.0, decimal=6)
     np.testing.assert_almost_equal(model.energy_derivative(model.n_max, 3), 0.0, decimal=6)
     np.testing.assert_almost_equal(model.electrophilicity, 2.33970276, decimal=6)
-    np.testing.assert_almost_equal(model.nucleofugality, 2.099047619, decimal=6)
+    np.testing.assert_almost_equal(model.nucleofugality, -2.099047619, decimal=6)
     np.testing.assert_almost_equal(model.electrofugality, 2.64268585, decimal=6)
 
 

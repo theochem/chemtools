@@ -138,12 +138,12 @@ class BaseGlobalTool(object):
         Electrophilicity defined as,
 
         .. math::
-           \omega_{\text{electrophilicity}} = \text{sgn}\left(N_0 - N_{\text{max}}\right)
+           \omega_{\text{electrophilicity}} = \text{sgn}\left(N_{\text{max}} - N_0\right)
                                               \times \left(E(N_0) - E(N_{\text{max}})\right)
         '''
         if self._n_max is None:
             return None
-        sign = np.sign(self._n0 - self._n_max)
+        sign = np.sign(self._n_max - self._n0)
         value = sign * (self._energy_zero - self.energy(self._n_max))
         return value
 
@@ -168,12 +168,12 @@ class BaseGlobalTool(object):
         Electrofugality defined as,
 
         .. math::
-           \nu_{\text{electrofugality}} = \text{sgn}\left(N_0 - 1 - N_{\text{max}}\right)
+           \nu_{\text{electrofugality}} = \text{sgn}\left(N_{\text{max}} - N_0 + 1\right)
                                           \times \left(E(N_0 - 1) - E(N_{\text{max}})\right)
         '''
         if self._n_max is None:
             return None
-        sign = np.sign(self._n0 - 1 - self._n_max)
+        sign = np.sign(self._n_max - self._n0 + 1)
         value = sign * (self.energy(self._n0 - 1) - self.energy(self._n_max))
         return value
 

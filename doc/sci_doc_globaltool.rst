@@ -200,7 +200,8 @@ By convention, we decided that for systems with :math:`\Delta N_{\text{max}} < 0
 as negative. This gives an extended definition for the electrophilicity
 
  .. math::
-    {\Delta E}_{\text {electrophile}} = \text{sgn}\left(N_0 - N_{\text{max}}\right) \times \left(E(N_0) - E(N_{\text{max}})\right)
+    {\Delta E}_{\text {electrophile}} =
+    \text{sgn}\left(N_{\text{max}} - N_0\right) \times \left(E(N_0) - E(N_{\text{max}})\right)
 
 Here :math:`\text{sgn}(x)` is the sign of the argument :math:`x`. I.e.,
 
@@ -282,7 +283,8 @@ to their environment. We therefore define them so that they have negative values
 motivating the extended definition
 
  .. math::
-    {\Delta E}_{\text {electrofuge}} = \text{sgn}\left(N_0 - 1 - N_{\text{max}}\right) \times \left(E(N_0 - 1) - E(N_{\text{max}})\right)
+    {\Delta E}_{\text {electrofuge}} =
+    \text{sgn}\left(N_{\text{max}} - N_0 + 1\right) \times \left(E(N_0 - 1) - E(N_{\text{max}})\right)
 
 In general, small (ideally negative) values of electrofugality index are associated with better leaving groups.
 Ergo,

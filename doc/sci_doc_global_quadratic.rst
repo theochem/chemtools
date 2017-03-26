@@ -147,6 +147,8 @@ to zero,
 
 The related :ref:`derived global reactivity indicators <derived_indicators>` for the quadratic energy model are:
 
+ .. todo:: include the generalized singned definitions.
+
  .. math::
 
     \omega_{\text{electrophilicity}} &= E\left(N_0\right) - E\left(N_{\text{max}}\right)
