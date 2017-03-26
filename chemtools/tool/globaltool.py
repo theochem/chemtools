@@ -27,6 +27,7 @@
 '''
 
 import math
+import warnings
 import numpy as np
 import sympy as sp
 from scipy.optimize import root
@@ -429,32 +430,39 @@ class LinearGlobalTool(BaseGlobalTool):
         if n_elec is None:
             return None
         if n_elec < 0.0:
-            raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
+            raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
+        if not self._n0 - 1 <= n_elec <= self._n0 + 1:
+            warnings.warn('Energy evaluated for n_elec={0} outside of '.format(n_elec) +
+                          'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
+        # evaluate energy
+        value = self._energy_zero
         if n_elec < self._n0:
-            return (self._n0 - n_elec) * self._ip + self._energy_zero
+            value += (self._n0 - n_elec) * self._ip
         elif n_elec > self._n0:
-            return (self._n0 - n_elec) * self._ea + self._energy_zero
-        else:
-            return self._energy_zero
+            value += (self._n0 - n_elec) * self._ea
+        return value
 
     @doc_inherit(BaseGlobalTool)
     def energy_derivative(self, n_elec, order=1):
         if n_elec is None:
             return None
         if n_elec < 0.0:
-            raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
+            raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
+        if not self._n0 - 1 <= n_elec <= self._n0 + 1:
+            warnings.warn('Energy derivative evaluated for n_elec={0} outside of '.format(n_elec) +
+                          'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
         if not(isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
+        # evaluate derivative
         if n_elec == self._n0:
-            return None
+            deriv = None
         elif order >= 2:
-            return 0.0
+            deriv = 0.0
         elif n_elec < self._n0:
-            return - self._ip
+            deriv = - self._ip
         elif n_elec > self._n0:
-            return - self._ea
-        else:
-            raise ValueError('')
+            deriv = - self._ea
+        return deriv
 
 
 class QuadraticGlobalTool(BaseGlobalTool):
@@ -497,16 +505,24 @@ class QuadraticGlobalTool(BaseGlobalTool):
     @doc_inherit(BaseGlobalTool)
     def energy(self, n_elec):
         if n_elec < 0.0:
-            raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
+            raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
+        if not self._n0 - 1 <= n_elec <= self._n0 + 1:
+            warnings.warn('Energy evaluated for n_elec={0} outside of '.format(n_elec) +
+                          'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
+        # evaluate energy
         value = self._params[0] + self._params[1] * n_elec + self._params[2] * n_elec**2
         return value
 
     @doc_inherit(BaseGlobalTool)
     def energy_derivative(self, n_elec, order=1):
         if n_elec < 0.0:
-            raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
+            raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
+        if not self._n0 - 1 <= n_elec <= self._n0 + 1:
+            warnings.warn('Energy derivative evaluated for n_elec={0} outside of '.format(n_elec) +
+                          'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
         if not(isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
+        # evaluate derivative
         if order == 1:
             deriv = self._params[1] + 2 * n_elec * self._params[2]
         elif order == 2:
@@ -522,38 +538,40 @@ class ExponentialGlobalTool(BaseGlobalTool):
     given :math:`E(N_0 - 1)`, :math:`E(N_0)` and :math:`E(N_0 + 1)` known values of energy.
 
     The energy is approximated as a exponential function of the number of electrons,
-    and the three unknown parameters are obtained by fitting to the given values of energy.
+    and the three unknown parameters are obtained by interpolating to the given values of energy.
 
     .. math:: E(N) = A \exp(-\gamma(N-N_0)) + B
 
-    The :math:`n^{th}` -order derivative of the rational energy model with respect to the number
-    of electrons at fixed external potential is given by:
+    The :math:`n^{\text{th}}` -order derivative of the rational energy model with respect to
+    the number of electrons at fixed external potential is given by:
 
     .. math::
-
-       {\left( {\frac{{{\partial ^n}E}}{{\partial {N^n}}}} \right)_{v(r)}} =
-                A {(-\gamma) ^n} \exp(-\gamma (N - N_0))
+       \left( {\frac{{{\partial ^n}E}}{{\partial {N^n}}}} \right)_{v(\mathbf{r})} =
+               A {(-\gamma) ^n} \exp(-\gamma (N - N_0))
     '''
     @doc_inherit(BaseGlobalTool)
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
         # check energy values are monotonic, i.e. E(N-1) > E(N) > E(N+1)
         if not (energy_minus > energy_zero and energy_zero > energy_plus):
             energies = [energy_minus, energy_zero, energy_plus]
-            raise ValueError('To fit exponential energy model, energy values should change monotonically! Given E={0}'.format(energies))
+            n_values = [n0 - 1, n0, n0 + 1]
+            raise ValueError('To interpolate exponential energy model, E values vs. N should be ' +
+                             'monotonic! Given E={0} for N={1}.'.format(energies, n_values))
 
         # calculate the A, B, gamma parameters of the model and N_max
-        A = (energy_minus - energy_zero) * (energy_zero - energy_plus)
-        A /= (energy_minus - 2 * energy_zero + energy_plus)
-        B = energy_zero - A
-        gamma = math.log(1. - (energy_minus - 2 * energy_zero + energy_plus) / (energy_plus - energy_zero))
-        self._params = [A, gamma, B]
-        # Calulate N_max
-        self._n_max = 0.0
+        param_a = (energy_minus - energy_zero) * (energy_zero - energy_plus)
+        param_a /= (energy_minus - 2 * energy_zero + energy_plus)
+        param_b = energy_zero - param_a
+        gamma = (energy_minus - 2 * energy_zero + energy_plus) / (energy_plus - energy_zero)
+        gamma = math.log(1. - gamma)
+        self._params = [param_a, gamma, param_b]
+        # calulate N_max
+        self._n_max = float('inf')
         super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0)
 
     @property
     def params(self):
-        '''
+        r'''
         Parameters :math:`A`, :math:`\gamma` and :math:`B` of energy model.
         '''
         return self._params
@@ -561,19 +579,35 @@ class ExponentialGlobalTool(BaseGlobalTool):
     @doc_inherit(BaseGlobalTool)
     def energy(self, n_elec):
         if n_elec < 0.0:
-            raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
-        dN = n_elec - self._n0
-        value = self._params[0] * math.exp(- self._params[1] * dN) + self._params[2]
+            raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
+        if not self._n0 - 1 <= n_elec <= self._n0 + 1:
+            warnings.warn('Energy evaluated for n_elec={0} outside of '.format(n_elec) +
+                          'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
+        # evaluate energy
+        if np.isinf(n_elec):
+            # limit of E(N) as N goes to infinity equals B
+            value = self._params[2]
+        else:
+            dn = n_elec - self._n0
+            value = self._params[0] * math.exp(- self._params[1] * dn) + self._params[2]
         return value
 
     @doc_inherit(BaseGlobalTool)
     def energy_derivative(self, n_elec, order=1):
         if n_elec < 0.0:
-            raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
+            raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
+        if not self._n0 - 1 <= n_elec <= self._n0 + 1:
+            warnings.warn('Energy derivative evaluated for n_elec={0} outside of '.format(n_elec) +
+                          'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
         if not(isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
-        dN = n_elec - self._n0
-        deriv = self._params[0] * math.pow(- self._params[1], order) * math.exp(- self._params[1] * dN)
+        # evaluate derivative
+        if np.isinf(n_elec):
+            # limit of E(N) derivatives as N goes to infinity equals zero
+            deriv = 0.0
+        else:
+            dn = n_elec - self._n0
+            deriv = self._params[0] * (- self._params[1])**order * math.exp(- self._params[1] * dn)
         return deriv
 
 
@@ -584,28 +618,34 @@ class RationalGlobalTool(BaseGlobalTool):
     known values of energy.
 
     The energy is approximated as a rational function of the number of electrons,
-    and the three unknown parameters are obtained by fitting to the given values of energy.
+    and the three unknown parameters are obtained by interpolating to the given values of energy.
 
     .. math:: E(N) = \frac{a_0 + a_1 N}{1 + b_1 N}
 
-    The :math:`n^{th}` -order derivative of the rational energy model with respect to the number
-    of electrons at fixed external potential is given by:
+    The :math:`n^{\text{th}}`-order derivatives of the rational energy model with respect to
+    the number of electrons at fixed external potential is given by:
 
     .. math::
-
-       {\left( {\frac{{{\partial ^n}E}}{{\partial {N^n}}}} \right)_{v(r)}} =
-            \frac{b_1^{n - 1} (a_1 - a_0 b_1) n!}{(1 + b_1 N)^{2n}}
+       \left( {\frac{{{\partial ^n}E}}{{\partial {N^n}}}} \right)_{v(\mathbf{r})} =
+               \frac{b_1^{n - 1} (a_1 - a_0 b_1) n!}{(1 + b_1 N)^{2n}}
     '''
     @doc_inherit(BaseGlobalTool)
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
+        # check energy values are monotonic, i.e. E(N-1) > E(N) > E(N+1)
+        if not energy_minus > energy_zero > energy_plus:
+            energies = [energy_minus, energy_zero, energy_plus]
+            n_values = [n0 - 1, n0, n0 + 1]
+            raise ValueError('To interpolate rational energy model, E values vs. N should be ' +
+                             'monotonic! Given E={0} for N={1}.'.format(energies, n_values))
+
         # calculate parameters a0, a1 and b1 of rational energy model
         b1 = - (energy_plus - 2 * energy_zero + energy_minus)
-        b1 /= ( (n0 + 1) * energy_plus - 2 * n0 * energy_zero + (n0 - 1) * energy_minus )
+        b1 /= ((n0 + 1) * energy_plus - 2 * n0 * energy_zero + (n0 - 1) * energy_minus)
         a1 = (1 + b1 * n0) * (energy_plus - energy_zero) + (b1 * energy_plus)
         a0 = - a1 * n0 + energy_zero * (1 + b1 * n0)
         self._params = [a0, a1, b1]
         # calculate Nmax
-        self._n_max = None
+        self._n_max = float('inf')
         super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0)
 
     @property
@@ -618,18 +658,35 @@ class RationalGlobalTool(BaseGlobalTool):
     @doc_inherit(BaseGlobalTool)
     def energy(self, n_elec):
         if n_elec < 0.0:
-            raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
-        value = (self._params[0] + self._params[1] * n_elec) / (1 + self._params[2] * n_elec)
+            raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
+        if not self._n0 - 1 <= n_elec <= self._n0 + 1:
+            warnings.warn('Energy evaluated for n_elec={0} outside of '.format(n_elec) +
+                          'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
+        # evaluate energy
+        if np.isinf(n_elec):
+            # limit of E(N) as N goes to infinity equals a1/b1
+            value = self._params[1] / self._params[2]
+        else:
+            value = (self._params[0] + self._params[1] * n_elec) / (1 + self._params[2] * n_elec)
         return value
 
     @doc_inherit(BaseGlobalTool)
     def energy_derivative(self, n_elec, order=1):
         if n_elec < 0.0:
-            raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
+            raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
+        if not self._n0 - 1 <= n_elec <= self._n0 + 1:
+            warnings.warn('Energy derivative evaluated for n_elec={0} outside of '.format(n_elec) +
+                          'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
         if not(isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
-        deriv = math.pow(-self._params[2], order - 1) * (self._params[1] - self._params[0] * self._params[2]) * math.factorial(order)
-        deriv /= math.pow(1 + self._params[2] * n_elec, order + 1)
+        # evaluate derivative
+        if np.isinf(n_elec):
+            # limit of E(N) derivatives as N goes to infinity equals zero
+            deriv = 0.0
+        else:
+            deriv = (-self._params[2])**(order - 1)
+            deriv *= (self._params[1] - self._params[0] * self._params[2]) * math.factorial(order)
+            deriv /= (1 + self._params[2] * n_elec)**(order + 1)
         return deriv
 
 
