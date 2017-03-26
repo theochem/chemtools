@@ -19,27 +19,37 @@ from chemtools import GlobalConceptualDFT, context
 # path to molecule's fchk file
 file_path = context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk')
 # build linear & quadratic gloabl conceptual DFT tool (one file is passed, so FMO approach is taken)
-tool_lin = GlobalConceptualDFT.from_file(file_path, model='linear')
-tool_qua = GlobalConceptualDFT.from_file(file_path, model='quadratic')
+model_lin = GlobalConceptualDFT.from_file(file_path, 'linear')
+model_qua = GlobalConceptualDFT.from_file(file_path, 'quadratic')
+model_rat = GlobalConceptualDFT.from_file(file_path, 'rational')
+model_exp = GlobalConceptualDFT.from_file(file_path, 'exponential')
 
 # 2. Compute energy values for various number of electrons.
 
 # get reference number of electrons, n0, from either linear or quadratic models
-n0 = tool_lin.n0
+n0 = model_lin.n0
 # sample number of electrons around n0
 n_values = np.arange(n0 - 1.1, n0 + 1.1, 0.1)
 # compute linear & quadratic energy values for sampled number of electrons
-energy_lin = [tool_lin.energy(n) for n in n_values]
-energy_qua = [tool_qua.energy(n) for n in n_values]
+energy_lin = [model_lin.energy(n) for n in n_values]
+energy_qua = [model_qua.energy(n) for n in n_values]
+energy_rat = [model_rat.energy(n) for n in n_values]
+energy_exp = [model_exp.energy(n) for n in n_values]
 
 # 3. Plot energy vs. number of electrons.
 
 # plot linear enery model
-plt.plot(n_values, energy_lin, color='b', linestyle='-', linewidth=3,
-         label='%s Model' % tool_lin.model.capitalize())
+plt.plot(n_values, energy_lin, color='0.7', linestyle='--', linewidth=2.5,
+         label='%s Model' % model_lin.model.capitalize())
 # plot quadratic energy model
-plt.plot(n_values, energy_qua, color='r', linestyle='-', linewidth=3,
-         label='%s Model' % tool_qua.model.capitalize())
+plt.plot(n_values, energy_qua, color='c', linestyle='-', linewidth=2.5,
+         label='%s Model' % model_qua.model.capitalize())
+# plot rational energy model
+plt.plot(n_values, energy_rat, color='b', linestyle='--', linewidth=2.5,
+         label='%s Model' % model_rat.model.capitalize())
+# plot exponential energy model
+plt.plot(n_values, energy_exp, color='m', linestyle='-', linewidth=2.5,
+         label='%s Model' % model_exp.model.capitalize())
 
 # 4. Plot data points used for modeling energy.
 
@@ -48,14 +58,14 @@ n_data = [n0 - 1, n0, n0 + 1]
 # compute energy values used for modeling energy
 # Note: any of the tools built above can be used for this purpose because
 #       they all have the same energy for N0 - 1, N0, and N0 + 1 electrons.
-e_data = [tool_lin.energy(n) for n in n_data]
+e_data = [model_lin.energy(n) for n in n_data]
 
 # plot given data points
 plt.plot(n_data, e_data, marker='o', markersize=8, color='k', linestyle='', label='Given Data')
 
 # add axis label
-plt.xlabel('Number of electrons, N', fontsize=12)
-plt.ylabel('Energy, E(N)', fontsize=12)
+plt.xlabel('Number of electrons, N', fontsize=12, fontweight='bold')
+plt.ylabel('Energy, E(N)', fontsize=12, fontweight='bold')
 # add title
 plt.title('Frontier Molecular Orbital Approach', fontsize=16, fontweight='bold')
 # add legend & remove legend frame
