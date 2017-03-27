@@ -320,28 +320,36 @@ class BaseGlobalTool(object):
 
     def grand_potential(self, n_elec):
         r'''
-        Return the grand potential model defined as,
+        Return the grand potential model :math:`\Omega \left[\mu(N); v(\mathbf{r})\right]` evaluated
+        for the specified number of electrons :math:`N_{\text{elec}}`, where,
 
-        .. math:: \Omega = E(\left\langle N \right\rangle) - \mu \cdot \left\langle N \right\rangle
+        .. math::
+           \Omega [\mu(N); v(\mathbf{r})] &= E(N) - \mu(N) \times N \\
+              &= E(N) - \left(\frac{\partial E(N)}{\partial N}\right)_{v(\mathbf{r})} \times N
 
         Parameters
         ----------
         n_elec : float
             Number of electrons.
         '''
-        value = self.energy(n_elec) - self.chemical_potential * n_elec
+        if n_elec is None:
+            return None
+        value = self.energy(n_elec) - self.energy_derivative(n_elec, 1) * n_elec
         return value
 
-    def grand_potential_derivative(self, n_elec, order):
+    def grand_potential_derivative(self, n_elec, order=1):
         r'''
-        Return the :math:`n^{the}` -order derivative of grand potential model w.r.t. to the chemical potential
-        at fixed chemical potential evaluated for the specified number of electrons.
+        Return the :math:`n^{\text{th}}`-order derivative of grand potential model w.r.t.
+        to the number of electrons at fixed external potential evaluated for the specified
+        number of electrons :math:`N_{\text{elec}}`, where,
 
         .. math::
-
-           - \left( \frac{\partial^{n+1}\Omega}{\partial\mu^{n+1}} \right)_{v(r)}
-                  = - \left( \frac{\partial^n}{\partial\mu^n} \frac{\partial\Omega}{\partial\mu} \right)_{v(r)}
-                  = \left( \frac{\partial^n N}{\partial \mu^n} \right)_{v(r)}
+           \left( \frac{\partial^n \Omega}{\partial N^n} \right)_{v(\mathbf{r})} =
+           \begin{cases}
+           -\left(\frac{\partial^2 E(N)}{\partial N^2}\right)_{v(\mathbf{r})} \times N \quad & n=1\\
+           -\left(\frac{\partial^{n+1} E(N)}{\partial N^{n+1}}\right)_{v(\mathbf{r})} \times N
+           -\left(\frac{\partial^n E(N)}{\partial N^n}\right)_{v(\mathbf{r})} \quad & n > 1
+           \end{cases}
 
         Parameters
         ----------
@@ -349,14 +357,74 @@ class BaseGlobalTool(object):
             Number of electrons.
         order : int, default=1
             The order of derivative denoted by :math:`n` in the formula.
+        '''
+        if n_elec < 0.0:
+            raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
+        if not(isinstance(order, int) and order > 0):
+            raise ValueError('Argument order should be an integer greater than or equal to 1.')
+        deriv = - self.energy_derivative(n_elec, order + 1) * n_elec
+        if order > 1:
+            deriv -= self.energy_derivative(n_elec, order)
+        return deriv
+
+    def grand_potential_mu(self, mu):
+        r'''
+        Return the grand potential model :math:`\Omega \left[\mu(N); v(\mathbf{r})\right]` evaluated
+        for the specified chemical potential :math:`\mu`, where,
+
+        .. math:: \Omega [\mu(N); v(\mathbf{r})] = E(N) - \mu(N) \times N
+
+        To evaluate this expression, first the number of electrons corresponding to the specified
+        :math:`\mu` should be find, i.e. :math:`N(\mu)=\mu^{-1}(N)`. In other words,
+
+        .. math:: \Omega [\mu; v(\mathbf{r})] = E(N(\mu)) - \mu \times N(\mu)
+
+        As a result, having found :math:`N(\mu)`, the :func:`grand_potential` is used to compute
+        the value of grand potential for the given :math:`\mu`.
+
+        Parameters
+        ----------
+        mu : float
+            Chemical potential :math:`\mu`.
+        '''
+        from scipy.optimize import newton
+        # solve for N corresponding to the given mu
+        func = lambda n: self.energy_derivative(n, 1) - mu
+        fprime = lambda n: self.energy_derivative(n, 2)
+        fprime2 = lambda n: self.energy_derivative(n, 3)
+        try:
+            n_elec = newton(func, self._n0, fprime=fprime, fprime2=fprime2)
+        except:
+            raise ValueError(
+                'Number of electrons corresponding to mu={0} could not be found!'.format(mu))
+        assert abs(self.energy_derivative(n_elec, 1) - mu) < 1.e-6
+        value = self.grand_potential(n_elec)
+        return value
+
+    def grand_potential_mu_derivative(self, mu, order):
+        r'''
+        Return the :math:`n^{\text{th}}`-order derivative of grand potential model w.r.t.
+        to the chemical potential at fixed external potential evaluated for the specified
+        chemical potential.
+
+        .. math::
+           - \left( \frac{\partial^{n+1}\Omega}{\partial\mu^{n+1}} \right)_{v(\mathbf{r})} =
+           - \left(\frac{\partial^n}{\partial\mu^n}
+             \frac{\partial\Omega}{\partial\mu}\right)_{v(\mathbf{r})} =
+             \left( \frac{\partial^n N}{\partial \mu^n} \right)_{v(\mathbf{r})}
+
+        Parameters
+        ----------
+        mu : float
+            Chemical potential.
+        order : int, default=1
+            The order of derivative denoted by :math:`n` in the formula.
 
         Note
         ----
-        For :math:`N_{elec} = N_0` the second and higher order derivatives are equal
+        For :math:`N_{\text{elec}} = N_0` the second and higher order derivatives are equal
         to the :attr:`chemical_softness`, :attr:`hyper_softness`, respectively.
         '''
-        # implementing the Faa di Bruno identity
-        # decide whether we use sympy to evaluate Bell polynomials or code our own Bell polynomial
         pass
 
 
