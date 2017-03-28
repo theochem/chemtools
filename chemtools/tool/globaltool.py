@@ -32,7 +32,7 @@ import warnings
 from abc import ABCMeta, abstractmethod
 import numpy as np
 import sympy as sp
-from scipy.optimize import root, newton
+from scipy.optimize import root, newton, least_squares
 from chemtools.utils import doc_inherit
 
 
@@ -916,7 +916,7 @@ class GeneralGlobalTool(BaseGlobalTool):
         energy_zero = self.energy(n0)
         energy_plus = self.energy(n0 + 1)
         energy_minus = self.energy(n0 - 1)
-        super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0)
+        super(GeneralGlobalTool, self).__init__(energy_zero, energy_plus, energy_minus, n0)
 
     @property
     def params(self):
@@ -1020,29 +1020,24 @@ class GeneralGlobalTool(BaseGlobalTool):
             '''
             return np.array([eqn(args) for eqn in system_eqns])
 
-        # def jacobian(args):
-        #     '''
-        #     Evaluate the Jacobian of the above objective function for the given
-        #     values of parameters.
+        def jacobian(args):
+            '''
+            Evaluate the Jacobian of the above objective function for the given
+            values of parameters.
 
-        #     Parameters
-        #     ----------
-        #     See objective().
-        #     '''
-        #     jac = []
-        #     for row in d_system_eqns:
-        #         jac.append([eqn(args) for eqn in row])
-        #     return np.array(jac)
+            Parameters
+            ----------
+            See objective().
+            '''
+            jac = []
+            for row in d_system_eqns:
+                jac.append([eqn(args) for eqn in row])
+            return np.array(jac)
 
-        # # check if the Jacobian is useable
-        # jac_test = jacobian(guess)
-        # if np.linalg.matrix_rank(jac_test) < np.min(jac_test.shape):
-        #     jacobian = None
-        jacobian = None
         # solve for the parameters in the energy model
         if opts is None:
             opts = {}
-        result = root(objective, guess, jac=jacobian, options=opts)
+        result = least_squares(objective, guess, jac=jacobian, **opts)
         if not result.success:
             raise ValueError(
                 'The system of equations for parameters could not be solved. ' +
