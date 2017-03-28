@@ -38,10 +38,10 @@ from chemtools.utils import doc_inherit
 
 
 class BaseGlobalTool(object):
-    __metaclass__ = ABCMeta
     '''
     Base class of global conceptual DFT reactivity descriptors.
     '''
+    __metaclass__ = ABCMeta
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
         '''
         Parameters
@@ -847,17 +847,17 @@ class RationalGlobalTool(BaseGlobalTool):
 class GeneralGlobalTool(BaseGlobalTool):
     '''
     Class of global conceptual DFT reactivity descriptors based on the user-specified
-    symbolic energy model given known values of energy.
+    symbolic energy model and given known values of energy.
 
     The energy is approximated as a symbolic function of the number of electrons,
-    and the unknown parameters are obtained by fitting to the given values of energy; i.e.
+    and the unknown parameters are obtained by interpolating to the given values of energy; i.e.
     the number of parameters in the model should equal the number of given energy values and
     the corresponding number of electrons.
 
-    The :math:`n^{th}` -order derivative of the symbolic energy model with respect to the number
-    of electrons at fixed external potential is calculated symbolically.
+    The :math:`n^{\text{th}}`-order derivative of the symbolic energy model with respect to the
+    number of electrons at fixed external potential is calculated symbolically.
     '''
-    def __init__(self, expr, n0, n_energies, n_symbol, n0_symbol=None, guess={}, opts={}):
+    def __init__(self, expr, n0, n_energies, n_symbol=None, n0_symbol=None, guess=None, opts=None):
         '''
         Parameters
         ----------
@@ -868,7 +868,7 @@ class GeneralGlobalTool(BaseGlobalTool):
         n_energies : dict
             The energy values of `expr` at different electron-numbers.  The dict has int
             (electron-number) keys, float (energy) values.
-        n_symbol : sp.Symbol
+        n_symbol : sp.Symbol, default=`sp.symbols('N')`
             The symbol in `expr` that represents the number of electrons.
         n0_symbol: sp.Symbol, optional
             The symbol in `expr` that represents the electron-number at which to evaluate
@@ -881,49 +881,96 @@ class GeneralGlobalTool(BaseGlobalTool):
             Optional keyword arguments to pass to the :py:meth:`scipy.optimimze.root` solver
             that is used to solve for the parameters in the model.
         '''
-        # Make sure that the energy expression depends on number of electrons
+        # make sure that the energy expression depends on number of electrons
+        if n_symbol is None:
+            n_symbol = sp.symbols('N')
         if n_symbol not in expr.atoms(sp.Symbol):
             raise ValueError(
-                'The expr={0} does not contain {1} symbol representing the number of electrons.'.format(expr, n_symbol))
+                'The expr={0} does not contain {1} symbol representing '.format(expr, n_symbol) +
+                'the number of electrons.')
         self._n_symb = n_symbol
+        # store minimum and maximum number of electrons used for interpolation
+        self._n_min, self._n_max = np.min(n_energies.keys()), np.max(n_energies.keys())
 
-        # Replace the value of N0 in the energy expression, if N0 exists in the expression.
+        # substitute N0 in energy expression
         if n0_symbol:
             expr = expr.subs(n0_symbol, n0)
 
-        # Solve for the parameters of energy expression
-        self._params = self._solve(expr, n_energies, guess, opts)
-        # Substitute the parameters in the energy expression
+        # list of energy model parameters
+        params = expr.atoms(sp.Symbol)
+        params.remove(self._n_symb)
+        # assign initial values for parameters of energy model
+        if guess is None:
+            guess = {}
+        guess.update({param: 1. for param in params if param not in guess})
+        # solve for the parameters of energy model
+        self._params = self._solve_parameters(expr, n_energies, guess, opts)
+
+        # substitute values of parameters in energy expression
         self._expr = expr.subs(self._params.items())
 
-        # solve for N_max
-        # the N for which the 1st derivative is equal to zero
+        # solve for N_max (number of electrons for which the 1st derivative of energy is zero)
+        self._n_max = self._solve_nmax(n0)
 
-        # Calculate the E(N0 - 1), E(N0) and E(N0 + 1)
+        # calculate E(N0 - 1), E(N0) and E(N0 + 1) values
         energy_zero = self.energy(n0)
         energy_plus = self.energy(n0 + 1)
         energy_minus = self.energy(n0 - 1)
-        # Initialize the base class based on the known energy values
         super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0)
+
+    @property
+    def params(self):
+        '''
+        Parameters dictionary of energy model.
+        '''
+        return self._params
+
+    @property
+    def n_symbol(self):
+        '''
+        Symbol used to denote the number of electrons.
+        '''
+        return self._n_symb
+
+    @property
+    def expression(self):
+        '''
+        Energy expression as a function of number of electrons, :math:`E(N)`.
+        '''
+        return self._expr
 
     @doc_inherit(BaseGlobalTool)
     def energy(self, n_elec):
+        if n_elec < 0.0:
+            raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
+        if not self._n_min <= n_elec <= self._n_max:
+            warnings.warn('Energy evaluated for n_elec={0} outside of '.format(n_elec) +
+                          'interpolation region [{0}, {1}].'.format(self._n_min, self._n_max))
+        # eveluate energy
         value = self._expr.subs(self._n_symb, n_elec)
         return value
 
     @doc_inherit(BaseGlobalTool)
     def energy_derivative(self, n_elec, order=1):
+        if n_elec < 0.0:
+            raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
+        if not self._n0 - 1 <= n_elec <= self._n0 + 1:
+            warnings.warn('Energy derivative evaluated for n_elec={0} outside of '.format(n_elec) +
+                          'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
         if not(isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
+
         # obtain derivative expression
         deriv = self._expr.diff(self._n_symb, order)
         # evaluate derivative expression at n_elec
         deriv = deriv.subs(self._n_symb, n_elec)
         return deriv
 
-    def _solve(self, expr, n_energies, guess={}, opts={}):
-        '''
-        Solve for the parameters of the tool's property expression.
+    def _solve_parameters(self, expr, n_energies, guess, opts=None):
+        r'''
+        Solve for the unknown parameters of the energy model using the given
+        :math:`\left(N, E(N)\right)` pair. This requires solving a system of
+        (non-)linear equations
 
         Parameters
         ----------
@@ -935,27 +982,32 @@ class GeneralGlobalTool(BaseGlobalTool):
             A dictionary of sympy.Symbol keys corresponding to the
             value of the expression's solved parameters.
         '''
-        # Obtain set of parameters in the energy expression
-        params = expr.atoms(sp.Symbol)
-        params.remove(self._n_symb)
+        # obtain set of parameters in the energy expression
+        params = guess.keys()
         if len(params) == 0:
             raise ValueError(
                 'There is no parameters in the energy_expression={0} to solve for.'.format(expr))
+        if not all([param in expr.atoms(sp.Symbol) for param in params]):
+            raise ValueError('The expr={0} does not contain parameters given '.format(expr) +
+                             'in guess={1}'.format(guess))
         if len(params) > len(n_energies):
-            print n_energies
-            print params
-            raise ValueError('Underdetermined system of equations')
+            raise ValueError('Underdetermined system of equations: Number of unknowns parameters ' +
+                             'in the energy model is more than number of given known envergies.')
 
-        # Set the initial guess of the parameters not specified to 0.
-        guess.update({param: 0. for param in params if param not in guess})
-        # initial guess for the parameters in the energy model
+        # intial guess for the parameters in the energy model
         guess = np.array([guess[param] for param in params])
 
-        # Construct system of equations to solve
+        # construct system of equations to solve
         system_eqns = []
+        d_system_eqns = []
         for n, energy in n_energies.iteritems():
             eqn = sp.lambdify((params,), expr.subs(self._n_symb, n) - energy, 'numpy')
             system_eqns.append(eqn)
+            d_eqn_row = []
+            for p in params:
+                d_eqn = sp.lambdify((params,), expr.diff(p).subs(self._n_symb, n), 'numpy')
+                d_eqn_row.append(d_eqn)
+            d_system_eqns.append(d_eqn_row)
 
         def objective(args):
             '''
@@ -968,13 +1020,60 @@ class GeneralGlobalTool(BaseGlobalTool):
             '''
             return np.array([eqn(args) for eqn in system_eqns])
 
-        #TODO: Add jacobina
+        # def jacobian(args):
+        #     '''
+        #     Evaluate the Jacobian of the above objective function for the given
+        #     values of parameters.
 
+        #     Parameters
+        #     ----------
+        #     See objective().
+        #     '''
+        #     jac = []
+        #     for row in d_system_eqns:
+        #         jac.append([eqn(args) for eqn in row])
+        #     return np.array(jac)
+
+        # # check if the Jacobian is useable
+        # jac_test = jacobian(guess)
+        # if np.linalg.matrix_rank(jac_test) < np.min(jac_test.shape):
+        #     jacobian = None
+        jacobian = None
         # solve for the parameters in the energy model
-        result = root(objective, guess, **opts)
+        if opts is None:
+            opts = {}
+        result = root(objective, guess, jac=jacobian, options=opts)
         if not result.success:
-            raise ValueError('The system of equations could not be solved. message:{0}'.format(result.message))
-        # make the dictionary of parameter values
+            raise ValueError(
+                'The system of equations for parameters could not be solved. ' +
+                'message:{0}'.format(result.message))
+        # make dictionary of parameter values
         parameters = dict([(param, result.x[i]) for i, param in enumerate(params)])
-
         return parameters
+
+    def _solve_nmax(self, guess):
+        '''
+        Solve for the :math:`N_{\text{max}}` of the energy model.
+        '''
+        d_expr = self._expr.diff(self._n_symb)
+        n_max_eqn = sp.lambdify(self._n_symb, d_expr, 'numpy')
+        result = root(n_max_eqn, guess)
+        print result
+        if result.success:
+            n_max = np.asscalar(result.x)
+            # n_ceil = math.ceil(n_max)
+            # n_floor = math.floor(n_max)
+            # e_ceil = self._expr.subs(self._n_symb, math.ceil(n_max))
+            # e_floor = self._expr.subs(self._n_symb, math.floor(n_max))
+            # n_max = n_floor if e_floor < e_ceil else n_ceil
+        else:
+            for sign in (+1, -1):
+                n_inf = n_max_eqn(sign * np.inf)
+                if np.isfinite(n_inf):
+                    n_max = sign * np.inf
+                    break
+            else:
+                n_max = None
+                warnings.warn('The system of equations for Nmax could not be solved; Nmax=`None`.' +
+                              ' message:{0}'.format(result.message))
+        return n_max
