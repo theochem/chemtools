@@ -228,15 +228,8 @@ class BaseGlobalTool(object):
            S = - \left. \left(\frac{\partial^2 \Omega}{\partial \mu^2}
                         \right)_{v(\mathbf{r})}\right|_{N = N_0} = \frac{1}{\eta}
         '''
-        hardness = self.chemical_hardness
-        if hardness is None:
-            return None
-        if hardness != 0.0:
-            value = 1.0 / self.chemical_hardness
-        else:
-            value = None
-        # TODO: when grand potential derivative is ready, it is better to calculate softness through that.
-        #value = self.grand_potential_derivative(self._n0, 1)
+        # compute 2nd-order derivative of grand potential w.r.t. mu at N0
+        value = - self.grand_potential_derivative(self._n0, 2)
         return value
 
     def hyper_hardness(self, order=2):
@@ -403,8 +396,29 @@ class BaseGlobalTool(object):
             raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
         if not(isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
-        # Faa di Bruno implementation of grand potential derivative
-        raise NotImplementedError('Faa di Bruno formula!')
+
+        if order == 1:
+            # 1st order derivative is minus number of electrons
+            deriv = - n_elec
+        elif order == 2:
+            # 2nd order derivative is inverse hardness
+            hardness = self.energy_derivative(n_elec, order=2)
+            if hardness is None:
+                deriv = None
+            elif hardness != 0.0:
+                deriv = - 1.0 / hardness
+            else:
+                deriv = None
+        else:
+            # higher-order derivatives are compute with Faa Di Bruno formula
+            # list of hyper-hardneses (derivatives of energy w.r.t. N)
+            energy_deriv = [self.energy_derivative(n_elec, i + 1) for i in range(1, order)]
+            deriv = 0
+            for k in xrange(1, order - 1):
+                grand_potential = self.grand_potential_derivative(n_elec, k + 1)
+                deriv -= grand_potential * sp.bell(order - 1, k, energy_deriv[:order - k])
+            deriv /= sp.bell(order - 1, order - 1, [energy_deriv[0]])
+        return deriv
 
     def grand_potential_mu(self, mu):
         r'''
