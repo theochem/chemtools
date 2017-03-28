@@ -105,7 +105,7 @@ hypersoftnesses,
     S^{(3)} = - \left. \left( \frac{\partial^{4}\Omega}{\partial\mu^{4}} \right)_{v(\mathbf{r})} \right|_{N = N_0}
            &= -\eta^{(3)} \cdot S^4 + 3 \left(\eta^{(2)}\right)^2 \cdot S^5 \\
 	   &= - \left(A\gamma^4\right) \left(\frac{1}{A\gamma^2}\right)^4 +
-	      3 \left(\frac{1}{-A\gamma^3}\right)^2 \left(\frac{1}{A\gamma^2}\right)^5 = \frac{-4}{A^3\gamma^4}\\
+	      3 \left(\frac{1}{-A\gamma^3}\right)^2 \left(\frac{1}{A\gamma^2}\right)^5 = \frac{2}{A^3\gamma^4}\\
 
 ChemTools can also compute higher-order hyper-softnesses, using the (extended) inverse function theorem for
 derivatives. Please refer to :ref:`derivation_global_softness` for details.

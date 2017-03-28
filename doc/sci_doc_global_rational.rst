@@ -125,19 +125,19 @@ hyper-softnesses,
  .. math::
 
     S = - \left. \left( \frac{\partial^2\Omega}{\partial\mu^2} \right)_{v(\mathbf{r})} \right|_{N = N_0}
-     &= \frac{1}{\eta} = \frac{\left(1 + b_1 N_0\right)^3}{2 b_1 \left(a_1 - a_0 b_1\right)} \\
+     &= \frac{1}{\eta} = \frac{-\left(1 + b_1 N_0\right)^3}{2 b_1 \left(a_1 - a_0 b_1\right)} \\
     S^{(2)} = - \left. \left( \frac{\partial^{3}\Omega}{\partial\mu^{3}} \right)_{v(\mathbf{r})} \right|_{N = N_0}
            &= -\eta^{(2)} \cdot S^3 \\
            &= -\frac{6 b_1^2 \left(a_1 - a_0 b_1\right)}{\left(1 + b_1 N_0\right)^4}
 	       \frac{\left(1 + b_1 N_0\right)^9}{2^3 b_1^3 \left(a_1 - a_0 b_1\right)^3}
-           = \frac{-3 \left(1 + b_1 N_0\right)^5}{2 b_1 \left(a_1 - a_0 b_1\right)^2} \\
+           = \frac{3 \left(1 + b_1 N_0\right)^5}{4 b_1 \left(a_1 - a_0 b_1\right)^2} \\
     S^{(3)} = - \left. \left( \frac{\partial^{4}\Omega}{\partial\mu^{4}} \right)_{v(\mathbf{r})} \right|_{N = N_0}
            &= -\eta^{(3)} \cdot S^4 + 3 \left(\eta^{(2)}\right)^2 \cdot S^5 \\
 	   &= -\frac{24 b_1^3 \left(a_1 - a_0 b_1\right)}{\left(1 + b_1 N_0\right)^5}
 	       \frac{\left(1 + b_1 N_0\right)^12}{2^4 b_1^4 \left(a_1 - a_0 b_1\right)^4} \\
 	   &  + 3\frac{6^2 b_1^4 \left(a_1 - a_0 b_1\right)^2}{\left(1 + b_1 N_0\right)^8}
 	       \frac{\left(1 + b_1 N_0\right)^15}{2^5 b_1^5 \left(a_1 - a_0 b_1\right)^5} \\
-	   &= \frac{15 \left(1 + b_1 N_0\right)^7}{8 b_1 \left(a_1 - a_0 b_1\right)^3}
+	   &= \frac{-15 \left(1 + b_1 N_0\right)^7}{8 b_1 \left(a_1 - a_0 b_1\right)^3}
 
 
 ChemTools can also compute higher-order hyper-softnesses, using the (extended) inverse function theorem for
