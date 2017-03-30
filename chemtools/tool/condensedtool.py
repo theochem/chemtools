@@ -24,7 +24,6 @@
 
 
 import numpy as np
-from chemtools.utils import doc_inherit
 
 
 class CondensedTool(object):
@@ -45,12 +44,14 @@ class CondensedTool(object):
 
     def condense_atoms(self, local_property):
         r'''
-        Return condensed values of the local descriptor :math:`p_{\text{local}}\left(\mathbf{r}\right)`
-        into atomic contribution :math:`P_A` defined as:
+        Return condensed values of the local descriptor
+        :math:`p_{\text{local}}\left(\mathbf{r}\right)` into atomic contribution :math:`P_A`
+        defined as,
 
         .. math::
 
-           P_A = \int \omega_A\left(\mathbf{r}\right) p_{\text{local}}\left(\mathbf{r}\right) d\mathbf{r}
+           P_A = \int \omega_A\left(\mathbf{r}\right)
+                      p_{\text{local}}\left(\mathbf{r}\right) d\mathbf{r}
 
         Parameters
         ----------
@@ -61,7 +62,7 @@ class CondensedTool(object):
         local_condensed = np.zeros(natom)
         for index in xrange(natom):
             at_grid = self._dens_part.get_grid(index)
-            at_weight = self._dens_part.cache.load('at_weights',index)
+            at_weight = self._dens_part.cache.load('at_weights', index)
             wcor = self._dens_part.get_wcor(index)
             local_prop = self._dens_part.to_atomic_grid(index, local_property)
             local_condensed[index] = at_grid.integrate(at_weight, local_prop, wcor)
@@ -69,13 +70,14 @@ class CondensedTool(object):
 
     def condese_pairs(self, response):
         r'''
-        Return condensed values of the response function :math:`f_{\text{response}}\left(\mathbf{r}, \mathbf{r'}\right)`
-        into atomic pair contribution :math:`P_{AB}` defined as:
+        Return condensed values of the response function
+        :math:`f_{\text{response}}\left(\mathbf{r}, \mathbf{r'}\right)` into atomic pair
+        contribution :math:`P_{AB}` defined as:
 
         .. math::
 
            P_{AB} = \int \omega_A\left(\mathbf{r}\right) \omega_B\left(\mathbf{r'}\right)
-                       f_{\text{response}}\left(\mathbf{r}, \mathbf{r'}\right) d\mathbf{r} d\mathbf{r'}
+                    f_{\text{response}}\left(\mathbf{r}, \mathbf{r'}\right) d\mathbf{r} d\mathbf{r'}
 
         Parameters
         ----------

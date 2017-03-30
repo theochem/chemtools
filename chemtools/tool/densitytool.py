@@ -44,9 +44,11 @@ class DensityLocalTool(object):
         if density.ndim != 1:
             raise ValueError('Argument desnity should be a 1-dimensioanl array.')
         if gradient.shape != (density.size, 3):
-            raise ValueError('Argument gradient should have same shape as density arrary. {0}!={1}'.format(gradient.shape, density.shape))
-        if (hessian is not None) and hessian.shape != (density.size, 3, 3):
-                raise ValueError('Argument hessian\'s shape is not consistent with the density array. {0}!={1}'.format(hessian.shape, (density.size, 3, 3)))
+            raise ValueError('Argument gradient should have same shape as density arrary.' +
+                             ' {0}!={1}'.format(gradient.shape, density.shape))
+        if hessian is not None and hessian.shape != (density.size, 3, 3):
+            raise ValueError('Argument hessian\'s shape is not consistent with the density array.' +
+                             ' {0}!={1}'.format(hessian.shape, (density.size, 3, 3)))
 
         self._density = density
         self._gradient = gradient
@@ -67,7 +69,6 @@ class DensityLocalTool(object):
         :math:`\mathbf{r} = \left(x\mathbf{i}, y\mathbf{j}, z\mathbf{k}\right)`:
 
          .. math::
-
             \nabla\rho\left(\mathbf{r}\right) =
             \left(\frac{\partial}{\partial x}\mathbf{i}, \frac{\partial}{\partial y}\mathbf{j},
                   \frac{\partial}{\partial z}\mathbf{k}\right) \rho\left(\mathbf{r}\right)
@@ -130,14 +131,14 @@ class DensityLocalTool(object):
 
         .. math::
            s\left(\mathbf{r}\right) = \frac{1}{2\left(3\pi ^2 \right)^{1/3}}
-           \frac{\lvert \nabla \rho\left(\mathbf{r}\right) \rvert}{\rho\left(\mathbf{r}\right)^{4/3}}
+           \frac{\lvert \nabla\rho\left(\mathbf{r}\right) \rvert}{\rho\left(\mathbf{r}\right)^{4/3}}
         '''
         # Mask density values less than 1.0d-30 to avoid diving by zero
         mdens = np.ma.masked_less(self._density, 1.0e-30)
         mdens.filled(1.0e-30)
         # Compute reduced density gradient
-        prefactor = 0.5 / (3.0 * np.pi**2)**(1.0/3.0)
-        rdg = prefactor * self.gradient_norm / mdens**(4.0/3.0)
+        prefactor = 0.5 / (3.0 * np.pi**2)**(1.0 / 3.0)
+        rdg = prefactor * self.gradient_norm / mdens**(4.0 / 3.0)
         return rdg
 
     @property
@@ -153,31 +154,31 @@ class DensityLocalTool(object):
         mdens = np.ma.masked_less(self._density, 1.0e-30)
         mdens.filled(1.0e-30)
         # Compute Weizsacker kinetic energy
-        wke = self.gradient_norm**2.0 / (8.0 * mdens)
-        return wke
+        kinetic = self.gradient_norm**2.0 / (8.0 * mdens)
+        return kinetic
 
     @property
     def thomas_fermi_kinetic_energy_density(self):
         r'''
-            Thomas-Fermi kinetic energy density defined as:
+        Thomas-Fermi kinetic energy density defined as:
 
         .. math::
-            T\left(\mathbf{r}\right) = \frac{3}{10} \left( 6 \pi ^2 \right)^{2/3}
-            \left( \frac{\rho\left(\mathbf{r}\right)}{2} \right)^{5/3}
-            '''
+           T\left(\mathbf{r}\right) = \frac{3}{10} \left(6 \pi^2 \right)^{2/3}
+                  \left(\frac{\rho\left(\mathbf{r}\right)}{2}\right)^{5/3}
+        '''
         # Compute Thomas-Fermi kinetic energy
-        prefactor = 0.3 * (3.0 * (np.pi**2.0))**(2.0/3.0)
-        fivethird = 5.0 / 3.0
-        tfke =  prefactor * (self._density**fivethird)
-        return tfke
-
+        prefactor = 0.3 * (3.0 * np.pi**2.0)**(2.0 / 3.0)
+        kinetic = prefactor * self._density**(5.0 / 3.0)
+        return kinetic
 
     def electrostatic_potential(self, numbers, coordinates, int_weights, int_points, points):
         r'''
         Electrostatic potential defined as:
 
         .. math::
-           \Phi\left(\mathbf{r}\right) = - v \left(\mathbf{r}\right) - \int \frac{\rho\left(\mathbf{r}'\right)}{|\mathbf{r} - \mathbf{r}'|} d \mathbf{r}'
+           \Phi\left(\mathbf{r}\right) = - v \left(\mathbf{r}\right) -
+                     \int \frac{\rho\left(\mathbf{r}'\right)}{|\mathbf{r} -
+                     \mathbf{r}'|} d \mathbf{r}'
 
         Parameters
         ----------
@@ -195,11 +196,14 @@ class DensityLocalTool(object):
         '''
         # check consistency of arrays
         if len(coordinates) != len(numbers):
-            raise ValueError('Argument numbers & coordinates should have the same length. {0}!={1}'.format(len(coordinates), len(numbers)))
+            raise ValueError('Argument numbers & coordinates should have the same length. ' +
+                             '{0}!={1}'.format(len(coordinates), len(numbers)))
         if len(int_weights) != len(self._density):
-            raise ValueError('Argument int_weights & density should have the same shape. {0}!={1}'.format(int_weights.shape, self._density.shape))
+            raise ValueError('Argument int_weights & density should have the same shape. ' +
+                             '{0}!={1}'.format(int_weights.shape, self._density.shape))
         if len(int_points) != len(self._density):
-            raise ValueError('Argument int_points & density should have the same shape. {0}!={1}'.format(int_weights.shape, self._density.shape))
+            raise ValueError('Argument int_points & density should have the same shape. ' +
+                             '{0}!={1}'.format(int_weights.shape, self._density.shape))
 
         # array to store esp
         esp = np.zeros(points.shape[0])
@@ -218,6 +222,6 @@ class DensityLocalTool(object):
                 distance = np.linalg.norm(delta)
                 # avoid computing esp, if points are very close
                 if distance > 1.e-6:
-                   esp[n] -= density * int_weights[index] / distance
+                    esp[n] -= density * int_weights[index] / distance
 
         return esp

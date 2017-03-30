@@ -38,8 +38,7 @@ class OrbitalLocalTool(DensityLocalTool):
         points : np.ndarray
             Gridpoints used to calculate the properties.
         obasis :
-            A HORTON ''obasis'' object, an orbital basis and
-            instance of the GOBasis class.
+            An instance of `GOBasis` class from `HORTON` library representing the orbital basis.
         exp_alpha :
             An expansion of the alpha orbitals in a basis set,
             with orbital energies and occupation numbers.
@@ -47,7 +46,6 @@ class OrbitalLocalTool(DensityLocalTool):
             An expansion of the beta orbitals in a basis set,
             with orbital energies and occupation numbers.
         '''
-
         self._obasis = obasis
         self._exp_alpha = exp_alpha
 
@@ -64,13 +62,12 @@ class OrbitalLocalTool(DensityLocalTool):
         dens = self._obasis.compute_grid_density_dm(self._dm, self._points)
         grad = self._obasis.compute_grid_gradient_dm(self._dm, self._points)
 
-        DensityLocalTool.__init__(self, dens, grad, hessian=None)
-
+        super(self.__class__, self).__init__(dens, grad, hessian=None)
 
     @property
     def kinetic_energy_density(self):
         r'''
-        positive definite kinetic energy density defined as:
+        Positive definite kinetic energy density defined as,
 
         .. math::
            \tau \left(\mathbf{r}\right) =
@@ -81,45 +78,44 @@ class OrbitalLocalTool(DensityLocalTool):
     @property
     def elf(self):
         r'''
-        The Electron Localization Function introduced by Becke and Edgecombe:
+        The Electron Localization Function introduced by Becke and Edgecombe,
 
         .. math::
-            ELF (\mathbf{r}) =
+           ELF (\mathbf{r}) =
                 \frac{1}{\left( 1 + \left(\frac{D_{\sigma}(\mathbf{r})}
-                {D_{\sigma}^0 (\mathbf{r})} \right)^2\right)} ,
+                {D_{\sigma}^0 (\mathbf{r})} \right)^2\right)}
+
         with
 
         .. math::
-            D_{\sigma} (\mathbf{r}) =  \tau_{\sigma} (\mathbf{r}) -
-                \frac{1}{4} \frac{(\nabla \rho_{\sigma})^2}{\rho_{\sigma}} .
+            D_{\sigma} (\mathbf{r}) &= \tau_{\sigma} (\mathbf{r}) -
+               \frac{1}{4} \frac{(\nabla \rho_{\sigma})^2}{\rho_{\sigma}}
+
+           D_{\sigma}^0 (\mathbf{r}) &=
+              \frac{3}{5} (6 \pi^2)^{2/3} \rho_{\sigma}^{5/3} (\mathbf{r})
+
+        where :math:`\tau_{\sigma} (\mathbf{r})` is the positive definite kinetic energy density,
+
         .. math::
-
-            D_{\sigma}^0 (\mathbf{r}) =
-                \frac{3}{5} (6 \pi^2)^{2/3} \rho_{\sigma}^{5/3} (\mathbf{r}) ,
-
-        where :math:`\tau_{\sigma}` is the positive definite kinetic energy density:
-
-        .. math::
-            \tau_{\sigma} (\mathbf{r}) =
-                \sum_i^{\sigma} \lvert \nabla \phi_i (\mathbf{r}) \rvert^2
+           \tau_{\sigma} (\mathbf{r}) =
+                 \sum_i^{\sigma} \lvert \nabla \phi_i (\mathbf{r}) \rvert^2
         '''
-
         elfd = self.kinetic_energy_density - self.weizsacker_kinetic_energy_density
         tf = np.ma.masked_less(self.thomas_fermi_kinetic_energy_density, 1.0e-30)
         tf.filled(1.0e-30)
-
-        return 1.0 / (1.0 + (elfd / tf)**2.0)
+        elf = 1.0 / (1.0 + (elfd / tf)**2.0)
+        return elf
 
     def mep(self, coordinates, pseudo_numbers):
         r'''
-        Molecular Electrostatic Potential defined as:
+        Molecular Electrostatic Potential defined as,
 
         .. math::
-            V \left(\mathbf{r}\right) =
-            \sum_A \frac{Z_A}{\rvert \mathbf{R}_A - \mathbf{r} \lvert}
-            - \int \frac{\rho \left(\mathbf{r}'\right)}{\rvert \mathbf{r}' - \mathbf{r} \lvert} d\mathbf{r}'
+           V \left(\mathbf{r}\right) = \sum_A \frac{Z_A}{\rvert \mathbf{R}_A - \mathbf{r} \lvert} -
+             \int \frac{\rho \left(\mathbf{r}'\right)}{\rvert \mathbf{r}' -
+             \mathbf{r} \lvert} d\mathbf{r}'
         '''
-        #compute mep
+        # compute mep with HORTON
         return self._obasis.compute_grid_esp_dm(self._dm, coordinates, pseudo_numbers, self._points)
 
     def orbitals_exp(self, iorbs, spin='alpha'):
@@ -145,4 +141,5 @@ class OrbitalLocalTool(DensityLocalTool):
         elif spin == 'beta':
             return self._obasis.compute_grid_orbitals_exp(self._exp_beta, self._points, iorbs)
         else:
-            raise ValueError('Argument spin {0} is not known.'.format(spin))
+            raise ValueError('Argument spin={0} is not known.'.format(spin) +
+                             'Choose either "alpha" or "beta".')

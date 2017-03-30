@@ -868,7 +868,7 @@ class GeneralGlobalTool(BaseGlobalTool):
         n_energies : dict
             The energy values of `expr` at different electron-numbers.  The dict has int
             (electron-number) keys, float (energy) values.
-        n_symbol : sp.Symbol, default=`sp.symbols('N')`
+        n_symbol : sp.Symbol, default=sp.symbols('N')
             The symbol in `expr` that represents the number of electrons.
         n0_symbol: sp.Symbol, optional
             The symbol in `expr` that represents the electron-number at which to evaluate
@@ -916,7 +916,7 @@ class GeneralGlobalTool(BaseGlobalTool):
         energy_zero = self.energy(n0)
         energy_plus = self.energy(n0 + 1)
         energy_minus = self.energy(n0 - 1)
-        super(GeneralGlobalTool, self).__init__(energy_zero, energy_plus, energy_minus, n0)
+        super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0)
 
     @property
     def params(self):
