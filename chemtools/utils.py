@@ -23,45 +23,47 @@
 '''The Utility Module.'''
 
 
-import os, sys
+import os
+import sys
+from glob import glob
 import numpy as np
 from horton import log, IOData
-from glob import glob
 
 
 __all__ = ['doc_inherit', 'CubeGen', 'Context', 'context']
 
 
 def doc_inherit(base_class):
-    """Docstring inheriting method descriptor
+    """
+    Docstring inheriting method descriptor
 
-       doc_inherit decorator
+    doc_inherit decorator
 
-       Usage:
+    Usage:
 
-       .. code-block:: python
+    .. code-block:: python
 
-            class Foo(object):
-                def foo(self):
-                    "Frobber"
-                    pass
+         class Foo(object):
+             def foo(self):
+                 "Frobber"
+                 pass
 
-            class Bar(Foo):
-                @doc_inherit(Foo)
-                def foo(self):
-                    pass
+         class Bar(Foo):
+             @doc_inherit(Foo)
+             def foo(self):
+                 pass
 
-       Now, ``Bar.foo.__doc__ == Bar().foo.__doc__ == Foo.foo.__doc__ ==
-       "Frobber"``
+    Now, ``Bar.foo.__doc__ == Bar().foo.__doc__ == Foo.foo.__doc__ ==
+    "Frobber"``
     """
     def decorator(method):
+        '''Overwrite method docstring.'''
         overridden = getattr(base_class, method.__name__, None)
         if overridden is None:
             raise NameError('Can\'t find method \'%s\' in base class.')
         method.__doc__ = overridden.__doc__
         return method
     return decorator
-
 
 
 class CubeGen(object):
@@ -122,7 +124,8 @@ class CubeGen(object):
         self._log_init()
 
     @classmethod
-    def from_molecule(cls, numbers, pseudo_numbers, coordinates, spacing=0.2, threshold=5.0, rotate=True):
+    def from_molecule(cls, numbers, pseudo_numbers, coordinates, spacing=0.2,
+                      threshold=5.0, rotate=True):
         '''
         Initialize ``CubeGen`` class based on the Cartesian coordinates of the molecule.
 
@@ -141,7 +144,7 @@ class CubeGen(object):
         '''
         # calculate center of mass of the nuclear charges:
         totz = np.sum(pseudo_numbers)
-        com = np.dot(pseudo_numbers, coordinates)/totz
+        com = np.dot(pseudo_numbers, coordinates) / totz
 
         if rotate:
             # calculate moment of inertia tensor:
@@ -151,9 +154,9 @@ class CubeGen(object):
                 r = np.linalg.norm(xyz)**2.0
                 tempitens = np.diag([r, r, r])
                 tempitens -= np.outer(xyz.T, xyz)
-                itensor += pseudo_numbers[i]*tempitens
+                itensor += pseudo_numbers[i] * tempitens
 
-            w, v = np.linalg.eigh(itensor)
+            _, v = np.linalg.eigh(itensor)
             new_coordinates = np.dot((coordinates - com), v)
             axes = spacing * v
 
@@ -209,7 +212,8 @@ class CubeGen(object):
         '''
         # Load file
         mol = IOData.from_file(filename)
-        return cls.from_molecule(mol.numbers, mol.pseudo_numbers, mol.coordinates, spacing, threshold, rotate)
+        return cls.from_molecule(mol.numbers, mol.pseudo_numbers, mol.coordinates, spacing,
+                                 threshold, rotate)
 
     @property
     def numbers(self):
@@ -282,7 +286,6 @@ class CubeGen(object):
                         ])
             log.blank()
 
-
     def dump_cube(self, filename, data):
         '''
         Write the data evaluated on grid points into a *.cube file.
@@ -297,7 +300,8 @@ class CubeGen(object):
         if not filename.endswith('.cube'):
             raise ValueError('Arguemnt filename should be a cube file with `*.cube` extension!')
         if data.size != self._npoints:
-            raise ValueError('Argument data should have the same size as the grid. {0}!={1}'.format(data.size, self._npoints))
+            raise ValueError('Argument data should have the same size as the grid. ' +
+                             '{0}!={1}'.format(data.size, self._npoints))
 
         # Write data into the cube file
         with open(filename, 'w') as f:
@@ -336,23 +340,21 @@ class CubeGen(object):
             R  : rectangle/trapezoidal rule for integration of the cubic grid.
             R0 : rectangle/trapezoidal rule, assuming that the function is very close to zero
                  at the edges of the grid.
-
         '''
-
         if method == 'R':
             volume = np.linalg.norm(self._shape[0] * self._axes[0])
             volume *= np.linalg.norm(self._shape[1] * self._axes[1])
             volume *= np.linalg.norm(self._shape[2] * self._axes[2])
             numpnt = 1.0 * self._npoints
-            return np.full((self._npoints), volume/numpnt)
+            return np.full((self._npoints), volume / numpnt)
 
         elif method == 'R0':
             volume = np.linalg.norm((self._shape[0] + 1.0) * self._axes[0])
             volume *= np.linalg.norm((self._shape[1] + 1.0) * self._axes[1])
             volume *= np.linalg.norm((self._shape[2] + 1.0) * self._axes[2])
 
-            numpnt = (1.0*self._shape[0] + 1.0)*(1.0*self._shape[1] + 1.0)*(1.0*self._shape[2] + 1.0)
-            return np.full((self._npoints), volume/numpnt)
+            numpnt = (self._shape[0] + 1.0) * (self._shape[1] + 1.0) * (self._shape[2] + 1.0)
+            return np.full((self._npoints), volume / numpnt)
 
         else:
             raise ValueError('Argument method {0} is not known.'.format(method))
@@ -374,12 +376,11 @@ class CubeGen(object):
                  at the edges of the grid.
             R  : rectangle/trapezoidal rule, without assuming that the function is close to zero
                  at the edges of the grid.
-
         '''
-
         if data.shape[0] != self._npoints:
-            raise ValueError('Argument data should have the same size as the grid for axis=0. {0}!={1}'.format(data.shape[0], self._npoints))
-        return np.tensordot(self.weights(method=method), data, axes=(0,0))
+            raise ValueError('Argument data should have the same size as the grid for axis=0. ' +
+                             '{0}!={1}'.format(data.shape[0], self._npoints))
+        return np.tensordot(self.weights(method=method), data, axes=(0, 0))
 
     @staticmethod
     def _read_cube_header(filename):
@@ -436,11 +437,12 @@ class CubeGen(object):
 
         return numbers, pseudo_numbers, coordinates, origin, axes, shape
 
-class Context(object):
-    '''Finds out where the data directory is located etc.
 
-       The data directory contains data files with standard basis sets and
-       pseudo potentials.
+class Context(object):
+    '''
+    Find out where the data directory is located etc.
+
+    The data directory contains data files.
     '''
     def __init__(self):
         # Determine data directory (also for in-place build)
@@ -463,7 +465,8 @@ class Context(object):
                         f.read().strip(),
                         'include/python%i.%i' % (sys.version_info.major, sys.version_info.minor))
         if not os.path.isdir(self.data_dir):
-            raise IOError('Can not find the data files. The directory %s does not exist.' % self.data_dir)
+            raise IOError(
+                'Can not find data files. The directory {0} does not exist.'.format(self.data_dir))
 
     def get_fn(self, filename):
         '''Return the full path to the given filename in the data directory.'''
