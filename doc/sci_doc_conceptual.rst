@@ -63,10 +63,12 @@ system’s energy and the energies of the :math:`\left(N-1\right)` and :math:`\l
 
 where HOMO denotes the highest occupied molecular orbital and LUMO denotes the lowest unoccupied molecular orbital.
 
-Once energies for the systems with integer electron number have been modeled using either the FMO or FD approaches,
+Once energies for the systems with integer electron number have been modelled using either the FMO or FD approaches,
 a continuous model for the energy as a function of the number of electrons should be chosen.
-Popular choices include the piecewise linear model, the quadratic model, the exponential model, and the rational
-model. Of these, the piecewise linear model is the most mathematically rigorous and the quadratic model is the most
+Popular choices include the piecewise linear model, :cite:`Perdew1982PRL,Ayers2008JMC` the quadratic model,
+:cite:`Parr1978JCP,Parr1983JACS`, the exponential model, :cite:`Parr1982JACS,Fuentealba2013JMM`
+and the rational model. :cite:`Heidar-Zadeh2016JCTC`
+Of these, the piecewise linear model is the most mathematically rigorous and the quadratic model is the most
 popular (and perhaps the most useful). The exponential and rational models have undesirable mathematical properties
 and one should be especially wary about using them for local descriptors.
 
@@ -76,9 +78,3 @@ and one should be especially wary about using them for local descriptors.
    sci_doc_globaltool
    sci_doc_localtool
    sci_doc_condensedtool
-
-
-
-
-
-

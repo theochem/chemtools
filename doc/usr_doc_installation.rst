@@ -40,7 +40,7 @@ The latest code can be obtained through Github (private at present),
 Dependencies
 ============
 
-The following dependencies will be necessary for chemtools to build properly,
+The following dependencies will be necessary for ChemTools to build properly,
 
   .. code-block:: bash
 
@@ -48,13 +48,13 @@ The following dependencies will be necessary for chemtools to build properly,
 Installation
 ============
 
-To install chemtools run:
+To install ChemTools run:
 
   .. code-block:: bash
 
      $ ./setup.py install --user
 
-If you prefer to run chemtools from source folder, ``PYTHONPATH`` and ``CTDATA`` paths
+If you prefer to run ChemTools from source folder, ``PYTHONPATH`` and ``CTDATA`` paths
 need to be add into your **~/.bashrc** (Linux) or **~/.profile** (MacOS)
 
   .. code-block:: bash
@@ -65,11 +65,13 @@ need to be add into your **~/.bashrc** (Linux) or **~/.profile** (MacOS)
 Tests
 =====
 
-To ensue all the parts of chemtools work properly, you are suggested to run the nosetests:
+To ensue all the parts of ChemTools work properly, you are suggested to run the nosetests:
 
   .. code-block:: bash
 
      $ nosetests -v chemtools
+
+
 
 LFS Installation
 ================
@@ -117,3 +119,38 @@ To get a list of all the files tracked with Git LFS, use:
   .. code-block:: bash
 
      $ git lfs ls-files
+
+Building the documentation
+==========================
+
+Dependencies
+~~~~~~~~~~~~
+
+If you are interested in generating the documentation from source, the following
+packages are also needed:
+
+* Sphinx >=1.3.1: http://sphinx.pocoo.org/
+* Sphinx Read-The-Docs theme >=0.1.8: https://github.com/snide/sphinx_rtd_theme
+* sphinxcontrib-bibtex >= 0.3.5: https://pypi.python.org/pypi/sphinxcontrib-bibtex
+* Git Large File Storage (LFS), as described above.
+
+
+Installing the dependencies with PIP
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following commands will install the ports and a few other dependencies (with pip),
+which are not available as ports:
+
+.. code-block:: bash
+
+    pip install --user --upgrade sphinx sphinx_rtd_theme sphinxcontrib-bibtex
+
+
+Actual build
+~~~~~~~~~~~~
+
+The documentation is compiled and viewed as follows:
+
+.. code-block:: bash
+
+    (cd doc; make html; open _build/html/index.html)

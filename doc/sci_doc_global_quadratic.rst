@@ -161,5 +161,12 @@ The related :ref:`derived global reactivity indicators <global_derived_indicator
                                  &&= \frac{\left(3 \cdot IP - EA \right)^2}{8 \left(IP - EA \right)}
 				&&&= \frac{\left(\mu - \eta\right)^2}{2\eta} = IP + \omega_{\text{electrophilicity}}
 
+
+
 **References:**
-  * `Parr R. G., Pearson R. G., J. Am. Chem. Soc. (1983), 105, 7512 <http://pubs.acs.org/doi/abs/10.1021/ja00364a005>`_.
+
+.. bibliography:: ../data/references.bib
+   :style: unsrt
+   :start: continue
+   :list: bullet
+   :filter: key % "Parr1983JACS"

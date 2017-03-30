@@ -43,7 +43,7 @@ gradient will have very large positive values. In regions of covalent bonding an
 interactions, the reduced gradient have very small values, close to zero.
 
 To study the non-covalent interactions the plot of the reduced gradients, :math:`s\left(\mathbf{r}\right)`,
-versus :math:`\rho\left(\mathbf{r}\right)` plot is examined at low reduced gradient regions, 
+versus :math:`\rho\left(\mathbf{r}\right)` plot is examined at low reduced gradient regions,
 as in this example for water:
 
  .. image:: ./_static/H2O_dimer_dens_rdg.jpg
@@ -52,7 +52,7 @@ as in this example for water:
 For the monomer, the top left points, with a small density and large reduced density gradient,
 correspond to the tail regions of the density, far from the nuclei. The points at the lower right
 correspond to covalent bonds, with higher density (around 0.35 a.u.), but a near-zero reduced
-density gradient. 
+density gradient.
 
 For the dimer, a new structure can be seen, a spike in the low-density, low-gradient region,
 which is typical of non-covalent interactions. This feature appears because, in the region of
@@ -65,7 +65,7 @@ To determine the type of the interaction, the sign of the Laplacian of the densi
 :math:`\lambda_i` of the Hessian (second derivative) of the electron-density are calculated
 :math:`( \lambda_1 \leq \lambda_2 \leq \lambda_3)`. At the nuclei, all eigenvalues are negative,
 since the density is at a local maximum. In covalent bonds, the Hessian has one positive
-eigenvalue and two negative eigenvalues :math:`( \lambda_1 < 0, \lambda_2 < 0, \lambda_3 > 0)`. 
+eigenvalue and two negative eigenvalues :math:`( \lambda_1 < 0, \lambda_2 < 0, \lambda_3 > 0)`.
 On the other hand, in regions of steric clashes or strain in the interatomic region
 (as in bicyclo[2.2.2]octene and ring or cage critical points), the second eigenvalue will be positive.
 Therefore, the sign of the second eigenvalue of the Hessian, :math:`\lambda_2`, can be used to
@@ -86,7 +86,7 @@ the stabilizing hydrogen-bonding. The methane dimer spike is very close to zero,
 on the other hand, shows a spike at positive values due to the steric clash in the centre of this molecule.
 
 To visualise the location of the interactions, the low reduced density gradient isosurfaces can be studied.
-The gradient isosurfaces are colored based on the value of :math:`\text{sign}(\lambda_2)\rho\left(\mathbf{r}\right)`.
+The gradient isosurfaces are coloured based on the value of :math:`\text{sign}(\lambda_2)\rho\left(\mathbf{r}\right)`.
 Blue regions with large, negative values of :math:`\text{sign}(\lambda_2)\rho\left(\mathbf{r}\right)` show
 attractive non-covenant interactions, such as dipole-dipole interactions or hydrogen bonding, while red,
 positive regions show nonbonding, steric clashes. Values close to zero indicate weak non-covenant interactions,
@@ -101,10 +101,13 @@ weaker dispersion interaction between the two monomers. Finally, the sterically 
 has a isosurface at the centre of the molecule, where steric repulsion between the carbons is present.
 
 In ChemTools these plots can be generated with the ``.dump_files('filename')``
-function. See the tutorials and example gallery for more details. 
+function. See the tutorials and example gallery for more details.
 
  .. TODO::
     Add link to tutorials and example gallery once these are in their final form.
 
 **References:**
-  * `Erin R. Johnson, E. R., Keinan S., Mori-Sanchez, P. Contreras-Garcia J., Cohen, A. J.and Yang, J. Am. Chem. Soc.(2010), 132, 6498 <http:/pubs.acs.org/doi/abs/10.1021/ja100936w>`_.
+
+.. bibliography:: ../data/references.bib
+   :list: bullet
+   :filter: key % "Johnson2010JACS"

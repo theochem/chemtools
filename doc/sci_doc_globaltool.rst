@@ -93,19 +93,19 @@ denoted by :math:`\eta ^{(n)} \text{for } n \geq 2`, respectively:
                 {\partial N^{n+1}} \right)_{v(\mathbf{r})} \right|_{N = N_0} & \qquad \text{for } n \geq 2
 
 By analogy to thermodynamics, the electronic chemical potential, :math:`\mu`, is identified as the first derivative
-of the energy with respect to the number of electrons. The electronic chemical potential is always negative and it
-represents the intrinsic Lewis acidity/basicity of a system.
+of the energy with respect to the number of electrons. :cite:`Parr1978JCP` The electronic chemical potential is always
+negative and it represents the intrinsic Lewis acidity/basicity of a system.
 Systems with very negative chemical potentials are strong Lewis acids; systems with nearly zero (but still negative)
 chemical potential are strong Lewis bases. Electrons flow from places with higher chemical potential to places with
 lower chemical potential until the chemical potential is everywhere equal.
-This motivates the definition of electronegativity as the negative of the chemical potential, :math:`\chi_e=-\mu`.
+This motivates the definition of electronegativity :cite:`Iczkowski1961JACS` as the negative of the chemical potential, :math:`\chi_e=-\mu`.
 
-The second derivative of the energy with respect to electron number is the chemical hardness, :math:`\eta`.
+The second derivative of the energy with respect to electron number is the chemical hardness, :math:`\eta`. :cite:`Parr1983JACS`
 The chemical hardness is always positive. Hard molecules have properties (e.g., the chemical potential and electron density)
 that are relatively insensitive to perturbations. In addition, according to the principle of maximum hardness,
 it is frequently (but far from universally) the case that hard systems are more stable than soft systems.
 According to the hard/soft acid/base (HSAB) principle: if all other effects are (nearly) equal, hard acids will prefer
-to react with hard bases and soft acids will prefer to react with soft bases.
+to react with hard bases and soft acids will prefer to react with soft bases. :cite:`Pearson1963JACS,Pearson1968JCE,Pearson1968JCEb`
 
 Higher-order derivatives of the energy with respect to electron number are called hyper-hardnesses, and are not often used.
 The third derivative, :math:`\eta^{(2)}`, which is often simply called the hyper-hardness, appears in some contexts,
@@ -121,7 +121,7 @@ disparate size, it is better to use reactivity descriptors from the grand canoni
 
 .. _grand_potential_derivatives:
 
-In the grand canonical ensemble, the fundamental global reactivity descriptors are the derivatives of the grand
+In the grand canonical ensemble, :cite:`Nalewajski1982JCP` the fundamental global reactivity descriptors are the derivatives of the grand
 potential model :math:`\Omega = E \left(\left\langle N \right\rangle\right) - \mu \left\langle N \right\rangle`
 with respect to the chemical potential :math:`\mu` at fixed external potential :math:`v(\mathbf{r})`.
 
@@ -187,10 +187,9 @@ in the reference system, :math:`N_0`, and the maximum number of bound electrons,
 
 
 **Electrophilicity Index** :math:`\omega_{\text{electrophilicity}}` measures the ability
-of an agent to accept electrons from the environment. However, in contrast to electron affinity, :math:`EA`,
-which measures the energy lowering from adding one electron to the system, the electrophilicity index
-measures the energy lowering due to maximal electron flow
-(which may be either less or more than one) from the environment,
+of an agent to accept electrons from the environment. :cite:`Parr1999JACS` However, in contrast to electron affinity,
+:math:`EA`, which measures the energy lowering from adding one electron to the system, the electrophilicity index
+measures the energy lowering due to maximal electron flow (which may be either less or more than one) from the environment,
 
  .. math:: \omega_{\text{electrophilicity}} = E(N_0) - E(N_0 + \Delta N_{\text{max}}) = E(N_0) - E(N_{\text{max}})
 
@@ -227,17 +226,17 @@ electrophiles, that is,
 
 **Nucleophilicity Index** :math:`\omega_{\text{nucleophilicity}}` measures the capacity of a reagent to donate
 electrons to its environment. Unlike the electrophilicity, there is not a strong consensus about how one should
-define the nucleophilicity. None of the existing definitions is very convincing, perhaps because electrostatic
+define the nucleophilicity. :cite:`Domingo2016M` None of the existing definitions is very convincing, perhaps because electrostatic
 interactions are often important for nucleophiles, which tend to be locally harder (because nucleophilic sites
 tend to be positively charged) than electrophiles. A reasonable definition for nucleophilicity, perhaps first
-suggested by Contreras et al., is the effective ionization potential. The effective ionization potential is
+suggested by Contreras *et al.*, is the effective ionization potential. :cite:`Contreras2003JPCA` The effective ionization potential is
 closely related to the adiabatic ionization potential: the idea is to include the effects of the environment
 (e.g. solvation, surrounding molcules) and geometric relaxation. Given the simplifications inherent in this
 description, it is usually reasonable to  simply use the vertical ionization potential,
 
  .. math:: \omega_{\text{nucleophilicity}} \sim I_{\text{eff}} \sim I
 
-Sometimes the electrofugality (which is closely related) is also identified as the nucleophilicity,
+Sometimes the electrofugality (which is closely related) is also identified as the nucleophilicity, :cite:`Ayers2005PCCP`
 
  .. math:: \omega_{\text{nucleophilicity}} \sim \frac{\left(3I - A\right)^2}{8\left(I - A\right)}
 
@@ -314,4 +313,3 @@ Details about how ChemTools evaluates global reactivity descriptors using its bu
    sci_doc_global_rational
    sci_doc_global_exponential
    sci_doc_global_general
-

@@ -27,7 +27,7 @@ Quick Start
 
 ChemTools is a package for interpreting the outputs of molecular quantum chemistry calculations.
 
-To use Chemtools, you should first perform an electronic structure calculation on your system(s) of interest
+To use ChemTools, you should first perform an electronic structure calculation on your system(s) of interest
 either by using `HORTON <http://theochem.github.io/horton/2.0.0/user_estruct.html>`_ or by using your preferred
 software package to generate an output file in a format that is supported by ChemTools. Currently supported data
 file formats are:
@@ -95,4 +95,3 @@ computations. For example:
      $ chemtools-analysis.py --help
 
 Currently, the scripts below are available in ChemTools:
-

@@ -63,15 +63,15 @@ with respect to the external potential :math:`v(\mathbf{r})` at constant number 
                  {\left( \frac{\partial^n E}{\partial N^n} \right)_{v(\mathbf{r})}} \right)_N}
 
 The derivative of the energy with respect to the external potential is, by the Hellmann-Feynman theorem,
-equal to the ground-state electron density, :math:`\rho(\mathbf{r})`.
+equal to the ground-state electron density, :math:`\rho(\mathbf{r})`. :cite:`Hellmann1937,Feynman1939PR`
 The derivative of the electronic chemical potential with respect to the external potential,
-at fixed electron number, is the **Fukui function**, :math:`f(\mathbf{r})`.
+at fixed electron number, is the **Fukui function**, :math:`f(\mathbf{r})`. :cite:`Fukui1952JCP,Parr1984JACS`
 The Fukui function is the fundamental regioselectivity descriptor in conceptual DFT, and indicates the
 areas of the molecule that are best able to accept/donate electrons.
 The derivative of the chemical hardness with respect to external potential at constant :math:`N` is the
-**dual descriptor**, :math:`\Delta f(\mathbf{r})`.
-The dual descriptor is positive in electrophilic regions, negative in nucleophilic regions. It is especially
-useful for reactions where electrons are simultaneously accepted/donated (like concerted pericyclic
+**dual descriptor**, :math:`\Delta f(\mathbf{r})`. :cite:`Morell2005JPC`
+The dual descriptor is positive in electrophilic regions negative in nucleophilic regions. It is especially
+useful for reactions where electrons are simultaneously accepted/donated electrons (like concerted pericyclic
 reactions) or for describing ambiphilic reagents. Higher-order local reactivity descriptors—corresponding to
 the derivatives of hyper-hardnesses with respect to the external potential—are called **hyper-Fukui functions** or
 :math:`\mathbf{n^{\text{th}}}` **-order Fukui function** :math:`f^{(n)}(\mathbf{r})`.
@@ -100,7 +100,7 @@ with respect to the external potential :math:`v(\mathbf{r})` at constant chemica
 The derivative of the grand potential with respect to the external potential at constant chemical potential
 is the ground-state electron density, :math:`\rho(\mathbf{r})`.
 The derivative of minus the number of electrons with respect to the external potential, at fixed electron number,
-gives the **local softness**, :math:`s(\mathbf{r})`.
+gives the **local softness**, :math:`s(\mathbf{r})`. :cite:`Yang1985PNAS`
 The local softness is the fundamental regioselectivity descriptor for open systems, and is especially useful when
 comparing the relative electrophilicity/nucleophilicity of reactive sites of different molecules, especially if
 those molecules are somewhat different in size. The derivative of the global softness with respect to external
@@ -180,8 +180,7 @@ ChemTools provide explicit implementations for local reactivity descriptors comp
 
 The rational model and the exponential model do not have built-in support because the local reactivity
 indicators (even the electron density!) do not satisfy the appropriate normalization constraints for these models.
-Please see `J. Chem. Theory Comput., 2016, 12 (12), pp 5777–5787  <http://pubs.acs.org/doi/abs/10.1021/acs.jctc.6b00494>`_
-for more information.
+Please see :cite:`Heidar-Zadeh2016JCTC` for more information.
 
  .. However, the local reactivity descriptors for these, and other, models can be computed using the general linear model.
  .. In the general linear model, the (hyper) Fukui functions are derived using the chain rule,

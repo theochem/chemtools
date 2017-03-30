@@ -30,7 +30,7 @@ Condensed Descriptive Tools :mod:`chemtools.tool.condensedtool`
 Local reactivity indicators indicate the susceptibility of a particular point in space to reactions.
 Chemists usually think, however, in terms of the reactivity of atoms and functional groups.
 The coarse-graining of pointwise local reactivity indicators into atomic and/or functional group
-contributions gives condensed reactivity indicators.
+contributions gives condensed reactivity indicators. :cite:`Yang1986JACS`
 
 In conceptual DFT, the fundamental local reactivity indicators are derivatives of the electron density with
 respect to either the number of electrons or the chemical potential,
@@ -42,7 +42,7 @@ respect to either the number of electrons or the chemical potential,
     \lambda \left(\mathbf{r}\right) \equiv \left(\frac{\partial^{k} \rho \left(\mathbf{r}\right)}
     {\partial \mu^{k}} \right)_{v\left(\mathbf{r}\right)}
 
-Sometimes (e.g., the local electrophilicity), one will multiply one of the above reactivity indicators
+Sometimes (e.g., the local electrophilicity :cite:`Chattaraj2003JPCA,Chattaraj2006CR`), one will multiply one of the above reactivity indicators
 by a global reactivity indicator, or consider the sum of two or more local reactivity indicators.
 To coarse-grain these descriptors, we introduce a method for partitioning the molecule into atoms/functional groups.
 This partitioning is expressed in terms of atomic weighting function (or, occasionally, atomic weighting operators)
@@ -52,7 +52,7 @@ in real space,
     w_{A} \left(\mathbf{r}\right) \ge 0 \\
     \sum_{A=1}^{{N}_{\text{atoms}}} w_{A} \left(\mathbf{r}\right) = 1
 
-In the **fragment-of-molecular-response (FMR) approach**, local properties are divided directly,
+In the **fragment-of-molecular-response (FMR) approach**, local properties are divided directly, :cite:`Ayers2002JCP,Bultinck2007JCP`
 
  .. math::
     \lambda_{A}^{\text{FMR}} = \int w_{A} \left(\mathbf{r}\right) \lambda \left(\mathbf{r}\right) d\mathbf{r}
@@ -62,8 +62,7 @@ In the **response-of-molecular-fragment (RMF) approach**, the electron density i
  .. math::
     N_{A} = \int w_{A} \left(\mathbf{r}\right) \rho \left(\mathbf{r}\right) d\mathbf{r}
 
-and the atomic populations are then differentiated,
-
+and the atomic populations are then differentiated, :cite:`Bultinck2007JCP`
  .. math::
     \lambda_{A}^{\text{RMF}} \left(\mathbf{r} \right) \equiv \left(\frac{\partial^{k} N_{A}}
     {\partial N^{k}} \right)_{v\left(\mathbf{r}\right)}
@@ -75,7 +74,7 @@ The FMR and RMF approaches are just two among many different methods for atom-co
 they give the same results only if the atomic weight functions do not depend on the number of electrons in the molecule,
 as is true for the (ordinary) Hirshfeld partitioning, the Voronoi/Becke partitioning, and the Mulliken partitioning.
 For more sophisticated partitioning methods like iterative Hirshfeld charges, the FMR and RMF methods give different results,
-though we know of no compelling formal or practical reasons to favor one approach over the other.
+though we know of no compelling formal or practical reasons to favour one approach over the other.
 In some contexts, the RMF approach is easier to compute, since it only requires performing population analysis on several
 different charge states of the molecule being studied. For higher-order reactivity indicators, corresponding to :math:`k > 2`
 in Eq. (1), the FMR approach seems somewhat simpler.
@@ -122,8 +121,9 @@ Nonlocal reactivity indicators depending on three or more points in space, :math
 can be condensed into tensors, :math:`v_{ABC...}`, using the same strategy.
 
 Evaluating the FMR and RMF condensed reactivity indicators requires that one select an appropriate model for the
-dependence of the energy upon the number of electrons. ChemTools can evaluate condensed reactivity indicators for a
-general energy model using the formulation in ref. 7, but the most common choices are the linear model and the quadratic model.
+dependence of the energy upon the number of electrons. :cite:`Parr1982JACS` ChemTools can evaluate condensed
+reactivity indicators for a general energy model using the formulation in ref. :cite:`Heidar-Zadeh2016CPL` ,
+but the most common choices are the linear model and the quadratic model.
 
 In the linear model, the condensed Fukui functions are
 

@@ -67,7 +67,8 @@ is:
 	\frac{1}{4} \frac{(\nabla \rho_{\sigma})^2}{\rho_{\sigma}} \rbrack s^2
 
 where :math:`(\mathbf{r},s)` denotes the average on a sphere of radius :math:`s`
-around the reference electron at :math:`(\mathbf{r}` and :math:`\tau_{\sigma}` is the positive definite kinetic energy density:
+around the reference electron at :math:`(\mathbf{r}` and :math:`\tau_{\sigma}` is
+the positive definite kinetic energy density:
 
 .. math::
 
@@ -114,5 +115,8 @@ ELF = :math:`^1/_2` to the uniform electron gas-like correlation.
 
 
 **References:**
-  * `Becke A. D. and Edgecombe K. E., J. Chem. Phys. (1990), 92, 5397 <http://scitation.aip.org/content/aip/journal/jcp/92/9/10.1063/1.458517>`_.
-  * `Savin A., Becke A. D., Flad J., Nesper R., Preuss H. and von Schnering H. G., Angew. Chem. Int. Ed. Engl. (1991), 30, 409 <http://onlinelibrary.wiley.com/doi/10.1002/anie.199104091/full>`_.
+
+.. bibliography:: ../data/references.bib
+   :list: bullet
+   :filter: (key % "Savin1991ACIE" or
+             key % "Becke1990JCP")

@@ -62,6 +62,7 @@ extensions = [
     'sphinx_gallery.gen_gallery',
     'IPython.sphinxext.ipython_console_highlighting',
     'IPython.sphinxext.ipython_directive',
+    'sphinxcontrib.bibtex',
 ]
 mathjax_path = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
 

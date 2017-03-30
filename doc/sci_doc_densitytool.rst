@@ -40,7 +40,7 @@ by integrating the square of the wave function over all variables except the spa
 where the vectors :math:`\boldsymbol{x}_i` include the space coordinates, :math:`\boldsymbol{r}_i`, and the spin coordinate, :math:`\sigma_i`, of the i-th electron.
 
 **Gradient of electron density** :math:`\nabla \rho\left(\mathbf{r}\right)` represents the first-order partial
-derivatives of the electron density with respect tothe  coordinates:
+derivatives of the electron density with respect to the coordinates:
 
  .. math:: \nabla \rho\left(\mathbf{r}\right) =
            \left( \frac{\partial}{\partial x} \rho\left(\mathbf{r}\right), \frac{\partial}{\partial y} \rho\left(\mathbf{r}\right), \frac{\partial}{\partial z} \rho\left(\mathbf{r}\right)\right)
