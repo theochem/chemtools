@@ -96,61 +96,60 @@ def _print_vmd_script_nci(scriptfile, densfile, rdgfile, isosurf=0.5, denscut=0.
 def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5, material='Opaque',
                                 scalemin=-0.05, scalemax=0.05, colorscheme='RGB', negative=False):
     '''
-        Generate VMD (Visual Molecular Dynamics) script for visualizing the isosurface based on
-        one cube file when coloring by the value of another cube file on the isosurface.
+    Generate VMD (Visual Molecular Dynamics) script for visualizing the isosurface based on
+    one cube file when coloring by the value of another cube file on the isosurface.
 
-        Parameters
-        ----------
-        scriptfile : str
+    Parameters
+    ----------
+    scriptfile : str
         Name of VMD script file to generate.
-        isofile : str
+    isofile : str
         Name of cube file used in VMD script for visualizing the isosurface.
-        colorfile : str, default=None
+    colorfile : str, default=None
         Name of cube file used in VMD script for coloring the isosurface.
         If None, the isofile is used for coloring.
-        isosurf : float, default=0.5
+    isosurf : float, default=0.5
         The value of the isosurface to visualize used in VMD script.
-        material : str, default='Opaque'
+    material : str, default='Opaque'
         The material setting of the isosurface used in VMD script.
-        Options:
-        'Opaque', 'Transparent', 'BrushedMetal', 'Diffuse', 'Ghost',
-        'Glass1', 'Glass2', 'Glass3', 'Glossy', 'HardPlastic', 'MetallicPastel',
-        'Steel', 'Translucent', 'Edgy', 'EdgyShiny', 'EdgyGlass', 'Goodsell',
-        'AOShiny', 'AOChalky', 'AOEdgy', 'BlownGlass', 'GlassBubble', 'RTChrome'.
-        scalemin : float, default=-0.05
+
+            Options: 'Opaque', 'Transparent', 'BrushedMetal', 'Diffuse', 'Ghost',
+            'Glass1', 'Glass2', 'Glass3', 'Glossy', 'HardPlastic', 'MetallicPastel',
+            'Steel', 'Translucent', 'Edgy', 'EdgyShiny', 'EdgyGlass', 'Goodsell',
+            'AOShiny', 'AOChalky', 'AOEdgy', 'BlownGlass', 'GlassBubble', 'RTChrome'.
+
+    scalemin : float, default=-0.05
         Smallest value to color on the isosurface used in VMD script.
-        scalemax : float, default=0.05
+    scalemax : float, default=0.05
         Largest value to color on the isosurface used in VMD script.
-        colorscheme : str or int, default='RGB'
+    colorscheme : str or int, default='RGB'
         Color scheme used in VMD script for coloring the isosurface.
-        For color-scale, a sting is needed specifying the color scheme. The default is 'RGB'
-        Available options are described in the table below.
 
-        =======  =====================================
-        Options  Description
-        =======  =====================================
-        'RGB'    small=red, middle=green, large=blue
-        'BGR'    small=blue, middle=green, large=red
-        'RWB'    small=red, middle=white, large=blue
-        'BWR'    small=blue, middle=white, large=red
-        'RWG'    small=red, middle=white, large=green
-        'GWR'    small=green, middle=white, large=red
-        'GWB'    small=green, middle=white, large=blue
-        'BWG'    small=blue, middle=white, large=green
-        'BlkW'   small=black, large=white
-        'WBlk'   small=white, large=black
-        =======  =====================================
+            For color-scale, a sting is needed specifying the color scheme. The default is 'RGB',
+            ans more options are available in table below.
+            Alternatively, the isosurface can be colored with just one color.
+            For this option, an integer is needed specifying the color.
+            1057 colors are available in VMD, check the program or website for more details.
+            If you want to plot the negative isosurface as well, a list of two colors can be given
+            to specify the color of positive and negative iso-surfaces. e.g. [0, 1]
 
-        Alternatively, the isosurface can be colored with just one color.
-        For this option, an integer is needed specifying the color.
-        1057 colors are available in VMD, check the program or website for more details.
-
-        If you want to plot the negative isosurface as well, a list of two colors can be given. e.g. [0,1]
-
-        negative : bool, default=False
+            =======  =====================================
+            Options  Description
+            =======  =====================================
+            'RGB'    small=red, middle=green, large=blue
+            'BGR'    small=blue, middle=green, large=red
+            'RWB'    small=red, middle=white, large=blue
+            'BWR'    small=blue, middle=white, large=red
+            'RWG'    small=red, middle=white, large=green
+            'GWR'    small=green, middle=white, large=red
+            'GWB'    small=green, middle=white, large=blue
+            'BWG'    small=blue, middle=white, large=green
+            'BlkW'   small=black, large=white
+            'WBlk'   small=white, large=black
+            =======  =====================================
+    negative : bool, default=False
         Determines if you want to plot the negative of the isosurface as well. The default is false.
-        '''
-
+    '''
     if isinstance(colorscheme, int):
         colorscheme = [colorscheme]
 
@@ -169,7 +168,7 @@ def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5
         if colorfile is not None:
             print >> f, 'mol new {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'.format(colorfile)
             print >> f, 'mol addfile {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'.format(isofile)
-        else :
+        else:
             print >> f, 'mol new {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'.format(isofile)
         print >> f, '#'
         print >> f, '# representation of the atoms'

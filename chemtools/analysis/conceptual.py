@@ -30,10 +30,10 @@ import numpy as np
 from horton import log
 from horton import IOData, BeckeMolGrid, ProAtomDB
 from horton.scripts.wpart import wpart_schemes
-from chemtools.tool.globaltool import LinearGlobalTool, QuadraticGlobalTool, ExponentialGlobalTool, RationalGlobalTool, GeneralGlobalTool
+from chemtools.tool.globaltool import LinearGlobalTool, QuadraticGlobalTool
+from chemtools.tool.globaltool import ExponentialGlobalTool, RationalGlobalTool, GeneralGlobalTool
 from chemtools.tool.localtool import LinearLocalTool, QuadraticLocalTool
 from chemtools.utils import CubeGen
-
 
 
 class GlobalConceptualDFT(object):
@@ -42,7 +42,7 @@ class GlobalConceptualDFT(object):
     chemistry output file(s). If only one molecule is provided, the frontiner molecular orbital
     (FMO) approach is invoked, otherwise finite difference (FD) approach is taken.
     '''
-    def __init__(self, dict_values, model='quadratic', **kwargs):
+    def __init__(self, dict_values, model='quadratic'):
         '''
         Parameters
         ----------
@@ -69,15 +69,18 @@ class GlobalConceptualDFT(object):
             energies = [dict_values[key] for key in nelectrons]
 
             if len(nelectrons) != 3:
-                raise NotImplementedError('For model={0}, three energy values are required!'.format(self._model))
+                raise NotImplementedError(
+                    'For model={0}, three energy values are required!'.format(self._model))
 
             # check number of electrons are integers
             if not all(isinstance(item, int) for item in nelectrons):
-                raise ValueError('For model={0}, integer number of electrons are required! #electrons={1}'.format(self._model, nelectrons))
+                raise ValueError('For model={0}, integer number of electrons '.format(self._model) +
+                                 'are required! #electrons={0}'.format(nelectrons))
 
             # check consecutive number of elctrons change by one
             if not all([y - x == 1 for x, y in zip(nelectrons[:-1], nelectrons[1:])]):
-                raise ValueError('For model={0}, consecutive number of electrons should differ by 1! #electrons={1}'.format(self._model, nelectrons))
+                raise ValueError('For model={0}, consecutive number of'.format(self._model) +
+                                 'electrons should differ by 1! #electrons={0}'.format(nelectrons))
 
             # obtain reference number of electrons
             if len(nelectrons) % 2 == 0:
@@ -113,11 +116,14 @@ class GlobalConceptualDFT(object):
 
     def __repr__(self):
         '''
+        Print table of available class attributes and methods.
         '''
         available = dir(self._tool)
-        attrs = [attr for attr in available if not callable(getattr(self, attr)) and not attr.startswith('_')]
+        is_public = lambda item: not item.startswith('_')
+        attrs = [atr for atr in available if not callable(getattr(self, atr)) and is_public(atr)]
         attrs.sort()
-        methods = [attr for attr in available if callable(getattr(self, attr)) and not attr.startswith('_')]
+        methods = [attr for attr in available if callable(getattr(self, attr)) and is_public(attr)]
+        methods.sort()
         content = 'Available attributes in {0} global model:\n{1}\n'.format(self._model, '-' * 50)
         for attr in attrs:
             if getattr(self._tool, attr) is not None:
@@ -137,8 +143,9 @@ class GlobalConceptualDFT(object):
             log.deflist([('Energy Model', self._model),
                          ('Reference Energy', self._tool.energy_zero),
                          ('Reference #Electrons', self._tool.n0),
-                         ('Energy Values', [getattr(self._tool, attr) for attr in ['_energy_minus', 'energy_zero', '_energy_plus']]),
-                         #('Parameters', self._tool.energy_params)
+                         ('Energy Values', [getattr(self._tool, attr) for attr in
+                                            ['_energy_minus', 'energy_zero', '_energy_plus']]),
+                         # ('Parameters', self._tool.params)
                         ])
             log.blank()
 
@@ -218,7 +225,8 @@ class GlobalConceptualDFT(object):
                 if index == 0:
                     atomic_numbers = iodata.numbers
                 elif not np.all(abs(atomic_numbers - iodata.numbers) < 1.e-6):
-                    raise ValueError('Molecule 1 & {0} have different atomic numbers!'.format(index + 1))
+                    raise ValueError(
+                        'Molecule 1 & {0} have different atomic numbers!'.format(index + 1))
                 # get the number of electrons
                 nelec = int(np.sum(iodata.exp_alpha.occupations))
                 if hasattr(iodata, 'exp_beta') and iodata.exp_beta is not None:
@@ -256,7 +264,7 @@ class LocalConceptualDFT(object):
             Please see '' for more information.
         '''
         # available models for local tools
-        select_tool = {'linear':LinearLocalTool, 'quadratic':QuadraticLocalTool}
+        select_tool = {'linear': LinearLocalTool, 'quadratic': QuadraticLocalTool}
 
         if model.lower() not in select_tool.keys():
             raise ValueError('Model={0} is not available!'.format(model))
@@ -264,11 +272,14 @@ class LocalConceptualDFT(object):
 
         # check shape of coordinates
         if coordinates is not None and coordinates.shape[1] != 3:
-            raise ValueError('Argument coordinate should be a 2D-array with 3 columns! shape={0}'.format(coordinates.shape))
+            raise ValueError('Argument coordinate should be a 2D-array with 3 columns!' +
+                             ' shape={0}'.format(coordinates.shape))
+
         # check number of atoms given by numbers and coordinates match
         if len(numbers) != len(coordinates):
-            raise ValueError(
-                'Numbers & coordinates should represent same number of atoms! {0}!={1}'.format(len(numbers), len(coordinates)))
+            raise ValueError('Numbers & coordinates should represent same number of ' +
+                             'atoms! {0}!={1}'.format(len(numbers), len(coordinates)))
+
         self._coordiantes = coordinates
         self._numbers = numbers
 
@@ -277,7 +288,8 @@ class LocalConceptualDFT(object):
             if index == 0:
                 shape = value.shape
             elif value.shape != shape:
-                raise ValueError('Densities should have the same shape! {1}!={2}'.format(shape, value.shape))
+                raise ValueError(
+                    'Densities should have the same shape! {1}!={2}'.format(shape, value.shape))
 
         if self._model != 'general':
             # get sorted number of electrons
@@ -286,15 +298,18 @@ class LocalConceptualDFT(object):
             densities = [dict_values[key] for key in nelectrons]
 
             if len(nelectrons) != 3:
-                raise NotImplementedError('For model={0}, three densities are required!'.format(self._model))
+                raise NotImplementedError(
+                    'For model={0}, three densities are required!'.format(self._model))
 
             # check number of electrons are integers
             if not all(isinstance(item, int) for item in nelectrons):
-                raise ValueError('For model={0}, integer number of electrons are required! #electrons={1}'.format(self._model, nelectrons))
+                raise ValueError('For model={0}, integer number of electrons '.format(self._model) +
+                                 'are required! #electrons={0}'.format(nelectrons))
 
             # check consecutive number of elctrons change by one
             if not all([y - x == 1 for x, y in zip(nelectrons[:-1], nelectrons[1:])]):
-                raise ValueError('For model={0}, consecutive number of electrons should differ by 1! #electrons={1}'.format(self._model, nelectrons))
+                raise ValueError('For model={0}, consecutive number of'.format(self._model) +
+                                 'electrons should differ by 1! #electrons={0}'.format(nelectrons))
 
             # obtain reference number of electrons
             if len(nelectrons) % 2 == 0:
@@ -347,13 +362,16 @@ class LocalConceptualDFT(object):
 
     def __repr__(self):
         '''
-        Return string when class is printed.
+        Print table of available class attributes and methods.
         '''
         available = dir(self._tool) + dir(self)
-        attrs = [attr for attr in available if not callable(getattr(self, attr)) and not attr.startswith('_')]
+        is_public = lambda item: not item.startswith('_')
+        attrs = [atr for atr in available if not callable(getattr(self, atr)) and is_public(atr)]
         attrs.sort()
-        attrs.remove('n0')   # b/c it is both an attr of self._tool and self
-        methods = [attr for attr in available if callable(getattr(self, attr)) and not attr.startswith('_')]
+        # remove n0, because it is both an attr of self._tool and self (duplicate)
+        attrs.remove('n0')
+        methods = [attr for attr in available if callable(getattr(self, attr)) and is_public(attr)]
+        methods.sort()
         content = 'Available attributes in {0} global model:\n{1}\n'.format(self._model, '-' * 50)
         content += '\n'.join(attrs)
         content += '\n\nAvailable methods in {0} global model:\n{1}\n'.format(self._model, '-' * 50)
@@ -412,7 +430,8 @@ class LocalConceptualDFT(object):
         '''
         # check points array
         if points.ndim != 2 or points.shape[1] != 3:
-            raise ValueError('Argument points should be a 2D array with 3 columns! given shape={0}'.format(points.shape))
+            raise ValueError('Argument points should be a 2D array with 3 columns! ' +
+                             'given shape={0}'.format(points.shape))
 
         # case of one IOData object not given as a list
         if isinstance(iodatas, IOData):
@@ -471,13 +490,15 @@ class LocalConceptualDFT(object):
                 if index == 0:
                     atomic_numbers = iodata.numbers
                 elif not np.all(abs(atomic_numbers - iodata.numbers) < 1.e-6):
-                    raise ValueError('Molecule 1 & {0} have different atomic numbers!'.format(index + 1))
+                    raise ValueError(
+                        'Molecule 1 & {0} have different atomic numbers!'.format(index + 1))
                 # check coordinates
                 if index == 0:
                     # get coordinates of molecule
                     coordinates = iodata.coordinates
                 elif not np.all(abs(coordinates - iodata.coordinates) < 1.e-4):
-                    raise ValueError('Molecule 1 & {0} have different geometries!'.format(index + 1))
+                    raise ValueError(
+                        'Molecule 1 & {0} have different geometries!'.format(index + 1))
                 # get number of electrons
                 nelec = int(np.sum(iodata.exp_alpha.occupations))
                 if hasattr(iodata, 'exp_beta') and iodata.exp_beta is not None:
@@ -500,7 +521,8 @@ class CondensedConceptualDFT(object):
     chemistry output file(s). If only one molecule is provided, the frontiner molecular orbital
     (FMO) approach is invoked, otherwise finite difference (FD) approach is taken.
 
-    Note: If FD approach is taken, the geometries of molecules can be different only for RMF approach.
+    Note: If FD approach is taken, the geometries of molecules can be different only for RMF
+          approach.
     '''
     def __init__(self, dict_values, model='quadratic'):
         '''
@@ -514,7 +536,7 @@ class CondensedConceptualDFT(object):
             Please see '' for more information.
         '''
         # available models for local tools
-        select_tool = {'linear':LinearLocalTool, 'quadratic':QuadraticLocalTool}
+        select_tool = {'linear': LinearLocalTool, 'quadratic': QuadraticLocalTool}
 
         if model.lower() not in select_tool.keys():
             raise ValueError('Model={0} is not available!'.format(model))
@@ -527,15 +549,18 @@ class CondensedConceptualDFT(object):
             populations = [dict_values[key] for key in nelectrons]
 
             if len(nelectrons) != 3:
-                raise NotImplementedError('For model={0}, three densities are required!'.format(self._model))
+                raise NotImplementedError(
+                    'For model={0}, three densities are required!'.format(self._model))
 
             # check number of electrons are integers
             if not all(isinstance(item, int) for item in nelectrons):
-                raise ValueError('For model={0}, integer number of electrons are required! #electrons={1}'.format(self._model, nelectrons))
+                raise ValueError('For model={0}, integer number of electrons'.format(self._model) +
+                                 ' are required! #electrons={0}'.format(nelectrons))
 
             # check consecutive number of elctrons change by one
             if not all([y - x == 1 for x, y in zip(nelectrons[:-1], nelectrons[1:])]):
-                raise ValueError('For model={0}, consecutive number of electrons should differ by 1! #electrons={1}'.format(self._model, nelectrons))
+                raise ValueError('For model={0}, consecutive number of '.format(self._model) +
+                                 'electrons should differ by 1! #electrons={0}'.format(nelectrons))
 
             # obtain reference number of electrons
             if len(nelectrons) % 2 == 0:
@@ -566,10 +591,11 @@ class CondensedConceptualDFT(object):
 
     def __repr__(self):
         '''
-        Return string when class is printed.
+        Print table of available class attributes and methods.
         '''
         available = dir(self._tool)
-        attrs = [attr for attr in available if not callable(getattr(self, attr)) and not attr.startswith('_')]
+        is_public = lambda item: not item.startswith('_')
+        attrs = [atr for atr in available if not callable(getattr(self, atr)) and is_public(atr)]
         attrs.sort()
         attrs.remove('n0')
         methods = [attr for attr in available if callable(getattr(self, attr)) and not attr.startswith('_')]
@@ -604,7 +630,8 @@ class CondensedConceptualDFT(object):
             Energy model used to calculate local descriptive tools.
             Available models are 'linear' and 'quadratic'.
         approach : str
-            Choose between 'FMR' (fragment of molecular response) or 'RMF' (response of molecular fragment).
+            Choose between 'FMR' (fragment of molecular response) or 'RMF'
+            (response of molecular fragment).
         scheme: str
             Partitioning scheme. Options: 'h', 'hi', 'mbis'.
         grid: instance of ``BeckeMolGrid``
@@ -614,7 +641,8 @@ class CondensedConceptualDFT(object):
         '''
         # case of one file not given as a list
         if isinstance(filenames, (str, unicode)):
-            return cls.from_iodata(IOData.from_file(filenames), model, grid, approach, scheme, proatomdb)
+            return cls.from_iodata(IOData.from_file(filenames), model, grid, approach,
+                                   scheme, proatomdb)
         # case of list of file(s)
         iodatas = []
         for filename in filenames:
@@ -622,7 +650,8 @@ class CondensedConceptualDFT(object):
         return cls.from_iodata(iodatas, model, grid, approach, scheme, proatomdb)
 
     @classmethod
-    def from_iodata(cls, iodatas, model, grid=None, approach='FMR', scheme='mbis', proatomdb=None, **kwargs):
+    def from_iodata(cls, iodatas, model, grid=None, approach='FMR', scheme='mbis',
+                    proatomdb=None, **kwargs):
         '''
         Initialize class from `IOData` objects.
 
@@ -634,7 +663,8 @@ class CondensedConceptualDFT(object):
             Energy model used to calculate local descriptive tools.
             Available models are 'linear' and 'quadratic'.
         approach : str
-            Choose between 'FMR' (fragment of molecular response) or 'RMF' (response of molecular fragment).
+            Choose between 'FMR' (fragment of molecular response) or 'RMF'
+            (response of molecular fragment).
         scheme: str
             Partitioning scheme. Options: 'h', 'hi', 'mbis'.
         grid: instance of ``BeckeMolGrid``
@@ -694,17 +724,20 @@ class CondensedConceptualDFT(object):
             dens = mol.obasis.compute_grid_density_dm(mol.get_dm_full(), points)
             # partitioning
             if scheme.lower() not in wpart_schemes:
-                raise ValueError('Partitioning scheme={0} not supported! Select from: {1}'.format(scheme, wpart_schemes))
+                raise ValueError('Partitioning scheme={0} not supported! ' +
+                                 'Select from: {1}'.format(scheme, wpart_schemes))
+
             wpart = wpart_schemes[scheme]
             if isinstance(grid, BeckeMolGrid):
                 # compute population of reference system
                 if scheme.lower() not in ['mbis', 'b']:
                     if proatomdb is None:
                         proatomdb = ProAtomDB.from_refatoms(mol.numbers)
-                    kwargs = {'proatomdb':proatomdb}
+                    kwargs = {'proatomdb': proatomdb}
                 else:
                     kwargs = {}
-                part0 = wpart(mol.coordinates, mol.numbers, mol.pseudo_numbers, grid, dens, **kwargs)
+                part0 = wpart(mol.coordinates, mol.numbers,
+                              mol.pseudo_numbers, grid, dens, **kwargs)
                 part0.do_all()
                 pops0 = part0['populations']
                 # compute population of N+1 and N-1 electron system
@@ -714,14 +747,17 @@ class CondensedConceptualDFT(object):
                     popsm = cls.condense_to_atoms(dens - homo_dens, part0)
                 elif approach.lower() == 'rmf':
                     # response of molecular fragment
-                    partp = wpart(mol.coordinates, mol.numbers, mol.pseudo_numbers, grid, dens + lumo_dens, **kwargs)
+                    partp = wpart(mol.coordinates, mol.numbers, mol.pseudo_numbers,
+                                  grid, dens + lumo_dens, **kwargs)
                     partp.do_all()
                     popsp = partp['populations']
-                    partm = wpart(mol.coordinates, mol.numbers, mol.pseudo_numbers, grid, dens - homo_dens, **kwargs)
+                    partm = wpart(mol.coordinates, mol.numbers, mol.pseudo_numbers,
+                                  grid, dens - homo_dens, **kwargs)
                     partm.do_all()
                     popsm = partm['populations']
             elif isinstance(grid, CubeGen):
-                raise NotImplementedError('Condensing with CubGen will be implemented in near future!')
+                raise NotImplementedError(
+                    'Condensing with CubGen will be implemented in near future!')
             else:
                 raise NotImplementedError('Condensing does not support grid={0}!'.format(grid))
 
@@ -738,12 +774,14 @@ class CondensedConceptualDFT(object):
                 if index == 0:
                     atomic_numbers = iodata.numbers
                 elif not np.all(abs(atomic_numbers - iodata.numbers) < 1.e-6):
-                    raise ValueError('Molecule 1 & {0} have different atomic numbers!'.format(index + 1))
+                    raise ValueError(
+                        'Molecule 1 & {0} have different atomic numbers!'.format(index + 1))
                 # check coordinates of grid and molecule match
                 if grid is not None:
                     if not np.all(abs(grid.centers - iodata.coordinates) < 1.e-4):
                         print abs(grid.centers - iodata.coordinates)
-                        raise ValueError('Coordinates of grid and molecule {0} should match!'.format(index))
+                        raise ValueError(
+                            'Coordinates of grid and molecule {0} should match!'.format(index))
                 if index == 0:
                     coordinates = iodata.coordinates
                 elif not np.all(abs(coordinates - iodata.coordinates) < 1.e-4):
@@ -751,7 +789,8 @@ class CondensedConceptualDFT(object):
                     same_coordinates = False
                     # if geometries are not the same, only rmf can be done.
                     if approach.lower() == 'fmr':
-                        raise ValueError('When geoemtries of molecules are different only approach=RMF is possible!')
+                        raise ValueError('When geoemtries of molecules are different, ' +
+                                         'only approach=RMF is possible!')
 
                 # get number of electrons
                 nelec = int(np.sum(iodata.exp_alpha.occupations))
@@ -767,7 +806,9 @@ class CondensedConceptualDFT(object):
             # Get sorted number of electrons
             nelectrons = sorted(dict_values.keys())
             if len(nelectrons) != 3:
-                raise ValueError('Condensed conceptual DFT within FD approach, currently only works for 3 molecules!')
+                raise ValueError('Condensed conceptual DFT within FD approach, ' +
+                                 'currently only works for 3 molecules!')
+
             reference = nelectrons[1]
             # get energy values of sorted number of electrons (from small to big)
             molm, mol0, molp = [dict_values[key] for key in nelectrons]
@@ -781,17 +822,20 @@ class CondensedConceptualDFT(object):
 
             # partitioning
             if scheme.lower() not in wpart_schemes:
-                raise ValueError('Partitioning scheme={0} not supported! Select from: {1}'.format(scheme, wpart_schemes))
+                raise ValueError('Partitioning scheme={0} not supported!'.format(scheme) +
+                                 'Select from: {0}'.format(wpart_schemes))
+
             wpart = wpart_schemes[scheme]
             if isinstance(grid, BeckeMolGrid):
                 # compute population of reference system
                 if scheme.lower() not in ['mbis', 'b']:
                     if proatomdb is None:
                         proatomdb = ProAtomDB.from_refatoms(mol0.numbers)
-                    kwargs = {'proatomdb':proatomdb}
+                    kwargs = {'proatomdb': proatomdb}
                 else:
                     kwargs = {}
-                part0 = wpart(mol0.coordinates, mol0.numbers, mol0.pseudo_numbers, grid, dens0, **kwargs)
+                part0 = wpart(mol0.coordinates, mol0.numbers,
+                              mol0.pseudo_numbers, grid, dens0, **kwargs)
                 part0.do_all()
                 pops0 = part0['populations']
                 # compute population of N+1 and N-1 electron system
@@ -809,7 +853,8 @@ class CondensedConceptualDFT(object):
                                             agspec='fine', random_rotate=False, mode='keep')
                         points = grid.points
                     densp = molp.obasis.compute_grid_density_dm(molp.get_dm_full(), points)
-                    partp = wpart(molp.coordinates, molp.numbers, molp.pseudo_numbers, grid, densp, **kwargs)
+                    partp = wpart(molp.coordinates, molp.numbers,
+                                  molp.pseudo_numbers, grid, densp, **kwargs)
                     partp.do_all()
                     popsp = partp['populations']
                     if not same_coordinates:
@@ -817,11 +862,13 @@ class CondensedConceptualDFT(object):
                                             agspec='fine', random_rotate=False, mode='keep')
                         points = grid.points
                     densm = molm.obasis.compute_grid_density_dm(molm.get_dm_full(), points)
-                    partm = wpart(molm.coordinates, molm.numbers, molm.pseudo_numbers, grid, densm, **kwargs)
+                    partm = wpart(molm.coordinates, molm.numbers,
+                                  molm.pseudo_numbers, grid, densm, **kwargs)
                     partm.do_all()
                     popsm = partm['populations']
             elif isinstance(grid, CubeGen):
-                raise NotImplementedError('Condensing with CubGen will be implemented in near future!')
+                raise NotImplementedError(
+                    'Condensing with CubGen will be implemented in near future!')
             else:
                 raise NotImplementedError('Condensing does not support grid={0}!'.format(grid))
 
@@ -834,12 +881,13 @@ class CondensedConceptualDFT(object):
     @staticmethod
     def condense_to_atoms(local_property, part):
         r'''
-        Return condensed values of the local descriptor :math:`p_{\text{local}}\left(\mathbf{r}\right)`
-        into atomic contribution :math:`P_A` defined as:
+        Return condensed values of the local descriptor
+        :math:`p_{\text{local}}\left(\mathbf{r}\right)` into atomic contribution :math:`P_A`
+        defined as,
 
         .. math::
-
-           P_A = \int \omega_A\left(\mathbf{r}\right) p_{\text{local}}\left(\mathbf{r}\right) d\mathbf{r}
+           P_A = \int \omega_A\left(\mathbf{r}\right)
+                      p_{\text{local}}\left(\mathbf{r}\right) d\mathbf{r}
 
         Parameters
         ----------
@@ -849,7 +897,7 @@ class CondensedConceptualDFT(object):
         condensed = np.zeros(part.natom)
         for index in xrange(part.natom):
             at_grid = part.get_grid(index)
-            at_weight = part.cache.load('at_weights',index)
+            at_weight = part.cache.load('at_weights', index)
             wcor = part.get_wcor(index)
             local_prop = part.to_atomic_grid(index, local_property)
             condensed[index] = at_grid.integrate(at_weight, local_prop, wcor)

@@ -38,7 +38,6 @@ import matplotlib.pyplot as plt
 class NCI(object):
     '''
     Class for the Non-Covalent Interactions (NCI).
-
     '''
     def __init__(self, density, rdgradient, cube, hessian=None):
         '''
@@ -50,7 +49,6 @@ class NCI(object):
             Cubic grid used for calculating and visualizating the NCI.
             If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
         '''
-
         if hessian is not None:
             # Compute hessian and its eigenvalues on cubuc grid
             eigvalues = np.linalg.eigvalsh(hessian)
@@ -89,12 +87,12 @@ class NCI(object):
     @classmethod
     def from_iodata(cls, iodata, cube=None):
         '''
-        Initialize class from `IOData` object.
+        Initialize class from ``IOData`` object from ``HORTON`` library.
 
         Parameters
         ----------
-        iodata : `IOData`
-            Instance of `IOData`.
+        iodata : ``IOData``
+            Instance of ``IOData``.
         '''
         # Generate or check cubic grid
         if cube is None:
@@ -120,26 +118,27 @@ class NCI(object):
     def signed_density(self):
         r'''
         Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on a grid,
-        signed by the second eigenvalue of the Hessian at that point.
+        signed by the second eigenvalue of the Hessian at that point, i.e.
+        :math:`\text{sgn}\left(\lambda_2\right) \times \rho\left(\mathbf{r}\right)`.
         '''
         return self._signed_density
 
     @property
     def eigvalues(self):
         r'''
-        Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on a grid,
-        signed by the second eigenvalue of the Hessian at that point.
+        Eigenvalues of Hessian.
         '''
         return self._eigvalues
 
     def plot(self, filename):
         r'''
-        # Plot reduced density gradient vs. sign(lambda_2)*density
+        Plot reduced density gradient vs.
+        :math:`\text{sgn}\left(\lambda_2\right) \times \rho\left(\mathbf{r}\right)`.
         '''
-        plt.scatter(self._signed_density, self._rdgrad, lw = 0.5)
+        plt.scatter(self._signed_density, self._rdgrad, lw=0.5)
         plt.xlim(-0.2, 0.2)
         plt.ylim(0.0, 2.0)
-        plt.xlabel(r'sign($\lambda_2$)$\rho$ (a.u)')
+        plt.xlabel(r'sgn($\lambda_2$)$\rho$ (a.u)')
         plt.ylabel('Reduced Density Gradient')
         plt.savefig(filename)
 
@@ -164,7 +163,6 @@ class NCI(object):
         ----
         The generated cube files and script imitate the NCIPlot software version 1.0.
         '''
-
         # Similar to NCIPlot program, reduced density gradient of points with
         # density > cutoff will be set to 100.0 before generating cube file to
         # display reduced density gradient iso-surface subject to the constraint
@@ -181,13 +179,13 @@ class NCI(object):
 
         # Name of output files:
         densfile = filename + '-dens.cube'    # density cube file
-        rdgfile  = filename + '-grad.cube'    # reduced density gradient cube file
-        vmdfile  = filename + '.vmd'          # vmd script file
+        rdgfile = filename + '-grad.cube'    # reduced density gradient cube file
+        vmdfile = filename + '.vmd'          # vmd script file
         # Dump density & reduced density gradient cube files
         self._cube.dump_cube(densfile, dens)
         self._cube.dump_cube(rdgfile, cutrdg)
         # Make VMD scripts for visualization
-        _print_vmd_script_nci(vmdfile, densfile, rdgfile, isosurf, denscut*100.0)
+        _print_vmd_script_nci(vmdfile, densfile, rdgfile, isosurf, denscut * 100.0)
 
 
 def _compute_hessian(mol, points):
@@ -216,9 +214,9 @@ def _compute_hessian(mol, points):
     gpnt = mol.obasis.compute_grid_gradient_dm(dm, points)
     # Calculate hessian using finite difference
     hess = np.zeros((points.shape[0], 3, 3), float)
-    hess[:,:,0] = (mol.obasis.compute_grid_gradient_dm(dm, dx) - gpnt) / eps
-    hess[:,:,1] = (mol.obasis.compute_grid_gradient_dm(dm, dy) - gpnt) / eps
-    hess[:,:,2] = (mol.obasis.compute_grid_gradient_dm(dm, dz) - gpnt) / eps
+    hess[:, :, 0] = (mol.obasis.compute_grid_gradient_dm(dm, dx) - gpnt) / eps
+    hess[:, :, 1] = (mol.obasis.compute_grid_gradient_dm(dm, dy) - gpnt) / eps
+    hess[:, :, 2] = (mol.obasis.compute_grid_gradient_dm(dm, dz) - gpnt) / eps
     # Make Hessian symmetric to avoid complex eigenvalues
     hess = 0.5 * (hess + np.transpose(hess, axes=(0, 2, 1)))
     return hess
@@ -263,7 +261,6 @@ class OrbitalAnalysis(OrbitalLocalTool):
             Instance of `IOData`.
         '''
         # check if iodata has exp_beta
-
         if hasattr(iodata, 'exp_beta'):
             return cls(points, iodata.obasis, iodata.exp_alpha, iodata.exp_beta)
         else:
