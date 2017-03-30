@@ -180,13 +180,13 @@ class CubeGen(object):
 
     @classmethod
     def from_cube(cls, filename):
-        '''
+        r'''
         Initialize ``CubeGen`` class based on the grid specifications of a cube file.
 
         Parameters
         ----------
         filename : str
-            Cube file name with *.cube extension.
+            Cube file name with \*.cube extension.
         '''
         if not filename.endswith('.cube'):
             raise ValueError('Arguemnt filename should be a cube file with *.cube extension!')
@@ -287,13 +287,13 @@ class CubeGen(object):
             log.blank()
 
     def dump_cube(self, filename, data):
-        '''
-        Write the data evaluated on grid points into a *.cube file.
+        r'''
+        Write the data evaluated on grid points into a cube file.
 
         Parameters
         ----------
         filename : str
-            Cube file name with *.cube extension.
+            Cube file name with \*.cube extension.
         data : np.ndarray, shape=(npoints,)
             An array containing the evaluated scalar property on the grid points.
         '''
@@ -330,23 +330,24 @@ class CubeGen(object):
 
     def weights(self, method='R'):
         '''
-        Generate the waights for the integration of the cubic grid.
+        Return integration weights at every point on the cubic grid.
 
         Parameters
         ----------
         method : str, default='R0'
-            The method for constucting the weights on the grid.
-            Options:
-            R  : rectangle/trapezoidal rule for integration of the cubic grid.
-            R0 : rectangle/trapezoidal rule, assuming that the function is very close to zero
-                 at the edges of the grid.
+            The method for computing the integration weights at every point on the grid. Options:
+
+                - 'R' method perfors rectangle/trapezoidal rule, without assuming that the function
+                  is close to zero at the edges of the grid.
+                - 'R0' method performing rectangle/trapezoidal rule, assuming that the function is
+                  very close to zero at the edges of the grid.
         '''
         if method == 'R':
             volume = np.linalg.norm(self._shape[0] * self._axes[0])
             volume *= np.linalg.norm(self._shape[1] * self._axes[1])
             volume *= np.linalg.norm(self._shape[2] * self._axes[2])
             numpnt = 1.0 * self._npoints
-            return np.full((self._npoints), volume / numpnt)
+            weights = np.full((self._npoints), volume / numpnt)
 
         elif method == 'R0':
             volume = np.linalg.norm((self._shape[0] + 1.0) * self._axes[0])
@@ -354,10 +355,11 @@ class CubeGen(object):
             volume *= np.linalg.norm((self._shape[2] + 1.0) * self._axes[2])
 
             numpnt = (self._shape[0] + 1.0) * (self._shape[1] + 1.0) * (self._shape[2] + 1.0)
-            return np.full((self._npoints), volume / numpnt)
+            weights = np.full((self._npoints), volume / numpnt)
 
         else:
             raise ValueError('Argument method {0} is not known.'.format(method))
+        return weights
 
     def integrate(self, data, method='R0'):
         '''
@@ -365,22 +367,23 @@ class CubeGen(object):
 
         Parameters
         ----------
-
-        data : np.ndarray, shape=(npoints,m)
-            Data must be arrays with the size the numbet of points of the grid as size fot axis=0
+        data : np.ndarray, shape=(npoints, m)
+            Data at every point on the grid given as an array. The size of axis=0 of this array
+            should equal the number of grid points.
 
         method : str, default='R0'
-            The method for constucting the weights on the grid.
-            Options:
-            R0 : rectangle/trapezoidal rule, assuming that the function is very close to zero
-                 at the edges of the grid.
-            R  : rectangle/trapezoidal rule, without assuming that the function is close to zero
-                 at the edges of the grid.
+            The method for computing the integration weights at every point on the grid. Options:
+
+                - 'R' method perfors rectangle/trapezoidal rule, without assuming that the function
+                  is close to zero at the edges of the grid.
+                - 'R0' method performing rectangle/trapezoidal rule, assuming that the function is
+                  very close to zero at the edges of the grid.
         '''
         if data.shape[0] != self._npoints:
             raise ValueError('Argument data should have the same size as the grid for axis=0. ' +
                              '{0}!={1}'.format(data.shape[0], self._npoints))
-        return np.tensordot(self.weights(method=method), data, axes=(0, 0))
+        value = np.tensordot(self.weights(method=method), data, axes=(0, 0))
+        return value
 
     @staticmethod
     def _read_cube_header(filename):

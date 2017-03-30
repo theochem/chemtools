@@ -89,7 +89,7 @@ respect to :math:`N` at fixed external potential
 to the second-order Taylor expansion of the energy as a function of :math:`N` around the reference
 state :math:`N_0`.
 
-To obtain the :ref:`fundamental global reactivity indicators <fundamental_indicators>` for the
+To obtain the :ref:`fundamental global reactivity indicators <global_fundamental_indicators>` for the
 quadratic energy model, the derivatives of the energy with respect to the number of electrons at
 fixed external potential :math:`v(\mathbf{r})` should be calculated. These are given by:
 
@@ -134,7 +134,7 @@ by the expressions,
     S^{(n)} = - \left. \left( \frac{\partial^{n+1}\Omega}{\partial\mu^{n+1}} \right)_{v(\mathbf{r})} \right|_{N = N_0}
            &= 0 \text {     for } n \geq 2
 
-To obtain the :ref:`derived global reactivity indicators <derived_indicators>` for
+To obtain the :ref:`derived global reactivity indicators <global_derived_indicators>` for
 the quadratic energy model, the maximum number of electrons to saturate the system should be calculated.
 This is obtained by setting the first derivative of the energy with respect to the number of electrons equal
 to zero,
@@ -145,7 +145,7 @@ to zero,
     & \to N_{\text{max}} = \frac{-b}{2c} = N_{0} + \frac{IP + EA}{2 \left(IP - EA \right)} = N_{0} - \frac{\mu}{\eta} \\
     & \to \Delta N_{\text{max}} = N_0 - N_{\text{max}} = \frac{IP + EA}{2 \left(IP - EA \right)} = - \frac{\mu}{\eta}
 
-The related :ref:`derived global reactivity indicators <derived_indicators>` for the quadratic energy model are:
+The related :ref:`derived global reactivity indicators <global_derived_indicators>` for the quadratic energy model are:
 
  .. todo:: include the generalized singned definitions.
 

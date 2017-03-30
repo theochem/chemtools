@@ -83,7 +83,7 @@ electrons are zero except when the number of electrons is an integer, where they
 (because the energy model is nondifferentiable). So the chemical hardness and hyper-hardnesses are all zero,
 and the global softness and global hyper-softness are not defined.
 
-Calculating :ref:`derived global reactivity indicators <derived_indicators>` for the linear energy model
+Calculating :ref:`derived global reactivity indicators <global_derived_indicators>` for the linear energy model
 requires that one first compute the maximum number of electrons that can be accepted by the system.
 It is only possible to do this when the :math:`N_0-` electron system has lower energy than the :math:`(N_0+1)`
 and :math:`(N_0-1)` electron systems. In that case, :math:`N_{\text{max}}=N_0` which gives :math:`\Delta N_{\text{max}}=0`,

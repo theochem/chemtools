@@ -110,7 +110,7 @@ hypersoftnesses,
 ChemTools can also compute higher-order hyper-softnesses, using the (extended) inverse function theorem for
 derivatives. Please refer to :ref:`derivation_global_softness` for details.
 
-To obtain the :ref:`derived global reactivity indicators <derived_indicators>` for
+To obtain the :ref:`derived global reactivity indicators <global_derived_indicators>` for
 the exponential energy model, the maximum number of electrons accepted by the system should be calculated.
 
  .. TODO::

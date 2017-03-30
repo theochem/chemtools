@@ -42,7 +42,7 @@ the local descriptors associated with a user-defined energy model.
 **Fundamental Local Reactivity Descriptors**
 
 In conceptual DFT, the fundamental local descriptors are functional derivatives of
-:ref:`fundamental global descriptive tools <fundamental_indicators>` with respect to local quantities, typically the
+:ref:`fundamental global descriptive tools <global_fundamental_indicators>` with respect to local quantities, typically the
 external potential :math:`v(\mathbf{r})`, but occasionally also the electron density :math:`\rho(\mathbf{r})`.
 
 In the canonical ensemble, fundamental local descriptors arise by differentiating
