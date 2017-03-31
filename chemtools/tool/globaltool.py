@@ -42,7 +42,7 @@ class BaseGlobalTool(object):
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, energy_zero, energy_plus, energy_minus, n0):
+    def __init__(self, energy_zero, energy_plus, energy_minus, n0, n_max):
         """
         Parameters
         ----------
@@ -57,7 +57,10 @@ class BaseGlobalTool(object):
         """
         if n0 <= 0:
             raise ValueError('Argument n0 should be positive! Given n0={0}'.format(n0))
+        if n_max is not None and n_max < 0:
+            raise ValueError('Argument n_max cannot be negative! Given n0={0}'.format(n_max))
         self._n0 = n0
+        self._n_max = n_max
         self._energy_zero = energy_zero
         self._energy_plus = energy_plus
         self._energy_minus = energy_minus
@@ -544,11 +547,11 @@ class LinearGlobalTool(BaseGlobalTool):
        \mu^{+} &= -EA \\
     """
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
-        super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0)
         if energy_zero < energy_plus:
-            self._n_max = self._n0
+            n_max = n0
         else:
-            self._n_max = None
+            n_max = None
+        super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0, n_max)
 
     @property
     def mu_minus(self):
@@ -646,8 +649,8 @@ class QuadraticGlobalTool(BaseGlobalTool):
         a = energy_zero - b * n0 - c * (n0**2)
         self._params = [a, b, c]
         # calculate Nmax (number of electrons for which energy is minimum)
-        self._n_max = - b / (2 * c)
-        super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0)
+        n_max = - b / (2 * c)
+        super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0, n_max)
 
     @property
     def params(self):
@@ -720,8 +723,8 @@ class ExponentialGlobalTool(BaseGlobalTool):
         gamma = math.log(1. - gamma)
         self._params = [param_a, gamma, param_b]
         # calulate N_max
-        self._n_max = float('inf')
-        super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0)
+        n_max = float('inf')
+        super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0, n_max)
 
     @property
     def params(self):
@@ -799,8 +802,8 @@ class RationalGlobalTool(BaseGlobalTool):
         a0 = - a1 * n0 + energy_zero * (1 + b1 * n0)
         self._params = [a0, a1, b1]
         # calculate Nmax
-        self._n_max = float('inf')
-        super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0)
+        n_max = float('inf')
+        super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0, n_max)
 
     @property
     def params(self):
@@ -910,13 +913,13 @@ class GeneralGlobalTool(BaseGlobalTool):
         self._expr = expr.subs(self._params.items())
 
         # solve for N_max (number of electrons for which the 1st derivative of energy is zero)
-        self._n_max = self._solve_nmax(n0)
+        n_max = self._solve_nmax(n0)
 
         # calculate E(N0 - 1), E(N0) and E(N0 + 1) values
         energy_zero = self.energy(n0)
         energy_plus = self.energy(n0 + 1)
         energy_minus = self.energy(n0 - 1)
-        super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0)
+        super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0, n_max)
 
     @property
     def params(self):
