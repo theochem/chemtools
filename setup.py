@@ -58,6 +58,7 @@ class my_install_data(install_data):
                     with open(destination, "w") as f:
                         print >> f, my_install_dir
 
+
 setup(
     name='chemtools',
     version='0.9.0',
@@ -69,17 +70,19 @@ setup(
               'chemtools.analysis', 'chemtools.analysis.test'],
     scripts=glob("scripts/*.py"),
     cmdclass={
-        'install_data' : my_install_data,
-	},
+        'install_data': my_install_data,
+    },
     data_files=[
         ('share/chemtools', glob('data/*.*')),
         ('share/chemtools/test', glob('data/test/*.*')),
         ('share/chemtools/examples', glob('data/examples/*.*')),
-        ],
+    ],
     classifiers=[
         'Environment :: Console',
         'Intended Audience :: Science/Research',
         'Programming Language :: Python :: 2',
         'Topic :: Science/Engineering :: Molecular Science'
-        ],
-    )
+    ],
+    requires=['numpy', 'horton', 'numpy', 'sphinx', 'matplotlib', 'PIL', 'mayavi', 'Image',
+              'sympy', 'scipy']
+)
