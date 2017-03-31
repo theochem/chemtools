@@ -334,7 +334,7 @@ class QuadraticLocalTool(BaseLocalTool):
             ff = self._ff0 + self._df0 * (number_electrons - self.n0)
             return ff
 
-    def dual_descriptor(self, number_electrons=None):
+    def dual_descriptor(self):
         r"""
         Quadratic dual descriptor of :math:`N`-electron system defined as the functional
         derivative of quadratic chemical hardness w.r.t. external potential at fixed number
@@ -345,12 +345,6 @@ class QuadraticLocalTool(BaseLocalTool):
             \rho_{N_0}\left(\mathbf{r}\right) + \rho_{N_0 + 1}\left(\mathbf{r}\right)
 
         The quadratic dual descriptor is independent of the number electrons.
-
-        Parameters
-        ----------
-        number_electrons : float, default=None
-            Number of electrons. If None, the :math:`\Delta f_{N_0}\left(\mathbf{r}\right)`
-            is returned.
         """
         return self._df0
 
@@ -371,7 +365,7 @@ class QuadraticLocalTool(BaseLocalTool):
         s_value = global_softness * self.fukui_function(number_electrons)
         return s_value
 
-    def hyper_softness(self, global_softness, number_electrons=None):
+    def hyper_softness(self, global_softness):
         r"""
         Quadratic hyper-softness of :math:`N`-electron system defined as,
 
@@ -384,9 +378,6 @@ class QuadraticLocalTool(BaseLocalTool):
         ----------
         global_softness : float
             The value of gloabl softness.
-        number_electrons : float, default=None
-            Number of electrons. If None, the :math:`s_{N_0}^{(2)}\left(\mathbf{r}\right)`
-            is returned.
         """
-        s_value = global_softness**2 * self.dual_descriptor(number_electrons)
+        s_value = global_softness**2 * self.dual_descriptor()
         return s_value

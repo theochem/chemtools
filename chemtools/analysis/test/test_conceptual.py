@@ -174,13 +174,11 @@ def test_local_quadratic_ch4_fchk():
     np.testing.assert_almost_equal(grid.integrate(desp.fukui_function(10.5)), 1., decimal=4)
     np.testing.assert_almost_equal(grid.integrate(desp.fukui_function(9.50)), 1., decimal=4)
     np.testing.assert_almost_equal(grid.integrate(desp.dual_descriptor()), 0., decimal=4)
-    np.testing.assert_almost_equal(grid.integrate(desp.dual_descriptor(10.79)), 0., decimal=4)
     # Check local softness
     np.testing.assert_almost_equal(grid.integrate(desp.softness(1./eta)), 1./eta, decimal=4)
     np.testing.assert_almost_equal(grid.integrate(desp.softness(1./eta, 10.3)), 1./eta, decimal=4)
     np.testing.assert_almost_equal(grid.integrate(desp.softness(1./eta, 9.1)), 1./eta, decimal=4)
     np.testing.assert_almost_equal(grid.integrate(desp.hyper_softness(eta)), 0., decimal=3)
-    np.testing.assert_almost_equal(grid.integrate(desp.hyper_softness(eta, 9.91)), 0., decimal=3)
 
 
 def test_condense_mbis_quadratic_ch4_fchk():
@@ -209,9 +207,7 @@ def test_condense_mbis_quadratic_ch4_fchk():
     np.testing.assert_almost_equal(condense(16.0), 1.0, decimal=2)
     np.testing.assert_almost_equal(condense(16.5), 1.0, decimal=2)
     # check condensed dual descriptor
-    condense = lambda x: np.sum(desp.dual_descriptor(x))
-    np.testing.assert_almost_equal(condense(15.5), 0.0, decimal=2)
-    np.testing.assert_almost_equal(condense(16.0), 0.0, decimal=2)
+    np.testing.assert_almost_equal(np.sum(desp.dual_descriptor()), 0.0, decimal=2)
 
 
 def test_condense_mbis_linear_fmr_ch4_fchk():
@@ -500,9 +496,7 @@ def test_condense_h_quadratic_fd_ch4_fchk():
     np.testing.assert_almost_equal(condense(16.0), 1.0, decimal=2)
     np.testing.assert_almost_equal(condense(16.5), 1.0, decimal=2)
     # check condensed dual descriptor
-    condense = lambda x: np.sum(desp.dual_descriptor(x))
-    np.testing.assert_almost_equal(condense(15.5), 0.0, decimal=2)
-    np.testing.assert_almost_equal(condense(16.0), 0.0, decimal=2)
+    np.testing.assert_almost_equal(np.sum(desp.dual_descriptor()), 0.0, decimal=2)
 
 
 def test_condense_h_linear_ch4_fchk():

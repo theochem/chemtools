@@ -502,8 +502,8 @@ def test_global_rational1():
     dE = lambda n, r: (-b1)**(r-1) * (a1 - a0*b1) * math.factorial(r) / (1 + b1*n)**(r+1)
     d2omega = lambda n: -1. / dE(n, 2)
     d3omega = lambda n: dE(n, 3) / dE(n, 2)**3
-    d4omega = lambda n: dE(n, 4) / dE(n, 2)**4 - (3 * dE(n, 3)**2) / dE(n, 2)**5
-    d5omega = lambda n: dE(n, 5)/dE(n, 2)**5 - (10 * dE(n, 3) * dE(n, 4))/dE(n, 2)**6 + (15 * dE(n, 3)**3)/dE(n, 2)**7
+    # d4omega = lambda n: dE(n, 4) / dE(n, 2)**4 - (3 * dE(n, 3)**2) / dE(n, 2)**5
+    # d5omega = lambda n: dE(n, 5)/dE(n, 2)**5 - (10 * dE(n, 3) * dE(n, 4))/dE(n, 2)**6 + (15 * dE(n, 3)**3)/dE(n, 2)**7
     np.testing.assert_almost_equal(model.grand_potential_derivative(4.1, 2), d2omega(4.1), decimal=6)
     np.testing.assert_almost_equal(model.grand_potential_derivative(3.5, 2), d2omega(3.5), decimal=6)
     np.testing.assert_almost_equal(model.grand_potential_derivative(2.9, 3), d3omega(2.9), decimal=6)
@@ -595,8 +595,8 @@ def test_global_rational2():
     dE = lambda n, r: (-b1)**(r-1) * (a1 - a0*b1) * math.factorial(r) / (1 + b1*n)**(r+1)
     d2omega = lambda n: -1. / dE(n, 2)
     d3omega = lambda n: dE(n, 3) / dE(n, 2)**3
-    d4omega = lambda n: dE(n, 4) / dE(n, 2)**4 - (3 * dE(n, 3)**2) / dE(n, 2)**5
-    d5omega = lambda n: dE(n, 5)/dE(n, 2)**5 - (10 * dE(n, 3) * dE(n, 4))/dE(n, 2)**6 + (15 * dE(n, 3)**3)/dE(n, 2)**7
+    # d4omega = lambda n: dE(n, 4) / dE(n, 2)**4 - (3 * dE(n, 3)**2) / dE(n, 2)**5
+    # d5omega = lambda n: dE(n, 5)/dE(n, 2)**5 - (10 * dE(n, 3) * dE(n, 4))/dE(n, 2)**6 + (15 * dE(n, 3)**3)/dE(n, 2)**7
     np.testing.assert_almost_equal(model.grand_potential_derivative(6.5), -6.5, decimal=6)
     np.testing.assert_almost_equal(model.grand_potential_derivative(7.1, 1), -7.1, decimal=6)
     np.testing.assert_almost_equal(model.grand_potential_derivative(5.8, 2), d2omega(5.8), decimal=6)
