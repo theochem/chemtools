@@ -51,7 +51,7 @@ def test_cubegen_o2_uhf():
                      [0.0,   0.5,   0.0],
                      [0.0,   0.0,   0.5]]
     shape_result  = [24, 24, 29]
-    weight_result = np.full((cube.npoints), 0.125)
+    weight_result = np.full(cube.npoints, 0.125)
 
     np.testing.assert_array_almost_equal(cube.origin, origin_result, decimal=7)
     np.testing.assert_array_almost_equal(cube.axes, axes_result, decimal=7)
@@ -69,7 +69,7 @@ def test_cubegen_o2_uhf():
                      [0.0,   0.2,   0.0],
                      [0.2,   0.0,   0.0]]
     shape_result  = [61, 50, 50]
-    weight_result = np.full((cube.npoints), 0.0080)
+    weight_result = np.full(cube.npoints, 0.0080)
 
     np.testing.assert_array_almost_equal(cube.origin, origin_result, decimal=7)
     np.testing.assert_array_almost_equal(cube.axes, axes_result, decimal=7)

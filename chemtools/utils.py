@@ -347,7 +347,7 @@ class CubeGen(object):
             volume *= np.linalg.norm(self._shape[1] * self._axes[1])
             volume *= np.linalg.norm(self._shape[2] * self._axes[2])
             numpnt = 1.0 * self._npoints
-            weights = np.full((self._npoints), volume / numpnt)
+            weights = np.full(self._npoints, volume / numpnt)
 
         elif method == 'R0':
             volume = np.linalg.norm((self._shape[0] + 1.0) * self._axes[0])
@@ -355,7 +355,7 @@ class CubeGen(object):
             volume *= np.linalg.norm((self._shape[2] + 1.0) * self._axes[2])
 
             numpnt = (self._shape[0] + 1.0) * (self._shape[1] + 1.0) * (self._shape[2] + 1.0)
-            weights = np.full((self._npoints), volume / numpnt)
+            weights = np.full(self._npoints, volume / numpnt)
 
         else:
             raise ValueError('Argument method {0} is not known.'.format(method))
