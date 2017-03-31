@@ -98,8 +98,7 @@ class DensityLocalTool(object):
                      \frac{\partial^2\rho\left(\mathbf{r}\right)}{\partial z^2} =
                      \lambda_1 + \lambda_2 + \lambda_3
         """
-        # This is not a local tool!
-        pass
+        raise NotImplementedError()
 
     @property
     def shanon_information(self):
