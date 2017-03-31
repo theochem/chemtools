@@ -27,7 +27,7 @@
 """
 
 
-def _print_vmd_script_nci(scriptfile, densfile, rdgfile, isosurf=0.5, denscut=0.05):
+def print_vmd_script_nci(scriptfile, densfile, rdgfile, isosurf=0.5, denscut=0.05):
     r"""
     Generate VMD (Visual Molecular Dynamics) script for visualizing NCI
     (non-covalent interactions) isosurfaces subject to the constraint of

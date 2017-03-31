@@ -31,7 +31,7 @@ from horton import IOData
 from chemtools.tool.densitytool import DensityLocalTool
 from chemtools.utils import CubeGen
 from chemtools.tool.orbitaltool import OrbitalLocalTool
-from chemtools.analysis.output import _print_vmd_script_nci
+from chemtools.analysis.output import print_vmd_script_nci
 import matplotlib.pyplot as plt
 
 
@@ -185,7 +185,7 @@ class NCI(object):
         self._cube.dump_cube(densfile, dens)
         self._cube.dump_cube(rdgfile, cutrdg)
         # Make VMD scripts for visualization
-        _print_vmd_script_nci(vmdfile, densfile, rdgfile, isosurf, denscut * 100.0)
+        print_vmd_script_nci(vmdfile, densfile, rdgfile, isosurf, denscut * 100.0)
 
 
 def _compute_hessian(mol, points):
