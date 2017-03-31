@@ -36,12 +36,12 @@ def test_global_quadratic1():
     np.testing.assert_almost_equal(model.n0, 15, decimal=6)
     np.testing.assert_almost_equal(model.n_max, 12.5, decimal=6)
     # check E(N)
-    energy = lambda(n): -9.0 - 25.0*n + n*n
+    energy = lambda n: -9.0 - 25.0*n + n*n
     np.testing.assert_almost_equal(model.energy(20), energy(20), decimal=6)
     np.testing.assert_almost_equal(model.energy(10), energy(10), decimal=6)
     np.testing.assert_almost_equal(model.energy(16.5), energy(16.5), decimal=6)
     # check dE(N)
-    deriv = lambda(n): -25.0 + 2*n
+    deriv = lambda n: -25.0 + 2*n
     np.testing.assert_almost_equal(model.energy_derivative(20), deriv(20), decimal=6)
     np.testing.assert_almost_equal(model.energy_derivative(10), deriv(10), decimal=6)
     np.testing.assert_almost_equal(model.energy_derivative(16.5), deriv(16.5), decimal=6)
@@ -138,12 +138,12 @@ def test_global_quadratic2():
     np.testing.assert_almost_equal(model.n0, 5, decimal=6)
     np.testing.assert_almost_equal(model.n_max, 1, decimal=6)
     # check E(N)
-    energy = lambda(n): 30.0 - 6.0*n + 3*n*n
+    energy = lambda n: 30.0 - 6.0*n + 3*n*n
     np.testing.assert_almost_equal(model.energy(20), energy(20), decimal=6)
     np.testing.assert_almost_equal(model.energy(10), energy(10), decimal=6)
     np.testing.assert_almost_equal(model.energy(16.5), energy(16.5), decimal=6)
     # check dE(N)
-    deriv = lambda(n): -6.0 + 6*n
+    deriv = lambda n: -6.0 + 6*n
     np.testing.assert_almost_equal(model.energy_derivative(20), deriv(20), decimal=6)
     np.testing.assert_almost_equal(model.energy_derivative(10), deriv(10), decimal=6)
     np.testing.assert_almost_equal(model.energy_derivative(16.5), deriv(16.5), decimal=6)
@@ -231,12 +231,12 @@ def test_global_quadratic3():
     np.testing.assert_almost_equal(model.n0, 5, decimal=6)
     np.testing.assert_almost_equal(model.n_max, 0.0, decimal=6)
     # check E(N)
-    energy = lambda(n): -100.0 + 5*n*n
+    energy = lambda n: -100.0 + 5*n*n
     np.testing.assert_almost_equal(model.energy(20), energy(20), decimal=6)
     np.testing.assert_almost_equal(model.energy(10), energy(10), decimal=6)
     np.testing.assert_almost_equal(model.energy(16.5), energy(16.5), decimal=6)
     # check dE(N)
-    deriv = lambda(n): 10*n
+    deriv = lambda n: 10*n
     np.testing.assert_almost_equal(model.energy_derivative(20), deriv(20), decimal=6)
     np.testing.assert_almost_equal(model.energy_derivative(10), deriv(10), decimal=6)
     np.testing.assert_almost_equal(model.energy_derivative(16.5), deriv(16.5), decimal=6)
@@ -641,12 +641,12 @@ def test_global_general_energy_quadratic():
     np.testing.assert_almost_equal(model.n0, 3.45, decimal=6)
     np.testing.assert_almost_equal(model.n_max, 28./(2 * 4.0), decimal=6)
     # check energy
-    energy = lambda(n): 31.0 - 28.0*n + 4.0*(n**2)
+    energy = lambda n: 31.0 - 28.0*n + 4.0*(n**2)
     np.testing.assert_almost_equal(model.energy(5.23), energy(5.23), decimal=6)
     np.testing.assert_almost_equal(model.energy(3.45), energy(3.45), decimal=6)
     np.testing.assert_almost_equal(model.energy(3.00), energy(3.0), decimal=6)
     # check energy derivatives
-    deriv = lambda(n): -28.0 + 8.0*n
+    deriv = lambda n: -28.0 + 8.0*n
     np.testing.assert_almost_equal(model.energy_derivative(6.30), deriv(6.30), decimal=6)
     np.testing.assert_almost_equal(model.energy_derivative(3.45), deriv(3.45), decimal=6)
     np.testing.assert_almost_equal(model.energy_derivative(1.70), deriv(1.70), decimal=6)
