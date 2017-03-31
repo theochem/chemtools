@@ -1,4 +1,4 @@
-'''
+"""
 ======================================================
 EX1: Plot Krypton Electron Localization Function (ELF)
 ======================================================
@@ -6,7 +6,7 @@ EX1: Plot Krypton Electron Localization Function (ELF)
 1. Run a Hartree-Fock calculation with cc-pVDZ basis-set using HORTON.
 2. Build an OrbitalLocalTool.
 3. Plot Electron Localization Function (ELF) & radially weighted density.
-'''
+"""
 
 import numpy as np
 import matplotlib.pyplot as plt

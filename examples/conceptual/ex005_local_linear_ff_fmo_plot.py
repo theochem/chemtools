@@ -1,4 +1,4 @@
-'''
+"""
 ==============================================
 EX5: Plot Linear Fukui function (FMO Approach)
 ==============================================
@@ -9,7 +9,7 @@ EX5: Plot Linear Fukui function (FMO Approach)
 3. Compute Fukui functions (f+, f- and f0) using linear energy model.
 4. Make cube files & generate VMD (Visual Molecular Dynamics) scripts
    to plot Fukui function iso-surfaces.
-'''
+"""
 
 from chemtools import LocalConceptualDFT, CubeGen, print_vmd_script_isosurface, context
 
@@ -49,4 +49,5 @@ print_vmd_script_isosurface('coh2_ff0_fmo.vmd', 'coh2_ff0_fmo.cube', isosurf=0.0
 # the code below is for displaying the ff image on the website, you should remove it
 # when running the script on your machine.
 from tools.rug import plot_existing_image
+
 plot_existing_image('ch2o-ff_fmo.jpg')

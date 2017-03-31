@@ -1,4 +1,4 @@
-'''
+"""
 =======================================================
 EX4: Global Linear Reactivity Descriptors (FD Approach)
 =======================================================
@@ -7,7 +7,7 @@ EX4: Global Linear Reactivity Descriptors (FD Approach)
    using finite difference (FD) approach.
 2. Print all available global linear reactivity descriptors.
 3. Compute linear energy model and its derivatives for various numbers of electrons.
-'''
+"""
 
 from chemtools import GlobalConceptualDFT, context
 

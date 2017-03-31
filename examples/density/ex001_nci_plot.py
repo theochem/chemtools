@@ -1,11 +1,11 @@
-'''
+"""
 ===================================================
 EX1: Non-Covalent Interactions (NCI) of water dimer
 ===================================================
 
 1. Build the NCI object for water dimmer using fchk files.
 2. Dump files/scripts for visualizing NCI through VMD.
-'''
+"""
 
 from chemtools import NCI
 
@@ -25,4 +25,5 @@ nci.dump_files('h2o_dimer')
 # the code below is for displaying the NCI image on the website, you should remove it
 # when running the script on your machine.
 from tools.rug import plot_existing_image
+
 plot_existing_image('nci_h2o_dimer.jpg')

@@ -1,4 +1,4 @@
-'''
+"""
 ==================================================
 EX7: Plot Quadratic Dual Descriptor (FMO Approach)
 ==================================================
@@ -9,7 +9,7 @@ EX7: Plot Quadratic Dual Descriptor (FMO Approach)
 3. Compute dual descriptor using quadratic energy model.
 4. Make dual descriptor cube file & generate VMD (Visual Molecular Dynamics)
    script to visualize its iso-surface.
-'''
+"""
 
 from chemtools import LocalConceptualDFT, CubeGen, print_vmd_script_isosurface, context
 
@@ -41,4 +41,5 @@ print_vmd_script_isosurface('coh2_dual_fmo.vmd', 'coh2_dual_fmo.cube', isosurf=0
 # the code below is for displaying the dual descriptor image on the website, you should remove it
 # when running the script on your machine.
 from tools.rug import plot_existing_image
+
 plot_existing_image('ch2o_dual_fmo.jpg')

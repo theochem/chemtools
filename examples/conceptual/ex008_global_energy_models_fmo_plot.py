@@ -1,4 +1,4 @@
-'''
+"""
 ======================================
 EX8: Plot Energy Models (FMO Approach)
 ======================================
@@ -8,7 +8,7 @@ EX8: Plot Energy Models (FMO Approach)
 2. Compute energy values for various number of electrons.
 3. Plot energy vs. number of electrons.
 4. Plot data points used for modeling energy.
-'''
+"""
 
 import numpy as np
 import matplotlib.pyplot as plt

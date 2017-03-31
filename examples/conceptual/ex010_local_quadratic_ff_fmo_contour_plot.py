@@ -1,4 +1,4 @@
-'''
+"""
 =========================================================
 EX10: 2D-Contours Quadratic Fukui Function (FMO Approach)
 =========================================================
@@ -7,7 +7,7 @@ EX10: 2D-Contours Quadratic Fukui Function (FMO Approach)
 2. Build a quadratic energy models using fontier molecular orbital (FMO) theory approach.
 3. Evaluate quadratic Fukui function on the grid points.
 4. Plot 2D-contour plots of quadratic Fukui function.
-'''
+"""
 
 import numpy as np
 import matplotlib.pyplot as plt

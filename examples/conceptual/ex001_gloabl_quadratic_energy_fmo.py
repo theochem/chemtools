@@ -1,4 +1,4 @@
-'''
+"""
 ===========================================================
 EX1: Global Quadratic Reactivity Descriptors (FMO Approach)
 ===========================================================
@@ -7,7 +7,7 @@ EX1: Global Quadratic Reactivity Descriptors (FMO Approach)
    using fontier molecular orbital (FMO) theory approach.
 2. Print all available global quadratic reactivity descriptors.
 3. Compute quadratic energy model and its derivatives for various numbers of electrons.
-'''
+"""
 
 from chemtools import GlobalConceptualDFT, context
 

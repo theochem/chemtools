@@ -1,4 +1,4 @@
-'''
+"""
 =============================================
 EX6: Plot Linear Fukui function (FD Approach)
 =============================================
@@ -9,7 +9,7 @@ EX6: Plot Linear Fukui function (FD Approach)
 3. Compute Fukui functions (f+, f- and f0) using linear energy model.
 4. Make cube files & generate VMD (Visual Molecular Dynamics) scripts
    to plot Fukui function iso-surfaces.
-'''
+"""
 
 from chemtools import LocalConceptualDFT, CubeGen, print_vmd_script_isosurface, context
 
@@ -47,7 +47,8 @@ cube.dump_cube('coh2_ffm_fd.cube', ffm)
 cube.dump_cube('coh2_ffp_fd.cube', ffp)
 cube.dump_cube('coh2_ff0_fd.cube', ff0)
 # generate VMD scripts for visualizing iso-surfaces with VMD
-print_vmd_script_isosurface('coh2_ffm_fd.vmd', 'coh2_ffm_fd.cube', isosurf=0.005, negative=True, colorscheme=[0, 1])
+print_vmd_script_isosurface('coh2_ffm_fd.vmd', 'coh2_ffm_fd.cube', isosurf=0.005, negative=True,
+                            colorscheme=[0, 1])
 print_vmd_script_isosurface('coh2_ffp_fd.vmd', 'coh2_ffp_fd.cube', isosurf=0.005)
 print_vmd_script_isosurface('coh2_ff0_fd.vmd', 'coh2_ff0_fd.cube', isosurf=0.005)
 
@@ -55,4 +56,5 @@ print_vmd_script_isosurface('coh2_ff0_fd.vmd', 'coh2_ff0_fd.cube', isosurf=0.005
 # the code below is for displaying the ff image on the website, you should remove it
 # when running the script on your machine.
 from tools.rug import plot_existing_image
+
 plot_existing_image('ch2o-ffm_fd.jpg')
