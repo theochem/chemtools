@@ -68,7 +68,7 @@ class CondensedTool(object):
             local_condensed[index] = at_grid.integrate(at_weight, local_prop, wcor)
         return local_condensed
 
-    def condese_pairs(self, response):
+    def condense_pairs(self, response):
         r"""
         Return condensed values of the response function
         :math:`f_{\text{response}}\left(\mathbf{r}, \mathbf{r'}\right)` into atomic pair
