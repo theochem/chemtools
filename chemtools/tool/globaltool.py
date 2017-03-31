@@ -988,10 +988,9 @@ class GeneralGlobalTool(BaseGlobalTool):
             raise ValueError(
                 'There is no parameters in the energy_expression={0} to solve for.'.format(expr))
         if not all([param in expr.atoms(sp.Symbol) for param in params]):
-            raise ValueError('The expr={0} does not contain parameters given '.format(expr) +
-                             'in guess={1}'.format(guess))
+            raise ValueError('The expr={0} does not contain parameters given in guess={1}'.format(expr, guess))
         if len(params) > len(n_energies):
-            raise ValueError('Underdetermined system of equations: Number of unknowns parameters ' +
+            raise ValueError('Underdetermined system of equations: Number of unknowns parameters '
                              'in the energy model is more than number of given known envergies.')
 
         # intial guess for the parameters in the energy model
@@ -1040,7 +1039,7 @@ class GeneralGlobalTool(BaseGlobalTool):
         result = least_squares(objective, guess, jac=jacobian, **opts)
         if not result.success:
             raise ValueError(
-                'The system of equations for parameters could not be solved. ' +
+                'The system of equations for parameters could not be solved. '
                 'message:{0}'.format(result.message))
         # make dictionary of parameter values
         parameters = dict([(param, result.x[i]) for i, param in enumerate(params)])
@@ -1069,6 +1068,6 @@ class GeneralGlobalTool(BaseGlobalTool):
                     break
             else:
                 n_max = None
-                warnings.warn('The system of equations for Nmax could not be solved; Nmax=`None`.' +
+                warnings.warn('The system of equations for Nmax could not be solved; Nmax=`None`.'
                               ' message:{0}'.format(result.message))
         return n_max

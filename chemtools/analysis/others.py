@@ -43,8 +43,6 @@ class NCI(object):
         """
         Parameters
         ----------
-        iodata : IOData
-            The molecule's IOData.
         cube : instance of `CubeGen`, default=None
             Cubic grid used for calculating and visualizating the NCI.
             If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
@@ -227,7 +225,7 @@ class OrbitalAnalysis(OrbitalLocalTool):
     Class for orbital-based analysis.
     """
     def __init__(self, points, obasis, exp_alpha, exp_beta=None):
-        super(OrbitalAnalysis, self).__init__(points, obasis, exp_alpha, exp_beta=None)
+        super(OrbitalAnalysis, self).__init__(points, obasis, exp_alpha, exp_beta=exp_beta)
 
     @classmethod
     def from_file(cls, filename, points):

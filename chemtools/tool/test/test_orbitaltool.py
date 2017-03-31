@@ -22,8 +22,7 @@
 # --
 #pylint: skip-file
 
-import numpy as np
-import os
+
 from horton import *
 from chemtools import *
 # here both chemtools and horton has context

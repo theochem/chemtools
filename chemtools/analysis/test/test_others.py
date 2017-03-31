@@ -23,9 +23,7 @@
 #pylint: skip-file
 
 
-import os
-import numpy as np, tempfile, shutil
-from horton import IOData
+import tempfile, shutil
 from chemtools import *
 from contextlib import contextmanager
 

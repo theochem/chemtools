@@ -23,8 +23,6 @@
 #pylint: skip-file
 
 
-import os
-from horton import BeckeMolGrid
 from chemtools import *
 
 
