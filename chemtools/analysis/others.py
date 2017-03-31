@@ -22,7 +22,7 @@
 # --
 """Module for Density-Based and Orbital-Based Analysis of Quantum Chemistry Output Files.
 
-   This modules contains wrappers which take outputs of quantum chemistry softwares and
+   This modules contains wrappers which take outputs of quantum chemistry software and
    compute various descriptive tools based on the density and orbital information.
 """
 
@@ -44,7 +44,7 @@ class NCI(object):
         Parameters
         ----------
         cube : instance of `CubeGen`, default=None
-            Cubic grid used for calculating and visualizating the NCI.
+            Cubic grid used for calculating and visualizing the NCI.
             If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
         """
         if hessian is not None:
@@ -80,7 +80,7 @@ class NCI(object):
             return cls.from_iodata(IOData.from_file(filename), cube)
         # case of list of file(s)
         for _ in filename:
-            raise ValueError('Multiple files are not suported')
+            raise ValueError('Multiple files are not supported')
 
     @classmethod
     def from_iodata(cls, iodata, cube=None):
@@ -103,7 +103,7 @@ class NCI(object):
         dm_full = iodata.get_dm_full()
         dens = iodata.obasis.compute_grid_density_dm(dm_full, cube.points)
         grad = iodata.obasis.compute_grid_gradient_dm(dm_full, cube.points)
-        # Compute hessian on cubuc grid
+        # Compute hessian on cubic grid
         hess = _compute_hessian(iodata, cube.points)
 
         # initialize DensityLocalTool & compute reduced gradient
@@ -143,7 +143,7 @@ class NCI(object):
     def dump_files(self, filename, isosurf=0.50, denscut=0.05):
         r"""
         Generate density and reduced density gradient cube files, as well as a VMD (Visual
-        Molecular Dynamics) script to visualize non-covalnet inteactions (NCI).
+        Molecular Dynamics) script to visualize non-covalent interactions (NCI).
 
         Parameters
         ----------
@@ -168,7 +168,7 @@ class NCI(object):
         cutrdg = np.array(self._rdgrad, copy=True)
         cutrdg[abs(self._density) > denscut] = 100.0
         # Similar to NCIPlot program, sign(hessian second eigenvalue)*density is
-        # multiplied by 100.0 before genetaing cube file used for coloring the
+        # multiplied by 100.0 before generating cube file used for coloring the
         # reduced density gradient iso-surface.
         if self._signed_density is not None:
             dens = 100.0 * self._signed_density
@@ -246,7 +246,7 @@ class OrbitalAnalysis(OrbitalLocalTool):
                 return cls(points, mol.obasis, mol.exp_alpha)
         # case of list of file(s)
         for _ in filename:
-            raise ValueError('Multiple files are not suported')
+            raise ValueError('Multiple files are not supported')
 
     @classmethod
     def from_iodata(cls, iodata, points):

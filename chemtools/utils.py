@@ -93,13 +93,13 @@ class CubeGen(object):
         self._pseudo_numbers = pseudo_numbers
         self._coordinates = coordinates
         if origin.shape[0] != 3:
-            raise ValueError('Arguemnt origin should be an np.ndarray with shape=(3,)')
+            raise ValueError('Argument origin should be an np.ndarray with shape=(3,)')
         self._origin = origin
         if axes.shape[0] != 3 or axes.shape[1] != 3:
-            raise ValueError('Arguemnt axes should be an np.ndarray with shape=(3, 3)')
+            raise ValueError('Argument axes should be an np.ndarray with shape=(3, 3)')
         self._axes = axes
         if shape.shape[0] != 3:
-            raise ValueError('Arguemnt shape should be an np.ndarray with shape=(3,)')
+            raise ValueError('Argument shape should be an np.ndarray with shape=(3,)')
         self._shape = shape
         #
         # Make cubic grid
@@ -189,7 +189,7 @@ class CubeGen(object):
             Cube file name with \*.cube extension.
         """
         if not filename.endswith('.cube'):
-            raise ValueError('Arguemnt filename should be a cube file with *.cube extension!')
+            raise ValueError('Argument filename should be a cube file with *.cube extension!')
 
         # Extract the specifications of the cubic grid from cube file's header
         numbers, pseudo_numbers, coordinates, origin, axes, shape = cls._read_cube_header(filename)
@@ -298,7 +298,7 @@ class CubeGen(object):
             An array containing the evaluated scalar property on the grid points.
         """
         if not filename.endswith('.cube'):
-            raise ValueError('Arguemnt filename should be a cube file with `*.cube` extension!')
+            raise ValueError('Argument filename should be a cube file with `*.cube` extension!')
         if data.size != self._npoints:
             raise ValueError('Argument data should have the same size as the grid. ' +
                              '{0}!={1}'.format(data.size, self._npoints))

@@ -17,7 +17,7 @@ from chemtools import GlobalConceptualDFT, context
 file_path = [context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'),
              context.get_fn('examples/ch2o_q+1_ub3lyp_augccpvtz.fchk'),
              context.get_fn('examples/ch2o_q-1_ub3lyp_augccpvtz.fchk')]
-# build quadratic gloabl conceptual DFT tool (3 files are given, so FD approach is taken)
+# build quadratic global conceptual DFT tool (3 files are given, so FD approach is taken)
 tool = GlobalConceptualDFT.from_file(file_path, model='quadratic')
 
 # 2. Print all available global quadratic reactivity descriptors

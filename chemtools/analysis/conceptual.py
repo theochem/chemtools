@@ -22,7 +22,7 @@
 # --
 """Module for Conceptual Density Functional Theory Analysis of Quantum Chemistry Output Files.
 
-   This modules contains wrappers which take outputs of quantum chemistry softwares and
+   This modules contains wrappers which take outputs of quantum chemistry software and
    compute various conceptual density functional theory (DFT) descriptive tools.
 """
 
@@ -39,7 +39,7 @@ from chemtools.utils import CubeGen
 class GlobalConceptualDFT(object):
     """
     Class for global conceptual density functional theory (DFT) analysis of molecular quantum
-    chemistry output file(s). If only one molecule is provided, the frontiner molecular orbital
+    chemistry output file(s). If only one molecule is provided, the frontier molecular orbital
     (FMO) approach is invoked, otherwise finite difference (FD) approach is taken.
     """
     def __init__(self, dict_values, model='quadratic'):
@@ -77,7 +77,7 @@ class GlobalConceptualDFT(object):
                 raise ValueError('For model={0}, integer number of electrons '.format(self._model) +
                                  'are required! #electrons={0}'.format(nelectrons))
 
-            # check consecutive number of elctrons change by one
+            # check consecutive number of electrons change by one
             if not all([y - x == 1 for x, y in zip(nelectrons[:-1], nelectrons[1:])]):
                 raise ValueError('For model={0}, consecutive number of'.format(self._model) +
                                  'electrons should differ by 1! #electrons={0}'.format(nelectrons))
@@ -162,7 +162,7 @@ class GlobalConceptualDFT(object):
             Energy model used to calculate local descriptive tools.
             Available models are 'linear' and 'quadratic'.
         points : np.array
-            Points on which the local descriptive tools is evalauted.
+            Points on which the local descriptive tools is evaluated.
         """
         # case of one file not given as a list
         if isinstance(filenames, (str, unicode)):
@@ -186,14 +186,14 @@ class GlobalConceptualDFT(object):
             Energy model used to calculate local descriptive tools.
             Available models are 'linear' and 'quadratic'.
         points : np.array
-            Points on which the local descriptive tools is evalauted.
+            Points on which the local descriptive tools is evaluated.
         """
         # case of one IOData object not given as a list
         if isinstance(iodatas, IOData):
             iodatas = [iodatas]
 
         if len(iodatas) == 1:
-            # Frontiner Molecular Orbital (FMO) Approach
+            # Frontier Molecular Orbital (FMO) Approach
             mol = iodatas[0]
             # get homo & lumo energy of alpha electrons
             homo_energy = mol.exp_alpha.homo_energy
@@ -247,7 +247,7 @@ class GlobalConceptualDFT(object):
 class LocalConceptualDFT(object):
     """
     Class for local conceptual density functional theory (DFT) analysis of molecular quantum
-    chemistry output file(s). If only one molecule is provided, the frontiner molecular orbital
+    chemistry output file(s). If only one molecule is provided, the frontier molecular orbital
     (FMO) approach is invoked, otherwise finite difference (FD) approach is taken.
 
     Note: If FD approach is taken, the geometries of all molecules need to be the same.
@@ -280,7 +280,7 @@ class LocalConceptualDFT(object):
             raise ValueError('Numbers & coordinates should represent same number of ' +
                              'atoms! {0}!={1}'.format(len(numbers), len(coordinates)))
 
-        self._coordiantes = coordinates
+        self._coordinates = coordinates
         self._numbers = numbers
 
         # check densities shape
@@ -306,7 +306,7 @@ class LocalConceptualDFT(object):
                 raise ValueError('For model={0}, integer number of electrons '.format(self._model) +
                                  'are required! #electrons={0}'.format(nelectrons))
 
-            # check consecutive number of elctrons change by one
+            # check consecutive number of electrons change by one
             if not all([y - x == 1 for x, y in zip(nelectrons[:-1], nelectrons[1:])]):
                 raise ValueError('For model={0}, consecutive number of'.format(self._model) +
                                  'electrons should differ by 1! #electrons={0}'.format(nelectrons))
@@ -343,7 +343,7 @@ class LocalConceptualDFT(object):
     @property
     def coordinates(self):
         """Cartesian coordinates of atoms."""
-        return self._coordiantes
+        return self._coordinates
 
     @property
     def numbers(self):
@@ -402,7 +402,7 @@ class LocalConceptualDFT(object):
             Energy model used to calculate local descriptive tools.
             Available models are 'linear' and 'quadratic'.
         points : np.array
-            Points on which the local descriptive tools is evalauted.
+            Points on which the local descriptive tools is evaluated.
         """
         # case of one file not given as a list
         if isinstance(filenames, (str, unicode)):
@@ -426,7 +426,7 @@ class LocalConceptualDFT(object):
             Energy model used to calculate local descriptive tools.
             Available models are 'linear' and 'quadratic'.
         points : np.array
-            Points on which the local descriptive tools is evalauted.
+            Points on which the local descriptive tools is evaluated.
         """
         # check points array
         if points.ndim != 2 or points.shape[1] != 3:
@@ -438,14 +438,14 @@ class LocalConceptualDFT(object):
             iodatas = [iodatas]
 
         if len(iodatas) == 1:
-            # Frontiner Molecular Orbital (FMO) Approach
+            # Frontier Molecular Orbital (FMO) Approach
             mol = iodatas[0]
             # get homo & lumo index & energy of alpha electrons
             homo_index = mol.exp_alpha.get_homo_index()
             lumo_index = mol.exp_alpha.get_lumo_index()
             homo_energy = mol.exp_alpha.homo_energy
             lumo_energy = mol.exp_alpha.lumo_energy
-            # set homo & lumo expasion to alpha orbitals
+            # set homo & lumo expansion to alpha orbitals
             homo_exp, lumo_exp = 'exp_alpha', 'exp_alpha'
 
             # get number of alpha electrons
@@ -518,7 +518,7 @@ class LocalConceptualDFT(object):
 class CondensedConceptualDFT(object):
     """
     Class for condensed conceptual density functional theory (DFT) analysis of molecular quantum
-    chemistry output file(s). If only one molecule is provided, the frontiner molecular orbital
+    chemistry output file(s). If only one molecule is provided, the frontier molecular orbital
     (FMO) approach is invoked, otherwise finite difference (FD) approach is taken.
 
     Note: If FD approach is taken, the geometries of molecules can be different only for RMF
@@ -557,7 +557,7 @@ class CondensedConceptualDFT(object):
                 raise ValueError('For model={0}, integer number of electrons'.format(self._model) +
                                  ' are required! #electrons={0}'.format(nelectrons))
 
-            # check consecutive number of elctrons change by one
+            # check consecutive number of electrons change by one
             if not all([y - x == 1 for x, y in zip(nelectrons[:-1], nelectrons[1:])]):
                 raise ValueError('For model={0}, consecutive number of '.format(self._model) +
                                  'electrons should differ by 1! #electrons={0}'.format(nelectrons))
@@ -681,7 +681,7 @@ class CondensedConceptualDFT(object):
             iodatas = [iodatas]
 
         if len(iodatas) == 1:
-            # Frontiner Molecular Orbital (FMO) Approach
+            # Frontier Molecular Orbital (FMO) Approach
             mol = iodatas[0]
             if grid is None:
                 grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
@@ -692,7 +692,7 @@ class CondensedConceptualDFT(object):
             lumo_index = mol.exp_alpha.get_lumo_index()
             homo_energy = mol.exp_alpha.homo_energy
             lumo_energy = mol.exp_alpha.lumo_energy
-            # set homo & lumo expasion to alpha orbitals
+            # set homo & lumo expansion to alpha orbitals
             homo_exp, lumo_exp = 'exp_alpha', 'exp_alpha'
 
             # get number of alpha electrons
@@ -789,7 +789,7 @@ class CondensedConceptualDFT(object):
                     same_coordinates = False
                     # if geometries are not the same, only rmf can be done.
                     if approach.lower() == 'fmr':
-                        raise ValueError('When geoemtries of molecules are different, ' +
+                        raise ValueError('When geometries of molecules are different, ' +
                                          'only approach=RMF is possible!')
 
                 # get number of electrons

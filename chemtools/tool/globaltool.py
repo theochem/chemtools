@@ -376,7 +376,7 @@ class BaseGlobalTool(object):
                         \qquad n = 1, 2, \dots
 
         To compute higher-order derivatives, Faa di Bruno formula which generalizes the chain rule
-        to higher derivaties can be used. i.e. for :math:`n \geq 2`,
+        to higher derivatives can be used. i.e. for :math:`n \geq 2`,
 
         .. math::
            \left. \left(\frac{\partial^n \Omega}{\partial \mu^n}
@@ -881,7 +881,7 @@ class GeneralGlobalTool(BaseGlobalTool):
             Guesses at the values of the parameters of `expr`.  The dict has sp.Symbol
             keys, float values.
         opts : dict, optional
-            Optional keyword arguments to pass to the :py:meth:`scipy.optimimze.root` solver
+            Optional keyword arguments to pass to the :py:meth:`scipy.optimize.root` solver
             that is used to solve for the parameters in the model.
         """
         # make sure that the energy expression depends on number of electrons
@@ -949,7 +949,7 @@ class GeneralGlobalTool(BaseGlobalTool):
         if not self._n_min <= n_elec <= self._n_max:
             warnings.warn('Energy evaluated for n_elec={0} outside of '.format(n_elec) +
                           'interpolation region [{0}, {1}].'.format(self._n_min, self._n_max))
-        # eveluate energy
+        # evaluate energy
         value = self._expr.subs(self._n_symb, n_elec)
         return value
 
@@ -994,9 +994,9 @@ class GeneralGlobalTool(BaseGlobalTool):
             raise ValueError('The expr={0} does not contain parameters given in guess={1}'.format(expr, guess))
         if len(params) > len(n_energies):
             raise ValueError('Underdetermined system of equations: Number of unknowns parameters '
-                             'in the energy model is more than number of given known envergies.')
+                             'in the energy model is more than number of given known energies.')
 
-        # intial guess for the parameters in the energy model
+        # initial guess for the parameters in the energy model
         guess = np.array([guess[param] for param in params])
 
         # construct system of equations to solve

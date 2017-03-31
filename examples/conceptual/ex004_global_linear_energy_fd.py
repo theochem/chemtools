@@ -17,7 +17,7 @@ from chemtools import GlobalConceptualDFT, context
 file_path = [context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'),
              context.get_fn('examples/ch2o_q+1_ub3lyp_augccpvtz.fchk'),
              context.get_fn('examples/ch2o_q-1_ub3lyp_augccpvtz.fchk')]
-# build linear gloabl conceptual DFT tool (3 files are given, so FD approach is taken)
+# build linear global conceptual DFT tool (3 files are given, so FD approach is taken)
 tool = GlobalConceptualDFT.from_file(file_path, model='linear')
 
 # 2. Print all available global linear reactivity descriptors

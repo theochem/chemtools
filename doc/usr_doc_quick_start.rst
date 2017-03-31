@@ -35,7 +35,7 @@ file formats are:
  .. TODO::
     Table of data file formats supported or a link where this information is provided.
 
-If, you wish to work through the examples in this tutorial, make sure that required packages are intalled on your computer.
+If, you wish to work through the examples in this tutorial, make sure that required packages are installed on your computer.
 Please see :ref:`Installation <usr_installation>` for instructions.
 
 How to use ChemTools?

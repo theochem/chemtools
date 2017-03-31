@@ -22,13 +22,13 @@ file_path = [context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'),
 
 # make molecular cubic grid  with points spaced by 0.2 a.u. &
 # extending 5.0 a.u. on every side of molecule
-# all 3 molecules have the same geoemetry (they just differ in the number of electrons
+# all 3 molecules have the same geometry (they just differ in the number of electrons
 # and multiplicity), so the cubic grid based on the first molecule works for all.
 cube = CubeGen.from_file(file_path[0], spacing=0.2, threshold=5.0)
 
 # 2. Build linear energy model for Formaldehyde using finite difference (FD) approach.
 
-# file_path contains 3 files are given, so FD approach is takn
+# file_path contains 3 files are given, so FD approach is taken
 tool = LocalConceptualDFT.from_file(file_path, model='linear', points=cube.points)
 
 # 3. Compute Fukui functions (f+, f- and f0) using linear energy model.

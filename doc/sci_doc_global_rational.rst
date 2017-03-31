@@ -67,7 +67,7 @@ Fitting the energy expression to the given energy values results in three equati
      \left(1 + b_1 \left(N_0 + 1\right)\right) & E\left(N_0+1\right) &&= a_0 + a_1 \left(N_0 + 1\right) \\
     \end{cases}
 
-This allows us to solve for the three unknonws:
+This allows us to solve for the three unknowns:
 
  .. math::
 
@@ -147,7 +147,7 @@ To obtain the :ref:`derived global reactivity indicators <global_derived_indicat
 the rational energy model, the maximum number of electrons accepted by the system should be calculated.
 
  .. TODO::
-    #. Incude :math:`N_{\text{max}}=\infty` and derived global reactivity tools
+    #. Include :math:`N_{\text{max}}=\infty` and derived global reactivity tools
 
 **References:**
 

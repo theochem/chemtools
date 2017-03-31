@@ -121,7 +121,7 @@ class LinearLocalTool(BaseLocalTool):
         \end{cases}
 
     the linear local tools are obtained by taking the functional derivative of these expressions
-    with respect to external potential :math:`v(\mathbf{r})` at fixed number of elecrrons.
+    with respect to external potential :math:`v(\mathbf{r})` at fixed number of electrons.
     """
     @doc_inherit(BaseLocalTool)
     def __init__(self, density_zero, density_plus, density_minus, n0):
@@ -234,7 +234,7 @@ class LinearLocalTool(BaseLocalTool):
         Parameters
         ----------
         global_softness : float
-            The value of gloabl softness.
+            The value of global softness.
         number_electrons : float, default=None
             Number of electrons. If None, the :math:`S \cdot f^0\left(\mathbf{r}\right)`
             is returned.
@@ -275,7 +275,7 @@ class QuadraticLocalTool(BaseLocalTool):
          = E\left(N_0 - 1\right) - 2 E\left(N_0\right) + E\left(N_0 + 1\right)
 
     the quadratic local tools are obtained by taking the functional derivative of these expressions
-    with respect to external potential :math:`v(\mathbf{r})` at fixed number of elecrrons.
+    with respect to external potential :math:`v(\mathbf{r})` at fixed number of electrons.
     """
     @doc_inherit(BaseLocalTool)
     def __init__(self, density_zero, density_plus, density_minus, n0):
@@ -358,7 +358,7 @@ class QuadraticLocalTool(BaseLocalTool):
         Parameters
         ----------
         global_softness : float
-            The value of gloabl softness.
+            The value of global softness.
         number_electrons : float, default=None
             Number of electrons. If None, the :math:`s_{N_0}\left(\mathbf{r}\right)` is returned.
         """
@@ -377,7 +377,7 @@ class QuadraticLocalTool(BaseLocalTool):
         Parameters
         ----------
         global_softness : float
-            The value of gloabl softness.
+            The value of global softness.
         """
         s_value = global_softness**2 * self.dual_descriptor()
         return s_value

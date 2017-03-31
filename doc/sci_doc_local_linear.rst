@@ -85,7 +85,7 @@ and :math:`\rho_{N_0 + 1}\left(\mathbf{r}\right)` when setting :math:`N` equal t
 Also, integrating the linear electron density over all space results in :math:`N`
 which confirms that the density expression is properly normalized to the number of electrons.
 
-By rearranging the expression for linear electron density, it can be easily perceived as first-order Taylor expanssion of density
+By rearranging the expression for linear electron density, it can be easily perceived as first-order Taylor expansion of density
 around the :math:`\rho_{N_0}(\mathbf{r})` as the reference within the linear energy model, that is,
 
  .. math::

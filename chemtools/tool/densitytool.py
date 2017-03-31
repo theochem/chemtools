@@ -28,7 +28,7 @@ import numpy as np
 
 class DensityLocalTool(object):
     """
-    Class of desnity-based local descriptive tools.
+    Class of density-based local descriptive tools.
     """
     def __init__(self, density, gradient, hessian=None):
         """
@@ -42,9 +42,9 @@ class DensityLocalTool(object):
             Hessian matrix of electron density evaluated on a grid
         """
         if density.ndim != 1:
-            raise ValueError('Argument desnity should be a 1-dimensioanl array.')
+            raise ValueError('Argument density should be a 1-dimensional array.')
         if gradient.shape != (density.size, 3):
-            raise ValueError('Argument gradient should have same shape as density arrary.' +
+            raise ValueError('Argument gradient should have same shape as density array.' +
                              ' {0}!={1}'.format(gradient.shape, density.shape))
         if hessian is not None and hessian.shape != (density.size, 3, 3):
             raise ValueError('Argument hessian\'s shape is not consistent with the density array.' +
@@ -88,7 +88,7 @@ class DensityLocalTool(object):
     def laplacian(self):
         r"""
         Laplacian of electron density :math:`\nabla ^2 \rho\left(\mathbf{r}\right)` defined
-        as the trace of Hessian matrix of electron desnity which is equal to the sum of
+        as the trace of Hessian matrix of electron density which is equal to the sum of
         :math:`\left(\lambda_1, \lambda_2, \lambda_3\right)` eigen-values of Hessian matrix:
 
         .. math::

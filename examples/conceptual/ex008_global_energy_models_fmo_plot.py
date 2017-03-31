@@ -4,7 +4,7 @@ EX8: Plot Energy Models (FMO Approach)
 ======================================
 
 1. Build a linear and quadratic energy models for formaldehyde, :math:`\mathbf{CH_2O}`,
-   using fontier molecular orbital (FMO) theory approach.
+   using frontier molecular orbital (FMO) theory approach.
 2. Compute energy values for various number of electrons.
 3. Plot energy vs. number of electrons.
 4. Plot data points used for modeling energy.
@@ -18,7 +18,7 @@ from chemtools import GlobalConceptualDFT, context
 
 # path to molecule's fchk file
 file_path = context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk')
-# build linear & quadratic gloabl conceptual DFT tool (one file is passed, so FMO approach is taken)
+# build linear & quadratic global conceptual DFT tool (one file is passed, so FMO approach is taken)
 model_lin = GlobalConceptualDFT.from_file(file_path, 'linear')
 model_qua = GlobalConceptualDFT.from_file(file_path, 'quadratic')
 model_rat = GlobalConceptualDFT.from_file(file_path, 'rational')
@@ -38,7 +38,7 @@ energy_exp = [model_exp.energy(n) for n in n_values]
 
 # 3. Plot energy vs. number of electrons.
 
-# plot linear enery model
+# plot linear energy model
 plt.plot(n_values, energy_lin, color='0.7', linestyle='--', linewidth=2.5,
          label='%s Model' % model_lin.model.capitalize())
 # plot quadratic energy model

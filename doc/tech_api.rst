@@ -22,8 +22,8 @@
     : --
 
 
-API Documentaion
-================
+API Documentation
+=================
 
 Automatically generated document from source code's docstring.
 

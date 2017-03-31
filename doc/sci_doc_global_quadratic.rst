@@ -147,7 +147,7 @@ to zero,
 
 The related :ref:`derived global reactivity indicators <global_derived_indicators>` for the quadratic energy model are:
 
- .. todo:: include the generalized singned definitions.
+ .. todo:: include the generalized signed definitions.
 
  .. math::
 

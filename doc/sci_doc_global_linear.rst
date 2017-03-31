@@ -89,7 +89,7 @@ It is only possible to do this when the :math:`N_0-` electron system has lower e
 and :math:`(N_0-1)` electron systems. In that case, :math:`N_{\text{max}}=N_0` which gives :math:`\Delta N_{\text{max}}=0`,
 and
 
- .. todo:: include the generalized singned definitions.
+ .. todo:: include the generalized signed definitions.
 
  .. math::
 

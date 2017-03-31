@@ -20,7 +20,7 @@ from chemtools import GlobalConceptualDFT, context
 file_path = [context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'),
              context.get_fn('examples/ch2o_q+1_ub3lyp_augccpvtz.fchk'),
              context.get_fn('examples/ch2o_q-1_ub3lyp_augccpvtz.fchk')]
-# build linear & quadratic gloabl conceptual DFT tool (3 files are given, so FD approach is taken)
+# build linear & quadratic global conceptual DFT tool (3 files are given, so FD approach is taken)
 tool_lin = GlobalConceptualDFT.from_file(file_path, model='linear')
 tool_qua = GlobalConceptualDFT.from_file(file_path, model='quadratic')
 
@@ -36,7 +36,7 @@ energy_qua = [tool_qua.energy(n) for n in n_values]
 
 # 3. Plot energy vs. number of electrons.
 
-# plot linear enery model
+# plot linear energy model
 plt.plot(n_values, energy_lin, color='b', linestyle='-', linewidth=3,
          label='%s Model' % tool_lin.model.capitalize())
 # plot quadratic energy model

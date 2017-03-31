@@ -4,7 +4,7 @@ EX1: Global Quadratic Reactivity Descriptors (FMO Approach)
 ===========================================================
 
 1. Build a quadratic energy model for formaldehyde, :math:`\mathbf{CH_2O}`,
-   using fontier molecular orbital (FMO) theory approach.
+   using frontier molecular orbital (FMO) theory approach.
 2. Print all available global quadratic reactivity descriptors.
 3. Compute quadratic energy model and its derivatives for various numbers of electrons.
 """
@@ -15,7 +15,7 @@ from chemtools import GlobalConceptualDFT, context
 
 # path to molecule's fchk file
 file_path = context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk')
-# build quadratic gloabl conceptual DFT tool (one file is passed, so FMO approach is taken)
+# build quadratic global conceptual DFT tool (one file is passed, so FMO approach is taken)
 tool = GlobalConceptualDFT.from_file(file_path, model='quadratic')
 
 # 2. Print all available global quadratic reactivity descriptors

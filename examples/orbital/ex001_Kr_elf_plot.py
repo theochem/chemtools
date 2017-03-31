@@ -23,7 +23,7 @@ mol.numbers = np.array([36])
 # make a cc-pVDZ basis-set
 obasis = get_gobasis(mol.coordinates, mol.numbers, 'cc-pVDZ')
 
-# creata linalg factory
+# create a linalg factory
 lf = CholeskyLinalgFactory(obasis.nbasis)
 
 # compute Gaussian integrals
@@ -64,7 +64,7 @@ grid = AtomicGrid(mol.numbers[0], mol.pseudo_numbers[0], mol.coordinates[0],
 # get radial distribution
 radii = grid.rgrid.radii
 
-# construce an OrbitalLocalTool
+# construct an OrbitalLocalTool
 tool = OrbitalLocalTool(grid.points, obasis, exp_alpha)
 
 # calculate spherically-averaged density & Electron Localization Function (ELF)

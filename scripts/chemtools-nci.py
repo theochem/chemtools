@@ -33,7 +33,7 @@ def parse_args_nci():
     """
     parser = argparse.ArgumentParser(prog='chemtools-nci.py',
         description='Generate density & reduced density gradient cube files, as well as a VMD\n'
-                    '(Visual Molecular Dynamics) script to visualize non-covalnet interactions (NCI).\n\n'
+                    '(Visual Molecular Dynamics) script to visualize non-covalent interactions (NCI).\n\n'
                     'This script will generate 3 files which includes:\n'
                     '    filename_output-dens.cube\n'
                     '    filename_output-grad.cube\n'

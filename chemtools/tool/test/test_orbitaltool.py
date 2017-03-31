@@ -42,7 +42,7 @@ def test_orbital_tool_ch4_uhf_ccpvdz():
 
     cube = CubeGen(mol.numbers, mol.pseudo_numbers, mol.coordinates, ori, ax, sh)
 
-    # initialyze OrbitalLocalTool:
+    # initialize OrbitalLocalTool:
     orbtool = OrbitalLocalTool(cube.points, mol.obasis, mol.exp_alpha)
 
     # density results obtained from Fortran code:

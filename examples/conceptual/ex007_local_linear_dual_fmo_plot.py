@@ -5,7 +5,7 @@ EX7: Plot Quadratic Dual Descriptor (FMO Approach)
 
 1. Make cubic grid for plotting dual descriptor.
 2. Build quadratic energy model for Formaldehyde, :math:`\mathbf{CH_2O}`,
-   using frontier molecular orbitral (FMO) theory approach.
+   using frontier molecular orbital (FMO) theory approach.
 3. Compute dual descriptor using quadratic energy model.
 4. Make dual descriptor cube file & generate VMD (Visual Molecular Dynamics)
    script to visualize its iso-surface.

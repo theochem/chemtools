@@ -54,7 +54,7 @@ def test_local_linear():
     np.testing.assert_almost_equal(model.density(9.32), expected, decimal=6)
     expected = 0.39 * dm + 0.61 * d0
     np.testing.assert_almost_equal(model.density(9.61), expected, decimal=6)
-    # Check descriptos
+    # Check descriptor
     expected = np.array([-0.5, 1.5, 1.0, -1.0, -2.0])
     np.testing.assert_almost_equal(model.ff_plus, expected, decimal=6)
     np.testing.assert_almost_equal(model.fukui_function(10.10), expected, decimal=6)
