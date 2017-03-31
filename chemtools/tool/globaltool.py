@@ -706,7 +706,7 @@ class ExponentialGlobalTool(BaseGlobalTool):
     @doc_inherit(BaseGlobalTool)
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
         # check energy values are monotonic, i.e. E(N-1) > E(N) > E(N+1)
-        if not (energy_minus > energy_zero and energy_zero > energy_plus):
+        if not (energy_minus > energy_zero > energy_plus):
             energies = [energy_minus, energy_zero, energy_plus]
             n_values = [n0 - 1, n0, n0 + 1]
             raise ValueError('To interpolate exponential energy model, E values vs. N should be ' +
