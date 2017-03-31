@@ -28,9 +28,9 @@ from chemtools import NCI
 from argparse import RawTextHelpFormatter
 
 def parse_args_nci():
-    '''
+    """
     Parse command-line arguments for computing NCI.
-    '''
+    """
     parser = argparse.ArgumentParser(prog='chemtools-nci.py',
         description='Generate density & reduced density gradient cube files, as well as a VMD\n'
                     '(Visual Molecular Dynamics) script to visualize non-covalnet interactions (NCI).\n\n'
@@ -57,10 +57,10 @@ def parse_args_nci():
 
 
 def main_nci():
-    '''
+    """
     Build NCI model using given command-line settings, and dump files/scripts for
     visualizing NCI with VMD.
-    '''
+    """
     # Parse command-line arguments
     args = parse_args_nci()
 

@@ -455,12 +455,12 @@ class LocalConceptualDFT(object):
                 nelec += int(np.sum(mol.exp_beta.occupations))
                 # use homo energy of beta electrons, if it has higher energy
                 if mol.exp_beta.homo_energy > homo_energy:
-                    homo_energy = mol.exp_beta.homo_energy
+                    # homo_energy = mol.exp_beta.homo_energy
                     homo_index = mol.exp_beta.get_homo_index()
                     homo_exp = 'exp_beta'
                 # use lumo energy of beta electrons, if it has lower energy
                 if mol.exp_beta.lumo_energy < lumo_energy:
-                    lumo_energy = mol.exp_beta.lumo_energy
+                    # lumo_energy = mol.exp_beta.lumo_energy
                     lumo_index = mol.exp_beta.get_lumo_index()
                     lumo_exp = 'exp_beta'
             else:
@@ -702,12 +702,12 @@ class CondensedConceptualDFT(object):
                 nelec += int(np.sum(mol.exp_beta.occupations))
                 # use homo energy of beta electrons, if it has higher energy
                 if mol.exp_beta.homo_energy > homo_energy:
-                    homo_energy = mol.exp_beta.homo_energy
+                    # homo_energy = mol.exp_beta.homo_energy
                     homo_index = mol.exp_beta.get_homo_index()
                     homo_exp = 'exp_beta'
                 # use lumo energy of beta electrons, if it has lower energy
                 if mol.exp_beta.lumo_energy < lumo_energy:
-                    lumo_energy = mol.exp_beta.lumo_energy
+                    # lumo_energy = mol.exp_beta.lumo_energy
                     lumo_index = mol.exp_beta.get_lumo_index()
                     lumo_exp = 'exp_beta'
             else:

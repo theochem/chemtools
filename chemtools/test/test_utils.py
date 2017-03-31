@@ -45,12 +45,12 @@ def test_cubegen_o2_uhf():
     #creating cube file from file:
     cube = CubeGen.from_file(path_file, spacing=0.5, threshold=6.0, rotate=False)
 
-    #test the cube gives the right result:
-    origin_result = [-6.0,  -6.0,  -7.25]
-    axes_result   = [[0.5,   0.0,   0.0],
-                     [0.0,   0.5,   0.0],
-                     [0.0,   0.0,   0.5]]
-    shape_result  = [24, 24, 29]
+    # test the cube gives the right result:
+    origin_result = [-6.0, -6.0, -7.25]
+    axes_result = [[0.5, 0.0, 0.0],
+                   [0.0, 0.5, 0.0],
+                   [0.0, 0.0, 0.5]]
+    shape_result = [24, 24, 29]
     weight_result = np.full(cube.npoints, 0.125)
 
     np.testing.assert_array_almost_equal(cube.origin, origin_result, decimal=7)
@@ -63,12 +63,12 @@ def test_cubegen_o2_uhf():
     #creating cube file from molecule:
     cube = CubeGen.from_molecule(mol.numbers, mol.pseudo_numbers, mol.coordinates)
 
-    #test the cube gives the right result:
-    origin_result = [-5.0,  -5.0,  -6.1]
-    axes_result   = [[0.0,   0.0,   0.2],
-                     [0.0,   0.2,   0.0],
-                     [0.2,   0.0,   0.0]]
-    shape_result  = [61, 50, 50]
+    # test the cube gives the right result:
+    origin_result = [-5.0, -5.0, -6.1]
+    axes_result = [[0.0, 0.0, 0.2],
+                   [0.0, 0.2, 0.0],
+                   [0.2, 0.0, 0.0]]
+    shape_result = [61, 50, 50]
     weight_result = np.full(cube.npoints, 0.0080)
 
     np.testing.assert_array_almost_equal(cube.origin, origin_result, decimal=7)
