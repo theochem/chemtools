@@ -657,8 +657,8 @@ class CondensedConceptualDFT(object):
 
         Parameters
         ----------
-        filenames : list,tuple
-            List/tuple containing the path to molecule's files.
+        iodatas : list,tuple
+            List/tuple containing `IOData` instances.
         model : str
             Energy model used to calculate local descriptive tools.
             Available models are 'linear' and 'quadratic'.
@@ -893,6 +893,8 @@ class CondensedConceptualDFT(object):
         ----------
         local_property : np.ndarray
             Local descriptor evaluated on grid.
+        part : part instance
+            Instance of `HORTON` partitioning calss.
         """
         condensed = np.zeros(part.natom)
         for index in xrange(part.natom):
