@@ -20,12 +20,12 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-'''The main ChemTools Package.'''
+"""The main ChemTools Package."""
 
 
 __version__ = '0.9.0'
 
 
-from tool import *
-from analysis import *
-from utils import *
+from chemtools.tool import *
+from chemtools.analysis import *
+from chemtools.utils import *

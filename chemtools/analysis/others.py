@@ -20,11 +20,11 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-'''Module for Density-Based and Orbital-Based Analysis of Quantum Chemistry Output Files.
+"""Module for Density-Based and Orbital-Based Analysis of Quantum Chemistry Output Files.
 
    This modules contains wrappers which take outputs of quantum chemistry softwares and
    compute various descriptive tools based on the density and orbital information.
-'''
+"""
 
 import numpy as np
 from horton import IOData
@@ -36,11 +36,11 @@ import matplotlib.pyplot as plt
 
 
 class NCI(object):
-    '''
+    """
     Class for the Non-Covalent Interactions (NCI).
-    '''
+    """
     def __init__(self, density, rdgradient, cube, hessian=None):
-        '''
+        """
         Parameters
         ----------
         iodata : IOData
@@ -48,7 +48,7 @@ class NCI(object):
         cube : instance of `CubeGen`, default=None
             Cubic grid used for calculating and visualizating the NCI.
             If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
-        '''
+        """
         if hessian is not None:
             # Compute hessian and its eigenvalues on cubuc grid
             eigvalues = np.linalg.eigvalsh(hessian)
@@ -69,14 +69,14 @@ class NCI(object):
 
     @classmethod
     def from_file(cls, filename, cube=None):
-        '''
+        """
         Initialize class from file.
 
         Parameters
         ----------
         filename : str
             Path to molecule's files.
-        '''
+        """
         # case of one file not given as a list
         if isinstance(filename, (str, unicode)):
             return cls.from_iodata(IOData.from_file(filename), cube)
@@ -86,14 +86,14 @@ class NCI(object):
 
     @classmethod
     def from_iodata(cls, iodata, cube=None):
-        '''
+        """
         Initialize class from ``IOData`` object from ``HORTON`` library.
 
         Parameters
         ----------
         iodata : ``IOData``
             Instance of ``IOData``.
-        '''
+        """
         # Generate or check cubic grid
         if cube is None:
             cube = CubeGen.from_molecule(iodata.numbers, iodata.pseudo_numbers,
@@ -116,25 +116,25 @@ class NCI(object):
 
     @property
     def signed_density(self):
-        r'''
+        r"""
         Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on a grid,
         signed by the second eigenvalue of the Hessian at that point, i.e.
         :math:`\text{sgn}\left(\lambda_2\right) \times \rho\left(\mathbf{r}\right)`.
-        '''
+        """
         return self._signed_density
 
     @property
     def eigvalues(self):
-        r'''
+        r"""
         Eigenvalues of Hessian.
-        '''
+        """
         return self._eigvalues
 
     def plot(self, filename):
-        r'''
+        r"""
         Plot reduced density gradient vs.
         :math:`\text{sgn}\left(\lambda_2\right) \times \rho\left(\mathbf{r}\right)`.
-        '''
+        """
         plt.scatter(self._signed_density, self._rdgrad, lw=0.5)
         plt.xlim(-0.2, 0.2)
         plt.ylim(0.0, 2.0)
@@ -143,7 +143,7 @@ class NCI(object):
         plt.savefig(filename)
 
     def dump_files(self, filename, isosurf=0.50, denscut=0.05):
-        r'''
+        r"""
         Generate density and reduced density gradient cube files, as well as a VMD (Visual
         Molecular Dynamics) script to visualize non-covalnet inteactions (NCI).
 
@@ -162,7 +162,7 @@ class NCI(object):
         Note
         ----
         The generated cube files and script imitate the NCIPlot software version 1.0.
-        '''
+        """
         # Similar to NCIPlot program, reduced density gradient of points with
         # density > cutoff will be set to 100.0 before generating cube file to
         # display reduced density gradient iso-surface subject to the constraint
@@ -189,7 +189,7 @@ class NCI(object):
 
 
 def _compute_hessian(mol, points):
-    '''
+    """
     Compute hessian of electron density defined as the second-order partial
     derivative of electron density w.r.t. coordinates.
 
@@ -203,7 +203,7 @@ def _compute_hessian(mol, points):
     Note
     ----
     This finite difference implementation is temporary until hessian is implemented in HORTON.
-    '''
+    """
     # Make small change in coordinates along x, y, & z directions
     eps = 1.0e-5
     dx = points + np.array([[eps, 0.0, 0.0]])
@@ -223,22 +223,22 @@ def _compute_hessian(mol, points):
 
 
 class OrbitalAnalysis(OrbitalLocalTool):
-    '''
+    """
     Class for orbital-based analysis.
-    '''
+    """
     def __init__(self, points, obasis, exp_alpha, exp_beta=None):
         super(OrbitalAnalysis, self).__init__(points, obasis, exp_alpha, exp_beta=None)
 
     @classmethod
     def from_file(cls, filename, points):
-        '''
+        """
         Initialize class from file.
 
         Parameters
         ----------
         filename : str
             Path to molecule's files.
-        '''
+        """
         # case of one file not given as a list
         if isinstance(filename, (str, unicode)):
             mol = IOData.from_file(filename)
@@ -252,14 +252,14 @@ class OrbitalAnalysis(OrbitalLocalTool):
 
     @classmethod
     def from_iodata(cls, iodata, points):
-        '''
+        """
         Initialize class from `IOData` object.
 
         Parameters
         ----------
         iodata : `IOData`
             Instance of `IOData`.
-        '''
+        """
         # check if iodata has exp_beta
         if hasattr(iodata, 'exp_beta'):
             return cls(points, iodata.obasis, iodata.exp_alpha, iodata.exp_beta)

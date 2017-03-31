@@ -20,18 +20,18 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-'''Density-Based Local Conceptual Density Functional Theory (DFT) Reactivity Tools.'''
+"""Density-Based Local Conceptual Density Functional Theory (DFT) Reactivity Tools."""
 
 
 import numpy as np
 
 
 class DensityLocalTool(object):
-    '''
+    """
     Class of desnity-based local descriptive tools.
-    '''
+    """
     def __init__(self, density, gradient, hessian=None):
-        '''
+        """
         Parameters
         ----------
         density : np.ndarray
@@ -40,7 +40,7 @@ class DensityLocalTool(object):
             Gradient vector of electron density evaluated on a grid
         hessian : np.ndarray
             Hessian matrix of electron density evaluated on a grid
-        '''
+        """
         if density.ndim != 1:
             raise ValueError('Argument desnity should be a 1-dimensioanl array.')
         if gradient.shape != (density.size, 3):
@@ -56,14 +56,14 @@ class DensityLocalTool(object):
 
     @property
     def density(self):
-        r'''
+        r"""
         Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on a grid.
-        '''
+        """
         return self._density
 
     @property
     def gradient(self):
-        r'''
+        r"""
         Gradient vector of electron :math:`\nabla \rho\left(\mathbf{r}\right)`
         defined as the first-order partial derivatives of electron density w.r.t. coordinate
         :math:`\mathbf{r} = \left(x\mathbf{i}, y\mathbf{j}, z\mathbf{k}\right)`:
@@ -72,21 +72,21 @@ class DensityLocalTool(object):
             \nabla\rho\left(\mathbf{r}\right) =
             \left(\frac{\partial}{\partial x}\mathbf{i}, \frac{\partial}{\partial y}\mathbf{j},
                   \frac{\partial}{\partial z}\mathbf{k}\right) \rho\left(\mathbf{r}\right)
-        '''
+        """
         return self._gradient
 
     @property
     def hessian(self):
-        r'''
+        r"""
         Hessian matrix of electron density :math:`\nabla^2 \rho\left(\mathbf{r}\right)`
         defined as the second-order partial derivatives of electron density w.r.t coordinate
         :math:`\mathbf{r} = \left(x\mathbf{i}, y\mathbf{j}, z\mathbf{k}\right)`:
-        '''
+        """
         return self._hessian
 
     @property
     def laplacian(self):
-        r'''
+        r"""
         Laplacian of electron density :math:`\nabla ^2 \rho\left(\mathbf{r}\right)` defined
         as the trace of Hessian matrix of electron desnity which is equal to the sum of
         :math:`\left(\lambda_1, \lambda_2, \lambda_3\right)` eigen-values of Hessian matrix:
@@ -97,22 +97,22 @@ class DensityLocalTool(object):
                      \frac{\partial^2\rho\left(\mathbf{r}\right)}{\partial y^2} +
                      \frac{\partial^2\rho\left(\mathbf{r}\right)}{\partial z^2} =
                      \lambda_1 + \lambda_2 + \lambda_3
-        '''
+        """
         # This is not a local tool!
         pass
 
     @property
     def shanon_information(self):
-        r'''
+        r"""
         Shanon information defined as :math:`\rho(r) \ln \rho(r)`.
-        '''
+        """
         # masking might be needed
         value = self._density * np.log(self._density)
         return value
 
     @property
     def gradient_norm(self):
-        r'''
+        r"""
         Gradient norm representing the norm of the gradient vector at every point:
 
         .. math::
@@ -120,19 +120,19 @@ class DensityLocalTool(object):
                   \left(\frac{\partial\rho\left(\mathbf{r}\right)}{\partial x}\right)^2 +
                   \left(\frac{\partial\rho\left(\mathbf{r}\right)}{\partial y}\right)^2 +
                   \left(\frac{\partial\rho\left(\mathbf{r}\right)}{\partial z}\right)^2 }
-        '''
+        """
         norm = np.linalg.norm(self._gradient, axis=1)
         return norm
 
     @property
     def reduced_density_gradient(self):
-        r'''
+        r"""
         Reduced density gradient (RDG) defined as:
 
         .. math::
            s\left(\mathbf{r}\right) = \frac{1}{2\left(3\pi ^2 \right)^{1/3}}
            \frac{\lvert \nabla\rho\left(\mathbf{r}\right) \rvert}{\rho\left(\mathbf{r}\right)^{4/3}}
-        '''
+        """
         # Mask density values less than 1.0d-30 to avoid diving by zero
         mdens = np.ma.masked_less(self._density, 1.0e-30)
         mdens.filled(1.0e-30)
@@ -143,13 +143,13 @@ class DensityLocalTool(object):
 
     @property
     def weizsacker_kinetic_energy_density(self):
-        r'''
+        r"""
         Weizsacker kinetic energy/local steric energy/Fisher information density defined as:
 
         .. math::
            T\left(\mathbf{r}\right) =
            \frac{\lvert \nabla \rho\left(\mathbf{r}\right) \rvert ^2}{8 \rho\left(\mathbf{r}\right)}
-        '''
+        """
         # Mask density values less than 1.0d-30 to avoid diving by zero
         mdens = np.ma.masked_less(self._density, 1.0e-30)
         mdens.filled(1.0e-30)
@@ -159,20 +159,20 @@ class DensityLocalTool(object):
 
     @property
     def thomas_fermi_kinetic_energy_density(self):
-        r'''
+        r"""
         Thomas-Fermi kinetic energy density defined as:
 
         .. math::
            T\left(\mathbf{r}\right) = \frac{3}{10} \left(6 \pi^2 \right)^{2/3}
                   \left(\frac{\rho\left(\mathbf{r}\right)}{2}\right)^{5/3}
-        '''
+        """
         # Compute Thomas-Fermi kinetic energy
         prefactor = 0.3 * (3.0 * np.pi**2.0)**(2.0 / 3.0)
         kinetic = prefactor * self._density**(5.0 / 3.0)
         return kinetic
 
     def electrostatic_potential(self, numbers, coordinates, int_weights, int_points, points):
-        r'''
+        r"""
         Electrostatic potential defined as:
 
         .. math::
@@ -193,7 +193,7 @@ class DensityLocalTool(object):
             The coordinates of the integration points.
         points : np.ndarray
             The coordinates of the point(s) on which to calculate the electrostatic potential.
-        '''
+        """
         # check consistency of arrays
         if len(coordinates) != len(numbers):
             raise ValueError('Argument numbers & coordinates should have the same length. ' +

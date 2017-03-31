@@ -20,11 +20,11 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-'''Module for Conceptual Density Functional Theory Analysis of Quantum Chemistry Output Files.
+"""Module for Conceptual Density Functional Theory Analysis of Quantum Chemistry Output Files.
 
    This modules contains wrappers which take outputs of quantum chemistry softwares and
    compute various conceptual density functional theory (DFT) descriptive tools.
-'''
+"""
 
 import numpy as np
 from horton import log
@@ -37,13 +37,13 @@ from chemtools.utils import CubeGen
 
 
 class GlobalConceptualDFT(object):
-    '''
+    """
     Class for global conceptual density functional theory (DFT) analysis of molecular quantum
     chemistry output file(s). If only one molecule is provided, the frontiner molecular orbital
     (FMO) approach is invoked, otherwise finite difference (FD) approach is taken.
-    '''
+    """
     def __init__(self, dict_values, model='quadratic'):
-        '''
+        """
         Parameters
         ----------
         dict_values : dict
@@ -52,7 +52,7 @@ class GlobalConceptualDFT(object):
             Energy model used to calculate global descriptive tools.
             The available models include: 'linear', 'quadratic', 'exponential', 'rational',
             and 'general'. Please see '' for more information.
-        '''
+        """
         # available models for global tools
         select_tool = {'linear': LinearGlobalTool, 'quadratic': QuadraticGlobalTool,
                        'exponential': ExponentialGlobalTool, 'rational': RationalGlobalTool,
@@ -101,13 +101,13 @@ class GlobalConceptualDFT(object):
 
     @property
     def model(self):
-        '''Energy model.'''
+        """Energy model."""
         return self._model
 
     def __getattr__(self, attr):
-        '''
+        """
         Return class attribute.
-        '''
+        """
         # if not hasattr(self._tool, attr):
         value = getattr(self._tool, attr, 'error')
         if value == 'error':
@@ -115,9 +115,9 @@ class GlobalConceptualDFT(object):
         return getattr(self._tool, attr)
 
     def __repr__(self):
-        '''
+        """
         Print table of available class attributes and methods.
-        '''
+        """
         available = dir(self._tool)
         is_public = lambda item: not item.startswith('_')
         attrs = [atr for atr in available if not callable(getattr(self, atr)) and is_public(atr)]
@@ -135,9 +135,9 @@ class GlobalConceptualDFT(object):
         return content
 
     def _log_init(self):
-        '''
+        """
         Print an initial informative message.
-        '''
+        """
         if log.do_medium:
             log('Initialize: %s' % self.__class__)
             log.deflist([('Energy Model', self._model),
@@ -151,7 +151,7 @@ class GlobalConceptualDFT(object):
 
     @classmethod
     def from_file(cls, filenames, model, **kwargs):
-        '''
+        """
         Initialize class from files.
 
         Parameters
@@ -163,7 +163,7 @@ class GlobalConceptualDFT(object):
             Available models are 'linear' and 'quadratic'.
         points : np.array
             Points on which the local descriptive tools is evalauted.
-        '''
+        """
         # case of one file not given as a list
         if isinstance(filenames, (str, unicode)):
             return cls.from_iodata(IOData.from_file(filenames), model, **kwargs)
@@ -175,7 +175,7 @@ class GlobalConceptualDFT(object):
 
     @classmethod
     def from_iodata(cls, iodatas, model, **kwargs):
-        '''
+        """
         Initialize class from `IOData` objects.
 
         Parameters
@@ -187,7 +187,7 @@ class GlobalConceptualDFT(object):
             Available models are 'linear' and 'quadratic'.
         points : np.array
             Points on which the local descriptive tools is evalauted.
-        '''
+        """
         # case of one IOData object not given as a list
         if isinstance(iodatas, IOData):
             iodatas = [iodatas]
@@ -245,15 +245,15 @@ class GlobalConceptualDFT(object):
 
 
 class LocalConceptualDFT(object):
-    '''
+    """
     Class for local conceptual density functional theory (DFT) analysis of molecular quantum
     chemistry output file(s). If only one molecule is provided, the frontiner molecular orbital
     (FMO) approach is invoked, otherwise finite difference (FD) approach is taken.
 
     Note: If FD approach is taken, the geometries of all molecules need to be the same.
-    '''
+    """
     def __init__(self, dict_values, model='quadratic', coordinates=None, numbers=None):
-        '''
+        """
         Parameters
         ----------
         dict_value : dict
@@ -262,7 +262,7 @@ class LocalConceptualDFT(object):
             Energy model used to calculate local descriptive tools.
             The available models include: 'linear', 'quadratic', and 'general'.
             Please see '' for more information.
-        '''
+        """
         # available models for local tools
         select_tool = {'linear': LinearLocalTool, 'quadratic': QuadraticLocalTool}
 
@@ -330,30 +330,30 @@ class LocalConceptualDFT(object):
 
     @property
     def model(self):
-        '''Energy model.'''
+        """Energy model."""
         return self._model
 
     @property
     def n0(self):
-        '''
+        """
         Reference number of electrons, i.e. :math:`N_0`.
-        '''
+        """
         return self._tool.n0
 
     @property
     def coordinates(self):
-        '''Cartesian coordinates of atoms.'''
+        """Cartesian coordinates of atoms."""
         return self._coordiantes
 
     @property
     def numbers(self):
-        '''Atomic numbers.'''
+        """Atomic numbers."""
         return self._numbers
 
     def __getattr__(self, attr):
-        '''
+        """
         Return class attribute.
-        '''
+        """
         # if not hasattr(self._tool, attr):
         value = getattr(self._tool, attr, None)
         if value is None:
@@ -361,9 +361,9 @@ class LocalConceptualDFT(object):
         return getattr(self._tool, attr)
 
     def __repr__(self):
-        '''
+        """
         Print table of available class attributes and methods.
-        '''
+        """
         available = dir(self._tool) + dir(self)
         is_public = lambda item: not item.startswith('_')
         attrs = [atr for atr in available if not callable(getattr(self, atr)) and is_public(atr)]
@@ -379,9 +379,9 @@ class LocalConceptualDFT(object):
         return content
 
     def _log_init(self):
-        '''
+        """
         Print an initial informative message.
-        '''
+        """
         if log.do_medium:
             log('Initialize: %s' % self.__class__)
             log.deflist([('Energy Model', self._model),
@@ -391,7 +391,7 @@ class LocalConceptualDFT(object):
 
     @classmethod
     def from_file(cls, filenames, model, points):
-        '''
+        """
         Initialize class from files.
 
         Parameters
@@ -403,7 +403,7 @@ class LocalConceptualDFT(object):
             Available models are 'linear' and 'quadratic'.
         points : np.array
             Points on which the local descriptive tools is evalauted.
-        '''
+        """
         # case of one file not given as a list
         if isinstance(filenames, (str, unicode)):
             return cls.from_iodata(IOData.from_file(filenames), model, points)
@@ -415,7 +415,7 @@ class LocalConceptualDFT(object):
 
     @classmethod
     def from_iodata(cls, iodatas, model, points):
-        '''
+        """
         Initialize class from `IOData` objects.
 
         Parameters
@@ -427,7 +427,7 @@ class LocalConceptualDFT(object):
             Available models are 'linear' and 'quadratic'.
         points : np.array
             Points on which the local descriptive tools is evalauted.
-        '''
+        """
         # check points array
         if points.ndim != 2 or points.shape[1] != 3:
             raise ValueError('Argument points should be a 2D array with 3 columns! ' +
@@ -516,16 +516,16 @@ class LocalConceptualDFT(object):
 
 
 class CondensedConceptualDFT(object):
-    '''
+    """
     Class for condensed conceptual density functional theory (DFT) analysis of molecular quantum
     chemistry output file(s). If only one molecule is provided, the frontiner molecular orbital
     (FMO) approach is invoked, otherwise finite difference (FD) approach is taken.
 
     Note: If FD approach is taken, the geometries of molecules can be different only for RMF
           approach.
-    '''
+    """
     def __init__(self, dict_values, model='quadratic'):
-        '''
+        """
         Parameters
         ----------
         dict_value : dict
@@ -534,7 +534,7 @@ class CondensedConceptualDFT(object):
             Energy model used to calculate local descriptive tools.
             The available models include: 'linear', 'quadratic', and 'general'.
             Please see '' for more information.
-        '''
+        """
         # available models for local tools
         select_tool = {'linear': LinearLocalTool, 'quadratic': QuadraticLocalTool}
 
@@ -580,9 +580,9 @@ class CondensedConceptualDFT(object):
         self._log_init()
 
     def __getattr__(self, attr):
-        '''
+        """
         Return class attribute.
-        '''
+        """
         # if not hasattr(self._tool, attr):
         value = getattr(self._tool, attr, None)
         if value is None:
@@ -590,9 +590,9 @@ class CondensedConceptualDFT(object):
         return getattr(self._tool, attr)
 
     def __repr__(self):
-        '''
+        """
         Print table of available class attributes and methods.
-        '''
+        """
         available = dir(self._tool)
         is_public = lambda item: not item.startswith('_')
         attrs = [atr for atr in available if not callable(getattr(self, atr)) and is_public(atr)]
@@ -606,9 +606,9 @@ class CondensedConceptualDFT(object):
         return content
 
     def _log_init(self):
-        '''
+        """
         Print an initial informative message.
-        '''
+        """
         if log.do_medium:
             log('Initialize: Condensed Class')
             # log('Initialize: %s' % self.__class__)
@@ -619,7 +619,7 @@ class CondensedConceptualDFT(object):
 
     @classmethod
     def from_file(cls, filenames, model, approach='FMR', scheme='h', grid=None, proatomdb=None):
-        '''
+        """
         Initialize class from files.
 
         Parameters
@@ -638,7 +638,7 @@ class CondensedConceptualDFT(object):
             Grid used for partitioning
         proatomdb: instance of ``ProAtomDB``
             Proatom database used for partitioning. Only 'h' and 'hi' requires that.
-        '''
+        """
         # case of one file not given as a list
         if isinstance(filenames, (str, unicode)):
             return cls.from_iodata(IOData.from_file(filenames), model, grid, approach,
@@ -652,7 +652,7 @@ class CondensedConceptualDFT(object):
     @classmethod
     def from_iodata(cls, iodatas, model, grid=None, approach='FMR', scheme='mbis',
                     proatomdb=None, **kwargs):
-        '''
+        """
         Initialize class from `IOData` objects.
 
         Parameters
@@ -671,7 +671,7 @@ class CondensedConceptualDFT(object):
             Grid used for partitioning
         proatomdb: instance of ``ProAtomDB``
             Proatom database used for partitioning. Only 'h' and 'hi' requires that.
-        '''
+        """
         if grid is not None:
             if not isinstance(grid, BeckeMolGrid):
                 raise ValueError('Currently, only BeckeMolGrid is supported for condensing!')
@@ -880,7 +880,7 @@ class CondensedConceptualDFT(object):
 
     @staticmethod
     def condense_to_atoms(local_property, part):
-        r'''
+        r"""
         Return condensed values of the local descriptor
         :math:`p_{\text{local}}\left(\mathbf{r}\right)` into atomic contribution :math:`P_A`
         defined as,
@@ -893,7 +893,7 @@ class CondensedConceptualDFT(object):
         ----------
         local_property : np.ndarray
             Local descriptor evaluated on grid.
-        '''
+        """
         condensed = np.zeros(part.natom)
         for index in xrange(part.natom):
             at_grid = part.get_grid(index)

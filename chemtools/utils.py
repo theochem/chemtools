@@ -20,7 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-'''The Utility Module.'''
+"""The Utility Module."""
 
 
 import os
@@ -57,7 +57,7 @@ def doc_inherit(base_class):
     "Frobber"``
     """
     def decorator(method):
-        '''Overwrite method docstring.'''
+        """Overwrite method docstring."""
         overridden = getattr(base_class, method.__name__, None)
         if overridden is None:
             raise NameError('Can\'t find method \'%s\' in base class.')
@@ -67,11 +67,11 @@ def doc_inherit(base_class):
 
 
 class CubeGen(object):
-    '''
+    """
     Class for generating a cubic grid and writing cube files.
-    '''
+    """
     def __init__(self, numbers, pseudo_numbers, coordinates, origin, axes, shape):
-        '''
+        """
         Parameters
         ----------
         numbers : np.ndarray, shape=(M,)
@@ -88,7 +88,7 @@ class CubeGen(object):
             cubic grid.
         shape : np.ndarray, shape=(3,)
             Number of grid points along `x`, `y`, and `z` axis.
-        '''
+        """
         self._numbers = numbers
         self._pseudo_numbers = pseudo_numbers
         self._coordinates = coordinates
@@ -126,7 +126,7 @@ class CubeGen(object):
     @classmethod
     def from_molecule(cls, numbers, pseudo_numbers, coordinates, spacing=0.2,
                       threshold=5.0, rotate=True):
-        '''
+        """
         Initialize ``CubeGen`` class based on the Cartesian coordinates of the molecule.
 
         Parameters
@@ -141,7 +141,7 @@ class CubeGen(object):
             Increment between grid points along `x`, `y` and `z` direction.
         threshold : float, default=5.0
             The extension of the cube on each side of the molecule.
-        '''
+        """
         # calculate center of mass of the nuclear charges:
         totz = np.sum(pseudo_numbers)
         com = np.dot(pseudo_numbers, coordinates) / totz
@@ -180,14 +180,14 @@ class CubeGen(object):
 
     @classmethod
     def from_cube(cls, filename):
-        r'''
+        r"""
         Initialize ``CubeGen`` class based on the grid specifications of a cube file.
 
         Parameters
         ----------
         filename : str
             Cube file name with \*.cube extension.
-        '''
+        """
         if not filename.endswith('.cube'):
             raise ValueError('Arguemnt filename should be a cube file with *.cube extension!')
 
@@ -198,7 +198,7 @@ class CubeGen(object):
 
     @classmethod
     def from_file(cls, filename, spacing=0.2, threshold=5.0, rotate=True):
-        '''
+        """
         Initialize ``CubeGen`` class based on the grid specifications of a file
 
         Parameters
@@ -209,7 +209,7 @@ class CubeGen(object):
             Increment between grid points along `x`, `y` and `z` direction.
         threshold : float, default=5.0
             The extension of the cube on each side of the molecule.
-        '''
+        """
         # Load file
         mol = IOData.from_file(filename)
         return cls.from_molecule(mol.numbers, mol.pseudo_numbers, mol.coordinates, spacing,
@@ -217,65 +217,65 @@ class CubeGen(object):
 
     @property
     def numbers(self):
-        '''
+        """
         Atomic number of the atoms in the molecule.
-        '''
+        """
         return self._numbers
 
     @property
     def pseudo_numbers(self):
-        '''
+        """
         Pseudo-number of the atoms in the molecule.
-        '''
+        """
         return self._pseudo_numbers
 
     @property
     def coordinates(self):
-        '''
+        """
         Cartesian coordinates of the atoms in the molecule.
-        '''
+        """
         return self._coordinates
 
     @property
     def origin(self):
-        '''
+        """
         Cartesian coordinate of the cubic grid origin.
-        '''
+        """
         return self._origin
 
     @property
     def axes(self):
-        '''
+        """
         The three vectors, stored as rows of axes array, defining the Cartesian
         coordinate system used to build the cubic grid.
-        '''
+        """
         return self._axes
 
     @property
     def shape(self):
-        '''
+        """
         Number of grid points along `x`, `y`, and `z` axis.
-        '''
+        """
         return self._shape
 
     @property
     def npoints(self):
-        '''
+        """
         Total number of grid points.
-        '''
+        """
         return self._npoints
 
     @property
     def points(self):
-        '''
+        """
         Cartesian coordinates of the cubic grid points.
-        '''
+        """
         return self._points
 
     def _log_init(self):
-        '''
+        """
         Print an overview of the cube's properties.
-        '''
+        """
         if log.do_medium:
             log('Initialized cube: %s' % self.__class__)
             log.deflist([('Origin ', self._origin),
@@ -287,7 +287,7 @@ class CubeGen(object):
             log.blank()
 
     def dump_cube(self, filename, data):
-        r'''
+        r"""
         Write the data evaluated on grid points into a cube file.
 
         Parameters
@@ -296,7 +296,7 @@ class CubeGen(object):
             Cube file name with \*.cube extension.
         data : np.ndarray, shape=(npoints,)
             An array containing the evaluated scalar property on the grid points.
-        '''
+        """
         if not filename.endswith('.cube'):
             raise ValueError('Arguemnt filename should be a cube file with `*.cube` extension!')
         if data.size != self._npoints:
@@ -329,7 +329,7 @@ class CubeGen(object):
                 counter += 1
 
     def weights(self, method='R'):
-        '''
+        """
         Return integration weights at every point on the cubic grid.
 
         Parameters
@@ -341,7 +341,7 @@ class CubeGen(object):
                   is close to zero at the edges of the grid.
                 - 'R0' method performing rectangle/trapezoidal rule, assuming that the function is
                   very close to zero at the edges of the grid.
-        '''
+        """
         if method == 'R':
             volume = np.linalg.norm(self._shape[0] * self._axes[0])
             volume *= np.linalg.norm(self._shape[1] * self._axes[1])
@@ -362,7 +362,7 @@ class CubeGen(object):
         return weights
 
     def integrate(self, data, method='R0'):
-        '''
+        """
         Integrate the data on a cubic grid.
 
         Parameters
@@ -378,7 +378,7 @@ class CubeGen(object):
                   is close to zero at the edges of the grid.
                 - 'R0' method performing rectangle/trapezoidal rule, assuming that the function is
                   very close to zero at the edges of the grid.
-        '''
+        """
         if data.shape[0] != self._npoints:
             raise ValueError('Argument data should have the same size as the grid for axis=0. ' +
                              '{0}!={1}'.format(data.shape[0], self._npoints))
@@ -387,14 +387,14 @@ class CubeGen(object):
 
     @staticmethod
     def _read_cube_header(filename):
-        '''
+        """
         Return specifications of the cubic grid from the given cube file.
 
         Parameters
         ----------
         filename : str
             Cube file name with *.cube extension.
-        '''
+        """
         with open(filename) as f:
             # skip the title
             f.readline()
@@ -402,7 +402,7 @@ class CubeGen(object):
             f.readline()
 
             def read_grid_line(line):
-                '''Read a number and (x, y, z) coordinate from the cube file line.'''
+                """Read a number and (x, y, z) coordinate from the cube file line."""
                 words = line.split()
                 return (
                     int(words[0]),
@@ -420,7 +420,7 @@ class CubeGen(object):
             axes = np.array([axis0, axis1, axis2])
 
             def read_coordinate_line(line):
-                '''Read atomic number and (x, y, z) coordinate from the cube file line.'''
+                """Read atomic number and (x, y, z) coordinate from the cube file line."""
                 words = line.split()
                 return (
                     int(words[0]), float(words[1]),
@@ -442,11 +442,11 @@ class CubeGen(object):
 
 
 class Context(object):
-    '''
+    """
     Find out where the data directory is located etc.
 
     The data directory contains data files.
-    '''
+    """
     def __init__(self):
         # Determine data directory (also for in-place build)
         self.data_dir = os.getenv('CTDATA')
@@ -472,15 +472,15 @@ class Context(object):
                 'Can not find data files. The directory {0} does not exist.'.format(self.data_dir))
 
     def get_fn(self, filename):
-        '''Return the full path to the given filename in the data directory.'''
+        """Return the full path to the given filename in the data directory."""
         return os.path.join(self.data_dir, filename)
 
     def glob(self, pattern):
-        '''Return all files in the data directory that match the given pattern.'''
+        """Return all files in the data directory that match the given pattern."""
         return glob(self.get_fn(pattern))
 
     def get_include(self):
-        '''Return the list with directories containing header files (.h and .pxd)'''
+        """Return the list with directories containing header files (.h and .pxd)"""
         return self.include_dir
 
 

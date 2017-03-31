@@ -20,30 +20,30 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-'''Condensed Conceptual Density Functional Theory (DFT) Reactivity Tools.'''
+"""Condensed Conceptual Density Functional Theory (DFT) Reactivity Tools."""
 
 
 import numpy as np
 
 
 class CondensedTool(object):
-    '''
+    """
     Class of condensed conceptual DFT reactivity descriptors.
 
     So far only the Fragment of Molecular Response is used,
     where the weights do not depend on the number of electrons.
-    '''
+    """
     def __init__(self, dens_part):
-        '''
+        """
         Parameters
         ----------
         dens_part:
             A WPartClass object obtained from partitioning the molecule
-        '''
+        """
         self._dens_part = dens_part
 
     def condense_atoms(self, local_property):
-        r'''
+        r"""
         Return condensed values of the local descriptor
         :math:`p_{\text{local}}\left(\mathbf{r}\right)` into atomic contribution :math:`P_A`
         defined as,
@@ -57,7 +57,7 @@ class CondensedTool(object):
         ----------
         local_property : np.ndarray
             Local descriptor evaluated on grid.
-        '''
+        """
         natom = self._dens_part.natom
         local_condensed = np.zeros(natom)
         for index in xrange(natom):
@@ -69,7 +69,7 @@ class CondensedTool(object):
         return local_condensed
 
     def condese_pairs(self, response):
-        r'''
+        r"""
         Return condensed values of the response function
         :math:`f_{\text{response}}\left(\mathbf{r}, \mathbf{r'}\right)` into atomic pair
         contribution :math:`P_{AB}` defined as:
@@ -83,5 +83,5 @@ class CondensedTool(object):
         ----------
         response : np.ndarray
             Response evaluated on grid.
-        '''
+        """
         pass

@@ -20,7 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-'''The Analysis Module.'''
+"""The Analysis Module."""
 
 from chemtools.analysis.conceptual import *
 from chemtools.analysis.others import *

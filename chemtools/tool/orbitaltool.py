@@ -20,7 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-'''Orbital-Based Local Tools.'''
+"""Orbital-Based Local Tools."""
 
 
 import numpy as np
@@ -28,11 +28,11 @@ from chemtools.tool.densitytool import DensityLocalTool
 
 
 class OrbitalLocalTool(DensityLocalTool):
-    '''
+    """
     Class of orbital-based descriptive tools.
-    '''
+    """
     def __init__(self, points, obasis, exp_alpha, exp_beta=None):
-        r'''
+        r"""
         Parameters
         ----------
         points : np.ndarray
@@ -45,7 +45,7 @@ class OrbitalLocalTool(DensityLocalTool):
         exp_beta : default=None
             An expansion of the beta orbitals in a basis set,
             with orbital energies and occupation numbers.
-        '''
+        """
         self._obasis = obasis
         self._exp_alpha = exp_alpha
 
@@ -66,18 +66,18 @@ class OrbitalLocalTool(DensityLocalTool):
 
     @property
     def kinetic_energy_density(self):
-        r'''
+        r"""
         Positive definite kinetic energy density defined as,
 
         .. math::
            \tau \left(\mathbf{r}\right) =
            \sum_i^N n_i \frac{1}{2} \rvert \nabla \phi_i \left(\mathbf{r}\right) \lvert^2
-        '''
+        """
         return self._obasis.compute_grid_kinetic_dm(self._dm, self._points)
 
     @property
     def elf(self):
-        r'''
+        r"""
         The Electron Localization Function introduced by Becke and Edgecombe,
 
         .. math::
@@ -99,7 +99,7 @@ class OrbitalLocalTool(DensityLocalTool):
         .. math::
            \tau_{\sigma} (\mathbf{r}) =
                  \sum_i^{\sigma} \lvert \nabla \phi_i (\mathbf{r}) \rvert^2
-        '''
+        """
         elfd = self.kinetic_energy_density - self.weizsacker_kinetic_energy_density
         tf = np.ma.masked_less(self.thomas_fermi_kinetic_energy_density, 1.0e-30)
         tf.filled(1.0e-30)
@@ -107,19 +107,19 @@ class OrbitalLocalTool(DensityLocalTool):
         return elf
 
     def mep(self, coordinates, pseudo_numbers):
-        r'''
+        r"""
         Molecular Electrostatic Potential defined as,
 
         .. math::
            V \left(\mathbf{r}\right) = \sum_A \frac{Z_A}{\rvert \mathbf{R}_A - \mathbf{r} \lvert} -
              \int \frac{\rho \left(\mathbf{r}'\right)}{\rvert \mathbf{r}' -
              \mathbf{r} \lvert} d\mathbf{r}'
-        '''
+        """
         # compute mep with HORTON
         return self._obasis.compute_grid_esp_dm(self._dm, coordinates, pseudo_numbers, self._points)
 
     def orbitals_exp(self, iorbs, spin='alpha'):
-        r'''
+        r"""
         Compute the orbital expectation value on the grid.
 
         Parameters
@@ -130,7 +130,7 @@ class OrbitalLocalTool(DensityLocalTool):
             are not using the python numbering.
         spin : str
             the spin of the orbitals to be calculated.
-        '''
+        """
         iorbs = np.asarray(iorbs)
         # Our orbital numbering starts at 1, but HORTON starts at 0.
         iorbs -= 1

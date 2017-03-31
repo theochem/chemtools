@@ -20,11 +20,11 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-'''Global Conceptual Density Functional Theory (DFT) Reactivity Tools.
+"""Global Conceptual Density Functional Theory (DFT) Reactivity Tools.
 
    This module contains various global tool classes corresponding to
    linear, quadratic, exponential, general energy models.
-'''
+"""
 
 
 import math
@@ -38,12 +38,12 @@ from chemtools.utils import doc_inherit
 
 
 class BaseGlobalTool(object):
-    '''
+    """
     Base class of global conceptual DFT reactivity descriptors.
-    '''
+    """
     __metaclass__ = ABCMeta
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
-        '''
+        """
         Parameters
         ----------
         energy_zero : float
@@ -54,7 +54,7 @@ class BaseGlobalTool(object):
             Energy of the :math:`(N_0 - 1)` -electron system, i.e. :math:`E(N_0 - 1)`.
         n0 : float
             Reference number of electrons, i.e. :math:`N_0`.
-        '''
+        """
         if n0 <= 0:
             raise ValueError('Argument n0 should be positive! Given n0={0}'.format(n0))
         self._n0 = n0
@@ -67,66 +67,66 @@ class BaseGlobalTool(object):
 
     @property
     def n0(self):
-        '''
+        """
         Reference number of electrons, i.e. :math:`N_0`.
-        '''
+        """
         return self._n0
 
     @property
     def n_max(self):
-        r'''
+        r"""
         Maximum number of electrons that the system can accept, defined as,
 
         .. math:: N_{\text{max}} = \underbrace {\min }_N E(N)
-        '''
+        """
         return self._n_max
 
     @property
     def energy_zero(self):
-        '''
+        """
         Energy of the system with :math:`N_0` electrons, i.e. :math:`E(N_0)`.
-        '''
+        """
         return self._energy_zero
 
     @property
     def ionization_potential(self):
-        '''
+        """
         Ionization potential (IP) of the :math:`N_0` -electron system defined as,
 
         .. math:: IP = E(N_0 - 1) - E(N_0)
-        '''
+        """
         return self._ip
 
     @property
     def ip(self):
-        '''
+        """
         The same as :attr:`ionization_potential`.
-        '''
+        """
         return self.ionization_potential
 
     @property
     def electron_affinity(self):
-        '''
+        """
         Electron affinity (EA) of the :math:`N_0` -electron system defined as,
 
         .. math:: EA = E(N_0) - E(N_0 + 1)
-        '''
+        """
         return self._ea
 
     @property
     def ea(self):
-        '''
+        """
         The same as :attr:`electron_affinity`.
-        '''
+        """
         return self.electron_affinity
 
     @property
     def electronegativity(self):
-        r'''
+        r"""
         Mulliken electronegativity defined as negative :attr:`chemical_potential`,
 
         .. math:: \chi_{\text{Mulliken}} = - \mu
-        '''
+        """
         if self.chemical_potential is None:
             return None
         value = -1 * self.chemical_potential
@@ -134,13 +134,13 @@ class BaseGlobalTool(object):
 
     @property
     def electrophilicity(self):
-        r'''
+        r"""
         Electrophilicity defined as,
 
         .. math::
            \omega_{\text{electrophilicity}} = \text{sgn}\left(N_{\text{max}} - N_0\right)
                                               \times \left(E(N_0) - E(N_{\text{max}})\right)
-        '''
+        """
         if self._n_max is None:
             return None
         sign = np.sign(self._n_max - self._n0)
@@ -149,13 +149,13 @@ class BaseGlobalTool(object):
 
     @property
     def nucleofugality(self):
-        r'''
+        r"""
         Nucleofugality defined as,
 
         .. math::
            \nu_{\text{nucleofugality}} = \text{sgn}\left(N_0 + 1 - N_{\text{max}}\right)
                                          \times \left(E(N_0 + 1) - E(N_{\text{max}})\right)
-        '''
+        """
         if self._n_max is None:
             return None
         sign = np.sign(self._n0 + 1 - self._n_max)
@@ -164,13 +164,13 @@ class BaseGlobalTool(object):
 
     @property
     def electrofugality(self):
-        r'''
+        r"""
         Electrofugality defined as,
 
         .. math::
            \nu_{\text{electrofugality}} = \text{sgn}\left(N_{\text{max}} - N_0 + 1\right)
                                           \times \left(E(N_0 - 1) - E(N_{\text{max}})\right)
-        '''
+        """
         if self._n_max is None:
             return None
         sign = np.sign(self._n_max - self._n0 + 1)
@@ -179,47 +179,47 @@ class BaseGlobalTool(object):
 
     @property
     def chemical_potential(self):
-        r'''
+        r"""
         Chemical potential defined as the first derivative of the energy model w.r.t.
         the number of electrons at fixed external potential evaluated at :math:`N_0`,
 
         .. math::
            \mu = \left. \left(\frac{\partial E}{\partial N}
                         \right)_{v(\mathbf{r})} \right|_{N = N_0}
-        '''
+        """
         value = self.energy_derivative(self._n0, order=1)
         return value
 
     @property
     def mu(self):
-        '''
+        """
         The same as :attr:`chemical_potential`.
-        '''
+        """
         return self.chemical_potential
 
     @property
     def chemical_hardness(self):
-        r'''
+        r"""
         Chemical hardness defined as the second derivative of the energy model w.r.t.
         the number of electrons at fixed external potential evaluated at :math:`N_0`,
 
         .. math::
            \eta  = \left. \left(\frac{\partial^2 E}{\partial N^2}
                           \right)_{v(\mathbf{r})} \right|_{N = N_0}
-        '''
+        """
         value = self.energy_derivative(self._n0, order=2)
         return value
 
     @property
     def eta(self):
-        '''
+        """
         The same as :attr:`chemical_hardness`.
-        '''
+        """
         return self.chemical_hardness
 
     @property
     def softness(self):
-        r'''
+        r"""
         Chemical softness defined as the second derivative of the grand potential model w.r.t
         the number of electrons at fixed external potential evaluated at :math:`N_0`. This is
         equal to the inverse chemical hardness.
@@ -227,13 +227,13 @@ class BaseGlobalTool(object):
         .. math::
            S = - \left. \left(\frac{\partial^2 \Omega}{\partial \mu^2}
                         \right)_{v(\mathbf{r})}\right|_{N = N_0} = \frac{1}{\eta}
-        '''
+        """
         # compute 2nd-order derivative of grand potential w.r.t. mu at N0
         value = - self.grand_potential_derivative(self._n0, 2)
         return value
 
     def hyper_hardness(self, order=2):
-        r'''
+        r"""
         :math:`n^{\text{th}}`-order hyper hardness defined as the :math:`(n+1)^{\text{th}}`-order
         derivative, where :math:`n \geq 2`, of the energy model w.r.t the number of electrons at
         fixed external potential evaluated at :math:`N_0`.
@@ -246,14 +246,14 @@ class BaseGlobalTool(object):
         ----------
         order : int, default=2
             The order of hyper-hardness denoted by :math:`n \geq 2` in the formula.
-        '''
+        """
         if not (isinstance(order, int) and order >= 2):
             raise ValueError('Argument order should be an integer greater than or equal to 2.')
         value = self.energy_derivative(self._n0, order + 1)
         return value
 
     def hyper_softness(self, order):
-        r'''
+        r"""
         :math:`n^{\text{th}}`-order hyper softness defined as the :math:`(n+1)^{\text{th}}`-order
         derivative, where :math:`n \geq 2`, of the grand potential model w.r.t the number of
         electrons at fixed external potential evaluated at :math:`N_0`.
@@ -266,7 +266,7 @@ class BaseGlobalTool(object):
         ----------
         order : int, default=2
             The order of hyper-hardness denoted by :math:`n \geq 2` in the formula.
-        '''
+        """
         if not (isinstance(order, int) and order >= 2):
             raise ValueError('Argument order should be an integer greater than or equal to 2.')
         # compute derivative of grand potential w.r.t. mu at N0
@@ -275,7 +275,7 @@ class BaseGlobalTool(object):
 
     @abstractmethod
     def energy(self, n_elec):
-        r'''
+        r"""
         Return energy model :math:`E(N)` evaluated for the specified number of electrons,
         i.e. :math:`E(N_{\text{elec}})`.
 
@@ -283,12 +283,12 @@ class BaseGlobalTool(object):
         ----------
         n_elec: float
             Number of electrons.
-        '''
+        """
         pass
 
     @abstractmethod
     def energy_derivative(self, n_elec, order=1):
-        r'''
+        r"""
         Return the :math:`n^{\text{th}}`-order derivative of energy model :math:`E(N)` w.r.t.
         to the number of electrons at fixed chemical potential evaluated for the specified number
         of electrons.
@@ -309,11 +309,11 @@ class BaseGlobalTool(object):
         For :math:`N_{\text{elec}} = N_0` the first, second and higher order derivatives are equal
         to the :attr:`BaseGlobalTool.chemical_potential`, :attr:`BaseGlobalTool.chemical_hardness`
         and :attr:`BaseGlobalTool.hyper_hardness`, respectively.
-        '''
+        """
         pass
 
     def grand_potential(self, n_elec):
-        r'''
+        r"""
         Return the grand potential model evaluated for the specified number of electrons
         :math:`N_{\text{elec}}`.
 
@@ -329,7 +329,7 @@ class BaseGlobalTool(object):
         ----------
         n_elec : float
             Number of electrons.
-        '''
+        """
         if n_elec is None:
             return None
         # compute grand potential as a function of N
@@ -337,7 +337,7 @@ class BaseGlobalTool(object):
         return value
 
     def grand_potential_derivative(self, n_elec, order=1):
-        r'''
+        r"""
         Return the :math:`n^{\text{th}}`-order derivative of grand potential model w.r.t.
         to the chemical potential, at fixed external potential, evaluated for the specified
         number of electrons :math:`N_{\text{elec}}`.
@@ -391,7 +391,7 @@ class BaseGlobalTool(object):
             Number of electrons.
         order : int, default=1
             The order of derivative denoted by :math:`n` in the formula.
-        '''
+        """
         if n_elec < 0.0:
             raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
         if not(isinstance(order, int) and order > 0):
@@ -421,7 +421,7 @@ class BaseGlobalTool(object):
         return deriv
 
     def grand_potential_mu(self, mu):
-        r'''
+        r"""
         Return the grand potential model evaluated for the specified chemical potential :math:`\mu`.
 
         To evaluate grand potential model,first the number of electrons corresponding to the
@@ -434,7 +434,7 @@ class BaseGlobalTool(object):
         ----------
         mu : float
             Chemical potential :math:`\mu`.
-        '''
+        """
         # find N corresponding to the given mu
         n_elec = self.convert_mu_to_n(mu)
         # evaluate grand potential as a function of N
@@ -442,7 +442,7 @@ class BaseGlobalTool(object):
         return value
 
     def grand_potential_mu_derivative(self, mu, order=1):
-        r'''
+        r"""
         Return the :math:`n^{\text{th}}`-order derivative of grand potential model w.r.t.
         to the chemical potential, at fixed external potential, evaluated for the specified
         chemical potential :math:`\mu`.
@@ -468,7 +468,7 @@ class BaseGlobalTool(object):
             Chemical potential.
         order : int, default=1
             The order of derivative denoted by :math:`n` in the formula.
-        '''
+        """
         if not(isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
         # find N corresponding to the given mu
@@ -478,7 +478,7 @@ class BaseGlobalTool(object):
         return value
 
     def convert_mu_to_n(self, mu, guess=None):
-        r'''
+        r"""
         Return the number of electrons, :math:`N`, corresponding to the specified chemical potential
         :math:`\mu`.
 
@@ -498,7 +498,7 @@ class BaseGlobalTool(object):
         guess : float, default=None
             Initial guess used for solving for :math:`N`.
             If ``None``, the reference number of electrons :math:`N_0` is used as an initial guess.
-        '''
+        """
         # assign an initial guess for N
         if guess is None:
             guess = self._n0
@@ -522,7 +522,7 @@ class BaseGlobalTool(object):
 
 
 class LinearGlobalTool(BaseGlobalTool):
-    r'''
+    r"""
     Class of global conceptual DFT reactivity descriptors based on the linear energy model,
     given :math:`E(N_0 - 1)`, :math:`E(N_0)` and :math:`E(N_0 + 1)` values.
 
@@ -542,7 +542,7 @@ class LinearGlobalTool(BaseGlobalTool):
        \mu^{-} &= -IP \\\
        \mu^{0} &= \frac{\mu^{+} + \mu^{-}}{2} \\
        \mu^{+} &= -EA \\
-    '''
+    """
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
         super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0)
         if energy_zero < energy_plus:
@@ -552,31 +552,31 @@ class LinearGlobalTool(BaseGlobalTool):
 
     @property
     def mu_minus(self):
-        r'''
+        r"""
         Chemical potential from below, i.e. :math:`N_0^{-}`, given by,
 
         .. math:: \mu^{-} = E\left(N_0\right) - E\left(N_0 - 1\right)  = -IP
-        '''
+        """
         return -1 * self._ip
 
     @property
     def mu_plus(self):
-        r'''
+        r"""
         Chemical potential from above, i.e. :math:`N_0^{+}`, given by,
 
         .. math:: \mu^{+} = E\left(N_0 + 1\right) - E\left(N_0\right)  = -EA
-        '''
+        """
         return -1 * self._ea
 
     @property
     def mu_zero(self):
-        r'''
+        r"""
         Chemical potential averaged, given by,
 
         .. math::
            \mu^{0} = \frac{\mu^{+} + \mu^{-}}{2}
                    = \frac{E\left(N_0 + 1\right) - E\left(N_0 - 1\right)}{2} = - \frac{IP + EA}{2}
-        '''
+        """
         return -0.5 * (self._ea + self._ip)
 
     @doc_inherit(BaseGlobalTool)
@@ -620,7 +620,7 @@ class LinearGlobalTool(BaseGlobalTool):
 
 
 class QuadraticGlobalTool(BaseGlobalTool):
-    r'''
+    r"""
     Class of global conceptual DFT reactivity descriptors based on the quadratic energy model,
     given :math:`E(N_0 - 1)`, :math:`E(N_0)` and :math:`E(N_0 + 1)` known values of energy.
 
@@ -637,7 +637,7 @@ class QuadraticGlobalTool(BaseGlobalTool):
        \left(\frac{\partial^2 E}{\partial N^2}\right)_{v(\mathbf{r})} &= 2 c \\
        \left(\frac{\partial^n E}{\partial N^n}\right)_{v(\mathbf{r})} &= 0
              \quad \text{for} \quad n \geq 2
-    '''
+    """
     @doc_inherit(BaseGlobalTool)
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
         # calculate parameters a, b, c of quadratic energy model
@@ -651,9 +651,9 @@ class QuadraticGlobalTool(BaseGlobalTool):
 
     @property
     def params(self):
-        '''
+        """
         Parameters :math:`a`, :math:`b` and :math:`c` of energy model.
-        '''
+        """
         return self._params
 
     @doc_inherit(BaseGlobalTool)
@@ -687,7 +687,7 @@ class QuadraticGlobalTool(BaseGlobalTool):
 
 
 class ExponentialGlobalTool(BaseGlobalTool):
-    r'''
+    r"""
     Class of global conceptual DFT reactivity descriptors based on the exponential energy model,
     given :math:`E(N_0 - 1)`, :math:`E(N_0)` and :math:`E(N_0 + 1)` known values of energy.
 
@@ -702,7 +702,7 @@ class ExponentialGlobalTool(BaseGlobalTool):
     .. math::
        \left(\frac{\partial^n E}{\partial N^n}\right)_{v(\mathbf{r})} =
               A (-\gamma)^n \exp(-\gamma (N - N_0))
-    '''
+    """
     @doc_inherit(BaseGlobalTool)
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
         # check energy values are monotonic, i.e. E(N-1) > E(N) > E(N+1)
@@ -725,9 +725,9 @@ class ExponentialGlobalTool(BaseGlobalTool):
 
     @property
     def params(self):
-        r'''
+        r"""
         Parameters :math:`A`, :math:`\gamma` and :math:`B` of energy model.
-        '''
+        """
         return self._params
 
     @doc_inherit(BaseGlobalTool)
@@ -766,7 +766,7 @@ class ExponentialGlobalTool(BaseGlobalTool):
 
 
 class RationalGlobalTool(BaseGlobalTool):
-    r'''
+    r"""
     Class of global conceptual DFT reactivity descriptors based on the 3-parameter
     rational energy model, given :math:`E(N_0 - 1)`, :math:`E(N_0)` and :math:`E(N_0 + 1)`
     known values of energy.
@@ -782,7 +782,7 @@ class RationalGlobalTool(BaseGlobalTool):
     .. math::
        \left(\frac{\partial^n E}{\partial N^n} \right)_{v(\mathbf{r})} =
              \frac{b_1^{n - 1} (a_1 - a_0 b_1) n!}{(1 + b_1 N)^{2n}}
-    '''
+    """
     @doc_inherit(BaseGlobalTool)
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
         # check energy values are monotonic, i.e. E(N-1) > E(N) > E(N+1)
@@ -804,9 +804,9 @@ class RationalGlobalTool(BaseGlobalTool):
 
     @property
     def params(self):
-        '''
+        """
         Parameters :math:`a_0`, :math:`a_1` and :math:`b_1` of energy model.
-        '''
+        """
         return self._params
 
     @doc_inherit(BaseGlobalTool)
@@ -845,7 +845,7 @@ class RationalGlobalTool(BaseGlobalTool):
 
 
 class GeneralGlobalTool(BaseGlobalTool):
-    '''
+    """
     Class of global conceptual DFT reactivity descriptors based on the user-specified
     symbolic energy model and given known values of energy.
 
@@ -856,9 +856,9 @@ class GeneralGlobalTool(BaseGlobalTool):
 
     The :math:`n^{\text{th}}`-order derivative of the symbolic energy model with respect to the
     number of electrons at fixed external potential is calculated symbolically.
-    '''
+    """
     def __init__(self, expr, n0, n_energies, n_symbol=None, n0_symbol=None, guess=None, opts=None):
-        '''
+        """
         Parameters
         ----------
         expr : sp.Exp
@@ -880,7 +880,7 @@ class GeneralGlobalTool(BaseGlobalTool):
         opts : dict, optional
             Optional keyword arguments to pass to the :py:meth:`scipy.optimimze.root` solver
             that is used to solve for the parameters in the model.
-        '''
+        """
         # make sure that the energy expression depends on number of electrons
         if n_symbol is None:
             n_symbol = sp.symbols('N')
@@ -920,23 +920,23 @@ class GeneralGlobalTool(BaseGlobalTool):
 
     @property
     def params(self):
-        '''
+        """
         Parameters dictionary of energy model.
-        '''
+        """
         return self._params
 
     @property
     def n_symbol(self):
-        '''
+        """
         Symbol used to denote the number of electrons.
-        '''
+        """
         return self._n_symb
 
     @property
     def expression(self):
-        '''
+        """
         Energy expression as a function of number of electrons, :math:`E(N)`.
-        '''
+        """
         return self._expr
 
     @doc_inherit(BaseGlobalTool)
@@ -967,7 +967,7 @@ class GeneralGlobalTool(BaseGlobalTool):
         return deriv
 
     def _solve_parameters(self, expr, n_energies, guess, opts=None):
-        r'''
+        r"""
         Solve for the unknown parameters of the energy model using the given
         :math:`\left(N, E(N)\right)` pair. This requires solving a system of
         (non-)linear equations
@@ -981,7 +981,7 @@ class GeneralGlobalTool(BaseGlobalTool):
         parameters : dict
             A dictionary of sympy.Symbol keys corresponding to the
             value of the expression's solved parameters.
-        '''
+        """
         # obtain set of parameters in the energy expression
         params = guess.keys()
         if len(params) == 0:
@@ -1010,25 +1010,25 @@ class GeneralGlobalTool(BaseGlobalTool):
             d_system_eqns.append(d_eqn_row)
 
         def objective(args):
-            '''
+            """
             Evaluate the system of equations for the given values of parameters.
 
             Parameters
             ----------
             args : array representing the value of parameters.
                 The expression for the property.
-            '''
+            """
             return np.array([eqn(args) for eqn in system_eqns])
 
         def jacobian(args):
-            '''
+            """
             Evaluate the Jacobian of the above objective function for the given
             values of parameters.
 
             Parameters
             ----------
             See objective().
-            '''
+            """
             jac = []
             for row in d_system_eqns:
                 jac.append([eqn(args) for eqn in row])
@@ -1047,9 +1047,9 @@ class GeneralGlobalTool(BaseGlobalTool):
         return parameters
 
     def _solve_nmax(self, guess):
-        '''
+        """
         Solve for the :math:`N_{\text{max}}` of the energy model.
-        '''
+        """
         d_expr = self._expr.diff(self._n_symb)
         n_max_eqn = sp.lambdify(self._n_symb, d_expr, 'numpy')
         result = root(n_max_eqn, guess)
