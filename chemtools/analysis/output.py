@@ -66,8 +66,10 @@ def print_vmd_script_nci(scriptfile, densfile, rdgfile, isosurf=0.5, denscut=0.0
         print >> f, 'display nearclip set 0.000000      '
         print >> f, '#'
         print >> f, '# load new molecule                '
-        print >> f, 'mol new {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'.format(densfile)
-        print >> f, 'mol addfile {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'.format(rdgfile)
+        print >> f, ('mol new {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'
+                     ''.format(densfile))
+        print >> f, ('mol addfile {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'
+                     ''.format(rdgfile))
         print >> f, '#'
         print >> f, '# representation of the atoms'
         print >> f, 'mol delrep 0 top'
@@ -166,10 +168,13 @@ def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5
         print >> f, '#'
         print >> f, '# load new molecule                '
         if colorfile is not None:
-            print >> f, 'mol new {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'.format(colorfile)
-            print >> f, 'mol addfile {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'.format(isofile)
+            print >> f, ('mol new {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'
+                         ''.format(colorfile))
+            print >> f, ('mol addfile {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'
+                         ''.format(isofile))
         else:
-            print >> f, 'mol new {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'.format(isofile)
+            print >> f, ('mol new {0}  type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all'
+                         ''.format(isofile))
         print >> f, '#'
         print >> f, '# representation of the atoms'
         print >> f, 'mol delrep 0 top'

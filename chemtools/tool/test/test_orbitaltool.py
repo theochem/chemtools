@@ -29,6 +29,7 @@ from chemtools import *
 # here both chemtools and horton has context
 # import chemtools later to overwrite horton one
 
+
 def test_orbital_tool_ch4_uhf_ccpvdz():
     path_file = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
     mol = IOData.from_file(path_file)
@@ -38,9 +39,9 @@ def test_orbital_tool_ch4_uhf_ccpvdz():
     ax = np.array([[ 3.000000,  0.000000,   0.000000],
                    [ 0.000000,  3.000000,   0.000000],
                    [ 0.000000,  0.000000,   3.000000]])
-    sh = np.array([3,3,3])
+    sh = np.array([3, 3, 3])
 
-    cube = CubeGen(mol.numbers, mol.pseudo_numbers, mol.coordinates, ori , ax , sh)
+    cube = CubeGen(mol.numbers, mol.pseudo_numbers, mol.coordinates, ori, ax, sh)
 
     # initialyze OrbitalLocalTool:
     orbtool = OrbitalLocalTool(cube.points, mol.obasis, mol.exp_alpha)
@@ -124,22 +125,22 @@ def test_orbital_tool_ch4_uhf_ccpvdz():
                     -0.02029558,  -0.00936400]
     # check homo expansion
     test = orbtool.orbitals_exp(8)
-    np.testing.assert_array_almost_equal(test[:,0], homo_result, decimal=6)
+    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     # check lumo expansion
     test = orbtool.orbitals_exp(9)
-    np.testing.assert_array_almost_equal(test[:,0], lumo_result, decimal=6)
+    np.testing.assert_array_almost_equal(test[:, 0], lumo_result, decimal=6)
     # check homo & lumo expansion with list of orbital indices
     test = orbtool.orbitals_exp([8, 9])
-    np.testing.assert_array_almost_equal(test[:,0], homo_result, decimal=6)
-    np.testing.assert_array_almost_equal(test[:,1], lumo_result, decimal=6)
+    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
+    np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     # check homo & lumo expansion with tuple of orbital indices
     test = orbtool.orbitals_exp((8, 9))
-    np.testing.assert_array_almost_equal(test[:,0], homo_result, decimal=6)
-    np.testing.assert_array_almost_equal(test[:,1], lumo_result, decimal=6)
+    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
+    np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     # check homo & lumo expansion with array of orbital indices
     test = orbtool.orbitals_exp(np.array([8, 9]))
-    np.testing.assert_array_almost_equal(test[:,0], homo_result, decimal=6)
-    np.testing.assert_array_almost_equal(test[:,1], lumo_result, decimal=6)
+    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
+    np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
 
 
 def test_orbital_tool_elf_h2o_dimer():

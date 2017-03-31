@@ -28,6 +28,7 @@ from horton import IOData
 from chemtools import *
 from contextlib import contextmanager
 
+
 @contextmanager
 def tmpdir(name):
     dn = tempfile.mkdtemp(name)
@@ -35,6 +36,7 @@ def tmpdir(name):
         yield dn
     finally:
         shutil.rmtree(dn)
+
 
 def test_cubegen_o2_uhf():
     path_file = context.get_fn('test/o2_uhf.fchk')

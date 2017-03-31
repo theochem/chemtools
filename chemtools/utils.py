@@ -283,7 +283,7 @@ class CubeGen(object):
                          ('Axes[1]', self._axes[1]),
                          ('Axes[2]', self._axes[2]),
                          ('Shape  ', self._shape)
-                        ])
+                         ])
             log.blank()
 
     def dump_cube(self, filename, data):

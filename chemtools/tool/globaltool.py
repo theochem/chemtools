@@ -36,12 +36,12 @@ from scipy.optimize import root, newton, least_squares
 from chemtools.utils import doc_inherit
 
 
-
 class BaseGlobalTool(object):
     """
     Base class of global conceptual DFT reactivity descriptors.
     """
     __metaclass__ = ABCMeta
+
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
         """
         Parameters
