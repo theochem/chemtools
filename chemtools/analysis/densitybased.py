@@ -31,6 +31,7 @@ from horton import IOData
 from chemtools.toolbox.densitybased import DensityLocalTool
 from chemtools.utils.cube import CubeGen
 from chemtools.utils.output import print_vmd_script_nci
+from matplotlib import rcParams
 import matplotlib.pyplot as plt
 
 
@@ -149,17 +150,56 @@ class NCI(object):
         """
         return self._eigvalues
 
-    def plot(self, filename):
+    def plot(self, filename, color='b'):
         r"""
         Plot reduced density gradient vs.
         :math:`\text{sgn}\left(\lambda_2\right) \times \rho\left(\mathbf{r}\right)`.
+
+        Parameters
+        ----------
+        filename : str
+            Name of generated 2D plot.
+
+            If the given filename does not have a proper extension (representing its format),
+            the 'png' format is used by default (i.e. plot is saved as filename.png).
+
+            Supported formats (which should be specified as filename extensions) include:
+
+            - 'svgz' or 'svg' (Scalable Vector Graphics)
+            - 'tif' or 'tiff' (Tagged Image File Format)
+            - 'jpg' or 'jpeg' (Joint Photographic Experts Group)
+            - 'raw' (Raw RGBA bitmap)
+            - 'png' (Portable Network Graphics)
+            - 'ps' (Postscript)
+            - 'eps' (Encapsulated Postscript)
+            - 'rgba' (Raw RGBA bitmap)
+            - 'pdf' (Portable Document Format)
+
+        color : str, default='b'
+            Color of plot. Default is blue specified with 'b'.
+            For details on specifying colors, please refer to
+            http://matplotlib.org/users/colors.html
         """
-        plt.scatter(self._signed_density, self._rdgrad, lw=0.5)
+        # set font
+        rcParams['font.family'] = 'serif'
+        rcParams['font.serif'] = ['Times New Roman']
+        rcParams['mathtext.fontset'] = 'stix'
+        # create figure
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        # scatter plot
+        plt.scatter(self._signed_density, self._rdgrad, marker='o', color=color)
+        # set axis range and label
         plt.xlim(-0.2, 0.2)
         plt.ylim(0.0, 2.0)
-        plt.xlabel(r'sgn($\lambda_2$)$\rho$ (a.u)')
-        plt.ylabel('Reduced Density Gradient')
-        plt.savefig(filename)
+        plt.xlabel(r'sgn$\mathbf{(\lambda_2)}$ $\times$ $\mathbf{\rho(r)}$ (a.u)',
+                   fontsize=12, fontweight='bold')
+        plt.ylabel('Reduced Density Gradient', fontsize=12, fontweight='bold')
+        # hide the right, top and bottom spines
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+        # save plot ('.png' extension is added by default, if filename is not a supported format)
+        plt.savefig(filename, dpi=800)
 
     def dump_files(self, filename, isosurf=0.50, denscut=0.05):
         r"""
