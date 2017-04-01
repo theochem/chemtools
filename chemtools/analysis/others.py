@@ -43,10 +43,27 @@ class NCI(object):
         """
         Parameters
         ----------
+        density : np.array
+            Density evaluated on grid points of `cube`.
+        rdgradient : np.array
+            Reduced density gradient evaluated on grid points of `cube`
         cube : instance of `CubeGen`, default=None
             Cubic grid used for calculating and visualizing the NCI.
             If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
+        hessian : np.array, default=None
+            Hessian of density evaluated on grid points of `cube`. This is a 3D-array with
+            (n, 3, 3) shape where n is the number of grid points of `cube`.
         """
+        if density.shape != (len(cube.points),):
+            raise ValueError('Shape of density argument {0} does not match'.format(density.shape) +
+                             'expected ({0},) shape.'.format(len(cube.points)))
+        if rdgradient.shape != (len(cube.points),):
+            raise ValueError('Shape of rdgradient argument {0} does not '.format(density.shape) +
+                             'match expected ({0},) shape.'.format(len(cube.points)))
+        if hessian.shape != (len(cube.points), 3, 3):
+            raise ValueError('Shape of hessian argument {0} does not match '.format(hessian.shape) +
+                             'expected ({0}, 3, 3) shape.'.format(len(cube.points)))
+
         if hessian is not None:
             # Compute hessian and its eigenvalues on cubuc grid
             eigvalues = np.linalg.eigvalsh(hessian)
@@ -68,7 +85,7 @@ class NCI(object):
     @classmethod
     def from_file(cls, filename, cube=None):
         """
-        Initialize class from file.
+        Initialize class using wave-function file.
 
         Parameters
         ----------
@@ -162,7 +179,8 @@ class NCI(object):
             Similar to NCIPlot program, reduced density gradient of points with
             density > denscut will be set to 100.0 to display reduced density gradient
             iso-surface subject to the constraint of low density.
-
+            To visualize all reduced density gradient iso-surfaces, disregarding of the
+            corresponding density value, set this argument equal to infity using `float('inf')`.
         Note
         ----
         The generated cube files and script imitate the NCIPlot software version 1.0.
