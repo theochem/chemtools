@@ -20,7 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-#pylint: skip-file
+# pylint: skip-file
 
 
 from horton import *
@@ -33,7 +33,7 @@ def test_orbital_tool_ch4_uhf_ccpvdz():
     path_file = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
     mol = IOData.from_file(path_file)
 
-    #creating cube file:
+    # creating cube file:
     ori = np.array([-3.000000, -3.000000,  -3.000000])
     ax = np.array([[ 3.000000,  0.000000,   0.000000],
                    [ 0.000000,  3.000000,   0.000000],
@@ -150,7 +150,7 @@ def test_orbital_tool_elf_h2o_dimer():
     elf_cube_path = context.get_fn('test/h2o_dimer_pbe_sto3g-elf.cube')
     elf = IOData.from_file(elf_cube_path)
     result = elf.cube_data.flatten()
-    #Build OrbitalLocal tool
+    # Build OrbitalLocal tool
     cube = CubeGen.from_cube(elf_cube_path)
     orbtool = OrbitalLocalTool(cube.points, mol.obasis, mol.exp_alpha)
     test = orbtool.elf

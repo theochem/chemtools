@@ -20,7 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-#pylint: skip-file
+# pylint: skip-file
 
 
 from chemtools import *
@@ -368,7 +368,7 @@ def test_global_exponential1():
     np.testing.assert_almost_equal(model.electrophilicity, 5.0, decimal=6)
     np.testing.assert_almost_equal(model.nucleofugality, -4.52418709, decimal=6)
     np.testing.assert_almost_equal(model.electrofugality, 5.52585459, decimal=6)
-    #np.testing.assert_almost_equal(model.hyper_softness(2), 0.0, decimal=6)
+    # np.testing.assert_almost_equal(model.hyper_softness(2), 0.0, decimal=6)
     # check grand potential (as a function of N)
     grand = lambda n: energy(n) - dE(n, 1) * n
     np.testing.assert_almost_equal(model.grand_potential(9.), grand(9.), decimal=6)
@@ -491,7 +491,7 @@ def test_global_rational1():
     np.testing.assert_almost_equal(model.grand_potential(2.78), -1.08950656, decimal=6)
     np.testing.assert_almost_equal(model.grand_potential(5.2), -1.74186236, decimal=6)
     np.testing.assert_almost_equal(model.grand_potential(0.), 0.5, decimal=6)
-    #np.testing.assert_almost_equal(model.grand_potential(model.n_max), , decimal=6)
+    # np.testing.assert_almost_equal(model.grand_potential(model.n_max), , decimal=6)
     # check grand potential derivative (as a function of N)
     np.testing.assert_almost_equal(model.grand_potential_derivative(2.), -2.0, decimal=6)
     np.testing.assert_almost_equal(model.grand_potential_derivative(1.4, 1), -1.4, decimal=6)
@@ -514,7 +514,7 @@ def test_global_rational1():
     # np.testing.assert_almost_equal(model.grand_potential_derivative(2.92, 4), d4omega(2.92), decimal=6)
     # np.testing.assert_almost_equal(model.grand_potential_derivative(5.01, 5), d5omega(5.01), decimal=6)
     # np.testing.assert_almost_equal(model.grand_potential_derivative(4.101, 5), d5omega(4.101), decimal=6)
-    #np.testing.assert_almost_equal(model.grand_potential_derivative(model.n_max, 4), , decimal=6)
+    # np.testing.assert_almost_equal(model.grand_potential_derivative(model.n_max, 4), , decimal=6)
     # check mu to N conversion
     np.testing.assert_almost_equal(model.convert_mu_to_n(-0.4427083333), 2., decimal=6)
     np.testing.assert_almost_equal(model.convert_mu_to_n(-0.5799422391), 1.567, decimal=6)
@@ -588,7 +588,7 @@ def test_global_rational2():
     np.testing.assert_almost_equal(model.grand_potential(6.5), -5.2500304, decimal=6)
     np.testing.assert_almost_equal(model.grand_potential(7.91), -5.7468530, decimal=6)
     np.testing.assert_almost_equal(model.grand_potential(0.), -0.15, decimal=6)
-    #np.testing.assert_almost_equal(model.grand_potential(model.n_max), , decimal=6)
+    # np.testing.assert_almost_equal(model.grand_potential(model.n_max), , decimal=6)
     # check grand potential derivative (as a function of N)
     # expected values based on derived formulas
     n0, a0, a1, b1 = 6.5, -0.15, -4.2, 0.45
@@ -612,7 +612,7 @@ def test_global_rational2():
     np.testing.assert_almost_equal(model.grand_potential_mu(-0.26824617), -5.2500304, decimal=6)
     np.testing.assert_almost_equal(model.grand_potential_mu(-0.19153203), -5.8048876, decimal=6)
     np.testing.assert_almost_equal(model.grand_potential_mu(-0.20521256), -5.6965107, decimal=6)
-    #np.testing.assert_almost_equal(model.grand_potential_derivative(model.n_max, 4), , decimal=6)
+    # np.testing.assert_almost_equal(model.grand_potential_derivative(model.n_max, 4), , decimal=6)
     np.testing.assert_almost_equal(model.grand_potential_mu(-0.268246176), -5.2500304, decimal=6)
     np.testing.assert_almost_equal(model.grand_potential_mu(-0.198782625), -5.7468530, decimal=6)
     # check grand potential derivative (as a function of mu)

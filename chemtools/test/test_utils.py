@@ -20,10 +20,12 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-#pylint: skip-file
+# pylint: skip-file
 
 import os
-import numpy as np, tempfile, shutil
+import numpy as np
+import tempfile
+import shutil
 from horton import IOData
 from chemtools import *
 from contextlib import contextmanager
@@ -42,7 +44,7 @@ def test_cubegen_o2_uhf():
     path_file = context.get_fn('test/o2_uhf.fchk')
     mol = IOData.from_file(path_file)
 
-    #creating cube file from file:
+    # create cube file from file:
     cube = CubeGen.from_file(path_file, spacing=0.5, threshold=6.0, rotate=False)
 
     # test the cube gives the right result:
@@ -60,7 +62,7 @@ def test_cubegen_o2_uhf():
     np.testing.assert_array_almost_equal(cube.weights(method='R0'), weight_result, decimal=7)
     np.testing.assert_array_almost_equal(cube.weights(method='R'), weight_result, decimal=7)
 
-    #creating cube file from molecule:
+    # create cube file from molecule:
     cube = CubeGen.from_molecule(mol.numbers, mol.pseudo_numbers, mol.coordinates)
 
     # test the cube gives the right result:
@@ -78,7 +80,7 @@ def test_cubegen_o2_uhf():
     np.testing.assert_array_almost_equal(cube.weights(method='R0'), weight_result, decimal=7)
     np.testing.assert_array_almost_equal(cube.weights(method='R'), weight_result, decimal=7)
 
-    #test integration of Fukui functions:
+    # test integration of Fukui functions:
 
     tool = LocalConceptualDFT.from_file(path_file, model='linear', points=cube.points)
 
@@ -91,6 +93,7 @@ def test_cubegen_o2_uhf():
     np.testing.assert_almost_equal(ffm_default, 1.000, decimal=2)
     np.testing.assert_almost_equal(ffm_default, 1.000, decimal=2)
     np.testing.assert_almost_equal(ffm_default, 1.000, decimal=2)
+
 
 def test_cube_h2o_dimer():
     file_path = context.get_fn('test/h2o_dimer_pbe_sto3g-dens.cube')

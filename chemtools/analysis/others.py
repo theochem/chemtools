@@ -74,6 +74,9 @@ class NCI(object):
         ----------
         filename : str
             Path to molecule's files.
+        cube : instance of `CubeGen`, default=None
+            Cubic grid used for calculating and visualizing the NCI.
+            If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
         """
         # case of one file not given as a list
         if isinstance(filename, (str, unicode)):
@@ -91,6 +94,9 @@ class NCI(object):
         ----------
         iodata : ``IOData``
             Instance of ``IOData``.
+        cube : instance of `CubeGen`, default=None
+            Cubic grid used for calculating and visualizing the NCI.
+            If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
         """
         # Generate or check cubic grid
         if cube is None:
@@ -236,6 +242,8 @@ class OrbitalAnalysis(OrbitalLocalTool):
         ----------
         filename : str
             Path to molecule's files.
+        points : np.ndarray
+            Gridpoints used to calculate the properties.
         """
         # case of one file not given as a list
         if isinstance(filename, (str, unicode)):
@@ -257,6 +265,8 @@ class OrbitalAnalysis(OrbitalLocalTool):
         ----------
         iodata : `IOData`
             Instance of `IOData`.
+        points : np.ndarray
+            Gridpoints used to calculate the properties.
         """
         # check if iodata has exp_beta
         if hasattr(iodata, 'exp_beta'):

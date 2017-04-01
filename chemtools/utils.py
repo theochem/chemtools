@@ -141,6 +141,9 @@ class CubeGen(object):
             Increment between grid points along `x`, `y` and `z` direction.
         threshold : float, default=5.0
             The extension of the cube on each side of the molecule.
+        rotate : bool, default=True
+            When True, the molecule is rotated so the axes of the cube file are
+            aligned with the principle axes of rotation of the molecule.
         """
         # calculate center of mass of the nuclear charges:
         totz = np.sum(pseudo_numbers)
@@ -209,6 +212,9 @@ class CubeGen(object):
             Increment between grid points along `x`, `y` and `z` direction.
         threshold : float, default=5.0
             The extension of the cube on each side of the molecule.
+        rotate : bool, default=True
+            When True, the molecule is rotated so the axes of the cube file are
+            aligned with the principle axes of rotation of the molecule.
         """
         # Load file
         mol = IOData.from_file(filename)

@@ -54,7 +54,6 @@ def plot_existing_image(imagename):
     return imgplot
 
 
-
 if __name__ == '__main__':
     args = sys.argv[1:]
     task = args.pop(0)
