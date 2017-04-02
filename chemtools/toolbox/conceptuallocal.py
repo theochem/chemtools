@@ -27,7 +27,7 @@
 """
 
 
-from chemtools.utils import doc_inherit
+from chemtools.utils.utils import doc_inherit
 
 
 class BaseLocalTool(object):

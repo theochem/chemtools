@@ -20,8 +20,11 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""The Analysis Module."""
+"""The Toolbox Module."""
 
-from chemtools.analysis.conceptual import *
-from chemtools.analysis.densitybased import *
-from chemtools.analysis.orbitalbased import *
+
+from chemtools.toolbox.conceptualglobal import *
+from chemtools.toolbox.conceptuallocal import *
+from chemtools.toolbox.conceptualcondense import *
+from chemtools.toolbox.densitybased import *
+from chemtools.toolbox.orbitalbased import *

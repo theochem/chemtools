@@ -24,13 +24,12 @@
 
 
 import numpy as np
-from chemtools.tool.densitytool import DensityLocalTool
+from chemtools.toolbox.densitybased import DensityLocalTool
 
 
 class OrbitalLocalTool(DensityLocalTool):
-    """
-    Class of orbital-based descriptive tools.
-    """
+    """Class of orbital-based descriptive tools."""
+
     def __init__(self, points, obasis, exp_alpha, exp_beta=None):
         r"""
         Parameters

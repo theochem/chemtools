@@ -32,7 +32,7 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 import sympy as sp
 from scipy.optimize import root, newton, least_squares
-from chemtools.utils import doc_inherit
+from chemtools.utils.utils import doc_inherit
 
 
 class BaseGlobalTool(object):

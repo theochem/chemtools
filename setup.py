@@ -62,12 +62,13 @@ class my_install_data(install_data):
 setup(
     name='chemtools',
     version='0.9.0',
-    description='Conceptual Density Functional Theory (DFT) Reactivity Descriptors Package.',
+    description='Package of Chemical Tools for Interpreting Quantum Chemistry Calculations',
     author='Ayers Group',
     author_email='horton.chemtools@gmail.com',
     package_dir={'chemtools': 'chemtools'},
-    packages=['chemtools', 'chemtools.tool', 'chemtools.tool.test',
-              'chemtools.analysis', 'chemtools.analysis.test'],
+    packages=['chemtools', 'chemtools.toolbox', 'chemtools.toolbox.test',
+              'chemtools.analysis', 'chemtools.analysis.test', 'chemtools.utils',
+              'chemtools.utils.test'],
     scripts=glob("scripts/*.py"),
     cmdclass={
         'install_data': my_install_data,

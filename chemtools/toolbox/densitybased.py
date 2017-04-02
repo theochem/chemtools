@@ -27,9 +27,8 @@ import numpy as np
 
 
 class DensityLocalTool(object):
-    """
-    Class of density-based local descriptive tools.
-    """
+    """Class of density-based local descriptive tools."""
+
     def __init__(self, density, gradient, hessian=None):
         """
         Parameters
@@ -56,9 +55,7 @@ class DensityLocalTool(object):
 
     @property
     def density(self):
-        r"""
-        Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on a grid.
-        """
+        r"""Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on a grid."""
         return self._density
 
     @property
@@ -66,7 +63,7 @@ class DensityLocalTool(object):
         r"""
         Gradient vector of electron :math:`\nabla \rho\left(\mathbf{r}\right)`
         defined as the first-order partial derivatives of electron density w.r.t. coordinate
-        :math:`\mathbf{r} = \left(x\mathbf{i}, y\mathbf{j}, z\mathbf{k}\right)`:
+        :math:`\mathbf{r} = \left(x\mathbf{i}, y\mathbf{j}, z\mathbf{k}\right)`,
 
          .. math::
             \nabla\rho\left(\mathbf{r}\right) =
@@ -80,7 +77,7 @@ class DensityLocalTool(object):
         r"""
         Hessian matrix of electron density :math:`\nabla^2 \rho\left(\mathbf{r}\right)`
         defined as the second-order partial derivatives of electron density w.r.t coordinate
-        :math:`\mathbf{r} = \left(x\mathbf{i}, y\mathbf{j}, z\mathbf{k}\right)`:
+        :math:`\mathbf{r} = \left(x\mathbf{i}, y\mathbf{j}, z\mathbf{k}\right)`.
         """
         return self._hessian
 
@@ -89,7 +86,7 @@ class DensityLocalTool(object):
         r"""
         Laplacian of electron density :math:`\nabla ^2 \rho\left(\mathbf{r}\right)` defined
         as the trace of Hessian matrix of electron density which is equal to the sum of
-        :math:`\left(\lambda_1, \lambda_2, \lambda_3\right)` eigen-values of Hessian matrix:
+        :math:`\left(\lambda_1, \lambda_2, \lambda_3\right)` eigen-values of Hessian matrix,
 
         .. math::
            \nabla^2 \rho\left(\mathbf{r}\right) = \nabla\cdot\nabla\rho\left(\mathbf{r}\right) =
@@ -102,9 +99,7 @@ class DensityLocalTool(object):
 
     @property
     def shanon_information(self):
-        r"""
-        Shanon information defined as :math:`\rho(r) \ln \rho(r)`.
-        """
+        r"""Shanon information defined as :math:`\rho(r) \ln \rho(r)`."""
         # masking might be needed
         value = self._density * np.log(self._density)
         return value
@@ -112,7 +107,7 @@ class DensityLocalTool(object):
     @property
     def gradient_norm(self):
         r"""
-        Gradient norm representing the norm of the gradient vector at every point:
+        Gradient norm representing the norm of the gradient vector at every point,
 
         .. math::
            \lvert \nabla \rho\left(\mathbf{r}\right) \rvert = \sqrt{
@@ -126,7 +121,7 @@ class DensityLocalTool(object):
     @property
     def reduced_density_gradient(self):
         r"""
-        Reduced density gradient (RDG) defined as:
+        Reduced density gradient (RDG) defined as,
 
         .. math::
            s\left(\mathbf{r}\right) = \frac{1}{2\left(3\pi ^2 \right)^{1/3}}
@@ -143,7 +138,7 @@ class DensityLocalTool(object):
     @property
     def weizsacker_kinetic_energy_density(self):
         r"""
-        Weizsacker kinetic energy/local steric energy/Fisher information density defined as:
+        Weizsacker kinetic energy/local steric energy/Fisher information density defined as,
 
         .. math::
            T\left(\mathbf{r}\right) =
@@ -159,7 +154,7 @@ class DensityLocalTool(object):
     @property
     def thomas_fermi_kinetic_energy_density(self):
         r"""
-        Thomas-Fermi kinetic energy density defined as:
+        Thomas-Fermi kinetic energy density defined as,
 
         .. math::
            T\left(\mathbf{r}\right) = \frac{3}{10} \left(6 \pi^2 \right)^{2/3}
@@ -172,7 +167,7 @@ class DensityLocalTool(object):
 
     def electrostatic_potential(self, numbers, coordinates, int_weights, int_points, points):
         r"""
-        Electrostatic potential defined as:
+        Electrostatic potential defined as,
 
         .. math::
            \Phi\left(\mathbf{r}\right) = - v \left(\mathbf{r}\right) -

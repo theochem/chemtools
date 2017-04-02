@@ -30,10 +30,11 @@ import numpy as np
 from horton import log
 from horton import IOData, BeckeMolGrid, ProAtomDB
 from horton.scripts.wpart import wpart_schemes
-from chemtools.tool.globaltool import LinearGlobalTool, QuadraticGlobalTool
-from chemtools.tool.globaltool import ExponentialGlobalTool, RationalGlobalTool, GeneralGlobalTool
-from chemtools.tool.localtool import LinearLocalTool, QuadraticLocalTool
-from chemtools.utils import CubeGen
+from chemtools.toolbox.conceptualglobal import LinearGlobalTool, QuadraticGlobalTool
+from chemtools.toolbox.conceptualglobal import ExponentialGlobalTool, RationalGlobalTool
+from chemtools.toolbox.conceptualglobal import GeneralGlobalTool
+from chemtools.toolbox.conceptuallocal import LinearLocalTool, QuadraticLocalTool
+from chemtools.utils.cube import CubeGen
 
 
 class GlobalConceptualDFT(object):

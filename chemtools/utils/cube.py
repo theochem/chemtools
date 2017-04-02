@@ -20,55 +20,17 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""The Utility Module."""
+"""The Cube Module."""
 
-import os
-import sys
-from glob import glob
 import numpy as np
 from horton import log, IOData
 
-__all__ = ['doc_inherit', 'CubeGen', 'Context', 'context']
-
-
-def doc_inherit(base_class):
-    """
-    Docstring inheriting method descriptor
-
-    doc_inherit decorator
-
-    Usage:
-
-    .. code-block:: python
-
-         class Foo(object):
-             def foo(self):
-                 "Frobber"
-                 pass
-
-         class Bar(Foo):
-             @doc_inherit(Foo)
-             def foo(self):
-                 pass
-
-    Now, ``Bar.foo.__doc__ == Bar().foo.__doc__ == Foo.foo.__doc__ ==
-    "Frobber"``
-    """
-    def decorator(method):
-        """Overwrite method docstring."""
-        overridden = getattr(base_class, method.__name__, None)
-        if overridden is None:
-            raise NameError('Can\'t find method \'%s\' in base class.')
-        method.__doc__ = overridden.__doc__
-        return method
-
-    return decorator
+__all__ = ['CubeGen']
 
 
 class CubeGen(object):
-    """
-    Class for generating a cubic grid and writing cube files.
-    """
+    """Class for generating a cubic grid and writing cube files."""
+
     def __init__(self, numbers, pseudo_numbers, coordinates, origin, axes, shape):
         """
         Parameters
@@ -201,7 +163,7 @@ class CubeGen(object):
     @classmethod
     def from_file(cls, filename, spacing=0.2, threshold=5.0, rotate=True):
         """
-        Initialize ``CubeGen`` class based on the grid specifications of a file
+        Initialize ``CubeGen`` class based on the grid specifications of a file.
 
         Parameters
         ----------
@@ -222,30 +184,22 @@ class CubeGen(object):
 
     @property
     def numbers(self):
-        """
-        Atomic number of the atoms in the molecule.
-        """
+        """Atomic number of the atoms in the molecule."""
         return self._numbers
 
     @property
     def pseudo_numbers(self):
-        """
-        Pseudo-number of the atoms in the molecule.
-        """
+        """Pseudo-number of the atoms in the molecule."""
         return self._pseudo_numbers
 
     @property
     def coordinates(self):
-        """
-        Cartesian coordinates of the atoms in the molecule.
-        """
+        """Cartesian coordinates of the atoms in the molecule."""
         return self._coordinates
 
     @property
     def origin(self):
-        """
-        Cartesian coordinate of the cubic grid origin.
-        """
+        """Cartesian coordinate of the cubic grid origin."""
         return self._origin
 
     @property
@@ -258,29 +212,21 @@ class CubeGen(object):
 
     @property
     def shape(self):
-        """
-        Number of grid points along `x`, `y`, and `z` axis.
-        """
+        """Number of grid points along `x`, `y`, and `z` axis."""
         return self._shape
 
     @property
     def npoints(self):
-        """
-        Total number of grid points.
-        """
+        """Total number of grid points."""
         return self._npoints
 
     @property
     def points(self):
-        """
-        Cartesian coordinates of the cubic grid points.
-        """
+        """Cartesian coordinates of the cubic grid points."""
         return self._points
 
     def _log_init(self):
-        """
-        Print an overview of the cube's properties.
-        """
+        """Print an overview of the cube's properties."""
         if log.do_medium:
             log('Initialized cube: %s' % self.__class__)
             log.deflist([('Origin ', self._origin),
@@ -444,49 +390,3 @@ class CubeGen(object):
                     pseudo_numbers[i] = numbers[i]
 
         return numbers, pseudo_numbers, coordinates, origin, axes, shape
-
-
-class Context(object):
-    """
-    Find out where the data directory is located etc.
-
-    The data directory contains data files.
-    """
-    def __init__(self):
-        # Determine data directory (also for in-place build)
-        self.data_dir = os.getenv('CTDATA')
-        if self.data_dir is None:
-            fn_data_dir = os.path.join(os.path.dirname(__file__), 'data_dir.txt')
-            if os.path.isfile(fn_data_dir):
-                with open(fn_data_dir) as f:
-                    self.data_dir = os.path.join(f.read().strip(), 'share/chemtools')
-        if self.data_dir is None:
-            self.data_dir = './data'
-        self.data_dir = os.path.abspath(self.data_dir)
-        # Determine include directory
-        self.include_dir = os.getenv('CTINCLUDE')
-        if self.include_dir is None:
-            fn_data_dir = os.path.join(os.path.dirname(__file__), 'data_dir.txt')
-            if os.path.isfile(fn_data_dir):
-                with open(fn_data_dir) as f:
-                    self.include_dir = os.path.join(
-                        f.read().strip(),
-                        'include/python%i.%i' % (sys.version_info.major, sys.version_info.minor))
-        if not os.path.isdir(self.data_dir):
-            raise IOError(
-                'Can not find data files. The directory {0} does not exist.'.format(self.data_dir))
-
-    def get_fn(self, filename):
-        """Return the full path to the given filename in the data directory."""
-        return os.path.join(self.data_dir, filename)
-
-    def glob(self, pattern):
-        """Return all files in the data directory that match the given pattern."""
-        return glob(self.get_fn(pattern))
-
-    def get_include(self):
-        """Return the list with directories containing header files (.h and .pxd)"""
-        return self.include_dir
-
-
-context = Context()
