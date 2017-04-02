@@ -22,13 +22,11 @@
 # --
 """The Utility Module."""
 
-
 import os
 import sys
 from glob import glob
 import numpy as np
 from horton import log, IOData
-
 
 __all__ = ['doc_inherit', 'CubeGen', 'Context', 'context']
 
@@ -63,6 +61,7 @@ def doc_inherit(base_class):
             raise NameError('Can\'t find method \'%s\' in base class.')
         method.__doc__ = overridden.__doc__
         return method
+
     return decorator
 
 

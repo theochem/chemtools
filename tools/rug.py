@@ -25,7 +25,6 @@
 This script includes swept-under-the-rug utilities needed for sphinx-gallery.
 """
 
-
 import os
 import sys
 import matplotlib.pyplot as plt

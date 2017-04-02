@@ -22,13 +22,15 @@
 # --
 # pylint: skip-file
 
-import os
-import numpy as np
-import tempfile
+
 import shutil
-from horton import IOData
-from chemtools import *
+import tempfile
 from contextlib import contextmanager
+
+from horton import IOData
+
+from chemtools import *
+
 
 
 @contextmanager

@@ -26,7 +26,6 @@
    linear, quadratic, exponential, general energy models.
 """
 
-
 import math
 import warnings
 from abc import ABCMeta, abstractmethod
@@ -397,7 +396,7 @@ class BaseGlobalTool(object):
         """
         if n_elec < 0.0:
             raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
-        if not(isinstance(order, int) and order > 0):
+        if not (isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
 
         if order == 1:
@@ -472,7 +471,7 @@ class BaseGlobalTool(object):
         order : int, default=1
             The order of derivative denoted by :math:`n` in the formula.
         """
-        if not(isinstance(order, int) and order > 0):
+        if not (isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
         # find N corresponding to the given mu
         n_elec = self.convert_mu_to_n(mu)
@@ -608,7 +607,7 @@ class LinearGlobalTool(BaseGlobalTool):
         if not self._n0 - 1 <= n_elec <= self._n0 + 1:
             warnings.warn('Energy derivative evaluated for n_elec={0} outside of '.format(n_elec) +
                           'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
-        if not(isinstance(order, int) and order > 0):
+        if not (isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
         # evaluate derivative
         if n_elec == self._n0:
@@ -677,7 +676,7 @@ class QuadraticGlobalTool(BaseGlobalTool):
         if not self._n0 - 1 <= n_elec <= self._n0 + 1:
             warnings.warn('Energy derivative evaluated for n_elec={0} outside of '.format(n_elec) +
                           'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
-        if not(isinstance(order, int) and order > 0):
+        if not (isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
         # evaluate derivative
         if order == 1:
@@ -756,7 +755,7 @@ class ExponentialGlobalTool(BaseGlobalTool):
         if not self._n0 - 1 <= n_elec <= self._n0 + 1:
             warnings.warn('Energy derivative evaluated for n_elec={0} outside of '.format(n_elec) +
                           'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
-        if not(isinstance(order, int) and order > 0):
+        if not (isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
         # evaluate derivative
         if np.isinf(n_elec):
@@ -834,7 +833,7 @@ class RationalGlobalTool(BaseGlobalTool):
         if not self._n0 - 1 <= n_elec <= self._n0 + 1:
             warnings.warn('Energy derivative evaluated for n_elec={0} outside of '.format(n_elec) +
                           'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
-        if not(isinstance(order, int) and order > 0):
+        if not (isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
         # evaluate derivative
         if np.isinf(n_elec):
@@ -960,7 +959,7 @@ class GeneralGlobalTool(BaseGlobalTool):
         if not self._n0 - 1 <= n_elec <= self._n0 + 1:
             warnings.warn('Energy derivative evaluated for n_elec={0} outside of '.format(n_elec) +
                           'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
-        if not(isinstance(order, int) and order > 0):
+        if not (isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
 
         # obtain derivative expression

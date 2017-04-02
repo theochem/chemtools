@@ -598,7 +598,7 @@ class CondensedConceptualDFT(object):
         attrs = [atr for atr in available if not callable(getattr(self, atr)) and is_public(atr)]
         attrs.sort()
         attrs.remove('n0')
-        methods = [attr for attr in available if callable(getattr(self, attr)) and not attr.startswith('_')]
+        methods = [attr for attr in available if callable(getattr(self, attr)) and is_public(attr)]
         content = 'Available attributes in {0} global model:\n{1}\n'.format(self._model, '-' * 50)
         content += '\n'.join(attrs)
         content += '\n\nAvailable methods in {0} global model:\n{1}\n'.format(self._model, '-' * 50)

@@ -20,7 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-#pylint: skip-file
+# pylint: skip-file
 
 
 from chemtools import *
@@ -119,13 +119,13 @@ def test_global_quadratic_ch4_fchk():
     np.testing.assert_almost_equal(desp.hyper_hardness(3), 0.0, decimal=6)
     np.testing.assert_almost_equal(desp.hyper_hardness(4), 0.0, decimal=6)
     # check softness & hyper-softness
-    np.testing.assert_almost_equal(desp.softness, 1.0/eta, decimal=6)
+    np.testing.assert_almost_equal(desp.softness, 1.0 / eta, decimal=6)
     # np.testing.assert_almost_equal(desp.hyper_softness(2), 0.0, decimal=6)
     # np.testing.assert_almost_equal(desp.hyper_softness(3), 0.0, decimal=6)
     # np.testing.assert_almost_equal(desp.hyper_softness(4), 0.0, decimal=6)
     # check N_max and related descriptors
     np.testing.assert_almost_equal(desp.n0, 10, decimal=6)
-    np.testing.assert_almost_equal(desp.n_max, 10 - mu/eta, decimal=6)
+    np.testing.assert_almost_equal(desp.n_max, 10 - mu / eta, decimal=6)
     # check Electrophilicity
     value = 0.5 * mu * mu / eta
     np.testing.assert_almost_equal(desp.electrophilicity, value, decimal=6)
@@ -528,7 +528,6 @@ def test_condense_h_linear_ch4_fchk():
     np.testing.assert_almost_equal(condense(15.5), 1.0, decimal=2)
     np.testing.assert_almost_equal(condense(16.0), 1.0, decimal=2)
     np.testing.assert_almost_equal(condense(16.5), 1.0, decimal=2)
-
 
 # def test_global_rational_ch4_fchk():
 #     file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')

@@ -20,12 +20,16 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-#pylint: skip-file
+# pylint: skip-file
 
 
-import tempfile, shutil
-from chemtools import *
+import shutil
+import tempfile
 from contextlib import contextmanager
+
+from horton import IOData
+
+from chemtools import *
 
 
 @contextmanager
@@ -70,7 +74,7 @@ def test_analyze_nci_h2o_dimer_wfn():
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-grad.cube')
         mol2 = IOData.from_file(cube2)
         # Check coordinates
-        np.testing.assert_array_almost_equal(gmol1.coordinates,  mol2.coordinates, decimal=6)
+        np.testing.assert_array_almost_equal(gmol1.coordinates, mol2.coordinates, decimal=6)
         np.testing.assert_equal(gmol1.numbers, mol2.numbers)
         # Check grid data
         ugrid1 = gmol1.grid
@@ -117,7 +121,7 @@ def test_analyze_nci_h2o_dimer_fchk():
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-grad.cube')
         mol2 = IOData.from_file(cube2)
         # Check coordinates
-        np.testing.assert_array_almost_equal(gmol1.coordinates,  mol2.coordinates, decimal=6)
+        np.testing.assert_array_almost_equal(gmol1.coordinates, mol2.coordinates, decimal=6)
         np.testing.assert_equal(gmol1.numbers, mol2.numbers)
         # Check grid data
         ugrid1 = gmol1.grid
