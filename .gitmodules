@@ -1,0 +1,4 @@
+[submodule "InspectorElephant"]
+	path = tools/inspector
+	url = https://github.com/kimt33/InspectorElephant.git
+	branch = chemtools
