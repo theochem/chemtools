@@ -70,8 +70,8 @@ The Fukui function is the fundamental regioselectivity descriptor in conceptual 
 areas of the molecule that are best able to accept/donate electrons.
 The derivative of the chemical hardness with respect to external potential at constant :math:`N` is the
 **dual descriptor**, :math:`\Delta f(\mathbf{r})`.
-The dual descriptor is positive in electrophilic regions negative in nucleophilic regions. It is especially
-useful for reactions where electrons are simultaneously accepted/donated electrons (like concerted pericyclic
+The dual descriptor is positive in electrophilic regions, negative in nucleophilic regions. It is especially
+useful for reactions where electrons are simultaneously accepted/donated (like concerted pericyclic
 reactions) or for describing ambiphilic reagents. Higher-order local reactivity descriptors—corresponding to
 the derivatives of hyper-hardnesses with respect to the external potential—are called **hyper-Fukui functions** or
 :math:`\mathbf{n^{\text{th}}}` **-order Fukui function** :math:`f^{(n)}(\mathbf{r})`.
@@ -123,7 +123,7 @@ hyper-Fukui functions using Faà di Bruno’s formula, please refer to :ref:`der
 **Derived Local Reactivity Descriptors**
 
 Many derived local reactivity descriptors are defined as the local response of a global derived descriptors.
-I.e., the derivative of any global reactivity descriptor with respect to the external potential:math:`v(\mathbf{r})`
+I.e., the derivative of any global reactivity descriptor with respect to the external potential :math:`v(\mathbf{r})`
 at constant :math:`N` or :math:`\mu` is a local reactivity descriptor.
 Most other derived descriptors are defined as products of several global and local descriptors.
 

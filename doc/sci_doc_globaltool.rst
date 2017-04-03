@@ -156,7 +156,7 @@ the reciprocal of the chemical hardness we obtained in the canonical ensemble.
 The third- and higher-order derivatives of the grand potential with respect to the chemical potential define the
 global hyper-softnesses.
 The first global hyper-softness, :math:`S^{(2)}`, appears in a few applications, but none of these higher-order
-reactivity indicators have not been explored much in literature.
+reactivity indicators have been explored much in literature.
 
 ChemTools will evaluate global hyper-softnesses to all orders if those derivatives exist in the energy model you
 have selected.
