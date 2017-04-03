@@ -367,3 +367,72 @@ def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5
 
     with open(scriptfile, 'w') as f:
         f.write(output)
+
+
+def print_vmd_script_multiple_cube(scriptfile, cubes, isosurf=0.5, material='Opaque',
+                                   scalemin=-0.05, scalemax=0.05, colors=None):
+    """ Generate VMD (Visual Molecular Dynamics) script for visualizing multiple cube files
+    simultaneously where data from each cube file is colored differently
+
+    Parameters
+    ----------
+    scriptfile : str
+        Name of VMD script file to generate.
+    cubes : list of str
+        Names of cube files to plot
+    isosurf : float
+        Isovalue at which the plot (isosurface) is generated
+        Default value is 0.5
+    material : str
+        The material setting of the isosurface used in VMD script.
+        One of 'Opaque', 'Transparent', 'BrushedMetal', 'Diffuse', 'Ghost',
+        'Glass1', 'Glass2', 'Glass3', 'Glossy', 'HardPlastic', 'MetallicPastel',
+        'Steel', 'Translucent', 'Edgy', 'EdgyShiny', 'EdgyGlass', 'Goodsell',
+        'AOShiny', 'AOChalky', 'AOEdgy', 'BlownGlass', 'GlassBubble', 'RTChrome'.
+        Default is 'Opaque'
+    scalemin : float
+        Smallest value to color on the isosurface used in VMD script.
+        Default is -0.05
+    scalemax : float
+        Largest value to color on the isosurface used in VMD script.
+        Default is 0.05
+    colors : list of int
+        Colors of each cube file data
+        Each integer corresponds to a color. See VMD program or manual for details.
+        Default selects random color for each cube file
+
+    Note
+    ----
+    Not quite sure what happens when the number of cube files exceeds 33 (possiblly the  maximum
+    number of ColorID's in VMD)
+
+    Raises
+    ------
+    TypeError
+        If cube files are not provided as a list or tuple
+        If colors are not provided as a list or tuple of the same length as the cube files
+    ValueError
+        If any of the cube files cannot be found
+        If any of the colors are not an integer between 0 and 32
+    """
+    if not isinstance(cubes, (list, tuple)):
+        raise TypeError('The cube files must be given as a list or tuple')
+    if not all(os.path.isfile(cube) for cube in cubes):
+        raise ValueError('Cannot find at least one of the cube files')
+
+    if colors is None:
+        colors = range(len(cubes))
+    elif not (isinstance(colors, (list, tuple)) and len(colors) != len(cubes)):
+        raise TypeError('The colors must be provided as a list or tuple of the same length as the '
+                        'number of cube files')
+    elif not all(isinstance(color, int) and 0 <= color < 33 for color in colors):
+        raise ValueError('Each color must be given as an integer between 0 and 32')
+
+    output = _vmd_script_start()
+    output += _vmd_script_molecule(*cubes)
+    for i, (cube, color) in enumerate(zip(cubes, colors)):
+        output += _vmd_script_isosurface(isosurf=isosurf, index=i, material=material,
+                                         scalemin=scalemin, scalemax=scalemax, colorscheme=color)
+
+    with open(scriptfile, 'w') as f:
+        f.write(output)
