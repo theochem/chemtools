@@ -26,6 +26,7 @@
    purposes using VMD, GaussView, etc.
 """
 import os
+import numpy as np
 
 
 def _vmd_script_start():
@@ -245,6 +246,63 @@ def _vmd_script_isosurface(isosurf=0.5, index=0, show_type='isosurface', draw_ty
     output += 'set colorcmds {{{{color Name {{C}} gray}}}}\n'
     output += '#\n'
     return output
+
+
+def _vmd_script_vector_field(centers, unit_directions, weights):
+    """ Generates part of the VMD script that constructs the vector field
+
+    Parameters
+    ----------
+    centers : np.ndarray(N, 3)
+        Coordinates of the centers of each vector
+    unit_directions : np.ndarray(N, 3)
+        Unit direction of each vector
+    weights : np.ndarray(N)
+        Weights that determine the size (length and/or thickness) of each vector
+    """
+    # check unit directions
+    if not np.allclose(np.linalg.norm(unit_directions, axis=1), 1):
+        raise ValueError('Given direction vectors are not unit vectors')
+
+    # vmd/tcl function for constructing arrow
+    output = '# Add function for vector field\n'
+    output += ('proc vmd_draw_arrow {mol center unit_dir cyl_radius cone_radius length} {\n'
+               'set start [vecsub $center [vecscale [vecscale 0.5 $length] $unit_dir]]\n'
+               'set end [vecadd $start [vecscale $length $unit_dir]]\n'
+               'set middle [vecsub $end [vecscale [vecscale 1.732050808 $cone_radius] $unit_dir]]\n'
+               'graphics $mol cylinder $start $middle radius $cyl_radius\n'
+               'graphics $mol cone $middle $end radius $cone_radius\n'
+               '}\n'
+               '#\n')
+
+    def decompose_weight(weight):
+        """ Decomposes a weight to the corresponding cylinder radius, cone radius and length
+
+        Parameters
+        ----------
+        weight : float
+            Weight of a vector
+
+        Returns
+        -------
+        cyl_radius : float
+            Radius of cylinder in vector
+        cone_radius : float
+            Radius of cone in vector
+        length : float
+            Length of vector
+        """
+        # FIXME: needs to be played around with
+        return (0.3, 0.8, weight)
+
+    for (center_x, center_y, center_z), (unit_x, unit_y, unit_z), weight in zip(centers,
+                                                                                unit_directions,
+                                                                                weights):
+        output += ('draw arrow {{{0} {1} {2}}} {{{3} {4} {5}}} {6} {7} {8}\n'
+                   ''.format(center_x, center_y, center_z, unit_x, unit_y, unit_z,
+                             *decompose_weight(weight)))
+    return output
+
 
 def print_vmd_script_nci(scriptfile, densfile, rdgfile, isosurf=0.5, denscut=0.05):
     r"""
