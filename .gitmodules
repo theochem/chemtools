@@ -2,3 +2,7 @@
 	path = tools/inspector
 	url = https://github.com/kimt33/InspectorElephant.git
 	branch = chemtools
+[submodule "doc/_themes/sphinx_rtd_theme"]
+	path = doc/_themes/sphinx_rtd_theme
+	url = git@github.com:QuantumElephant/sphinx_rtd_theme.git
+	branch = chemtools
