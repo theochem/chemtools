@@ -54,6 +54,7 @@ coverage.xml
 doc/_build/
 doc/modules
 doc/auto_examples
+doc/source/
 
 # PyBuilder
 target/
