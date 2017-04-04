@@ -427,7 +427,7 @@ def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5
         f.write(output)
 
 
-def print_vmd_script_multiple_cube(scriptfile, cubes, isosurf=0.5, material='Opaque',
+def print_vmd_script_multiple_cube(scriptfile, cubes, isosurfs=None, material='Opaque',
                                    scalemin=-0.05, scalemax=0.05, colors=None):
     """ Generate VMD (Visual Molecular Dynamics) script for visualizing multiple cube files
     simultaneously where data from each cube file is colored differently
@@ -438,9 +438,10 @@ def print_vmd_script_multiple_cube(scriptfile, cubes, isosurf=0.5, material='Opa
         Name of VMD script file to generate.
     cubes : list of str
         Names of cube files to plot
-    isosurf : float
+    isosurfs : float, list of float
         Isovalue at which the plot (isosurface) is generated
-        Default value is 0.5
+        If a float is given, then this is the value of isosurface for all cube files
+        Default value is 0.5 for all isosurfaces
     material : str
         The material setting of the isosurface used in VMD script.
         One of 'Opaque', 'Transparent', 'BrushedMetal', 'Diffuse', 'Ghost',
@@ -478,6 +479,16 @@ def print_vmd_script_multiple_cube(scriptfile, cubes, isosurf=0.5, material='Opa
     if not all(os.path.isfile(cube) for cube in cubes):
         raise ValueError('Cannot find at least one of the cube files')
 
+    if isosurfs is None:
+        isosurfs = [0.5 for i in cubes]
+    elif isinstance(isosurfs, float):
+        isosurfs = [isosurfs for i in cubes]
+    if not (isinstance(isosurfs, (list, tuple)) and len(isosurfs) != len(cubes)):
+        raise TypeError('The isosurfs must be provided as a list or tuple of same length as the '
+                        'number of cube files')
+    elif not all(isinstance(isosurf, float) for isosurf in isosurfs):
+        raise TypeError('Each isosurface value must be a float')
+
     if colors is None:
         colors = range(len(cubes))
     elif not (isinstance(colors, (list, tuple)) and len(colors) != len(cubes)):
@@ -488,7 +499,7 @@ def print_vmd_script_multiple_cube(scriptfile, cubes, isosurf=0.5, material='Opa
 
     output = _vmd_script_start()
     output += _vmd_script_molecule(*cubes)
-    for i, (cube, color) in enumerate(zip(cubes, colors)):
+    for i, (cube, isosurf, color) in enumerate(zip(cubes, isosurfs, colors)):
         output += _vmd_script_isosurface(isosurf=isosurf, index=i, material=material,
                                          scalemin=scalemin, scalemax=scalemax, colorscheme=color)
 
