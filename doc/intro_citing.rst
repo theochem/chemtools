@@ -25,9 +25,10 @@
 Citing ChemTools
 ################
 
-Please refer to ChemTools as follows:
+In anticipation of the first announcement of ChemTools in a scientific journal, please reference ChemTools as follows:
 
-    Awesome Group of Contributors,
-    ChemTools |version|, ``GitHub Link``,
-    **2016**
-
+.. bibliography:: ../data/references.bib
+   :style: unsrt
+   :start: continue
+   :list: bullet
+   :filter: key % "Heidar-Zadeh2016CPL"
