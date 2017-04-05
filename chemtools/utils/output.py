@@ -171,7 +171,7 @@ def _vmd_script_isosurface(isosurf=0.5, index=0, show_type='isosurface', draw_ty
         If `scalemin` is not float
         If `scalemax` is not float
         If `colorscheme` is not one of 'RGB', 'BGR', 'RWB', 'BWR', 'RWG', 'GWR', 'GWB', 'BWG',
-        'BlkW', 'WBlk'
+        'BlkW', 'WBlk' or int
     """
     if not isinstance(isosurf, float):
         raise TypeError('`isosurf` must be a float')
@@ -201,11 +201,11 @@ def _vmd_script_isosurface(isosurf=0.5, index=0, show_type='isosurface', draw_ty
     if not isinstance(scalemax, float):
         raise TypeError('`scalemax` must be a float')
 
-    if (isinstance(colorscheme, str) and
-            colorscheme not in ['RGB', 'BGR', 'RWB', 'BWR', 'RWG', 'GWR', 'GWB', 'BWG', 'BlkW',
-                                'WBlk']):
-        raise TypeError('Unsupported colorscheme, {0}'.format(colorscheme))
-    if isinstance(colorscheme, int) and not (0 <= colorscheme < 1057):
+    if (not isinstance(colorscheme, (str, int)) or
+            (isinstance(colorscheme, str) and
+             colorscheme not in ['RGB', 'BGR', 'RWB', 'BWR', 'RWG', 'GWR', 'GWB', 'BWG', 'BlkW',
+                                 'WBlk']) or
+            (isinstance(colorscheme, int) and not 0 <= colorscheme < 1057)):
         raise TypeError('Unsupported colorscheme, {0}'.format(colorscheme))
 
     output = '# add representation of the surface\n'
@@ -252,7 +252,7 @@ def _vmd_script_isosurface(isosurf=0.5, index=0, show_type='isosurface', draw_ty
     return output
 
 
-def _vmd_script_vector_field(centers, unit_directions, weights, weight_threshold=1e-1,
+def _vmd_script_vector_field(centers, unit_vecs, weights, weight_threshold=1e-1,
                              has_shadow=True, material='Transparent', color=0):
     """ Generates part of the VMD script that constructs the vector field
 
@@ -260,7 +260,7 @@ def _vmd_script_vector_field(centers, unit_directions, weights, weight_threshold
     ----------
     centers : np.ndarray(N, 3)
         Coordinates of the centers of each vector
-    unit_directions : np.ndarray(N, 3)
+    unit_vecs : np.ndarray(N, 3)
         Unit direction of each vector
     weights : np.ndarray(N)
         Weights that determine the size (length and/or thickness) of each vector
@@ -287,9 +287,13 @@ def _vmd_script_vector_field(centers, unit_directions, weights, weight_threshold
     Raises
     ------
     ValueError
-        If unit_directions are not unit vectors
+        If unit_vecs are not unit vectors
+        If centers, unit_vecs, and weights do not have the same number of rows (vectors)
     TypeError
-        If has_shadow must be boolean
+        If centers is not a numpy array with 3 columns
+        If unit_vecs is not a numpy array with 3 columns
+        If weights is not a one dimensional numpy array
+        If has_shadow is not boolean
         If material is not supported
         If color is not supported
 
@@ -298,7 +302,19 @@ def _vmd_script_vector_field(centers, unit_directions, weights, weight_threshold
     If there are too many vectors, you many need to turn off has_shadow (or materials in VMD)
     """
     # check unit directions
-    if not np.allclose(np.linalg.norm(unit_directions, axis=1), 1):
+    if not (isinstance(centers, np.ndarray) and len(centers.shape) == 2 and centers.shape[1] == 3):
+        raise TypeError('Given centers must be a two-dimensional numpy array with 3 columns')
+    if not (isinstance(unit_vecs, np.ndarray) and len(unit_vecs.shape) == 2 and
+            unit_vecs.shape[1] == 3):
+        raise TypeError('Given unit_vecs must be a two-dimensional numpy array with 3 '
+                        'columns')
+    if not (isinstance(weights, np.ndarray) and len(weights.shape) == 1):
+        raise TypeError('Given weights must be a one-dimensional numpy array')
+    if not centers.size/3 == unit_vecs.size/3 == weights.size:
+        raise ValueError('The number of vectors must match up with centers, unit_vecs, and '
+                         'weights')
+
+    if not np.allclose(np.linalg.norm(unit_vecs, axis=1), 1):
         raise ValueError('Given direction vectors are not unit vectors')
 
     if not isinstance(has_shadow, bool):
@@ -316,7 +332,7 @@ def _vmd_script_vector_field(centers, unit_directions, weights, weight_threshold
         raise TypeError('Unsupported `material`. Must be one of {0}'.format(allowed_materials))
 
 
-    if isinstance(color, int) and not (0 <= color < 1057):
+    if isinstance(color, int) and not 0 <= color < 1057:
         raise TypeError('Unsupported color, {0}'.format(color))
 
     # vmd/tcl function for constructing arrow
@@ -350,16 +366,17 @@ def _vmd_script_vector_field(centers, unit_directions, weights, weight_threshold
         length : float
             Length of vector
         """
-        return np.array([0.08, 0.15, 0.7])*(weight**0.333)
+        return np.array([0.08, 0.15, 0.7])*(np.array(weight)**0.333)
 
     for (center_x, center_y, center_z), (unit_x, unit_y, unit_z), weight in zip(centers,
-                                                                                unit_directions,
+                                                                                unit_vecs,
                                                                                 weights):
         if weight < weight_threshold:
             continue
         output += ('draw arrow {{{0} {1} {2}}} {{{3} {4} {5}}} {6} {7} {8}\n'
                    ''.format(center_x, center_y, center_z, unit_x, unit_y, unit_z,
                              *decompose_weight(weight)))
+    output += '#\n'
     return output
 
 
@@ -579,23 +596,12 @@ def print_vmd_script_vector_field(scriptfile, xyz, vector_centers, vector_direct
         Coordinates of the centers of each vector
     vector_directions : np.ndarray(N, 3)
         Vector at each coordinate
-
-    Raises
-    ------
-    TypeError
-        If vector_centers is not a numpy array with 3 columns
-        If vector_directions is not a numpy array with 3 columns
     """
-    if not (isinstance(vector_centers, np.ndarray) and vector_centers.shape[1] == 3):
-        raise TypeError('vector_centers is not a numpy array with 3 columns')
-    if not (isinstance(vector_directions, np.ndarray) and vector_directions.shape[1] == 3):
-        raise TypeError('vector_directions is not a numpy array with 3 columns')
-
     weights = np.linalg.norm(vector_directions, axis=1)
     # NOTE: might have weight behaviour if weights is noisy (very small)
-    unit_directions = vector_directions/weights[:, np.newaxis]
+    unit_vecs = vector_directions/weights[:, np.newaxis]
     output = _vmd_script_start()
     output += _vmd_script_molecule(xyz)
-    output += _vmd_script_vector_field(vector_centers, unit_directions, weights)
+    output += _vmd_script_vector_field(vector_centers, unit_vecs, weights)
     with open(scriptfile, 'w') as f:
         f.write(output)

@@ -25,6 +25,7 @@
 """
 
 from nose.tools import assert_raises
+import numpy as np
 from chemtools.utils import output
 
 
@@ -84,3 +85,115 @@ def test_vmd_script_molecule():
             'mol material Opaque\n'
             'mol addrep top\n'
             '#\n') == output._vmd_script_molecule('test.cube', 'test.xyz')
+
+def test_vmd_script_isosurface():
+    """ Tests output._vmd_script_isosurface
+    """
+    assert_raises(TypeError, output._vmd_script_isosurface, isosurf=None)
+    assert_raises(TypeError, output._vmd_script_isosurface, isosurf=1)
+    assert_raises(TypeError, output._vmd_script_isosurface, index=1.0)
+    assert_raises(TypeError, output._vmd_script_isosurface, index=None)
+    assert_raises(TypeError, output._vmd_script_isosurface, show_type='boxes')
+    assert_raises(TypeError, output._vmd_script_isosurface, show_type=None)
+    assert_raises(TypeError, output._vmd_script_isosurface, draw_type='lskdfj')
+    assert_raises(TypeError, output._vmd_script_isosurface, draw_type=None)
+    assert_raises(TypeError, output._vmd_script_isosurface, material='lksjdf')
+    assert_raises(TypeError, output._vmd_script_isosurface, material=None)
+    assert_raises(TypeError, output._vmd_script_isosurface, scalemin=1)
+    assert_raises(TypeError, output._vmd_script_isosurface, scalemin=None)
+    assert_raises(TypeError, output._vmd_script_isosurface, scalemax=1)
+    assert_raises(TypeError, output._vmd_script_isosurface, scalemax=None)
+    assert_raises(TypeError, output._vmd_script_isosurface, colorscheme=-1)
+    assert_raises(TypeError, output._vmd_script_isosurface, colorscheme=1057)
+    assert_raises(TypeError, output._vmd_script_isosurface, colorscheme='asdfasdf')
+    assert_raises(TypeError, output._vmd_script_isosurface, colorscheme=None)
+
+    assert output._vmd_script_isosurface() == ('# add representation of the surface\n'
+                                               'mol representation Isosurface 0.50000 0 0 0 1 1\n'
+                                               'mol color Volume 0\n'
+                                               'mol selection {all}\n'
+                                               'mol material Opaque\n'
+                                               'mol addrep top\n'
+                                               'mol selupdate 1 top 0\n'
+                                               'mol colupdate 1 top 0\n'
+                                               'mol scaleminmax top 1 -0.050000 0.050000\n'
+                                               'mol smoothrep top 1 0\n'
+                                               'mol drawframes top 1 {now}\n'
+                                               'color scale method RGB\n'
+                                               'set colorcmds {{{{color Name {{C}} gray}}}}\n'
+                                               '#\n')
+    assert ('# add representation of the surface\n'
+            'mol representation Isosurface 0.50000 0 0 0 1 1\n'
+            'mol color ColorID 1\n'
+            'mol selection {all}\n'
+            'mol material Opaque\n'
+            'mol addrep top\n'
+            'mol selupdate 1 top 0\n'
+            'mol colupdate 1 top 0\n'
+            'mol scaleminmax top 1 -0.050000 0.050000\n'
+            'mol smoothrep top 1 0\n'
+            'mol drawframes top 1 {now}\n'
+            'color scale method RGB\n'
+            'set colorcmds {{{{color Name {{C}} gray}}}}\n'
+            '#\n') == output._vmd_script_isosurface(colorscheme=1)
+
+
+def test_vmd_script_vector_field():
+    """ Tests output._vmd_script_vector_field
+    """
+    centers = np.array([[1, 2, 3]])
+    unit_vecs = np.array([[1, 0, 0]])
+    weights = np.array([1])
+    assert_raises(ValueError, output._vmd_script_vector_field, centers, unit_vecs, np.array([1, 2]))
+    assert_raises(ValueError, output._vmd_script_vector_field, centers, np.array([[1, 2, 3]]),
+                  weights)
+
+    assert_raises(TypeError, output._vmd_script_vector_field, np.array([1, 2, 3]),
+                  unit_vecs, weights)
+    assert_raises(TypeError, output._vmd_script_vector_field, np.array([[1, 2, 3, 4]]),
+                  unit_vecs, weights)
+    assert_raises(TypeError, output._vmd_script_vector_field, [[1, 2, 3]],
+                  unit_vecs, weights)
+
+    assert_raises(TypeError, output._vmd_script_vector_field, centers, np.array([1, 2, 3]), weights)
+    assert_raises(TypeError, output._vmd_script_vector_field, centers, np.array([[1, 2, 3, 4]]),
+                  weights)
+    assert_raises(TypeError, output._vmd_script_vector_field, centers, [[1, 2, 3]],
+                  weights)
+
+    assert_raises(TypeError, output._vmd_script_vector_field, centers, unit_vecs, np.array([[1]]))
+    assert_raises(TypeError, output._vmd_script_vector_field, centers, unit_vecs, [1])
+
+    assert_raises(TypeError, output._vmd_script_vector_field, has_shadow=None)
+    assert_raises(TypeError, output._vmd_script_vector_field, has_shadow=0)
+    assert_raises(TypeError, output._vmd_script_vector_field, material='lksjdf')
+    assert_raises(TypeError, output._vmd_script_vector_field, material=None)
+    assert_raises(TypeError, output._vmd_script_vector_field, color=-1)
+    assert_raises(TypeError, output._vmd_script_vector_field, color=1057)
+    assert ('# Add function for vector field\n'
+            'proc vmd_draw_arrow {mol center unit_dir cyl_radius cone_radius length} {\n'
+            'set start [vecsub $center [vecscale [vecscale 0.5 $length] $unit_dir]]\n'
+            'set end [vecadd $start [vecscale $length $unit_dir]]\n'
+            'set middle [vecsub $end [vecscale [vecscale 1.732050808 $cone_radius] $unit_dir]]\n'
+            'graphics $mol cylinder $start $middle radius $cyl_radius\n'
+            'graphics $mol cone $middle $end radius $cone_radius\n'
+            '}\n'
+            '#\n'
+            'draw materials on\n'
+            'draw material Transparent\n'
+            'draw color 0\n'
+            'draw arrow {1 2 3} {1 0 0} 0.08 0.15 0.7\n'
+            '#\n') == output._vmd_script_vector_field(centers, unit_vecs, weights)
+    assert ('# Add function for vector field\n'
+            'proc vmd_draw_arrow {mol center unit_dir cyl_radius cone_radius length} {\n'
+            'set start [vecsub $center [vecscale [vecscale 0.5 $length] $unit_dir]]\n'
+            'set end [vecadd $start [vecscale $length $unit_dir]]\n'
+            'set middle [vecsub $end [vecscale [vecscale 1.732050808 $cone_radius] $unit_dir]]\n'
+            'graphics $mol cylinder $start $middle radius $cyl_radius\n'
+            'graphics $mol cone $middle $end radius $cone_radius\n'
+            '}\n'
+            '#\n'
+            'draw materials on\n'
+            'draw material Transparent\n'
+            'draw color 0\n'
+            '#\n') == output._vmd_script_vector_field(centers, unit_vecs, np.array([1e-2]))
