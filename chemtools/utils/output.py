@@ -62,10 +62,14 @@ def _vmd_script_molecule(*mol_files):
 
     Raises
     ------
+    ValueError
+        If no files are given
     TypeError
         If unsupported file type (i.e. not xyz or cube)
     """
     output = '# load new molecule\n'
+    if len(mol_files) == 0:
+        raise ValueError('Need at least one molecule file')
     for i, mol in enumerate(mol_files):
         if i == 0:
             mol_type = 'new'
@@ -74,7 +78,7 @@ def _vmd_script_molecule(*mol_files):
 
         ext = os.path.splitext(mol)[1]
         if  ext == '.xyz':
-            file_type = 'xyz'
+            file_type = '{xyz}'
         elif ext == '.cube':
             file_type = 'cube'
         else:
