@@ -34,7 +34,7 @@ The latest code can be obtained through Github (private at present),
 
   .. code-block:: bash
 
-     $ git clone https://github.com/QuantumElephant/chemtools.git chemtools
+     git clone https://github.com/QuantumElephant/chemtools.git chemtools
 
 
 Dependencies
@@ -42,7 +42,94 @@ Dependencies
 
 The following dependencies will be necessary for ChemTools to build properly,
 
+* Python >= 2.7, < 3.0: http://www.python.org/ (Also install development files.)
+* PIP >= 7.0: https://pip.pypa.io/ (Not required in some scenarios but never bad to have.)
+* SciPy >= 0.11.0: http://www.scipy.org/
+* NumPy >= 1.9.1: http://www.numpy.org/
+* Sympy >= 0.7.1: http://code.google.com/p/sympy/
+* Matplotlib >= 1.0: http://matplotlib.org/
+* Nosetests >= 1.1.2: http://readthedocs.org/docs/nose/en/latest/
+* HORTON >= 2.0.1: http://theochem.github.io/horton/2.0.1/index.html
+* :ref:`Git Large File Storage (LFS) <usr_lfs_installation>`
+
+See :ref:`Documentation Dependencies <usr_doc>` for the dependencies
+required for building the documentations.
+
+Python Dependencies
+~~~~~~~~~~~~~~~~~~~
+
+To install the first seven dependecies (Python related dependencies):
+
+* **Ubuntu Linux 16.04**
+
   .. code-block:: bash
+
+     sudo apt-get install python-dev python-pip python-numpy python-scipy python-sympy \
+                  python-matplotlib python-nose
+
+* **Ubuntu Linux 15.04 & 14.04 and Mac OS**
+
+  .. code-block:: bash
+
+     sudo apt-get install python-dev python-pip python-numpy python-scipy python-sympy \
+                  python-matplotlib python-nose
+     pip install --user --upgrade numpy scipy sympy matplotlib nose
+
+For the latest versions of NumPy, SciPy, SymPy, Matplotlib and Nosetests, ``pip`` can be used to
+upgrade existing packages, as shown above.
+
+HORTON
+~~~~~~
+
+To install HORTON, follow the instructions from `Download and Install 
+<http://theochem.github.io/horton/2.0.1/user_download_and_install.html>`_ of HORTON's documentation.
+
+.. _usr_lfs_installation:
+
+Git LFS
+~~~~~~~
+
+`Git Large File Storage (LFS) <https://git-lfs.github.com/>`_ is used to store files that are not
+part of the ChemTools code, but are used in some ways, such as generating the examples in the 
+documentation.
+These files need to be downloaded separately, for example, if you would like to run the example
+scripts, go through tutorials (using exactly the same files used) or make Chemtools HTML with
+sphinx.
+
+To install Git LFS,
+
+* **Mac OS**
+
+  .. code-block:: bash
+
+     sudo port install git-lfs
+     brew install git-lfs
+
+* **Linux OS**
+
+  .. code-block:: bash
+
+     cd your_download_directory
+     wget https://github.com/git-lfs/git-lfs/releases/download/v2.0.1/git-lfs-linux-amd64-2.0.1.tar.gz
+     tar -zxvf git-lfs-linux-amd64-2.0.1.tar.gz
+     cd git-lfs-2.0.1
+     ./install.sh
+
+
+.. _usr_lfs_files:
+
+To download the files,
+
+  .. code-block:: bash
+
+     git lfs pull
+
+
+To get a list of all the files tracked with Git LFS,
+
+  .. code-block:: bash
+
+     git lfs ls-files
 
 
 Installation
@@ -52,81 +139,31 @@ To install ChemTools run:
 
   .. code-block:: bash
 
-     $ ./setup.py install --user
+     ./setup.py install --user
 
-If you prefer to run ChemTools from source folder, ``PYTHONPATH`` and ``CTDATA`` paths
+If you prefer to run ChemTools from the source folder, ``PYTHONPATH`` and ``CTDATA`` paths
 need to be add into your **~/.bashrc** (Linux) or **~/.profile** (MacOS)
 
   .. code-block:: bash
 
-     $ export PYTHONPATH=$PYTHONPATH:{path_to_chemtools_repo}/chemtools
-     $ export CTDATA={path_to_chemtools_repo}/chemtools/data
+     export PYTHONPATH=$PYTHONPATH:{path_to_chemtools_repo}/chemtools
+     export CTDATA={path_to_chemtools_repo}/chemtools/data
 
-Tests
-=====
+Testing
+=======
 
-To ensue all the parts of ChemTools work properly, you are suggested to run the nosetests:
-
-  .. code-block:: bash
-
-     $ nosetests -v chemtools
-
-
-.. _usr_lfs_installation:
-
-Git LFS Installation
-====================
-
-`Git Large File Storage (LFS) <https://git-lfs.github.com/>`_ has been used to store the files
-and images used in the examples' gallery. In order words, all files in ``doc/examples/*`` are
-stored remotely, and only a text pointer to these files exists in the repository.
-These files need to be downloaded separately if you would like to run the example scripts, go through
-tutorials (using exactly the same files used) or make Chemtools HTML with sphinx.
-
-First, you need to install Git LFS.
-
-Mac OS
-~~~~~~
+To ensure that all the parts of ChemTools working properly, nosetests can be used to run ChemTool's
+unit tests:
 
   .. code-block:: bash
 
-     $ sudo port install git-lfs
-     $ brew install git-lfs
-
-Linux OS
-~~~~~~~~
-
-In your download directory,
-
-  .. code-block:: bash
-
-     $ wget https://github.com/git-lfs/git-lfs/releases/download/v2.0.1/git-lfs-linux-amd64-2.0.1.tar.gz
-     $ tar -zxvf git-lfs-linux-amd64-2.0.1.tar.gz
-     $ cd git-lfs-2.0.1
-     $ ./install.sh
+     nosetests -v chemtools
 
 
-.. _usr_lfs_files:
+.. _usr_doc:
 
-Downloading Files From Remote Repository
-========================================
-
-Having :ref:`Git LFS installed <usr_lfs_installation>`, download the examples files by running:
-
-  .. code-block:: bash
-
-     $ cd data/examples
-     $ git lfs pull
-
-To get a list of all the files tracked with Git LFS, use:
-
-  .. code-block:: bash
-
-     $ git lfs ls-files
-
-
-Documentation Dependencies & Build
-==================================
+Documentation
+=============
 
 If you are interested in generating the documentation from source, the following
 packages are also needed:
@@ -134,44 +171,43 @@ packages are also needed:
 * Sphinx >=1.3.1: http://sphinx.pocoo.org/
 * Sphinx Read-The-Docs theme >=0.1.8: https://github.com/snide/sphinx_rtd_theme
 * sphinxcontrib-bibtex >= 0.3.5: https://pypi.python.org/pypi/sphinxcontrib-bibtex
-* :ref:`Git Large File Storage (LFS) <usr_lfs_installation>`
+* IPython >= 3.2.1: https://ipython.org/install.html
 
-To install the first three dependecies:
+To install these dependencies,
 
 * **Ubuntu Linux 16.04**
 
   .. code-block:: bash
 
-     $ sudo apt-get install python-sphinx python-sphinx-rtd-theme sphinxcontrib-bibtex
+     sudo apt-get install python-sphinx python-sphinx-rtd-theme sphinxcontrib-bibtex ipython
 
 * **Ubuntu Linux 15.04 & 14.04 and Mac OS**
 
   .. code-block:: bash
 
-     pip install --user --upgrade sphinx sphinx_rtd_theme sphinxcontrib-bibtex
+     pip install --user --upgrade sphinx sphinx_rtd_theme sphinxcontrib-bibtex ipython
 
 The Sphinx Read-The-Docs theme customized for ChemTools can be obtained cloning the repository
 as a submodule:
 
 .. code-block:: bash
 
-   $ cd doc/_themes
-   $ git submodule update --init --recursive
+   git submodule update --init --recursive
 
-To automatically generate API documentation and generate HTML (this requires ``data/examples`` files;
-to obtain them please refer to :ref:`usr_lfs_files`) use the commands below:
+To automatically generate API documentation and generate HTML (this requires ``data/examples``
+files; to obtain them please refer to :ref:`usr_lfs_files`) use the commands below:
 
 .. code-block:: bash
 
-   $ cd doc
-   $ sphinx-apidoc -f -o source ../
-   $ make clean
-   $ make html
+   cd doc
+   sphinx-apidoc -f -o source ../
+   make clean
+   make html
 
 To open the documentation in your default browser, either click on ``doc/_build/html/index.html``
 file directly, or run the command below from terminal:
 
 .. code-block:: bash
 
-   $ cd doc
-   $ open _build/html/index.html
+   cd doc
+   open _build/html/index.html
