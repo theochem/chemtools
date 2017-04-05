@@ -149,7 +149,7 @@ def _vmd_script_isosurface(isosurf=0.5, index=0, show_type='isosurface', draw_ty
             'BlkW'   small=black, large=white
             'WBlk'   small=white, large=black
             =======  =====================================
-        If int, isosurface is colored with just one color. There are 32 colors are available in
+        If int, isosurface is colored with just one color. There are 1057 colors are available in
         VMD, check the program or website for more details.
         Default is 'RGB'
 
@@ -205,7 +205,7 @@ def _vmd_script_isosurface(isosurf=0.5, index=0, show_type='isosurface', draw_ty
             colorscheme not in ['RGB', 'BGR', 'RWB', 'BWR', 'RWG', 'GWR', 'GWB', 'BWG', 'BlkW',
                                 'WBlk']):
         raise TypeError('Unsupported colorscheme, {0}'.format(colorscheme))
-    if isinstance(colorscheme, int) and not (0 <= colorscheme < 33):
+    if isinstance(colorscheme, int) and not (0 <= colorscheme < 1057):
         raise TypeError('Unsupported colorscheme, {0}'.format(colorscheme))
 
     output = '# add representation of the surface\n'
@@ -252,7 +252,8 @@ def _vmd_script_isosurface(isosurf=0.5, index=0, show_type='isosurface', draw_ty
     return output
 
 
-def _vmd_script_vector_field(centers, unit_directions, weights, weight_threshold=1e-1):
+def _vmd_script_vector_field(centers, unit_directions, weights, weight_threshold=1e-1,
+                             has_shadow=True, material='Transparent', color=0):
     """ Generates part of the VMD script that constructs the vector field
 
     Parameters
@@ -267,10 +268,56 @@ def _vmd_script_vector_field(centers, unit_directions, weights, weight_threshold
         Threshold of the weight of the vector
         Vectors with norms smaller than this threshold are not plotted
         Default is 1e-1
+    material : str
+        The material setting of each vector
+        One of 'Opaque', 'Transparent', 'BrushedMetal', 'Diffuse', 'Ghost', 'Glass1', 'Glass2',
+        'Glass3', 'Glossy', 'HardPlastic', 'MetallicPastel', 'Steel', 'Translucent', 'Edgy',
+        'EdgyShiny', 'EdgyGlass', 'Goodsell', 'AOShiny', 'AOChalky', 'AOEdgy', 'BlownGlass',
+        'GlassBubble', 'RTChrome'.
+        Default is 'Transparent'
+    color : int
+        Color of each vector
+        Integer between 0 and 1057. See VMD program or manual for details.
+        Default color is Blue.
+
+    Returns
+    -------
+    VMD script for generating vector field
+
+    Raises
+    ------
+    ValueError
+        If unit_directions are not unit vectors
+    TypeError
+        If has_shadow must be boolean
+        If material is not supported
+        If color is not supported
+
+    Note
+    ----
+    If there are too many vectors, you many need to turn off has_shadow (or materials in VMD)
     """
     # check unit directions
     if not np.allclose(np.linalg.norm(unit_directions, axis=1), 1):
         raise ValueError('Given direction vectors are not unit vectors')
+
+    if not isinstance(has_shadow, bool):
+        raise TypeError('Given has_shadow must be boolean')
+    if has_shadow:
+        has_shadow = 'on'
+    else:
+        has_shadow = 'off'
+
+    allowed_materials = ['Opaque', 'Transparent', 'BrushedMetal', 'Diffuse', 'Ghost', 'Glass1',
+                         'Glass2', 'Glass3', 'Glossy', 'HardPlastic', 'MetallicPastel', 'Steel',
+                         'Translucent', 'Edgy', 'EdgyShiny', 'EdgyGlass', 'Goodsell', 'AOShiny',
+                         'AOChalky', 'AOEdgy', 'BlownGlass', 'GlassBubble', 'RTChrome']
+    if material not in allowed_materials:
+        raise TypeError('Unsupported `material`. Must be one of {0}'.format(allowed_materials))
+
+
+    if isinstance(color, int) and not (0 <= color < 1057):
+        raise TypeError('Unsupported color, {0}'.format(color))
 
     # vmd/tcl function for constructing arrow
     output = '# Add function for vector field\n'
@@ -283,6 +330,9 @@ def _vmd_script_vector_field(centers, unit_directions, weights, weight_threshold
                '}\n'
                '#\n')
 
+    output += 'draw materials {0}\n'.format(has_shadow)
+    output += 'draw material {0}\n'.format(material)
+    output += 'draw color {0}\n'.format(color)
     def decompose_weight(weight):
         """ Decomposes a weight to the corresponding cylinder radius, cone radius and length
 
@@ -471,7 +521,7 @@ def print_vmd_script_multiple_cube(scriptfile, cubes, isosurfs=None, material='O
 
     Note
     ----
-    Not quite sure what happens when the number of cube files exceeds 33 (possiblly the  maximum
+    Not quite sure what happens when the number of cube files exceeds 1057 (possiblly the maximum
     number of ColorID's in VMD)
 
     Raises
@@ -503,8 +553,8 @@ def print_vmd_script_multiple_cube(scriptfile, cubes, isosurfs=None, material='O
     elif not (isinstance(colors, (list, tuple)) and len(colors) != len(cubes)):
         raise TypeError('The colors must be provided as a list or tuple of the same length as the '
                         'number of cube files')
-    elif not all(isinstance(color, int) and 0 <= color < 33 for color in colors):
-        raise ValueError('Each color must be given as an integer between 0 and 32')
+    elif not all(isinstance(color, int) and 0 <= color < 1057 for color in colors):
+        raise ValueError('Each color must be given as an integer between 0 and 1056')
 
     output = _vmd_script_start()
     output += _vmd_script_molecule(*cubes)
@@ -529,7 +579,18 @@ def print_vmd_script_vector_field(scriptfile, xyz, vector_centers, vector_direct
         Coordinates of the centers of each vector
     vector_directions : np.ndarray(N, 3)
         Vector at each coordinate
+
+    Raises
+    ------
+    TypeError
+        If vector_centers is not a numpy array with 3 columns
+        If vector_directions is not a numpy array with 3 columns
     """
+    if not (isinstance(vector_centers, np.ndarray) and vector_centers.shape[1] == 3):
+        raise TypeError('vector_centers is not a numpy array with 3 columns')
+    if not (isinstance(vector_directions, np.ndarray) and vector_directions.shape[1] == 3):
+        raise TypeError('vector_directions is not a numpy array with 3 columns')
+
     weights = np.linalg.norm(vector_directions, axis=1)
     # NOTE: might have weight behaviour if weights is noisy (very small)
     unit_directions = vector_directions/weights[:, np.newaxis]
