@@ -55,10 +55,11 @@ The following dependencies will be necessary for ChemTools to build properly,
 See :ref:`Documentation Dependencies <usr_doc>` for the dependencies
 required for building the documentations.
 
+
 Python Dependencies
 ~~~~~~~~~~~~~~~~~~~
 
-To install the first seven dependecies (Python related dependencies):
+To install the first seven dependencies (Python related dependencies):
 
 * **Ubuntu Linux 16.04**
 
@@ -75,14 +76,21 @@ To install the first seven dependecies (Python related dependencies):
                   python-matplotlib python-nose
      pip install --user --upgrade numpy scipy sympy matplotlib nose
 
-For the latest versions of NumPy, SciPy, SymPy, Matplotlib and Nosetests, ``pip`` can be used to
-upgrade existing packages, as shown above.
+* **Mac OS (using MacPorts)**
+
+  .. code-block:: bash
+
+     sudo port install python27; sudo port select --set python python27
+     sudo port install py27-nose; sudo port select --set nosetests nosetests27
+     sudo port install py27-numpy py27-scipy py27-sympy py27-matplotlib
+     sudo port install py27-pip; sudo port select --set pip pip27
 
 HORTON
 ~~~~~~
 
-To install HORTON, follow the instructions from `Download and Install 
+To install HORTON, follow the instructions from `Download and Install
 <http://theochem.github.io/horton/2.0.1/user_download_and_install.html>`_ of HORTON's documentation.
+
 
 .. _usr_lfs_installation:
 
@@ -90,7 +98,7 @@ Git LFS
 ~~~~~~~
 
 `Git Large File Storage (LFS) <https://git-lfs.github.com/>`_ is used to store files that are not
-part of the ChemTools code, but are used in some ways, such as generating the examples in the 
+part of the ChemTools code, but are used in some ways, such as generating the examples in the
 documentation.
 These files need to be downloaded separately, for example, if you would like to run the example
 scripts, go through tutorials (using exactly the same files used) or make Chemtools HTML with
@@ -115,10 +123,9 @@ To install Git LFS,
      cd git-lfs-2.0.1
      ./install.sh
 
-
 .. _usr_lfs_files:
 
-To download the files,
+To download the examples files,
 
   .. code-block:: bash
 
@@ -149,15 +156,21 @@ need to be add into your **~/.bashrc** (Linux) or **~/.profile** (MacOS)
      export PYTHONPATH=$PYTHONPATH:{path_to_chemtools_repo}/chemtools
      export CTDATA={path_to_chemtools_repo}/chemtools/data
 
+
+.. _usr_testing:
+
 Testing
 =======
 
 To ensure that all the parts of ChemTools working properly, nosetests can be used to run ChemTool's
-unit tests:
+automatic tests:
 
   .. code-block:: bash
 
      nosetests -v chemtools
+
+At this stage, some ``UserWarning`` messages are printed in between tests which is expected.
+However, no test should fail.
 
 
 .. _usr_doc:
@@ -188,14 +201,16 @@ To install these dependencies,
      pip install --user --upgrade sphinx sphinx_rtd_theme sphinxcontrib-bibtex ipython
 
 The Sphinx Read-The-Docs theme customized for ChemTools can be obtained cloning the repository
-as a submodule:
+as a submodule from ChemTools parent directory:
 
 .. code-block:: bash
 
    git submodule update --init --recursive
 
-To automatically generate API documentation and generate HTML (this requires ``data/examples``
-files; to obtain them please refer to :ref:`usr_lfs_files`) use the commands below:
+Also, make sure that the environment variable ``CTDATA`` is set and
+:ref:`examples files are downloaded <usr_lfs_files>`.
+
+To automatically generate API documentation and generate HTML:
 
 .. code-block:: bash
 
@@ -212,25 +227,59 @@ file directly, or run the command below from terminal:
    cd doc
    open _build/html/index.html
 
+In case this command did not work, for example on Ubuntu 16.04 you may get a message like **"Couldn't get a
+file descriptor referring to the console"**, try:
+
+.. code-block:: bash
+
+   cd doc
+   see _build/html/index.html
+
 
 Quality Assurance
 =================
-When contributing to the ChemTools repo, the code is remotely tested to see if it meets ChemTools'
-standards. To run these tests locally, you must first download and install the quality assurance
-code. From the ChemTools main directory,
+
+When making a pull request to contribute to the ChemTools repository, the code is remotely tested to see
+if it passes all the tests and meets ChemTools' quality standards. To run the tests locally, please refer
+to :ref:`Testing <usr_testing>`. If you are interested to run the quality assurance scripts locally, first
+install the dependencies below:
+
+* PyLint >= 1.5.0: https://www.pylint.org/
+* pycodestyle >= 2.0.0: http://pycodestyle.readthedocs.io/
+* pydocstyle >= 1.0.0: http://pydocstyle.readthedocs.io/
+* coverage >= 4.1: https://coverage.readthedocs.io/
+* Git >= 1.8: https://git-scm.com/
+* GitPython >= 2.0.5: http://gitpython.readthedocs.io/
+
+Then, download the quality assurance code by cloning the corresponding submodule:
 
 .. code-block:: bash
 
    git submodule update --init --recursive
-   cd ./tools/inspector
-   ./install.sh
-   cd ../..
 
-Then, the quality assurance tests can be simulated from the ChemTools main directory with
+And, run the module's bash script to setup some pre-commit hooks and copy files to run the quality assurance
+scripts individually:
 
 .. code-block:: bash
 
-   ./tools/inspector/qa/simulate_trapdoor_pr.py
+   cd tools/inspector
+   ./install.sh
+   cd ../..
 
-Note that you should be developing on a non-master (feature) branch and merging/rebasing to the
-updated master when complete.
+At this stage, the quality assurance tests can be simulated from the ChemTools parent directory.
+For example to run ``pylint`` check,
+
+.. code-block:: bash
+
+   # from ChemTools parent directory
+   ./tools/inspector/qa/simulate_trapdoor_pr.py tools/inspector/qa/trapdoor_pylint.py
+
+To run all of the quality assurance scripts,
+
+.. code-block:: bash
+
+   # from ChemTools parent directory
+   for i in tools/inspector/qa/trapdoor_*; do tools/inspector/qa/simulate_trapdoor_pr.py $i; done
+
+Note that you should be developing on a feature (not master) branch and merging/rebasing to the
+updated master when complete. There should be also no uncommitted changes when running these scripts.
