@@ -45,7 +45,7 @@ Analysis Tools
 
   * VMD Output
 
-    * :func:`_print_vmd_script_nci <analysis.output._print_vmd_script_nci>`
+    * :func:`print_vmd_script_nci <analysis.output.print_vmd_script_nci>`
     * :func:`print_vmd_script_isosurface <analysis.output.print_vmd_script_isosurface>`
 
 Conceptual Tools
@@ -84,7 +84,7 @@ Utility Tools
       analysis.conceptual.LocalConceptualDFT
       analysis.others.NCI
       analysis.others._compute_hessian
-      analysis.output._print_vmd_script_nci
+      analysis.output.print_vmd_script_nci
       analysis.output.print_vmd_script_isosurface
       tool.globaltool.BaseGlobalTool
       tool.globaltool.LinearGlobalTool
