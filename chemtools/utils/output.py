@@ -252,7 +252,7 @@ def _vmd_script_isosurface(isosurf=0.5, index=0, show_type='isosurface', draw_ty
     return output
 
 
-def _vmd_script_vector_field(centers, unit_directions, weights):
+def _vmd_script_vector_field(centers, unit_directions, weights, weight_threshold=1e-1):
     """ Generates part of the VMD script that constructs the vector field
 
     Parameters
@@ -263,6 +263,10 @@ def _vmd_script_vector_field(centers, unit_directions, weights):
         Unit direction of each vector
     weights : np.ndarray(N)
         Weights that determine the size (length and/or thickness) of each vector
+    weight_threshold : float
+        Threshold of the weight of the vector
+        Vectors with norms smaller than this threshold are not plotted
+        Default is 1e-1
     """
     # check unit directions
     if not np.allclose(np.linalg.norm(unit_directions, axis=1), 1):
@@ -296,12 +300,13 @@ def _vmd_script_vector_field(centers, unit_directions, weights):
         length : float
             Length of vector
         """
-        # FIXME: needs to be played around with
-        return (0.3, 0.8, weight)
+        return np.array([0.08, 0.15, 0.7])*(weight**0.333)
 
     for (center_x, center_y, center_z), (unit_x, unit_y, unit_z), weight in zip(centers,
                                                                                 unit_directions,
                                                                                 weights):
+        if weight < weight_threshold:
+            continue
         output += ('draw arrow {{{0} {1} {2}}} {{{3} {4} {5}}} {6} {7} {8}\n'
                    ''.format(center_x, center_y, center_z, unit_x, unit_y, unit_z,
                              *decompose_weight(weight)))
@@ -507,5 +512,29 @@ def print_vmd_script_multiple_cube(scriptfile, cubes, isosurfs=None, material='O
         output += _vmd_script_isosurface(isosurf=isosurf, index=i, material=material,
                                          scalemin=scalemin, scalemax=scalemax, colorscheme=color)
 
+    with open(scriptfile, 'w') as f:
+        f.write(output)
+
+
+def print_vmd_script_vector_field(scriptfile, xyz, vector_centers, vector_directions):
+    """  Generate VMD (Visual Molecular Dynamics) script for visualizing xyz file as a vector field
+
+    Parameters
+    ----------
+    scriptfile : str
+        Name of VMD script file to generate.
+    xyz : str
+        Name of the xyz file
+    vector_centers : np.ndarray(N, 3)
+        Coordinates of the centers of each vector
+    vector_directions : np.ndarray(N, 3)
+        Vector at each coordinate
+    """
+    weights = np.linalg.norm(vector_directions, axis=1)
+    # NOTE: might have weight behaviour if weights is noisy (very small)
+    unit_directions = vector_directions/weights[:, np.newaxis]
+    output = _vmd_script_start()
+    output += _vmd_script_molecule(xyz)
+    output += _vmd_script_vector_field(vector_centers, unit_directions, weights)
     with open(scriptfile, 'w') as f:
         f.write(output)
