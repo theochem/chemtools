@@ -211,3 +211,26 @@ file directly, or run the command below from terminal:
 
    cd doc
    open _build/html/index.html
+
+
+Quality Assurance
+=================
+When contributing to the ChemTools repo, the code is remotely tested to see if it meets ChemTools'
+standards. To run these tests locally, you must first download and install the quality assurance
+code. From the ChemTools main directory,
+
+.. code-block:: bash
+
+   git submodule update --init --recursive
+   cd ./tools/inspector
+   ./install.sh
+   cd ../..
+
+Then, the quality assurance tests can be simulated from the ChemTools main directory with
+
+.. code-block:: bash
+
+   ./tools/inspector/qa/simulate_trapdoor_pr.py
+
+Note that you should be developing on a non-master (feature) branch and merging/rebasing to the
+updated master when complete.
