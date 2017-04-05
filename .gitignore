@@ -72,4 +72,3 @@ examples/*/*.cube
 # Ignore testing output
 .coverage
 qaworkdir
-cleanfiles.sh
