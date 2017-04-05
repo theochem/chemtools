@@ -72,9 +72,10 @@ To ensue all the parts of ChemTools work properly, you are suggested to run the 
      $ nosetests -v chemtools
 
 
+.. _usr_lfs_installation:
 
-LFS Installation
-================
+Git LFS Installation
+====================
 
 `Git Large File Storage (LFS) <https://git-lfs.github.com/>`_ has been used to store the files
 and images used in the examples' gallery. In order words, all files in ``doc/examples/*`` are
@@ -105,13 +106,16 @@ In your download directory,
      $ ./install.sh
 
 
+.. _usr_lfs_files:
+
 Downloading Files From Remote Repository
 ========================================
 
-Then, go to the repository's directory to download the files by running:
+Having :ref:`Git LFS installed <usr_lfs_installation>`, download the examples files by running:
 
   .. code-block:: bash
 
+     $ cd data/examples
      $ git lfs pull
 
 To get a list of all the files tracked with Git LFS, use:
@@ -120,11 +124,9 @@ To get a list of all the files tracked with Git LFS, use:
 
      $ git lfs ls-files
 
-Building the documentation
-==========================
 
-Dependencies
-~~~~~~~~~~~~
+Documentation Dependencies & Build
+==================================
 
 If you are interested in generating the documentation from source, the following
 packages are also needed:
@@ -132,25 +134,44 @@ packages are also needed:
 * Sphinx >=1.3.1: http://sphinx.pocoo.org/
 * Sphinx Read-The-Docs theme >=0.1.8: https://github.com/snide/sphinx_rtd_theme
 * sphinxcontrib-bibtex >= 0.3.5: https://pypi.python.org/pypi/sphinxcontrib-bibtex
-* Git Large File Storage (LFS), as described above.
+* :ref:`Git Large File Storage (LFS) <usr_lfs_installation>`
 
+To install the first three dependecies:
 
-Installing the dependencies with PIP
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* **Ubuntu Linux 16.04**
 
-The following commands will install the ports and a few other dependencies (with pip),
-which are not available as ports:
+  .. code-block:: bash
+
+     $ sudo apt-get install python-sphinx python-sphinx-rtd-theme sphinxcontrib-bibtex
+
+* **Ubuntu Linux 15.04 & 14.04 and Mac OS**
+
+  .. code-block:: bash
+
+     pip install --user --upgrade sphinx sphinx_rtd_theme sphinxcontrib-bibtex
+
+The Sphinx Read-The-Docs theme customized for ChemTools can be obtained cloning the repository
+as a submodule:
 
 .. code-block:: bash
 
-    pip install --user --upgrade sphinx sphinx_rtd_theme sphinxcontrib-bibtex
+   $ cd doc/_themes
+   $ git submodule update --init --recursive
 
-
-Actual build
-~~~~~~~~~~~~
-
-The documentation is compiled and viewed as follows:
+To automatically generate API documentation and generate HTML (this requires ``data/examples`` files;
+to obtain them please refer to :ref:`usr_lfs_files`) use the commands below:
 
 .. code-block:: bash
 
-    (cd doc; make html; open _build/html/index.html)
+   $ cd doc
+   $ sphinx-apidoc -f -o source ../
+   $ make clean
+   $ make html
+
+To open the documentation in your default browser, either click on ``doc/_build/html/index.html``
+file directly, or run the command below from terminal:
+
+.. code-block:: bash
+
+   $ cd doc
+   $ open _build/html/index.html
