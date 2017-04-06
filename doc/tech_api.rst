@@ -28,53 +28,66 @@ API Documentation
 
 .. module:: chemtools
 
-Analysis Tools
-==============
+Analysis Module
+===============
 
 * Conceptual DFT Tools
 
   * :class:`Global Conceptual DFT Tools <analysis.conceptual.GlobalConceptualDFT>`
   * :class:`Local Conceptual DFT Tools <analysis.conceptual.LocalConceptualDFT>`
+  * :class:`Condense Conceptual DFT Tools <analysis.conceptual.CondensedConceptualDFT>`
 
-* Other Tools
+* Density Based Tools
 
-  * :class:`Noncovalent Interaction <analysis.others.NCI>`
-  * :func:`_compute_hessian <analysis.others._compute_hessian>`
+  * :class:`Noncovalent Interaction (NCI) <analysis.densitybased.NCI>`
+  * :func:`_compute_hessian <analysis.densitybased._compute_hessian>`
 
-* Visualization Tools
+* Orbital Based Tools
 
-  * VMD Output
+  * :class:`Orbital Analysis <analysis.orbitalbased.OrbitalAnalysis>`
 
-    * :func:`print_vmd_script_nci <analysis.output.print_vmd_script_nci>`
-    * :func:`print_vmd_script_isosurface <analysis.output.print_vmd_script_isosurface>`
-
-Conceptual Tools
-================
+ToolBox Module
+==============
 
 * Global Conceptual DFT Tools
 
-  * :class:`Base Global Tool <tool.globaltool.BaseGlobalTool>`
-  * :class:`Linear Global Tool <tool.globaltool.LinearGlobalTool>`
-  * :class:`Quadratic Global Tool <tool.globaltool.QuadraticGlobalTool>`
-  * :class:`Exponential Global Tool <tool.globaltool.ExponentialGlobalTool>`
-  * :class:`Rational Global Tool <tool.globaltool.RationalGlobalTool>`
-  * :class:`General Global Tool <tool.globaltool.GeneralGlobalTool>`
+  * :class:`Base Global Tool <toolbox.conceptualglobal.BaseGlobalTool>`
+  * :class:`Linear Global Tool <toolbox.conceptualglobal.LinearGlobalTool>`
+  * :class:`Quadratic Global Tool <toolbox.conceptualglobal.QuadraticGlobalTool>`
+  * :class:`Exponential Global Tool <toolbox.conceptualglobal.ExponentialGlobalTool>`
+  * :class:`Rational Global Tool <toolbox.conceptualglobal.RationalGlobalTool>`
+  * :class:`General Global Tool <toolbox.conceptualglobal.GeneralGlobalTool>`
 
 * Local Conceptual DFT Tools
 
-  * :class:`Base Local Tool <tool.localtool.BaseLocalTool>`
-  * :class:`Linear Local Tool <tool.localtool.LinearLocalTool>`
-  * :class:`Quadratic Local Tool <tool.localtool.QuadraticLocalTool>`
-  * :class:`Density Local Tool <tool.densitytool.DensityLocalTool>`
-  * :class:`Orbital Local Tool <tool.orbitaltool.OrbitalLocalTool>`
+  * :class:`Base Local Tool <toolbox.conceptuallocal.BaseLocalTool>`
+  * :class:`Linear Local Tool <toolbox.conceptuallocal.LinearLocalTool>`
+  * :class:`Quadratic Local Tool <toolbox.conceptuallocal.QuadraticLocalTool>`
 
-* :class:`Condensed Conceptual DFT Tool <tool.condensedtool.CondensedTool>`
- 
+* Condensed Conceptual DFT Tools
+
+  * :class:`Condensed Conceptual DFT Tool <toolbox.conceptualcondense.CondensedTool>`
+
+* Density Based Tools
+
+  * :class:`Density Local Tool <toolbox.densitybased.DensityLocalTool>`
+
+* Orbital Based Tools
+
+  * :class:`Orbital Local Tool <toolbox.orbitalbased.OrbitalLocalTool>`
+
 Utility Tools
 =============
-* :func:`doc_inherit <utils.doc_inherit>`
-* :class:`CubeGen <utils.CubeGen>`
 
+* :func:`doc_inherit <utils.utils.doc_inherit>`
+* :class:`CubeGen <utils.cube.CubeGen>`
+
+* Visualization Tools
+
+  * VMD Scripts
+
+    * :func:`print_vmd_script_nci <utils.output.print_vmd_script_nci>`
+    * :func:`print_vmd_script_isosurface <utils.output.print_vmd_script_isosurface>`
 
 .. Silent api generation
     .. autosummary::
@@ -82,22 +95,23 @@ Utility Tools
 
       analysis.conceptual.GlobalConceptualDFT
       analysis.conceptual.LocalConceptualDFT
-      analysis.others.NCI
-      analysis.others._compute_hessian
-      analysis.output.print_vmd_script_nci
-      analysis.output.print_vmd_script_isosurface
-      tool.globaltool.BaseGlobalTool
-      tool.globaltool.LinearGlobalTool
-      tool.globaltool.QuadraticGlobalTool
-      tool.globaltool.ExponentialGlobalTool
-      tool.globaltool.RationalGlobalTool
-      tool.globaltool.GeneralGlobalTool
-      tool.localtool.BaseLocalTool
-      tool.localtool.LinearLocalTool
-      tool.localtool.QuadraticLocalTool
-      tool.densitytool.DensityLocalTool
-      tool.orbitaltool.OrbitalLocalTool
-      tool.condensedtool.CondensedTool
-      utils.doc_inherit
-      utils.CubeGen
+      analysis.densitybased.NCI
+      analysis.densitybased._compute_hessian
+      analysis.orbitalbased.OrbitalAnalysis
+      toolbox.conceptualglobal.BaseGlobalTool
+      toolbox.conceptualglobal.LinearGlobalTool
+      toolbox.conceptualglobal.QuadraticGlobalTool
+      toolbox.conceptualglobal.ExponentialGlobalTool
+      toolbox.conceptualglobal.RationalGlobalTool
+      toolbox.conceptualglobal.GeneralGlobalTool
+      toolbox.conceptuallocal.BaseLocalTool
+      toolbox.conceptuallocal.LinearLocalTool
+      toolbox.conceptuallocal.QuadraticLocalTool
+      toolbox.conceptualcondense.CondensedTool
+      toolbox.densitybased.DensityLocalTool
+      toolbox.orbitalbased.OrbitalLocalTool
+      utils.utils.doc_inherit
+      utils.cube.CubeGen
+      utils.output.print_vmd_script_nci
+      utils.output.print_vmd_script_isosurface
 
