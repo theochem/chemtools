@@ -563,7 +563,7 @@ def print_vmd_script_multiple_cube(scriptfile, cubes, isosurfs=None, material='O
         isosurfs = [0.5 for i in cubes]
     elif isinstance(isosurfs, float):
         isosurfs = [isosurfs for i in cubes]
-    if not (isinstance(isosurfs, (list, tuple)) and len(isosurfs) != len(cubes)):
+    if not (isinstance(isosurfs, (list, tuple)) and len(isosurfs) == len(cubes)):
         raise TypeError('The isosurfs must be provided as a list or tuple of same length as the '
                         'number of cube files')
     elif not all(isinstance(isosurf, float) for isosurf in isosurfs):
@@ -571,7 +571,7 @@ def print_vmd_script_multiple_cube(scriptfile, cubes, isosurfs=None, material='O
 
     if colors is None:
         colors = range(len(cubes))
-    elif not (isinstance(colors, (list, tuple)) and len(colors) != len(cubes)):
+    elif not (isinstance(colors, (list, tuple)) and len(colors) == len(cubes)):
         raise TypeError('The colors must be provided as a list or tuple of the same length as the '
                         'number of cube files')
     elif not all(isinstance(color, int) and 0 <= color < 1057 for color in colors):
