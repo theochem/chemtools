@@ -215,7 +215,6 @@ To automatically generate API documentation and generate HTML:
 .. code-block:: bash
 
    cd doc
-   sphinx-apidoc -f -o source ../
    make clean
    make html
 
