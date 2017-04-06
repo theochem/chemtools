@@ -198,6 +198,8 @@ class NCI(object):
         # hide the right, top and bottom spines
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
+        ax.xaxis.tick_bottom()
+        ax.yaxis.tick_left()
         # save plot ('.png' extension is added by default, if filename is not a supported format)
         plt.savefig(filename, dpi=800)
 
