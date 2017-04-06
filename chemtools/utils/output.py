@@ -30,7 +30,11 @@ import numpy as np
 
 
 def _vmd_script_start():
-    """ Generates part of the beginning part of the VMD script
+    """Generate part of the beginning part of the VMD script.
+
+    Returns
+    -------
+    VMD script responsible for beginning of VMD script
     """
     return ('#!/usr/local/bin/vmd\n'
             '# VMD script written by save_state $Revision: 1.41 $\n'
@@ -41,17 +45,16 @@ def _vmd_script_start():
             '# Display settings\n'
             'display projection Orthographic\n'
             'display nearclip set 0.000000\n'
-            '#\n'
-           )
+            '#\n')
 
 
 def _vmd_script_molecule(*mol_files):
-    """ Generates part of the VMD script that loads the molecule information
+    """Generate part of the VMD script that loads the molecule information.
 
     Parameters
     ----------
     mol_files : str
-        Names of the input files that represent the moelcule
+        Names of the input files that represent the molecule
         .xyz and .cube files are supported
         Cube files can correspond to the density, reduced density gradient, isosurface, color of
         isosurface, etc
@@ -77,7 +80,7 @@ def _vmd_script_molecule(*mol_files):
             mol_type = 'addfile'
 
         ext = os.path.splitext(mol)[1]
-        if  ext == '.xyz':
+        if ext == '.xyz':
             file_type = '{xyz}'
         elif ext == '.cube':
             file_type = 'cube'
@@ -94,14 +97,13 @@ def _vmd_script_molecule(*mol_files):
                'mol selection {{all}}\n'
                'mol material Opaque\n'
                'mol addrep top\n'
-               '#\n'
-              )
+               '#\n')
     return output
 
 
 def _vmd_script_isosurface(isosurf=0.5, index=0, show_type='isosurface', draw_type='solid surface',
                            material='Opaque', scalemin=-0.05, scalemax=0.05, colorscheme='RGB'):
-    """ Generates part of the VMD script that configures the isosurface
+    """Generate part of the VMD script that configures the isosurface.
 
     Parameters
     ----------
@@ -182,12 +184,12 @@ def _vmd_script_isosurface(isosurf=0.5, index=0, show_type='isosurface', draw_ty
     if show_type not in ['isosurface', 'box', 'box+isosurface']:
         raise TypeError('Unsupported `show_type`. Must be one of {0}, {1}, or {2}'
                         ''.format('box', 'isosurface', 'box+isosurface'))
-    show_type = {'isosurface':0, 'box':1, 'box+isosurface':2}[show_type]
+    show_type = {'isosurface': 0, 'box': 1, 'box+isosurface': 2}[show_type]
 
     if draw_type not in ['solid surface', 'wireframe', 'points', 'shaded points']:
         raise TypeError('Unsupported `draw_type`. Must be one of {0}, {1}, {2} or {3}'
                         ''.format('solid surface', 'wireframe', 'points', 'shaded points'))
-    draw_type = {'solid surface':0, 'wireframe':1, 'points':2, 'shaded points':3}[draw_type]
+    draw_type = {'solid surface': 0, 'wireframe': 1, 'points': 2, 'shaded points': 3}[draw_type]
 
     allowed_materials = ['Opaque', 'Transparent', 'BrushedMetal', 'Diffuse', 'Ghost', 'Glass1',
                          'Glass2', 'Glass3', 'Glossy', 'HardPlastic', 'MetallicPastel', 'Steel',
@@ -239,8 +241,7 @@ def _vmd_script_isosurface(isosurf=0.5, index=0, show_type='isosurface', draw_ty
                'mol scaleminmax top 1 {scalemin:.6f} {scalemax:.6f}\n'
                'mol smoothrep top 1 0\n'
                'mol drawframes top 1 {{now}}\n'.format(material=material, scalemin=scalemin,
-                                                       scalemax=scalemax)
-              )
+                                                       scalemax=scalemax))
 
     if isinstance(colorscheme, str):
         output += 'color scale method {0}\n'.format(colorscheme)
@@ -254,7 +255,7 @@ def _vmd_script_isosurface(isosurf=0.5, index=0, show_type='isosurface', draw_ty
 
 def _vmd_script_vector_field(centers, unit_vecs, weights, weight_threshold=1e-1,
                              has_shadow=True, material='Transparent', color=0):
-    """ Generates part of the VMD script that constructs the vector field
+    """Generate part of the VMD script that constructs the vector field.
 
     Parameters
     ----------
@@ -331,7 +332,6 @@ def _vmd_script_vector_field(centers, unit_vecs, weights, weight_threshold=1e-1,
     if material not in allowed_materials:
         raise TypeError('Unsupported `material`. Must be one of {0}'.format(allowed_materials))
 
-
     if isinstance(color, int) and not 0 <= color < 1057:
         raise TypeError('Unsupported color, {0}'.format(color))
 
@@ -349,8 +349,9 @@ def _vmd_script_vector_field(centers, unit_vecs, weights, weight_threshold=1e-1,
     output += 'draw materials {0}\n'.format(has_shadow)
     output += 'draw material {0}\n'.format(material)
     output += 'draw color {0}\n'.format(color)
+
     def decompose_weight(weight):
-        """ Decomposes a weight to the corresponding cylinder radius, cone radius and length
+        """Decompose a weight to the corresponding cylinder radius, cone radius and length.
 
         Parameters
         ----------
@@ -381,9 +382,9 @@ def _vmd_script_vector_field(centers, unit_vecs, weights, weight_threshold=1e-1,
 
 
 def print_vmd_script_nci(scriptfile, densfile, rdgfile, isosurf=0.5, denscut=0.05):
-    r"""
-    Generate VMD (Visual Molecular Dynamics) script for visualizing NCI
-    (non-covalent interactions) isosurfaces subject to the constraint of
+    r"""Generate VMD (Visual Molecular Dynamics) script for visualizing NCI isosurfaces.
+
+    Visualizes NCI (non-covalent interactions) isosurfaces subject to the constraint of
     density(r) < denscut, i.e. low-density, and colored based on the
     sign(:math:`\lambda_2`) :math:`\rho`.
 
@@ -416,9 +417,10 @@ def print_vmd_script_nci(scriptfile, densfile, rdgfile, isosurf=0.5, denscut=0.0
 
 def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5, material='Opaque',
                                 scalemin=-0.05, scalemax=0.05, colorscheme='RGB', negative=False):
-    """
-    Generate VMD (Visual Molecular Dynamics) script for visualizing the isosurface based on
-    one cube file when coloring by the value of another cube file on the isosurface.
+    """Generate VMD (Visual Molecular Dynamics) script for visualizing the isosurface.
+
+    Visualize isosurface based on one cube file when coloring by the value of another cube file on
+    the isosurface.
 
     Parameters
     ----------
@@ -505,8 +507,10 @@ def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5
 
 def print_vmd_script_multiple_cube(scriptfile, cubes, isosurfs=None, material='Opaque',
                                    scalemin=-0.05, scalemax=0.05, colors=None):
-    """ Generate VMD (Visual Molecular Dynamics) script for visualizing multiple cube files
-    simultaneously where data from each cube file is colored differently
+    """Generate VMD (Visual Molecular Dynamics) script for visualizing multiple cube files.
+
+    Visualize multiple cube files simultaneously where data from each cube file is colored
+    differently.
 
     Parameters
     ----------
@@ -575,7 +579,7 @@ def print_vmd_script_multiple_cube(scriptfile, cubes, isosurfs=None, material='O
 
     output = _vmd_script_start()
     output += _vmd_script_molecule(*cubes)
-    for i, (cube, isosurf, color) in enumerate(zip(cubes, isosurfs, colors)):
+    for i, (isosurf, color) in enumerate(zip(isosurfs, colors)):
         output += _vmd_script_isosurface(isosurf=isosurf, index=i, material=material,
                                          scalemin=scalemin, scalemax=scalemax, colorscheme=color)
 
@@ -584,7 +588,7 @@ def print_vmd_script_multiple_cube(scriptfile, cubes, isosurfs=None, material='O
 
 
 def print_vmd_script_vector_field(scriptfile, xyz, vector_centers, vector_directions):
-    """  Generate VMD (Visual Molecular Dynamics) script for visualizing xyz file as a vector field
+    """Generate VMD (Visual Molecular Dynamics) script for visualizing xyz file as a vector field.
 
     Parameters
     ----------
