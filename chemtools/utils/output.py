@@ -248,7 +248,7 @@ def _vmd_script_isosurface(isosurf=0.5, index=0, show_type='isosurface', draw_ty
     else:
         output += 'color scale method RGB\n'
 
-    output += 'set colorcmds {{{{color Name {{C}} gray}}}}\n'
+    output += 'set colorcmds {{color Name {C} gray}}\n'
     output += '#\n'
     return output
 
@@ -410,13 +410,14 @@ def print_vmd_script_nci(scriptfile, densfile, rdgfile, isosurf=0.5, denscut=0.0
     """
     output = _vmd_script_start()
     output += _vmd_script_molecule(densfile, rdgfile)
-    output += _vmd_script_isosurface(isosurf=isosurf, scalemin=-denscut, scalemax=denscut, index=1)
+    output += _vmd_script_isosurface(isosurf=isosurf, scalemin=-denscut, scalemax=denscut, index=1,
+                                     colorscheme='BGR')
     with open(scriptfile, 'w') as f:
         f.write(output)
 
 
 def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5, material='Opaque',
-                                scalemin=-0.05, scalemax=0.05, colorscheme='RGB', negative=False):
+                                scalemin=-0.05, scalemax=0.05, colorscheme=None, negative=False):
     """Generate VMD (Visual Molecular Dynamics) script for visualizing the isosurface.
 
     Visualize isosurface based on one cube file when coloring by the value of another cube file on
@@ -473,6 +474,13 @@ def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5
     negative : bool, default=False
         Determines if you want to plot the negative of the isosurface as well. The default is false.
     """
+    # set default color schemes
+    if colorscheme is None:
+        if colorfile is None:
+            colorscheme = 0
+        else:
+            colorscheme = 'RGB'
+    # set color for positive and negative iso surfaces
     if not negative and isinstance(colorscheme, (int, str)):
         pos_color, neg_color = colorscheme, colorscheme
     elif negative and hasattr(colorscheme, '__iter__') and len(colorscheme) == 2:
