@@ -45,6 +45,7 @@ def _vmd_script_start():
             '# Display settings\n'
             'display projection Orthographic\n'
             'display nearclip set 0.000000\n'
+            'color Name {C} gray\n'
             '#\n')
 
 
@@ -248,7 +249,6 @@ def _vmd_script_isosurface(isosurf=0.5, index=0, show_type='isosurface', draw_ty
     else:
         output += 'color scale method RGB\n'
 
-    output += 'set colorcmds {{color Name {C} gray}}\n'
     output += '#\n'
     return output
 
