@@ -88,6 +88,8 @@ Utility Tools
 
     * :func:`print_vmd_script_nci <utils.output.print_vmd_script_nci>`
     * :func:`print_vmd_script_isosurface <utils.output.print_vmd_script_isosurface>`
+    * :func:`print_vmd_script_multiple_cube <utils.output.print_vmd_script_multiple_cube>`
+    * :func:`print_vmd_script_vector_field <utils.output.print_vmd_script_vector_field>`
 
 .. Silent api generation
     .. autosummary::
@@ -114,4 +116,6 @@ Utility Tools
       utils.cube.CubeGen
       utils.output.print_vmd_script_nci
       utils.output.print_vmd_script_isosurface
+      utils.output.print_vmd_script_multiple_cube
+      utils.output.print_vmd_script_vector_field
 
