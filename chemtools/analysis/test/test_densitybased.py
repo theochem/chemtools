@@ -32,7 +32,9 @@ import numpy as np
 
 from horton import IOData
 
-from chemtools import *
+from chemtools import context
+from chemtools.utils import CubeGen
+from chemtools.analysis.densitybased import NCI
 
 
 @contextmanager

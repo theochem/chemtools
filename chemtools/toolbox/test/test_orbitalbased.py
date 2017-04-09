@@ -23,12 +23,10 @@
 # pylint: skip-file
 
 import numpy as np
-from horton import *
-from chemtools import *
-
-
-# here both chemtools and horton has context
-# import chemtools later to overwrite horton one
+from horton import IOData
+from chemtools import context
+from chemtools.utils import CubeGen
+from chemtools.toolbox.orbitalbased import OrbitalLocalTool
 
 
 def test_orbital_tool_ch4_uhf_ccpvdz():

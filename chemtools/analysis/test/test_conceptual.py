@@ -24,7 +24,9 @@
 
 import numpy as np
 from horton import IOData, BeckeMolGrid
-from chemtools import *
+from chemtools import context
+from chemtools.analysis.conceptual import (GlobalConceptualDFT, LocalConceptualDFT,
+                                           CondensedConceptualDFT)
 
 
 def test_global_linear_ch4_fchk():

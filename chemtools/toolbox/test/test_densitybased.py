@@ -23,7 +23,7 @@
 # pylint: skip-file
 
 import numpy as np
-from chemtools import *
+from chemtools.toolbox.densitybased import DensityLocalTool
 
 
 def test_density_local_tool():

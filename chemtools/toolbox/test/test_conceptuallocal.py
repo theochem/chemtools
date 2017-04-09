@@ -23,7 +23,7 @@
 # pylint: skip-file
 
 import numpy as np
-from chemtools import *
+from chemtools.toolbox.conceptuallocal import LinearLocalTool, QuadraticLocalTool
 
 
 def test_local_linear():

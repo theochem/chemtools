@@ -25,7 +25,8 @@
 import numpy as np
 import sympy as sp
 import math
-from chemtools import *
+from chemtools.toolbox.conceptualglobal import (QuadraticGlobalTool, ExponentialGlobalTool,
+                                                RationalGlobalTool, GeneralGlobalTool)
 
 
 def test_global_quadratic1():
