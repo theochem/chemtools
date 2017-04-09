@@ -138,6 +138,7 @@ def test_analyze_nci_h2o_dimer_fchk():
         np.testing.assert_array_almost_equal(data1, data2, decimal=4)
         np.testing.assert_equal(gmol1.pseudo_numbers, mol2.pseudo_numbers)
 
+
 def test_analyze_nci_assert_errors():
     file_path = context.get_fn('test/h2o_dimer_pbe_sto3g.fchk')
     mol = IOData.from_file(file_path)
@@ -160,8 +161,8 @@ def test_analyze_nci_assert_errors():
     assert_raises(ValueError, NCI.from_file, file_path, cube=1)
 
     desp = NCI(dens, rdg, cube)
-    assert desp.signed_density == None
-    assert desp.eigvalues == None
+    assert desp.signed_density is None
+    assert desp.eigvalues is None
 
     with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_assert_errors') as dn:
         test = '%s/%s' % (dn, 'test')
@@ -176,7 +177,7 @@ def test_analyze_nci_assert_errors():
     desp = NCI.from_iodata(mol)
     assert desp.signed_density.shape == desp._density.shape
 
-    desp = NCI.from_file(file_path,cube)
+    desp = NCI.from_file(file_path, cube)
 
     with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_assert_errors') as dn:
         test = '%s/%s' % (dn, 'test.jpg')
