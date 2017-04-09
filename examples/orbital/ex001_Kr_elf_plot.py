@@ -10,7 +10,9 @@ EX1: Plot Krypton Electron Localization Function (ELF)
 
 import numpy as np
 import matplotlib.pyplot as plt
-from horton import *
+from horton import IOData, get_gobasis, CholeskyLinalgFactory, guess_core_hamiltonian
+from horton import compute_nucnuc, REffHam, AufbauOccModel, PlainSCFSolver, AtomicGrid
+from horton.meanfield import RTwoIndexTerm, RDirectTerm, RExchangeTerm, RTwoIndexTerm
 from chemtools import OrbitalLocalTool
 
 # 1. Run a Hartree-Fock calculation with cc-pVDZ basis-set using HORTON
