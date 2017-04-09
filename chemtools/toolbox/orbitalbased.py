@@ -26,12 +26,16 @@
 import numpy as np
 from chemtools.toolbox.densitybased import DensityLocalTool
 
+__all__ = ['OrbitalLocalTool']
+
 
 class OrbitalLocalTool(DensityLocalTool):
     """Class of orbital-based descriptive tools."""
 
     def __init__(self, points, obasis, exp_alpha, exp_beta=None):
         r"""
+        Initialize OrbitalLocalTool class using gridpoints, basisset and orbital expansion.
+
         Parameters
         ----------
         points : np.ndarray
@@ -66,6 +70,8 @@ class OrbitalLocalTool(DensityLocalTool):
     @property
     def kinetic_energy_density(self):
         r"""
+        Positive definite kinetic energy density.
+
         Positive definite kinetic energy density defined as,
 
         .. math::
@@ -77,6 +83,8 @@ class OrbitalLocalTool(DensityLocalTool):
     @property
     def elf(self):
         r"""
+        Electron Localization Function.
+
         The Electron Localization Function introduced by Becke and Edgecombe,
 
         .. math::
@@ -107,6 +115,8 @@ class OrbitalLocalTool(DensityLocalTool):
 
     def mep(self, coordinates, pseudo_numbers):
         r"""
+        Molecular Electrostatic Potential.
+
         Molecular Electrostatic Potential defined as,
 
         .. math::

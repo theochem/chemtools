@@ -71,8 +71,8 @@ def test_local_linear_ch4_fchk():
     file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
     # make molecular grid
     mol = IOData.from_file(file_path)
-    grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec='exp:5e-4:2e1:175:434',
-                        random_rotate=False, mode='keep')
+    grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
+                        agspec='exp:5e-4:2e1:175:434', random_rotate=False, mode='keep')
     # build local conceptual DFT tool
     desp = LocalConceptualDFT.from_file(file_path, model='linear', points=grid.points)
     # check shape of density
@@ -154,8 +154,8 @@ def test_local_quadratic_ch4_fchk():
     mu, eta = -0.5 * (ip + ea), ip - ea
     # make molecular grid
     mol = IOData.from_file(file_path)
-    grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec='exp:5e-4:2e1:175:434',
-                        random_rotate=False, mode='keep')
+    grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
+                        agspec='exp:5e-4:2e1:175:434', random_rotate=False, mode='keep')
     # build global conceptual DFT tool
     desp = LocalConceptualDFT.from_file(file_path, model='quadratic', points=grid.points)
     # check shape of density
@@ -281,7 +281,8 @@ def test_condense_h_linear_fd_rmf_ch4_fchk():
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec='insane', random_rotate=False, mode='keep')
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, model='linear', grid=grid, scheme='h', approach='RMF')
+    desp = CondensedConceptualDFT.from_file(file_path, model='linear', grid=grid,
+                                            scheme='h', approach='RMF')
     expectedm = np.array([7.98237872, 5.47698573, 0.77030456, 0.77031781])
     expected0 = np.array([8.46718639, 5.67524299, 0.92860658, 0.92866436])
     expectedp = np.array([8.76534627, 6.18498153, 1.02517556, 1.02513059])
@@ -321,7 +322,8 @@ def test_condense_h_linear_fd_fmr_ch4_fchk():
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec='insane', random_rotate=False, mode='keep')
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, model='linear', grid=grid, scheme='h', approach='FMR')
+    desp = CondensedConceptualDFT.from_file(file_path, model='linear', grid=grid,
+                                            scheme='h', approach='FMR')
     expectedm = np.array([7.98237872, 5.47698573, 0.77030456, 0.77031781])
     expected0 = np.array([8.46718639, 5.67524299, 0.92860658, 0.92866436])
     expectedp = np.array([8.76534627, 6.18498153, 1.02517556, 1.02513059])
@@ -361,7 +363,8 @@ def test_condense_mbis_linear_fd_rmf_ch4_fchk():
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec='insane', random_rotate=False, mode='keep')
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, model='linear', grid=grid, scheme='mbis', approach='RMF')
+    desp = CondensedConceptualDFT.from_file(file_path, model='linear', grid=grid, scheme='mbis',
+                                            approach='RMF')
     expectedm = np.array([7.8580338, 5.70425809, 0.71885554, 0.71884404])
     expected0 = np.array([8.41149, 5.66445074, 0.96204946, 0.96202722])
     expectedp = np.array([8.13881352, 6.81770852, 1.28123219, 0.76225513])
@@ -401,7 +404,8 @@ def test_condense_mbis_linear_fd_rmf_ch4_fchk():
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec='insane', random_rotate=False, mode='keep')
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, model='linear', grid=grid, scheme='mbis', approach='RMF')
+    desp = CondensedConceptualDFT.from_file(file_path, model='linear', grid=grid, scheme='mbis',
+                                            approach='RMF')
     expectedm = np.array([7.8580338, 5.70425809, 0.71885554, 0.71884404])
     expected0 = np.array([8.41149, 5.66445074, 0.96204946, 0.96202722])
     expectedp = np.array([8.13881352, 6.81770852, 1.28123219, 0.76225513])
@@ -441,7 +445,8 @@ def test_condense_mbis_linear_fd_fmr_ch4_fchk():
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec='insane', random_rotate=False, mode='keep')
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, model='linear', grid=grid, scheme='mbis', approach='FMR')
+    desp = CondensedConceptualDFT.from_file(file_path, model='linear', grid=grid, scheme='mbis',
+                                            approach='FMR')
     expected0 = np.array([8.41149, 5.66445074, 0.96204946, 0.96202722])
     np.testing.assert_almost_equal(desp.density_zero, expected0, decimal=2)
     # check condensed density

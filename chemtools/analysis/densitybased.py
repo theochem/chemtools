@@ -22,8 +22,8 @@
 # --
 """Module for Density-Based and Orbital-Based Analysis of Quantum Chemistry Output Files.
 
-   This modules contains wrappers which take outputs of quantum chemistry software and
-   compute various descriptive tools based on the density and orbital information.
+This modules contains wrappers which take outputs of quantum chemistry software and
+compute various descriptive tools based on the density and orbital information.
 """
 
 import numpy as np
@@ -34,12 +34,16 @@ from chemtools.utils.output import print_vmd_script_nci
 from matplotlib import rcParams
 import matplotlib.pyplot as plt
 
+__all__ = ['NCI']
+
 
 class NCI(object):
     """Class for the Non-Covalent Interactions (NCI)."""
 
     def __init__(self, density, rdgradient, cube, hessian=None):
         """
+        Initialize class using density, Reduced density gradient and `CubeGen` instance.
+
         Parameters
         ----------
         density : np.array
@@ -136,7 +140,8 @@ class NCI(object):
 
     @property
     def signed_density(self):
-        r"""
+        r"""Signed electron density.
+
         Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on a grid,
         signed by the second eigenvalue of the Hessian at that point, i.e.
         :math:`\text{sgn}\left(\lambda_2\right) \times \rho\left(\mathbf{r}\right)`.
@@ -145,9 +150,7 @@ class NCI(object):
 
     @property
     def eigvalues(self):
-        r"""
-        Eigenvalues of Hessian.
-        """
+        r"""Eigenvalues of Hessian."""
         return self._eigvalues
 
     def plot(self, filename, color='b'):
@@ -204,7 +207,8 @@ class NCI(object):
         plt.savefig(filename, dpi=800)
 
     def dump_files(self, filename, isosurf=0.50, denscut=0.05):
-        r"""
+        r"""Generate cube files and VMD script to visualize non-covalent interactions (NCI).
+
         Generate density and reduced density gradient cube files, as well as a VMD (Visual
         Molecular Dynamics) script to visualize non-covalent interactions (NCI).
 

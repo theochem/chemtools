@@ -103,7 +103,7 @@ class Context(object):
         return glob(self.get_fn(pattern))
 
     def get_include(self):
-        """Return the list with directories containing header files (.h and .pxd)"""
+        """Return the list with directories containing header files (.h and .pxd)."""
         return self.include_dir
 
 

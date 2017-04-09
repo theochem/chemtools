@@ -44,7 +44,7 @@ terms = [RTwoIndexTerm(kin, 'kin'),
          RDirectTerm(er, 'hartree'),
          RExchangeTerm(er, 'x_hf'),
          RTwoIndexTerm(na, 'ne'),
-        ]
+         ]
 ham = REffHam(terms, external)
 
 # select orbital occupation scheme (1 alpha electron)

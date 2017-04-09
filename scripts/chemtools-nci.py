@@ -22,10 +22,10 @@
 #
 # --
 
-
 import argparse
 from chemtools import NCI
 from argparse import RawTextHelpFormatter
+
 
 def parse_args_nci():
     """

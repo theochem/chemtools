@@ -20,8 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Test chemtools.utils.output
-"""
+"""Test chemtools.utils.output."""
 
 from nose.tools import assert_raises
 import numpy as np

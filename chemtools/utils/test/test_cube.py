@@ -32,7 +32,6 @@ from horton import IOData
 from chemtools import *
 
 
-
 @contextmanager
 def tmpdir(name):
     dn = tempfile.mkdtemp(name)

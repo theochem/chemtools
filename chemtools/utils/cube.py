@@ -33,6 +33,8 @@ class CubeGen(object):
 
     def __init__(self, numbers, pseudo_numbers, coordinates, origin, axes, shape):
         """
+        Initialize ``CubeGen`` class based on the origin, axes and shape of the cube.
+
         Parameters
         ----------
         numbers : np.ndarray, shape=(M,)
@@ -204,7 +206,8 @@ class CubeGen(object):
 
     @property
     def axes(self):
-        """
+        """Array with axes of the cube.
+
         The three vectors, stored as rows of axes array, defining the Cartesian
         coordinate system used to build the cubic grid.
         """

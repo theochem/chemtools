@@ -22,8 +22,9 @@
 # --
 """Condensed Conceptual Density Functional Theory (DFT) Reactivity Tools."""
 
-
 import numpy as np
+
+__all__ = ['CondensedTool']
 
 
 class CondensedTool(object):

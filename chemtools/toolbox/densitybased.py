@@ -22,15 +22,17 @@
 # --
 """Density-Based Local Conceptual Density Functional Theory (DFT) Reactivity Tools."""
 
-
 import numpy as np
+
+__all__ = ['DensityLocalTool']
 
 
 class DensityLocalTool(object):
     """Class of density-based local descriptive tools."""
 
     def __init__(self, density, gradient, hessian=None):
-        """
+        """Initialize class with density and gradient.
+
         Parameters
         ----------
         density : np.ndarray
@@ -55,12 +57,16 @@ class DensityLocalTool(object):
 
     @property
     def density(self):
-        r"""Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on a grid."""
+        r"""Electron density.
+
+        Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on a grid.
+        """
         return self._density
 
     @property
     def gradient(self):
-        r"""
+        r"""Gradient of electron density.
+
         Gradient vector of electron :math:`\nabla \rho\left(\mathbf{r}\right)`
         defined as the first-order partial derivatives of electron density w.r.t. coordinate
         :math:`\mathbf{r} = \left(x\mathbf{i}, y\mathbf{j}, z\mathbf{k}\right)`,
@@ -74,7 +80,8 @@ class DensityLocalTool(object):
 
     @property
     def hessian(self):
-        r"""
+        r"""Hessian of electron density.
+
         Hessian matrix of electron density :math:`\nabla^2 \rho\left(\mathbf{r}\right)`
         defined as the second-order partial derivatives of electron density w.r.t coordinate
         :math:`\mathbf{r} = \left(x\mathbf{i}, y\mathbf{j}, z\mathbf{k}\right)`.
@@ -83,7 +90,8 @@ class DensityLocalTool(object):
 
     @property
     def laplacian(self):
-        r"""
+        r"""Laplacian of electron density.
+
         Laplacian of electron density :math:`\nabla ^2 \rho\left(\mathbf{r}\right)` defined
         as the trace of Hessian matrix of electron density which is equal to the sum of
         :math:`\left(\lambda_1, \lambda_2, \lambda_3\right)` eigen-values of Hessian matrix,
@@ -106,7 +114,8 @@ class DensityLocalTool(object):
 
     @property
     def gradient_norm(self):
-        r"""
+        r"""Norm of the gradient of electron density.
+
         Gradient norm representing the norm of the gradient vector at every point,
 
         .. math::
@@ -120,7 +129,8 @@ class DensityLocalTool(object):
 
     @property
     def reduced_density_gradient(self):
-        r"""
+        r"""Reduced density gradient.
+
         Reduced density gradient (RDG) defined as,
 
         .. math::
@@ -137,7 +147,8 @@ class DensityLocalTool(object):
 
     @property
     def weizsacker_kinetic_energy_density(self):
-        r"""
+        r"""Weizsacker kinetic energy density.
+
         Weizsacker kinetic energy/local steric energy/Fisher information density defined as,
 
         .. math::
@@ -153,7 +164,8 @@ class DensityLocalTool(object):
 
     @property
     def thomas_fermi_kinetic_energy_density(self):
-        r"""
+        r"""Thomas-Fermi kinetic energy density.
+
         Thomas-Fermi kinetic energy density defined as,
 
         .. math::
@@ -166,7 +178,8 @@ class DensityLocalTool(object):
         return kinetic
 
     def electrostatic_potential(self, numbers, coordinates, int_weights, int_points, points):
-        r"""
+        r"""Electrostatic potential.
+
         Electrostatic potential defined as,
 
         .. math::

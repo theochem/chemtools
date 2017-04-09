@@ -22,12 +22,14 @@
 # --
 """Module for Density-Based and Orbital-Based Analysis of Quantum Chemistry Output Files.
 
-   This modules contains wrappers which take outputs of quantum chemistry software and
-   compute various descriptive tools based on the density and orbital information.
+This modules contains wrappers which take outputs of quantum chemistry software and
+compute various descriptive tools based on the density and orbital information.
 """
 
 from horton import IOData
 from chemtools.toolbox.orbitalbased import OrbitalLocalTool
+
+__all__ = ['OrbitalAnalysis']
 
 
 class OrbitalAnalysis(OrbitalLocalTool):

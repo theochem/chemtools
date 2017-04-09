@@ -22,11 +22,14 @@
 # --
 """Output Module.
 
-   This module contains functions for generating scripts for visualizing
-   purposes using VMD, GaussView, etc.
+This module contains functions for generating scripts for visualizing
+purposes using VMD, GaussView, etc.
 """
 import os
 import numpy as np
+
+__all__ = ['print_vmd_script_nci', 'print_vmd_script_isosurface',
+           'print_vmd_script_multiple_cube', 'print_vmd_script_vector_field']
 
 
 def _vmd_script_start():
