@@ -20,5 +20,9 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+"""Miscellaneous tools used in ChemTools.
+
+These tools do not influence the functionality of ChemTools.
+"""
 
 from tools.rug import *
