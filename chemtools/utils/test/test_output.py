@@ -20,6 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+# pylint: skip-file
 """Test chemtools.utils.output."""
 
 import shutil
@@ -49,6 +50,7 @@ header = ('#!/usr/local/bin/vmd\n'
           'display nearclip set 0.000000\n'
           'color Name {C} gray\n'
           '#\n')
+
 
 def test_vmd_script_start():
     """Test output._vmd_script_start."""
@@ -203,7 +205,7 @@ def test_vmd_script_vector_field():
          'draw color 0\n'
          'draw arrow {1 2 3} {1 0 0} 0.08 0.15 0.7\n'
          '#\n')
-    assert output._vmd_script_vector_field(centers, unit_vecs, weights,has_shadow=False) == \
+    assert output._vmd_script_vector_field(centers, unit_vecs, weights, has_shadow=False) == \
         ('# Add function for vector field\n'
          'proc vmd_draw_arrow {mol center unit_dir cyl_radius cone_radius length} {\n'
          'set start [vecsub $center [vecscale [vecscale 0.5 $length] $unit_dir]]\n'
@@ -233,11 +235,12 @@ def test_vmd_script_vector_field():
          'draw color 0\n'
          '#\n')
 
+
 def test_print_vmd_script_isosurface():
     """Test print_vmd_script_isosurface."""
     # check TypeError:
     assert_raises(TypeError, output.print_vmd_script_isosurface, 'test.vmd', 'iso.cube',
-                      colorscheme=[1], negative=True)
+                  colorscheme=[1], negative=True)
 
     with tmpdir('chemtools.utils.test.test_base.test_vmd_script_isosurface') as dn:
         vmd = '%s/%s' % (dn, 'test.vmd')
@@ -308,7 +311,7 @@ def test_print_vmd_script_isosurface():
                  'color scale method RGB\n'
                  '#\n')
 
-        output.print_vmd_script_isosurface(vmd, 'iso.cube', colorscheme=[0,1], negative=True)
+        output.print_vmd_script_isosurface(vmd, 'iso.cube', colorscheme=[0, 1], negative=True)
 
         with open(vmd, 'r') as content_file:
             assert content_file.read() == \
@@ -353,13 +356,12 @@ def test_print_vmd_script_isosurface():
                  '#\n')
 
 
-
 def test_print_vmd_script_multiple_cube():
     """Test print_vmd_script_multiple_cube."""
     # check TypeError and ValueError:
     assert_raises(TypeError, output.print_vmd_script_multiple_cube, 'test.vmd', 'iso.cube')
     assert_raises(ValueError, output.print_vmd_script_multiple_cube, 'test.vmd',
-                  ['iso.cube','iso.wrong_end'])
+                  ['iso.cube', 'iso.wrong_end'])
 
     ratom = ('# representation of the atoms\n'
              'mol delrep 0 top\n'
@@ -371,6 +373,7 @@ def test_print_vmd_script_multiple_cube():
              '#\n')
 
     def rsurf(iso, n, c):
+        """Generate representation of the surface."""
         return ('# add representation of the surface\n'
                 'mol representation Isosurface {0} {1} 0 0 1 1\n'.format(iso, n) +
                 'mol color ColorID {0}\n'.format(c) +
@@ -387,8 +390,8 @@ def test_print_vmd_script_multiple_cube():
 
     with tmpdir('chemtools.utils.test.test_base.test_vmd_script_multiple_cube') as dn:
         vmd = '%s/%s' % (dn, 'test.vmd')
-        c1  = '%s/%s' % (dn, 'iso1.cube')
-        c2  = '%s/%s' % (dn, 'iso2.cube')
+        c1 = '%s/%s' % (dn, 'iso1.cube')
+        c2 = '%s/%s' % (dn, 'iso2.cube')
         open(c1, 'a').close()
         open(c2, 'a').close()
 
@@ -402,7 +405,7 @@ def test_print_vmd_script_multiple_cube():
                  'autobonds 1 waitfor all\n'
                  'mol addfile {0} type cube first 0 last -1 step 1 filebonds 1 '.format(c2) +
                  'autobonds 1 waitfor all\n'
-                 '#\n'+ ratom + rsurf('0.50000', '0', '0') + rsurf('0.50000', '1', '1'))
+                 '#\n' + ratom + rsurf('0.50000', '0', '0') + rsurf('0.50000', '1', '1'))
 
         output.print_vmd_script_multiple_cube(vmd, [c1, c2], isosurfs=0.6)
 
@@ -414,7 +417,7 @@ def test_print_vmd_script_multiple_cube():
                  'autobonds 1 waitfor all\n'
                  'mol addfile {0} type cube first 0 last -1 step 1 filebonds 1 '.format(c2) +
                  'autobonds 1 waitfor all\n'
-                 '#\n'+ ratom + rsurf('0.60000', '0', '0') + rsurf('0.60000', '1', '1'))
+                 '#\n' + ratom + rsurf('0.60000', '0', '0') + rsurf('0.60000', '1', '1'))
 
         output.print_vmd_script_multiple_cube(vmd, [c1, c2], isosurfs=[0.6, 0.8], colors=[3, 4])
 
@@ -426,7 +429,7 @@ def test_print_vmd_script_multiple_cube():
                  'autobonds 1 waitfor all\n'
                  'mol addfile {0} type cube first 0 last -1 step 1 filebonds 1 '.format(c2) +
                  'autobonds 1 waitfor all\n'
-                 '#\n'+ ratom + rsurf('0.60000', '0', '3') + rsurf('0.80000', '1', '4'))
+                 '#\n' + ratom + rsurf('0.60000', '0', '3') + rsurf('0.80000', '1', '4'))
 
         # check TypeError and ValueError:
         assert_raises(TypeError, output.print_vmd_script_multiple_cube, vmd, [c1, c2],
@@ -437,6 +440,7 @@ def test_print_vmd_script_multiple_cube():
                       isosurfs=[0.6, 0.8], colors=[3, 4, 8])
         assert_raises(ValueError, output.print_vmd_script_multiple_cube, vmd, [c1, c2],
                       isosurfs=[0.6, 0.8], colors=[3, 1060])
+
 
 def test_print_vmd_script_vector_field():
     """Test output.print_vmd_script_vector_field."""
@@ -464,7 +468,8 @@ def test_print_vmd_script_vector_field():
                  'proc vmd_draw_arrow {mol center unit_dir cyl_radius cone_radius length} {\n'
                  'set start [vecsub $center [vecscale [vecscale 0.5 $length] $unit_dir]]\n'
                  'set end [vecadd $start [vecscale $length $unit_dir]]\n'
-                 'set middle [vecsub $end [vecscale [vecscale 1.732050808 $cone_radius] $unit_dir]]\n'
+                 'set middle [vecsub $end [vecscale [vecscale 1.732050808 $cone_radius] '
+                 '$unit_dir]]\n'
                  'graphics $mol cylinder $start $middle radius $cyl_radius\n'
                  'graphics $mol cone $middle $end radius $cone_radius\n'
                  '}\n'

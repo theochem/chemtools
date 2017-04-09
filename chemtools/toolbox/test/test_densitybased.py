@@ -65,9 +65,9 @@ def test_density_local_tool():
     expected = np.array([2.871234, 17.91722219, 41.97769574, 9.115599745, 73.5470608])
     np.testing.assert_almost_equal(model.thomas_fermi_kinetic_energy_density, expected, decimal=6)
     # check hessian
-    assert model.hessian == None
+    assert model.hessian is None
     # check laplacian
-    assert model.laplacian == None
+    assert model.laplacian is None
 
     # build a density local model with hessian
     model = DensityLocalTool(d, g, h)
@@ -78,9 +78,10 @@ def test_density_local_tool():
     np.testing.assert_almost_equal(model.laplacian, expected, decimal=6)
 
     # check ValueError
-    assert_raises(ValueError, DensityLocalTool, np.array([[0.],[0.]]), g)
+    assert_raises(ValueError, DensityLocalTool, np.array([[0.], [0.]]), g)
     assert_raises(ValueError, DensityLocalTool, d, np.array([0.]))
     assert_raises(ValueError, DensityLocalTool, d, g, hessian=np.array([0.]))
+
 
 def test_density_local_tool_electrostatic_potential():
     file_path = context.get_fn('test/water_b3lyp_sto3g.fchk')
