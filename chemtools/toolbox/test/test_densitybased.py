@@ -22,19 +22,26 @@
 # --
 # pylint: skip-file
 
+from nose.tools import assert_raises
 import numpy as np
 from chemtools.toolbox.densitybased import DensityLocalTool
 
 
 def test_density_local_tool():
-    # fake density and gradient arrays
+    # fake density, gradient and Hessian arrays
     d = np.array([1.00, 3.00, 5.00, 2.00, 7.00])
     g = np.array([[ 0.50,  0.50,  0.50],
                   [ 0.35, -0.35,  0.40],
                   [-0.30, -0.50, -0.50],
                   [ 0.40,  0.40,  0.60],
                   [ 0.25, -0.10, -0.50]])
-    # build a linear local model
+    h = np.array([[[ 0.50,  0.50,  0.50], [ 0.50,  0.50,  0.50], [ 0.50,  0.50,  0.50]],
+                  [[ 0.35, -0.35,  0.40], [ 0.35, -0.50,  0.40], [ 0.35, -0.35,  0.15]],
+                  [[-0.30, -0.50, -0.50], [ 0.40,  0.40,  0.60], [ 0.25, -0.10, -0.50]],
+                  [[ 0.40,  0.40,  0.60], [ 0.00,  0.00,  0.00], [ 0.00, -1.50,  0.60]],
+                  [[ 0.25, -0.10, -0.50], [ 0.35, -1.50,  0.40], [ 0.45, -0.20, -0.50]]])
+
+    # build a linear local model without hessian
     model = DensityLocalTool(d, g)
     # check density and gradient
     np.testing.assert_almost_equal(model.density, d, decimal=6)
@@ -53,3 +60,20 @@ def test_density_local_tool():
     np.testing.assert_almost_equal(model.weizsacker_kinetic_energy_density, expected, decimal=6)
     expected = np.array([2.871234, 17.91722219, 41.97769574, 9.115599745, 73.5470608])
     np.testing.assert_almost_equal(model.thomas_fermi_kinetic_energy_density, expected, decimal=6)
+    # check hessian
+    assert model.hessian == None
+    # check laplacian
+    assert model.laplacian == None
+
+    # build a linear local model with hessian
+    model = DensityLocalTool(d, g, h)
+    # check hessian
+    np.testing.assert_almost_equal(model.hessian, h, decimal=6)
+    # check laplacian
+    expected = np.array([1.5, 0.0, -0.4, 1.0, -1.75])
+    np.testing.assert_almost_equal(model.laplacian, expected, decimal=6)
+
+    # check ValueError
+    assert_raises(ValueError, DensityLocalTool, np.array([[0.],[0.]]), g)
+    assert_raises(ValueError, DensityLocalTool, d, np.array([0.]))
+    assert_raises(ValueError, DensityLocalTool, d, g, hessian=np.array([0.]))

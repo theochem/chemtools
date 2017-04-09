@@ -103,7 +103,8 @@ class DensityLocalTool(object):
                      \frac{\partial^2\rho\left(\mathbf{r}\right)}{\partial z^2} =
                      \lambda_1 + \lambda_2 + \lambda_3
         """
-        raise NotImplementedError()
+        if self._hessian is not None:
+            return np.trace(self._hessian, axis1=1, axis2=2)
 
     @property
     def shanon_information(self):
