@@ -26,6 +26,7 @@
 import shutil
 import tempfile
 from contextlib import contextmanager
+from nose.tools import assert_raises
 import numpy as np
 from horton import IOData
 from chemtools import context
@@ -60,6 +61,9 @@ def test_cubegen_o2_uhf():
     np.testing.assert_array_almost_equal(cube.origin, origin_result, decimal=7)
     np.testing.assert_array_almost_equal(cube.axes, axes_result, decimal=7)
     np.testing.assert_array_equal(cube.shape, shape_result)
+    np.testing.assert_array_equal(cube.numbers, mol.numbers)
+    np.testing.assert_array_almost_equal(cube.coordinates, mol.coordinates, decimal=10)
+    np.testing.assert_array_almost_equal(cube.pseudo_numbers, mol.pseudo_numbers, decimal=10)
     np.testing.assert_array_almost_equal(cube.weights(), weight_result, decimal=7)
     np.testing.assert_array_almost_equal(cube.weights(method='R0'), weight_result, decimal=7)
     np.testing.assert_array_almost_equal(cube.weights(method='R'), weight_result, decimal=7)
@@ -95,6 +99,24 @@ def test_cubegen_o2_uhf():
     np.testing.assert_almost_equal(ffm_default, 1.000, decimal=2)
     np.testing.assert_almost_equal(ffm_default, 1.000, decimal=2)
     np.testing.assert_almost_equal(ffm_default, 1.000, decimal=2)
+
+    o = np.array([-3.0, -3.0, -3.0])
+    a = np.array([[2.0,  0.0,  0.0],
+                  [0.0,  2.0,  0.0],
+                  [0.0,  0.0,  2.0]])
+    s = np.array([ 3,    3,    3])
+    # check ValueError
+    assert_raises(ValueError, CubeGen, mol.numbers, mol.pseudo_numbers, mol.coordinates,
+                  np.array([0.]), a, s)
+    assert_raises(ValueError, CubeGen, mol.numbers, mol.pseudo_numbers, mol.coordinates,
+                  o, np.array([0.]), s)
+    assert_raises(ValueError, CubeGen, mol.numbers, mol.pseudo_numbers, mol.coordinates,
+                  o, a, np.array([0.]))
+    assert_raises(ValueError, CubeGen.from_cube, 'test.wrong_end')
+    assert_raises(ValueError, cube.dump_cube, 'test.wrong_end', tool.ff_minus)
+    assert_raises(ValueError, cube.dump_cube, 'test.cube', np.array([0.]))
+    assert_raises(ValueError, cube.weights, method='erroneous')
+    assert_raises(ValueError, cube.integrate, np.array([0.]))
 
 
 def test_cube_h2o_dimer():
