@@ -22,10 +22,11 @@
 # --
 # pylint: skip-file
 
-
 import shutil
 import tempfile
 from contextlib import contextmanager
+
+import numpy as np
 
 from horton import IOData
 

@@ -38,6 +38,7 @@ def test_vmd_script_start():
                                           '# Display settings\n'
                                           'display projection Orthographic\n'
                                           'display nearclip set 0.000000\n'
+                                          'color Name {C} gray\n'
                                           '#\n')
 
 
@@ -120,7 +121,6 @@ def test_vmd_script_isosurface():
                                                'mol smoothrep top 1 0\n'
                                                'mol drawframes top 1 {now}\n'
                                                'color scale method RGB\n'
-                                               'set colorcmds {{{{color Name {{C}} gray}}}}\n'
                                                '#\n')
     assert output._vmd_script_isosurface(colorscheme=1) == \
         ('# add representation of the surface\n'
@@ -135,7 +135,6 @@ def test_vmd_script_isosurface():
          'mol smoothrep top 1 0\n'
          'mol drawframes top 1 {now}\n'
          'color scale method RGB\n'
-         'set colorcmds {{{{color Name {{C}} gray}}}}\n'
          '#\n')
 
 
