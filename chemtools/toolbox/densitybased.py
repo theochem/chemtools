@@ -212,6 +212,11 @@ class DensityLocalTool(object):
         if len(int_points) != len(self._density):
             raise ValueError('Argument int_points & density should have the same shape. ' +
                              '{0}!={1}'.format(int_weights.shape, self._density.shape))
+        try:
+            if points.shape[1] != 3:
+                raise ValueError('Argument points should have the shape of (n,3)')
+        except:
+            raise ValueError('Argument points should have the shape of (n,3)')
 
         # array to store esp
         esp = np.zeros(points.shape[0])
