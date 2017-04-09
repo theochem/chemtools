@@ -32,8 +32,7 @@ class CubeGen(object):
     """Class for generating a cubic grid and writing cube files."""
 
     def __init__(self, numbers, pseudo_numbers, coordinates, origin, axes, shape):
-        """
-        Initialize ``CubeGen`` class based on the origin, axes and shape of the cube.
+        """Initialize ``CubeGen`` class based on the origin, axes and shape of the cube.
 
         Parameters
         ----------
@@ -236,8 +235,7 @@ class CubeGen(object):
                          ('Axes[0]', self._axes[0]),
                          ('Axes[1]', self._axes[1]),
                          ('Axes[2]', self._axes[2]),
-                         ('Shape  ', self._shape)
-                         ])
+                         ('Shape  ', self._shape)])
             log.blank()
 
     def dump_cube(self, filename, data):
