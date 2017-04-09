@@ -993,7 +993,8 @@ class GeneralGlobalTool(BaseGlobalTool):
             raise ValueError(
                 'There is no parameters in the energy_expression={0} to solve for.'.format(expr))
         if not all([param in expr.atoms(sp.Symbol) for param in params]):
-            raise ValueError('The expr={0} does not contain parameters given in guess={1}'.format(expr, guess))
+            raise ValueError('The expr={0} does not contain parameters given in guess={1}'
+                             ''.format(expr, guess))
         if len(params) > len(n_energies):
             raise ValueError('Underdetermined system of equations: Number of unknowns parameters '
                              'in the energy model is more than number of given known energies.')
