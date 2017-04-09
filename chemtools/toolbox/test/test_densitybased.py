@@ -125,3 +125,5 @@ def test_density_local_tool_electrostatic_potential():
               grid.weights, np.array([0.]), cube.points)
     assert_raises(ValueError, model.electrostatic_potential, mol.numbers, mol.coordinates,
                   grid.weights, grid.points, np.array([0.]))
+    assert_raises(ValueError, model.electrostatic_potential, mol.numbers, mol.coordinates,
+              grid.weights, grid.points, np.array([[0.]]))

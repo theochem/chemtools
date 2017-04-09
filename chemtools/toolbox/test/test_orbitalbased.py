@@ -22,6 +22,7 @@
 # --
 # pylint: skip-file
 
+from nose.tools import assert_raises
 import numpy as np
 from horton import IOData
 from chemtools import context
@@ -30,8 +31,8 @@ from chemtools.toolbox.orbitalbased import OrbitalLocalTool
 
 
 def test_orbital_tool_ch4_uhf_ccpvdz():
-    path_file = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
-    mol = IOData.from_file(path_file)
+    file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
+    mol = IOData.from_file(file_path)
 
     # creating cube file:
     ori = np.array([-3.000000, -3.000000, -3.000000])
@@ -42,7 +43,7 @@ def test_orbital_tool_ch4_uhf_ccpvdz():
     cube = CubeGen(mol.numbers, mol.pseudo_numbers, mol.coordinates, ori, ax, sh)
 
     # initialize OrbitalLocalTool:
-    orbtool = OrbitalLocalTool(cube.points, mol.obasis, mol.exp_alpha)
+    orbtool = OrbitalLocalTool(cube.points, mol.obasis, mol.exp_alpha, mol.exp_beta)
 
     # density results obtained from Fortran code:
     result = [0.00003304, 0.00053319, 0.00019292, 0.00111552, 0.00679461,
@@ -124,8 +125,14 @@ def test_orbital_tool_ch4_uhf_ccpvdz():
     # check homo expansion
     test = orbtool.orbitals_exp(8)
     np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
+    # check homo expansion (beta should equal alpha)
+    test = orbtool.orbitals_exp(np.array([8]), spin='beta')
+    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     # check lumo expansion
     test = orbtool.orbitals_exp(9)
+    np.testing.assert_array_almost_equal(test[:, 0], lumo_result, decimal=6)
+    # check lumo expansion (beta should equal alpha)
+    test = orbtool.orbitals_exp(np.array([9]), spin='beta')
     np.testing.assert_array_almost_equal(test[:, 0], lumo_result, decimal=6)
     # check homo & lumo expansion with list of orbital indices
     test = orbtool.orbitals_exp([8, 9])
@@ -139,6 +146,37 @@ def test_orbital_tool_ch4_uhf_ccpvdz():
     test = orbtool.orbitals_exp(np.array([8, 9]))
     np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
+
+    # check ValueError
+    assert_raises(ValueError, orbtool.orbitals_exp, np.array([9]), spin='error')
+
+
+def test_orbital_tool_h2o_b3lyp_sto3g():
+    file_path = context.get_fn('test/water_b3lyp_sto3g.fchk')
+    mol = IOData.from_file(file_path)
+
+    # creating cube file:
+    ori = np.array([-3.000000, -3.000000, -3.000000])
+    ax = np.array([[ 3.000000,  0.000000,  0.000000],
+                   [ 0.000000,  3.000000,  0.000000],
+                   [ 0.000000,  0.000000,  3.000000]])
+    sh = np.array([3, 3, 3])
+    cube = CubeGen(mol.numbers, mol.pseudo_numbers, mol.coordinates, ori, ax, sh)
+
+    # initialize OrbitalLocalTool:
+    orbtool = OrbitalLocalTool(cube.points, mol.obasis, mol.exp_alpha)
+
+    # mep results obtained from Fortran code:
+    expected = np.array([-0.01239766, -0.02982537, -0.02201149,   -0.01787292, -0.05682143,
+                         -0.02503563, -0.00405942, -0.00818772,   -0.00502268,  0.00321181,
+                         -0.03320573, -0.02788605,  0.02741914, 1290.21135500, -0.03319778,
+                          0.01428660,  0.10127092,  0.01518299,    0.01530548,  0.00197975,
+                         -0.00894206,  0.04330806,  0.03441681,   -0.00203017,  0.02272626,
+                          0.03730846,  0.01463959])
+
+    test = orbtool.mep(mol.coordinates, mol.pseudo_numbers)
+
+    np.testing.assert_almost_equal(test, expected, decimal=6)
 
 
 def test_orbital_tool_elf_h2o_dimer():
