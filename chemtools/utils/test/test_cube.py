@@ -22,15 +22,15 @@
 # --
 # pylint: skip-file
 
+
 import shutil
 import tempfile
 from contextlib import contextmanager
-
 import numpy as np
-
 from horton import IOData
-
-from chemtools import *
+from chemtools import context
+from chemtools.analysis.conceptual import LocalConceptualDFT
+from chemtools.utils.cube import CubeGen
 
 
 @contextmanager

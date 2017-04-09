@@ -274,7 +274,6 @@ class CubeGen(object):
                 f.write((row_data.size*' {:12.5E}').format(*row_data))
                 f.write('\n')
 
-
     def weights(self, method='R'):
         """
         Return integration weights at every point on the cubic grid.
