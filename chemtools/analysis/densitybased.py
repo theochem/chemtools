@@ -63,11 +63,11 @@ class NCI(object):
         if rdgradient.shape != (len(cube.points),):
             raise ValueError('Shape of rdgradient argument {0} does not '.format(density.shape) +
                              'match expected ({0},) shape.'.format(len(cube.points)))
-        if hessian.shape != (len(cube.points), 3, 3):
-            raise ValueError('Shape of hessian argument {0} does not match '.format(hessian.shape) +
-                             'expected ({0}, 3, 3) shape.'.format(len(cube.points)))
 
         if hessian is not None:
+            if hessian.shape != (len(cube.points), 3, 3):
+                raise ValueError('Shape of hessian argument {0} '.format(hessian.shape) +
+                             'does not match expected ({0}, 3, 3) shape.'.format(len(cube.points)))
             # Compute hessian and its eigenvalues on cubuc grid
             eigvalues = np.linalg.eigvalsh(hessian)
 

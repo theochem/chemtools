@@ -64,8 +64,7 @@ class OrbitalLocalTool(DensityLocalTool):
         # Compute density & gradient on grid
         dens = self._obasis.compute_grid_density_dm(self._dm, self._points)
         grad = self._obasis.compute_grid_gradient_dm(self._dm, self._points)
-
-        super(self.__class__, self).__init__(dens, grad, hessian=None)
+        super(OrbitalLocalTool, self).__init__(dens, grad, hessian=None)
 
     @property
     def kinetic_energy_density(self):
