@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from horton import IOData, get_gobasis, CholeskyLinalgFactory, guess_core_hamiltonian
 from horton import compute_nucnuc, REffHam, AufbauOccModel, PlainSCFSolver, AtomicGrid
-from horton.meanfield import RTwoIndexTerm, RDirectTerm, RExchangeTerm, RTwoIndexTerm
+from horton.meanfield import RTwoIndexTerm, RDirectTerm, RExchangeTerm
 from chemtools import OrbitalLocalTool
 
 # 1. Run a Hartree-Fock calculation with cc-pVDZ basis-set using HORTON
@@ -46,7 +46,7 @@ terms = [RTwoIndexTerm(kin, 'kin'),
          RDirectTerm(er, 'hartree'),
          RExchangeTerm(er, 'x_hf'),
          RTwoIndexTerm(na, 'ne'),
-         ]
+        ]
 ham = REffHam(terms, external)
 
 # select orbital occupation scheme (1 alpha electron)
