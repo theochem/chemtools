@@ -82,7 +82,7 @@ class CubeGen(object):
                     self._points[count, :] += coordinate
                     count += 1
 
-        # print information
+        # log information
         self._log_init()
 
     @classmethod
@@ -228,7 +228,7 @@ class CubeGen(object):
         return self._points
 
     def _log_init(self):
-        """Print an overview of the cube's properties."""
+        """Log an overview of the cube's properties."""
         if log.do_medium:
             log('Initialized cube: %s' % self.__class__)
             log.deflist([('Origin ', self._origin),
@@ -239,8 +239,7 @@ class CubeGen(object):
             log.blank()
 
     def dump_cube(self, filename, data):
-        r"""
-        Write the data evaluated on grid points into a cube file.
+        r"""Write the data evaluated on grid points into a cube file.
 
         Parameters
         ----------
@@ -257,28 +256,24 @@ class CubeGen(object):
 
         # Write data into the cube file
         with open(filename, 'w') as f:
-            title = 'Cubefile created with HORTON CHEMTOOLS'
             # writing the cube header:
-            print >> f, title
-            print >> f, 'OUTER LOOP: X, MIDDLE LOOP: Y, INNER LOOP: Z'
+            f.write('Cubefile created with HORTON CHEMTOOLS\n')
+            f.write('OUTER LOOP: X, MIDDLE LOOP: Y, INNER LOOP: Z\n')
             natom = len(self._numbers)
             x, y, z = self._origin
-            print >> f, '%5i % 11.6f % 11.6f % 11.6f' % (natom, x, y, z)
+            f.write('{0:5d} {1:11.6f} {2:11.6f} {3:11.6f}\n'.format(natom, x, y, z))
             rvecs = self._axes
-            for i in xrange(3):
-                x, y, z = rvecs[i]
-                print >> f, '%5i % 11.6f % 11.6f % 11.6f' % (self._shape[i], x, y, z)
-            for i in xrange(natom):
-                q = self._pseudo_numbers[i]
-                x, y, z = self._coordinates[i]
-                print >> f, '%5i % 11.6f % 11.6f % 11.6f % 11.6f' % (self._numbers[i], q, x, y, z)
+            for i, (x, y, z) in zip(self._shape, rvecs):
+                f.write('{0:5d} {1:11.6f} {2:11.6f} {3:11.6f}\n'.format(i, x, y, z))
+            for i, q, (x, y, z) in zip(self._numbers, self._pseudo_numbers, self._coordinates):
+                f.write('{0:5d} {1:11.6f} {2:11.6f} {3:11.6f} {4:11.6f}\n'.format(i, q, x, y, z))
             # writing the cube data:
-            counter = 0
-            for value in data.flat:
-                f.write(' % 12.5E' % value)
-                if counter % 6 == 5:
-                    f.write('\n')
-                counter += 1
+            num_chunks = 6
+            for i in range(0, data.size, num_chunks):
+                row_data = data.flat[i:i+num_chunks]
+                f.write((row_data.size*' {:12.5E}').format(*row_data))
+                f.write('\n')
+
 
     def weights(self, method='R'):
         """
