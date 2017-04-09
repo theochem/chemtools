@@ -22,8 +22,8 @@
 # --
 """The Main ChemTools Package."""
 
-__version__ = '0.9.0'
-
 from chemtools.toolbox import *
 from chemtools.analysis import *
 from chemtools.utils import *
+
+__version__ = '0.9.0'
