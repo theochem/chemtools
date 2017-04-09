@@ -21,30 +21,29 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+"""Command-line script for NCI calculations."""
 
 import argparse
 from chemtools import NCI
-from argparse import RawTextHelpFormatter
 
 
 def parse_args_nci():
-    """
-    Parse command-line arguments for computing NCI.
-    """
-    parser = argparse.ArgumentParser(prog='chemtools-nci.py',
-        description='Generate density & reduced density gradient cube files, as well as a VMD\n'
-                    '(Visual Molecular Dynamics) script to visualize non-covalent interactions (NCI).\n\n'
-                    'This script will generate 3 files which includes:\n'
-                    '    filename_output-dens.cube\n'
-                    '    filename_output-grad.cube\n'
-                    '    filename_output.vmd\n\n'
-                    'If VMD is setup on your system, you can visualize NCI with the command below:\n'
-                    '    $ vmd -e filename_output.vmd\n\n'
-                    'Note: The filename_output.vmd scripts,requires "filename_output-dens.cube" &\n'
-                    '      "filename_output-grad.cube" to plot NCI.\n'
-                    'Note: The generated VMD script is the same as the NCIPlot Software version 1.0.\n',
-        formatter_class=RawTextHelpFormatter,
-                                     )
+    """Parse command-line arguments for computing NCI."""
+    description = ('Generate density & reduced density gradient cube files, as well as a VMD\n'
+                   '(Visual Molecular Dynamics) script to visualize non-covalent interactions '
+                   '(NCI).\n\n'
+                   'This script will generate 3 files which includes:\n'
+                   '    filename_output-dens.cube\n'
+                   '    filename_output-grad.cube\n'
+                   '    filename_output.vmd\n\n'
+                   'If VMD is setup on your system, you can visualize NCI with the command below:\n'
+                   '    $ vmd -e filename_output.vmd\n\n'
+                   'Note: The filename_output.vmd scripts,requires "filename_output-dens.cube" &\n'
+                   '      "filename_output-grad.cube" to plot NCI.\n'
+                   'Note: The generated VMD script is the same as the NCIPlot Software version '
+                   '1.0.\n')
+    parser = argparse.ArgumentParser(prog='chemtools-nci.py', description=description,
+                                     formatter_class=argparse.RawTextHelpFormatter)
     # parser.add_argument('-V', '--version', action='version',
     #     version="%%(prog)s (ChemTools version %s)" % __version__)
 
@@ -57,10 +56,7 @@ def parse_args_nci():
 
 
 def main_nci():
-    """
-    Build NCI model using given command-line settings, and dump files/scripts for
-    visualizing NCI with VMD.
-    """
+    """Build NCI model and dump files/scripts for visualizing NCI with VMD using command-line."""
     # Parse command-line arguments
     args = parse_args_nci()
 
