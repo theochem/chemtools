@@ -41,8 +41,7 @@ class NCI(object):
     """Class for the Non-Covalent Interactions (NCI)."""
 
     def __init__(self, density, rdgradient, cube, hessian=None):
-        """
-        Initialize class using density, Reduced density gradient and `CubeGen` instance.
+        """Initialize class using density, Reduced density gradient and `CubeGen` instance.
 
         Parameters
         ----------
@@ -58,16 +57,16 @@ class NCI(object):
             (n, 3, 3) shape where n is the number of grid points of `cube`.
         """
         if density.shape != (len(cube.points),):
-            raise ValueError('Shape of density argument {0} does not match'.format(density.shape) +
-                             'expected ({0},) shape.'.format(len(cube.points)))
+            raise ValueError('Shape of density argument {0} does not match '
+                             'expected ({1},) shape.'.format(density.shape, len(cube.points)))
         if rdgradient.shape != (len(cube.points),):
-            raise ValueError('Shape of rdgradient argument {0} does not '.format(density.shape) +
-                             'match expected ({0},) shape.'.format(len(cube.points)))
+            raise ValueError('Shape of rdgradient argument {0} does not '
+                             'match expected ({1},) shape.'.format(density.shape, len(cube.points)))
 
         if hessian is not None:
             if hessian.shape != (len(cube.points), 3, 3):
-                raise ValueError('Shape of hessian argument {0} '.format(hessian.shape) +
-                             'does not match expected ({0}, 3, 3) shape.'.format(len(cube.points)))
+                raise ValueError('Shape of hessian argument {0} does not match expected ({1}, 3, 3)'
+                                 ' shape.'.format(hessian.shape, len(cube.points)))
             # Compute hessian and its eigenvalues on cubuc grid
             eigvalues = np.linalg.eigvalsh(hessian)
 
@@ -87,8 +86,7 @@ class NCI(object):
 
     @classmethod
     def from_file(cls, filename, cube=None):
-        """
-        Initialize class using wave-function file.
+        """Initialize class using wave-function file.
 
         Parameters
         ----------
@@ -107,8 +105,7 @@ class NCI(object):
 
     @classmethod
     def from_iodata(cls, iodata, cube=None):
-        """
-        Initialize class from ``IOData`` object from ``HORTON`` library.
+        """Initialize class from ``IOData`` object from ``HORTON`` library.
 
         Parameters
         ----------
@@ -150,12 +147,13 @@ class NCI(object):
 
     @property
     def eigvalues(self):
-        r"""Eigenvalues of Hessian."""
+        r"""The eigenvalues of Hessian."""
         return self._eigvalues
 
     def plot(self, filename, color='b'):
-        r"""
-        Plot reduced density gradient vs.
+        r"""Plot reduced density gradient.
+
+        Reduced density gradient vs.
         :math:`\text{sgn}\left(\lambda_2\right) \times \rho\left(\mathbf{r}\right)`.
 
         Parameters
@@ -255,9 +253,10 @@ class NCI(object):
 
 
 def _compute_hessian(mol, points):
-    """
-    Compute hessian of electron density defined as the second-order partial
-    derivative of electron density w.r.t. coordinates.
+    """Compute hessian of electron density w.r.t. coordinates.
+
+    Hessian is defined as the second-order partial derivative of electron density w.r.t.
+    coordinates.
 
     Parameters
     ----------
