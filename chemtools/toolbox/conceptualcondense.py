@@ -28,14 +28,15 @@ __all__ = ['CondensedTool']
 
 
 class CondensedTool(object):
-    """
-    Class of condensed conceptual DFT reactivity descriptors.
+    """Class of condensed conceptual DFT reactivity descriptors.
 
     So far only the Fragment of Molecular Response is used,
     where the weights do not depend on the number of electrons.
     """
+
     def __init__(self, dens_part):
-        """
+        """Initialize.
+
         Parameters
         ----------
         dens_part:
@@ -44,15 +45,16 @@ class CondensedTool(object):
         self._dens_part = dens_part
 
     def condense_atoms(self, local_property):
-        r"""
-        Return condensed values of the local descriptor
-        :math:`p_{\text{local}}\left(\mathbf{r}\right)` into atomic contribution :math:`P_A`
-        defined as,
+        r"""Return condensed values of the local descriptor into atomic contributions.
+
+        Atomic contribution, :math:`P_A`, is defined as,
 
         .. math::
 
            P_A = \int \omega_A\left(\mathbf{r}\right)
                       p_{\text{local}}\left(\mathbf{r}\right) d\mathbf{r}
+
+        where local descriptor is :math:`p_{\text{local}}\left(\mathbf{r}\right)`.
 
         Parameters
         ----------
@@ -70,15 +72,17 @@ class CondensedTool(object):
         return local_condensed
 
     def condense_pairs(self, response):
-        r"""
-        Return condensed values of the response function
-        :math:`f_{\text{response}}\left(\mathbf{r}, \mathbf{r'}\right)` into atomic pair
-        contribution :math:`P_{AB}` defined as:
+        r"""Return condensed values of the response function into atomic pair contribution.
+
+        Atomic pair contribution :math:`P_{AB}` is defined as:
 
         .. math::
 
            P_{AB} = \int \omega_A\left(\mathbf{r}\right) \omega_B\left(\mathbf{r'}\right)
                     f_{\text{response}}\left(\mathbf{r}, \mathbf{r'}\right) d\mathbf{r} d\mathbf{r'}
+
+        where response function is :math:`f_{\text{response}}\left(\mathbf{r}, \mathbf{r'}\right)`
+
 
         Parameters
         ----------
