@@ -22,7 +22,7 @@
 # --
 """Test chemtools.toolbox.orbitalbased."""
 
-from nose.tools import assert_raises
+from numpy.testing import assert_raises
 import numpy as np
 from horton import IOData
 from chemtools import context

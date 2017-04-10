@@ -27,7 +27,7 @@ import shutil
 import tempfile
 from contextlib import contextmanager
 
-from nose.tools import assert_raises
+from numpy.testing import assert_raises
 import numpy as np
 
 from horton import IOData

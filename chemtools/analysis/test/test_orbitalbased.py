@@ -23,7 +23,7 @@
 """Test chemtools.analysis.orbitalbased."""
 
 import numpy as np
-from nose.tools import assert_raises
+from numpy.testing import assert_raises
 from horton import IOData
 from chemtools import context, CubeGen, OrbitalAnalysis
 
