@@ -1,0 +1,57 @@
+language: python
+
+python:
+  - "2.7"
+# - "3.6"
+
+env:
+  global:
+    - QAWORKDIR=$HOME/qaworkdir
+    - CACHED=$QAWORKDIR/cached
+    - PIP_WHEEL_DIR=$CACHED/wheels
+    - PIP_FIND_LINKS=file://$CACHED/wheels
+    - PIP_NO_CACHE_DIR=no
+
+cache:
+  directories:
+    - $HOME/qaworkdir/cached
+
+install:
+  - sudo apt-get update
+  # We do this conditionally because it saves us some downloading if the
+  # version is the same.
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+      wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
+    else
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    fi
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  # Useful for debugging any issues with conda
+  - conda info -a
+  - deps='numpy scipy sympy matplotlib nose horton'
+  - conda create -p $HOME/py --yes -c pyqc $deps "python=$TRAVIS_PYTHON_VERSION"
+
+# Get the master branch and complete feature branch for a comparative analysis.
+  - tools/inspector/qa/get_master.sh
+
+# Handle detached-HEAD situations that seem to be common on Travis-CI.
+  - tools/inspector/qa/fix_detached_head.sh
+
+script:
+# Run all checks. The behavior of the test script also depends on the current branch:
+# 1) If the current branch is the master branch, only the non-comparative tests are
+#    executed: building HORTON, building documentations, fast unit tests, slow unit tests
+#    and some code analysis tools.
+# 2) If the current branch is a feauture branch (or a pull request), it first runs all
+#    checks on the feature branch: building HORTON, building documentation, fast unit
+#    tests + coverage, slow unit tests, all code analysis tools. Then it checks out the
+#    common ancestor of the master and feature branch. In that commit, it runs the
+#    following tests: building HORTON, fast unit tests + coverage, all code analysis tools
+#    whose output needs to compared to the results from the feature branch (the trapdoor
+#    tests). Finally, it compares the outputs of both branches to check for regressions.
+  - source activate $HOME/py
+  - tools/inspector/qa/test_all_twobranches.sh
