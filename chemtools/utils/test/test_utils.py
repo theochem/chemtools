@@ -20,18 +20,22 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-# pylint: skip-file
+"""Test chemtools.utils.utils."""
 
 from chemtools.utils.utils import doc_inherit
 
 
 def test_cubegen_o2_uhf():
     class Foo(object):
+        """Dummy class for testing doc inheritance."""
+
         def foo(self):
             """Frobber."""
             pass
 
     class Bar(Foo):
+        """Dummy class for testing doc inheritance."""
+
         @doc_inherit(Foo)
         def foo(self):
             pass

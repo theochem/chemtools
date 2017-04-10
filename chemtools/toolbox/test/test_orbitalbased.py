@@ -20,7 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-# pylint: skip-file
+"""Test chemtools.toolbox.orbitalbased."""
 
 from nose.tools import assert_raises
 import numpy as np

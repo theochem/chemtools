@@ -20,7 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-# pylint: skip-file
+"""Test chemtools.utils.cube."""
 
 
 import shutil
@@ -36,6 +36,7 @@ from chemtools.utils.cube import CubeGen
 
 @contextmanager
 def tmpdir(name):
+    """Create temporary directory that gets deleted after accessing it."""
     dn = tempfile.mkdtemp(name)
     try:
         yield dn

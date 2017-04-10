@@ -20,7 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-# pylint: skip-file
+"""Test chemtools.analysis.densitybased."""
 
 import os
 import shutil
@@ -39,6 +39,7 @@ from chemtools.analysis.densitybased import NCI
 
 @contextmanager
 def tmpdir(name):
+    """Create temporary directory that gets deleted after accessing it."""
     dn = tempfile.mkdtemp(name)
     try:
         yield dn

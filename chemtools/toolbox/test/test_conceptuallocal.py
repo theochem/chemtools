@@ -20,7 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-# pylint: skip-file
+"""Test chemtools.toolbox.conceptuallocal."""
 
 import numpy as np
 from chemtools.toolbox.conceptuallocal import LinearLocalTool, QuadraticLocalTool

@@ -20,7 +20,6 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-# pylint: skip-file
 """Test chemtools.utils.output."""
 
 import shutil
@@ -33,6 +32,7 @@ from chemtools.utils import output
 
 @contextmanager
 def tmpdir(name):
+    """Create temporary directory that gets deleted after accessing it."""
     dn = tempfile.mkdtemp(name)
     try:
         yield dn

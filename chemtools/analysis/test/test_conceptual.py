@@ -20,7 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-# pylint: skip-file
+"""Test chemtools.analysis.conceptual."""
 
 import numpy as np
 from horton import IOData, BeckeMolGrid
@@ -275,7 +275,7 @@ def test_condense_mbis_linear_ch4_fchk():
     np.testing.assert_almost_equal(condense(16.5), 1.0, decimal=2)
 
 
-def test_condense_h_linear_fd_rmf_ch4_fchk():
+def test_condense_h_linear_fd_rmf_ch2o_fchk():
     file_path = [context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'),
                  context.get_fn('examples/ch2o_q+1_ub3lyp_augccpvtz.fchk'),
                  context.get_fn('examples/ch2o_q-1_ub3lyp_augccpvtz.fchk')]
@@ -316,7 +316,7 @@ def test_condense_h_linear_fd_rmf_ch4_fchk():
     np.testing.assert_almost_equal(condense(16.5), 1.0, decimal=2)
 
 
-def test_condense_h_linear_fd_fmr_ch4_fchk():
+def test_condense_h_linear_fd_fmr_ch20_fchk():
     file_path = [context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'),
                  context.get_fn('examples/ch2o_q+1_ub3lyp_augccpvtz.fchk'),
                  context.get_fn('examples/ch2o_q-1_ub3lyp_augccpvtz.fchk')]
@@ -357,48 +357,7 @@ def test_condense_h_linear_fd_fmr_ch4_fchk():
     np.testing.assert_almost_equal(condense(16.5), 1.0, decimal=2)
 
 
-def test_condense_mbis_linear_fd_rmf_ch4_fchk():
-    file_path = [context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'),
-                 context.get_fn('examples/ch2o_q+1_ub3lyp_augccpvtz.fchk'),
-                 context.get_fn('examples/ch2o_q-1_ub3lyp_augccpvtz.fchk')]
-    # make molecular grid
-    mol = IOData.from_file(file_path[0])
-    grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
-                        agspec='insane', random_rotate=False, mode='keep')
-    # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, model='linear', grid=grid, scheme='mbis',
-                                            approach='RMF')
-    expectedm = np.array([7.8580338, 5.70425809, 0.71885554, 0.71884404])
-    expected0 = np.array([8.41149, 5.66445074, 0.96204946, 0.96202722])
-    expectedp = np.array([8.13881352, 6.81770852, 1.28123219, 0.76225513])
-    # check charges
-    np.testing.assert_almost_equal(desp.density_plus, expectedp, decimal=2)
-    np.testing.assert_almost_equal(desp.density_zero, expected0, decimal=2)
-    np.testing.assert_almost_equal(desp.density_minus, expectedm, decimal=2)
-    # check condensed density
-    np.testing.assert_almost_equal(np.sum(desp.density_plus), 17., decimal=2)
-    np.testing.assert_almost_equal(np.sum(desp.density_zero), 16., decimal=2)
-    np.testing.assert_almost_equal(np.sum(desp.density_minus), 15., decimal=2)
-    # check condensed Fukui function
-    np.testing.assert_almost_equal(desp.ff_plus, expectedp - expected0, decimal=2)
-    np.testing.assert_almost_equal(desp.ff_zero, 0.5 * (expectedp - expectedm), decimal=2)
-    np.testing.assert_almost_equal(desp.ff_minus, expected0 - expectedm, decimal=2)
-    np.testing.assert_almost_equal(np.sum(desp.ff_plus), 1., decimal=2)
-    np.testing.assert_almost_equal(np.sum(desp.ff_zero), 1., decimal=2)
-    np.testing.assert_almost_equal(np.sum(desp.ff_minus), 1., decimal=2)
-    # check condensed density with arbitrary number of electrons
-    condense = lambda x: np.sum(desp.density(x))
-    np.testing.assert_almost_equal(condense(15.5), 15.5, decimal=2)
-    np.testing.assert_almost_equal(condense(16.0), 16.0, decimal=2)
-    np.testing.assert_almost_equal(condense(16.5), 16.5, decimal=2)
-    # check condensed fukui function with arbitrary number of electrons
-    condense = lambda x: np.sum(desp.fukui_function(x))
-    np.testing.assert_almost_equal(condense(15.5), 1.0, decimal=2)
-    np.testing.assert_almost_equal(condense(16.0), 1.0, decimal=2)
-    np.testing.assert_almost_equal(condense(16.5), 1.0, decimal=2)
-
-
-def test_condense_mbis_linear_fd_rmf_ch4_fchk():
+def test_condense_mbis_linear_fd_rmf_ch2o_fchk():
     file_path = [context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'),
                  context.get_fn('examples/ch2o_q+1_ub3lyp_augccpvtz.fchk'),
                  context.get_fn('examples/ch2o_q-1_ub3lyp_augccpvtz.fchk')]
