@@ -32,8 +32,9 @@ install:
   - conda update -q conda
   # Useful for debugging any issues with conda
   - conda info -a
-  - deps='numpy scipy sympy matplotlib nose horton'
+  - deps='numpy scipy sympy matplotlib sphinx nose coverage horton'
   - conda create -p $HOME/py --yes -c pyqc $deps "python=$TRAVIS_PYTHON_VERSION"
+  - conda install -p $HOME/py -c conda-forge pycodestyle pydocstyle pylint
 
 # Get the master branch and complete feature branch for a comparative analysis.
   - tools/inspector/qa/get_master.sh
