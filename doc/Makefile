@@ -55,6 +55,7 @@ clean:
 
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	python hover_win_generator.py
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
