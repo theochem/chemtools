@@ -1,5 +1,8 @@
 language: python
 
+notifications:
+  email: false
+
 python:
   - "2.7"
 # - "3.6"
@@ -11,6 +14,7 @@ env:
     - PIP_WHEEL_DIR=$CACHED/wheels
     - PIP_FIND_LINKS=file://$CACHED/wheels
     - PIP_NO_CACHE_DIR=no
+    - CTDATA=$TRAVIS_BUILD_DIR/data
 
 cache:
   directories:
