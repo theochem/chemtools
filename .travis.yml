@@ -38,7 +38,14 @@ install:
   - conda info -a
   - deps='numpy scipy sympy matplotlib sphinx nose coverage horton'
   - conda create -p $HOME/py --yes -c pyqc $deps "python=$TRAVIS_PYTHON_VERSION"
-  - conda install -p $HOME/py -c conda-forge pycodestyle pydocstyle pylint
+  - conda install -p $HOME/py -c conda-forge pycodestyle pydocstyle pylint gitpython
+  # git lfs
+  - wget https://github.com/git-lfs/git-lfs/releases/download/v2.0.2/git-lfs-linux-amd64-2.0.2.tar.gz -P $HOME
+  - tar -xzvf ~/git-lfs-linux-amd64-2.0.2.tar.gz --directory $HOME
+  - export PATH=$PATH:$HOME/git-lfs-2.0.2
+  - git-lfs pull
+  # pythonpath
+  - export PYTHONPATH=$TRAVIS_BUILD_DIR:$PYTHONPATH
 
 # Get the master branch and complete feature branch for a comparative analysis.
   - tools/inspector/qa/get_master.sh
