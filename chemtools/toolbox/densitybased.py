@@ -224,17 +224,15 @@ class DensityLocalTool(object):
         # compute esp at every point
         for n, point in enumerate(points):
             # esp at a given point from nuclei
-            for index, number in enumerate(numbers):
-                delta = point - coordinates[index, :]
-                distance = np.linalg.norm(delta)
-                esp[n] += number / distance
+            deltas = point - coordinates
+            distance = np.linalg.norm(deltas, axis=1)
+            esp[n] = np.sum(numbers / distance)
 
             # esp at a given point from electron density multiplied by integration weight
-            for index, density in enumerate(self._density):
-                delta = point - int_points[index, :]
-                distance = np.linalg.norm(delta)
-                # avoid computing esp, if points are very close
-                if distance > 1.e-6:
-                    esp[n] -= density * int_weights[index] / distance
+            deltas = point - int_points
+            distance = np.linalg.norm(deltas, axis=1)
+            # avoid computing esp, if points are very close
+            esp[n] -= np.sum(self._density[distance > 1e-6] * int_weights
+                             / distance[distance > 1e-6])
 
         return esp
