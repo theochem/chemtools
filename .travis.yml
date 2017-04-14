@@ -39,7 +39,7 @@ install:
   - deps='numpy scipy sympy matplotlib sphinx nose coverage horton'
   - conda create -p $HOME/py --yes -c pyqc $deps "python=$TRAVIS_PYTHON_VERSION"
   - conda install -p $HOME/py -c conda-forge pycodestyle pydocstyle pylint gitpython
-  - conda install -p $HOME/py -c anaconda ipython=5.3.0
+  - conda install -p $HOME/py -c anaconda ipython pil mayavi
   - source activate $HOME/py
   - pip install --user sphinxcontrib-bibtex
   # git lfs
