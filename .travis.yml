@@ -40,6 +40,8 @@ install:
   - conda create -p $HOME/py --yes -c pyqc $deps "python=$TRAVIS_PYTHON_VERSION"
   - conda install -p $HOME/py -c conda-forge pycodestyle pydocstyle pylint gitpython
   - conda install -p $HOME/py -c anaconda ipython=5.3.0
+  - source activate $HOME/py
+  - pip install --user sphinxcontrib-bibtex
   # git lfs
   - wget https://github.com/git-lfs/git-lfs/releases/download/v2.0.2/git-lfs-linux-amd64-2.0.2.tar.gz -P $HOME
   - tar -xzvf ~/git-lfs-linux-amd64-2.0.2.tar.gz --directory $HOME
