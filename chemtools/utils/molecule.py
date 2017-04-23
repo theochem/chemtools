@@ -22,6 +22,7 @@
 # --
 """The Input-Output (IO) Module."""
 
+
 import numpy as np
 from horton import IOData
 
@@ -35,6 +36,12 @@ class WaveFunction(object):
         """
         """
         self._iodata = iodata
+        self._exp_alpha = self._obasis.exp_alpha
+        # assign beta orbital expression
+        if hasattr(self._iodata, 'exp_beta') and self._iodata.exp_beta is not None:
+            self._exp_beta = self._iodata.exp_beta
+        else:
+            self._exp_beta = self._iodata.exp_alpha
 
     def __getattr__(self, attr):
         """
@@ -45,20 +52,6 @@ class WaveFunction(object):
         return value
 
     @property
-    def exp_alpha(self):
-        """Alpha orbital expansion."""
-        return self.obasis.exp_alpha
-
-    @property
-    def exp_beta(self):
-        """Beta orbital expansion."""
-        if hasattr(self._iodata, 'exp_beta') and self._iodata.exp_beta is not None:
-            exp_beta = self._iodata.exp_beta
-        else:
-            exp_beta = self._iodata.exp_alpha
-        return exp_beta
-
-    @property
     def obasis(self):
         """Orbital basis instance."""
         return self._iodata.obasis
@@ -66,49 +59,49 @@ class WaveFunction(object):
     @property
     def nbasis(self):
         """Number of basis functions."""
-        return self.obasis.nbasis
+        return self._obasis.nbasis
 
     @property
     def nelectrons(self):
         """Number of electrons."""
-        nelec = int(np.sum(self.exp_alpha.occupations))
-        nelec += int(np.sum(self.exp_beta.occupations))
+        nelec = int(np.sum(self._exp_alpha.occupations))
+        nelec += int(np.sum(self._exp_beta.occupations))
         return nelec
 
     @property
     def homo_index(self):
         """Index of alpha and beta HOMO orbital."""
-        return self.exp_alpha.get_homo_index(), self.exp_beta.get_homo_index()
+        return self._exp_alpha.get_homo_index(), self._exp_beta.get_homo_index()
 
     @property
     def lumo_index(self):
         """Index of alpha and beta LUMO orbital."""
-        return self.exp_alpha.get_lumo_index(), self.exp_beta.get_homo_index()
+        return self._exp_alpha.get_lumo_index(), self._exp_beta.get_homo_index()
 
     @property
     def homo_energy(self):
         """Energy of alpha and beta HOMO orbital."""
-        return self.exp_alpha.homo_energy, self.exp_beta.homo_energy
+        return self._exp_alpha.homo_energy, self._exp_beta.homo_energy
 
     @property
     def lumo_energy(self):
         """Energy of alpha and beta LUMO orbital."""
-        return self.exp_alpha.lumo_energy, self.exp_beta.lumo_energy
+        return self._exp_alpha.lumo_energy, self._exp_beta.lumo_energy
 
     @property
     def orbital_occupation(self):
         """Orbital occupation of alpha and beta electrons."""
-        return self.exp_alpha.occupations, self.exp_beta.occupations
+        return self._exp_alpha.occupations, self._exp_beta.occupations
 
     @property
     def orbital_energy(self):
         """Orbital energy of alpha and beta electrons."""
-        return self.exp_alpha.energies, self.exp_beta.energies
+        return self._exp_alpha.energies, self._exp_beta.energies
 
     @property
     def orbital_coefficient(self):
         """Orbital coefficient of alpha and beta electrons."""
-        return self.exp_alpha.coeffs, self.exp_beta.coeffs
+        return self._exp_alpha.coeffs, self._exp_beta.coeffs
 
     @property
     def dm_fulll(self):
@@ -130,10 +123,10 @@ class WaveFunction(object):
         # index and expression of lumo orbital
         if spin == 'alpha':
             index = self.homo_index[0]
-            exp = self.exp_alpha
+            exp = self._exp_alpha
         elif spin == 'beta':
             index = self.homo_index[1]
-            exp = self.exp_beta
+            exp = self._exp_beta
         else:
             raise ValueError('Spin={0} is not recognized.'.format(spin))
         # compute density
