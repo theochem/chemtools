@@ -41,8 +41,9 @@ __all__ = ['GlobalConceptualDFT', 'LocalConceptualDFT', 'CondensedConceptualDFT'
 
 
 class BaseConceptualDFT(object):
-    __metaclass__ = ABCMeta
     """Base class for conceptual density functional theory (DFT) analysis."""
+
+    __metaclass__ = ABCMeta
 
     def __init__(self, dict_values, dict_models, model, coordinates, numbers):
         """
@@ -138,7 +139,7 @@ class BaseConceptualDFT(object):
         return self._numbers
 
     @staticmethod
-    def from_file(filenames):
+    def load_file(filenames):
         """
         Return `IOData` instances corresponding to filenames.
 
@@ -157,7 +158,7 @@ class BaseConceptualDFT(object):
         return iodatas
 
     @staticmethod
-    def from_iodata(iodatas, points=None, part=None):
+    def load_iodata(iodatas, points=None, part=None):
         """
         Initialize class from `IOData` objects.
 
@@ -513,7 +514,7 @@ class BaseConceptualDFT(object):
 
 class GlobalConceptualDFT(BaseConceptualDFT):
     """
-    Global conceptual density functional theory (DFT) analysis of quantum chemistry output file(s).
+    Global conceptual density functional theory (DFT) analysis of quantum chemistry output files.
 
     If only one molecule is provided, the frontier molecular orbital (FMO) approach is invoked,
     otherwise finite difference (FD) approach is taken.
@@ -539,8 +540,7 @@ class GlobalConceptualDFT(BaseConceptualDFT):
         # available models for global tools
         dict_models = {'linear': LinearGlobalTool, 'quadratic': QuadraticGlobalTool,
                        'exponential': ExponentialGlobalTool, 'rational': RationalGlobalTool,
-                       'general': GeneralGlobalTool,
-                       }
+                       'general': GeneralGlobalTool}
         super(GlobalConceptualDFT, self).__init__(dict_values, dict_models, model,
                                                   coordinates, numbers)
 
@@ -567,12 +567,11 @@ class GlobalConceptualDFT(BaseConceptualDFT):
         if log.do_medium:
             log('Initialize: %s' % self.__class__)
             log.deflist([('Energy Model', self._model),
+                         # ('Parameters', self._tool.params),
                          ('Reference Energy', self._tool.energy_zero),
                          ('Reference #Electrons', self._tool.n0),
                          ('Energy Values', [getattr(self._tool, attr) for attr in
-                                            ['_energy_minus', 'energy_zero', '_energy_plus']]),
-                         # ('Parameters', self._tool.params)
-                         ])
+                                            ['_energy_minus', 'energy_zero', '_energy_plus']])])
             log.blank()
 
     @classmethod
@@ -588,7 +587,7 @@ class GlobalConceptualDFT(BaseConceptualDFT):
         model : str
             Energy model used to calculate global properties.
         """
-        iodatas = BaseConceptualDFT.from_file(filenames)
+        iodatas = cls.load_file(filenames)
         return cls.from_iodata(iodatas, model)
 
     @classmethod
@@ -603,13 +602,13 @@ class GlobalConceptualDFT(BaseConceptualDFT):
         model : str
             Energy model used to calculate global properties.
         """
-        coordinates, numbers, dict_energy = BaseConceptualDFT.from_iodata(iodatas)
+        coordinates, numbers, dict_energy = cls.load_iodata(iodatas)
         return cls(dict_energy, model, coordinates, numbers)
 
 
 class LocalConceptualDFT(BaseConceptualDFT):
     """
-    Local conceptual density functional theory (DFT) analysis of quantum chemistry output file(s).
+    Local conceptual density functional theory (DFT) analysis of quantum chemistry output files.
 
     If only one molecule is provided, the frontier molecular orbital (FMO) approach is invoked,
     otherwise finite difference (FD) approach is taken.
@@ -667,8 +666,7 @@ class LocalConceptualDFT(BaseConceptualDFT):
         if log.do_medium:
             log('Initialize: %s' % self.__class__)
             log.deflist([('Energy Model', self._model),
-                         ('Reference #Electrons', self._tool.n0),
-                         ])
+                         ('Reference #Electrons', self._tool.n0)])
             log.blank()
 
     @classmethod
@@ -686,7 +684,7 @@ class LocalConceptualDFT(BaseConceptualDFT):
         points : np.array
             Points on which the local descriptive tools is evaluated.
         """
-        iodatas = BaseConceptualDFT.from_file(filenames)
+        iodatas = cls.load_file(filenames)
         return cls.from_iodata(iodatas, model, points)
 
     @classmethod
@@ -705,13 +703,13 @@ class LocalConceptualDFT(BaseConceptualDFT):
         points : np.array
             Points on which the local properties are evaluated.
         """
-        coords, numbers, _, dict_dens = BaseConceptualDFT.from_iodata(iodatas, points=points)
+        coords, numbers, _, dict_dens = cls.load_iodata(iodatas, points=points)
         return cls(dict_dens, model, coords, numbers)
 
 
 class CondensedConceptualDFT(BaseConceptualDFT):
     """
-    Condensed conceptual density functional theory (DFT) analysis of quantum chemistry output file(s).
+    Condensed conceptual density functional theory (DFT) analysis of quantum chemistry output files.
 
     If only one molecule is provided, the frontier molecular orbital (FMO) approach is invoked,
     otherwise finite difference (FD) approach is taken.
@@ -762,8 +760,7 @@ class CondensedConceptualDFT(BaseConceptualDFT):
             log('Initialize: Condensed Class')
             # log('Initialize: %s' % self.__class__)
             log.deflist([('Energy Model', self._model),
-                         ('Reference #Electrons', self._tool.n0),
-                         ])
+                         ('Reference #Electrons', self._tool.n0)])
             log.blank()
 
     @classmethod
@@ -789,7 +786,7 @@ class CondensedConceptualDFT(BaseConceptualDFT):
         proatomdb: instance of ``ProAtomDB``
             Proatom database used for partitioning. Only 'h' and 'hi' requires that.
         """
-        iodatas = BaseConceptualDFT.from_file(filenames)
+        iodatas = cls.load_file(filenames)
         return cls.from_iodata(iodatas, model, grid, approach, scheme, proatomdb)
 
     @classmethod
@@ -817,7 +814,7 @@ class CondensedConceptualDFT(BaseConceptualDFT):
         """
         part = {'scheme': scheme, 'approach': approach, 'grid': grid, 'proatomdb': proatomdb,
                 'kwargs': kwargs}
-        coords, numbers, _, dict_pops = BaseConceptualDFT.from_iodata(iodatas, part=part)
+        coords, numbers, _, dict_pops = cls.load_iodata(iodatas, part=part)
         return cls(dict_pops, model, coords, numbers)
 
     @staticmethod

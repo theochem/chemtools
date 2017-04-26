@@ -22,21 +22,25 @@
 # --
 """Local Conceptual Density Functional Theory (DFT) Reactivity Tools.
 
-   This module contains various local tool classes corresponding to
-   linear and quadratic energy models.
+This module contains various local tool classes corresponding to
+linear and quadratic energy models.
 """
 
+from abc import ABCMeta
 from chemtools.utils.utils import doc_inherit
 
 __all__ = ['BaseLocalTool', 'LinearLocalTool', 'QuadraticLocalTool']
 
 
 class BaseLocalTool(object):
-    """
-    Base class of local conceptual DFT reactivity descriptors.
-    """
+    """Base class of local conceptual DFT reactivity descriptors."""
+
+    __metaclass__ = ABCMeta
+
     def __init__(self, density_zero, density_plus, density_minus, n0):
         r"""
+        Initialize class.
+
         Parameters
         ----------
         density_zero : np.ndarray
@@ -65,33 +69,22 @@ class BaseLocalTool(object):
 
     @property
     def n0(self):
-        r"""
-        Reference number of electrons, i.e. :math:`N_0`, corresponding to density_zero.
-        """
+        r"""Reference number of electrons, i.e. :math:`N_0`, corresponding to density_zero."""
         return self._n0
 
     @property
     def density_zero(self):
-        r"""
-        Electron density of :math:`N_0`-electron system, i.e.
-        :math:`\rho_{N_0}\left(\mathbf{r}\right)`.
-        """
+        r"""Electron density of :math:`N_0`-electron system :math:`\rho_{N_0}(\mathbf{r})`."""
         return self._density_zero
 
     @property
     def density_plus(self):
-        r"""
-        Electron density of :math:`(N_0 + 1)`-electron system, i.e.
-        :math:`\rho_{N_0 + 1}\left(\mathbf{r}\right)`.
-        """
+        r"""Electron density of :math:`(N_0+1)`-electron system :math:`\rho_{N_0+1}(\mathbf{r})`."""
         return self._density_plus
 
     @property
     def density_minus(self):
-        r"""
-        Electron density of :math:`(N_0 - 1)`-electron system, i.e.
-        :math:`\rho_{N_0 - 1}\left(\mathbf{r}\right)`.
-        """
+        r"""Electron density of :math:`(N_0-1)`-electron system :math:`\rho_{N_0-1}(\mathbf{r})`."""
         return self._density_minus
 
 
@@ -99,7 +92,7 @@ class LinearLocalTool(BaseLocalTool):
     r"""
     Class of local conceptual DFT reactivity descriptors based on the linear energy model.
 
-    Considering the fitted linear energy expression,
+    Considering the interpolated linear energy expression,
 
     .. math::
        E\left(N\right) =
@@ -124,6 +117,7 @@ class LinearLocalTool(BaseLocalTool):
     the linear local tools are obtained by taking the functional derivative of these expressions
     with respect to external potential :math:`v(\mathbf{r})` at fixed number of electrons.
     """
+
     @doc_inherit(BaseLocalTool)
     def __init__(self, density_zero, density_plus, density_minus, n0):
         super(self.__class__, self).__init__(density_zero, density_plus, density_minus, n0)
@@ -134,7 +128,7 @@ class LinearLocalTool(BaseLocalTool):
     @property
     def ff_plus(self):
         r"""
-        Fukui Function from above defined as,
+        Fukui Function from above, :math:`f^+(\mathbf{r})`.
 
         .. math::
            f^+\left(\mathbf{r}\right) = \rho_{N_0 + 1}\left(\mathbf{r}\right) -
@@ -145,7 +139,7 @@ class LinearLocalTool(BaseLocalTool):
     @property
     def ff_minus(self):
         r"""
-        Fukui Function from below define as,
+        Fukui Function from below, :math:`f^-(\mathbf{r})`.
 
         .. math::
            f^-\left(\mathbf{r}\right) = \rho_{N_0}\left(\mathbf{r}\right) -
@@ -156,7 +150,9 @@ class LinearLocalTool(BaseLocalTool):
     @property
     def ff_zero(self):
         r"""
-        Fukui Function from center defined as the average of :attr:`ff_plus` and :attr:`ff_minus`,
+        Fukui Function from center, :math:`f^0(\mathbf{r})`.
+
+        This is defined as the average of :attr:`ff_plus` and :attr:`ff_minus`,
 
         .. math::
            f^0\left(\mathbf{r}\right) =
@@ -167,8 +163,10 @@ class LinearLocalTool(BaseLocalTool):
 
     def density(self, number_electrons=None):
         r"""
-        Linear electron density of :math:`N`-electron system defined as the functional derivative of
-        linear energy model w.r.t. external potential at fixed number of electrons, i.e.,
+        Return linear electron density of :math:`N`-electron system, :math:`\rho_{N}(\mathbf{r})`.
+
+        This is defined as the functional derivative of linear energy model w.r.t.
+        external potential at fixed number of electrons, i.e.,
 
         .. math::
            \rho_{N}(\mathbf{r}) =
@@ -194,8 +192,10 @@ class LinearLocalTool(BaseLocalTool):
 
     def fukui_function(self, number_electrons=None):
         r"""
-        Linear Fukui function of :math:`N`-electron system defined as the functional derivative of
-        linear chemical potential w.r.t. external potential at fixed number of electrons,
+        Return linear Fukui function of :math:`N`-electron system, :math:`f_{N}(\mathbf{r})`.
+
+        This is defined as the functional derivative of linear chemical potential w.r.t.
+        external potential at fixed number of electrons,
 
         .. math::
            f_{N}(\mathbf{r}) =
@@ -222,7 +222,7 @@ class LinearLocalTool(BaseLocalTool):
 
     def softness(self, global_softness, number_electrons=None):
         r"""
-        Linear softness of :math:`N`-electron system defined as,
+        Return linear softness of :math:`N`-electron system, :math:`s_N(\mathbf{r})`.
 
         .. math::
            s_N\left(\mathbf{r}\right) = S \cdot f_N\left(\mathbf{r}\right) =
@@ -254,7 +254,7 @@ class QuadraticLocalTool(BaseLocalTool):
     r"""
     Class of local conceptual DFT reactivity descriptors based on the quadratic energy model.
 
-    Considering the fitted quadratic energy expression,
+    Considering the interpolated quadratic energy expression,
 
     .. math::
        E\left(N\right) = E\left(N_0\right) &+ \left(\frac{E\left(N_0 + 1\right) -
@@ -278,6 +278,7 @@ class QuadraticLocalTool(BaseLocalTool):
     the quadratic local tools are obtained by taking the functional derivative of these expressions
     with respect to external potential :math:`v(\mathbf{r})` at fixed number of electrons.
     """
+
     @doc_inherit(BaseLocalTool)
     def __init__(self, density_zero, density_plus, density_minus, n0):
         super(self.__class__, self).__init__(density_zero, density_plus, density_minus, n0)
@@ -287,9 +288,10 @@ class QuadraticLocalTool(BaseLocalTool):
 
     def density(self, number_electrons=None):
         r"""
-        Quadratic electron density of :math:`N`-electron system defined as the functional
-        derivative of quadratic energy model w.r.t. external potential at fixed number of
-        electrons,
+        Return quadratic electron density of :math:`N`-electron system :math:`\rho_{N}(\mathbf{r})`.
+
+        This is defined as the functional derivative of quadratic energy model w.r.t.
+        external potential at fixed number of electrons,
 
         .. math::
            \rho_{N}(\mathbf{r}) = \rho_{N_0}\left(\mathbf{r}\right)
@@ -313,9 +315,10 @@ class QuadraticLocalTool(BaseLocalTool):
 
     def fukui_function(self, number_electrons=None):
         r"""
-        Quadratic Fukui function of :math:`N`-electron system defined as the functional
-        derivative of quadratic chemical potential w.r.t. external potential at fixed number
-        of electrons,
+        Return quadratic Fukui function of :math:`N`-electron system, :math:`f_{N}(\mathbf{r})`.
+
+        This is defined as the functional derivative of quadratic chemical potential w.r.t.
+        external potential at fixed number of electrons,
 
         .. math::
            f_{N}(\mathbf{r}) = \left(\frac{\rho_{N_0 + 1}\left(\mathbf{r}\right) -
@@ -337,9 +340,10 @@ class QuadraticLocalTool(BaseLocalTool):
 
     def dual_descriptor(self):
         r"""
-        Quadratic dual descriptor of :math:`N`-electron system defined as the functional
-        derivative of quadratic chemical hardness w.r.t. external potential at fixed number
-        of electrons,
+        Quadratic dual descriptor of :math:`N`-electron system, :math:`\Delta f_{N}(\mathbf{r})`.
+
+        This is defined as the functional derivative of quadratic chemical hardness
+        w.r.t. external potential at fixed number of electrons,
 
         .. math::
            \Delta f_{N}(\mathbf{r}) = \rho_{N_0 - 1}\left(\mathbf{r}\right) - 2
@@ -351,7 +355,7 @@ class QuadraticLocalTool(BaseLocalTool):
 
     def softness(self, global_softness, number_electrons=None):
         r"""
-        Quadratic softness of :math:`N`-electron system defined as,
+        Return quadratic softness of :math:`N`-electron system, :math:`s_{N}(\mathbf{r})`.
 
         .. math::
            s_N\left(\mathbf{r}\right) = S \cdot f_N\left(\mathbf{r}\right)
@@ -368,7 +372,7 @@ class QuadraticLocalTool(BaseLocalTool):
 
     def hyper_softness(self, global_softness):
         r"""
-        Quadratic hyper-softness of :math:`N`-electron system defined as,
+        Quadratic hyper-softness of :math:`N`-electron system, :math:`s_N^{(2)}(\mathbf{r})`.
 
         .. math::
            s_N^{(2)}\left(\mathbf{r}\right) = S^2 \cdot \Delta f_N\left(\mathbf{r}\right)

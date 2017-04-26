@@ -153,8 +153,8 @@ def test_global_quadratic_ch4_fchk():
 def test_local_quadratic_ch4_fchk():
     file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
     # ip = -E(homo) & ea = E(lumo)
-    ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
-    mu, eta = -0.5 * (ip + ea), ip - ea
+    ip, ea = -(-5.43101269E-01), -1.93295185E-01
+    eta = ip - ea
     # make molecular grid
     mol = IOData.from_file(file_path)
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
