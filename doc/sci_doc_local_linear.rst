@@ -81,7 +81,8 @@ So,
       \end{cases}
 
 As expected, the obtained expression for density equals :math:`\rho_{N_0 - 1}\left(\mathbf{r}\right)`, :math:`\rho_{N_0}\left(\mathbf{r}\right)`
-and :math:`\rho_{N_0 + 1}\left(\mathbf{r}\right)` when setting :math:`N` equal to :math:`N_0-1`, :math:`N_0` and  :math:`N_0+1`, respectively.
+and :math:`\rho_{N_0 + 1}\left(\mathbf{r}\right)` when setting :math:`N` equal to :math:`\left(N_0-1\right)`, :math:`N_0` and
+:math:`\left(N_0+1\right)`, respectively.
 Also, integrating the linear electron density over all space results in :math:`N`
 which confirms that the density expression is properly normalized to the number of electrons.
 

@@ -74,7 +74,7 @@ The dual descriptor is positive in electrophilic regions negative in nucleophili
 useful for reactions where electrons are simultaneously accepted/donated electrons (like concerted pericyclic
 reactions) or for describing ambiphilic reagents. Higher-order local reactivity descriptors—corresponding to
 the derivatives of hyper-hardnesses with respect to the external potential—are called **hyper-Fukui functions** or
-:math:`\mathbf{n^{\text{th}}}` **-order Fukui function** :math:`f^{(n)}(\mathbf{r})`.
+:math:`\mathbf{n^{\text{th}}}` **-order Fukui function**, :math:`f^{(n)}(\mathbf{r})`.
 While the computational utility of hyper-Fukui functions has not been established, they can be computed with ChemTools.
 
 In the grand canonical ensemble, fundamental local descriptors arise by differentiating
@@ -108,7 +108,7 @@ potential at constant :math:`\mu` is the **dual local softness**, :math:`s^{(2)}
 The dual local softness is positive in electrophilic regions negative in nucleophilic regions.
 It has similar properties and amplicability to the dual descriptor. Higher-order local reactivity
 descriptors—corresponding to the derivatives of global hyper-softnesses with respect to the external potential—are
-called local **hyper-softnesses** or :math:`\mathbf{n^{\text{th}}}` **-order local softness** :math:`s^{(n)}(\mathbf{r})`.
+called local **hyper-softnesses** or :math:`\mathbf{n^{\text{th}}}` **-order local softness**, :math:`s^{(n)}(\mathbf{r})`.
 While the computational utility of local hyper-softnesses have not been established,
 they can be computed with ChemTools.
 
@@ -123,7 +123,7 @@ hyper-Fukui functions using Faà di Bruno’s formula, please refer to :ref:`der
 **Derived Local Reactivity Descriptors**
 
 Many derived local reactivity descriptors are defined as the local response of a global derived descriptors.
-I.e., the derivative of any global reactivity descriptor with respect to the external potential :math:`v(\mathbf{r})`
+I.e., the derivative of any global reactivity descriptor with respect to the external potential, :math:`v(\mathbf{r})`
 at constant :math:`N` or :math:`\mu` is a local reactivity descriptor.
 Most other derived descriptors are defined as products of several global and local descriptors.
 
