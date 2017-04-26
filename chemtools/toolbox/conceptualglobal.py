@@ -27,10 +27,10 @@
 """
 
 import math
-import warnings
 from abc import ABCMeta, abstractmethod
 import numpy as np
 import sympy as sp
+from horton import log
 from scipy.optimize import root, newton, least_squares
 from chemtools.utils.utils import doc_inherit
 
@@ -520,9 +520,8 @@ class BaseGlobalTool(object):
         # size and there is no guarantee that a zero has been found. Consequently the result
         # should be verified.
         if not abs(self.energy_derivative(n_elec, 1) - mu) < 1.e-4:
-            warnings.warn('Solved number of electrons {0} corresponding to {1}'.format(n_elec, mu) +
-                          ' gives, mu(N={0})={1}'.format(n_elec, self.energy_derivative(n_elec, 1)),
-                          RuntimeWarning)
+            log.warn('Solved number of electrons {0} corresponding to {1} gives, '
+                     'mu(N={0})={2}'.format(n_elec, mu, self.energy_derivative(n_elec, 1)))
         return n_elec
 
 
@@ -591,8 +590,8 @@ class LinearGlobalTool(BaseGlobalTool):
         if n_elec < 0.0:
             raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
         if not self._n0 - 1 <= n_elec <= self._n0 + 1:
-            warnings.warn('Energy evaluated for n_elec={0} outside of '.format(n_elec) +
-                          'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
+            log.warn('Energy evaluated for n_elec={0} outside of interpolation '
+                     'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
         # evaluate energy
         value = self._energy_zero
         if n_elec < self._n0:
@@ -608,8 +607,8 @@ class LinearGlobalTool(BaseGlobalTool):
         if n_elec < 0.0:
             raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
         if not self._n0 - 1 <= n_elec <= self._n0 + 1:
-            warnings.warn('Energy derivative evaluated for n_elec={0} outside of '.format(n_elec) +
-                          'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
+            log.warn('Energy derivative evaluated for n_elec={0} outside of interpolation '
+                     'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
         if not (isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
         # evaluate derivative
@@ -666,8 +665,8 @@ class QuadraticGlobalTool(BaseGlobalTool):
         if n_elec < 0.0:
             raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
         if not self._n0 - 1 <= n_elec <= self._n0 + 1:
-            warnings.warn('Energy evaluated for n_elec={0} outside of '.format(n_elec) +
-                          'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
+            log.warn('Energy evaluated for n_elec={0} outside of interpolation '
+                     'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
         # evaluate energy
         value = self._params[0] + self._params[1] * n_elec + self._params[2] * n_elec**2
         return value
@@ -677,8 +676,8 @@ class QuadraticGlobalTool(BaseGlobalTool):
         if n_elec < 0.0:
             raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
         if not self._n0 - 1 <= n_elec <= self._n0 + 1:
-            warnings.warn('Energy derivative evaluated for n_elec={0} outside of '.format(n_elec) +
-                          'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
+            log.warn('Energy derivative evaluated for n_elec={0} outside of interpolation '
+                     'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
         if not (isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
         # evaluate derivative
@@ -740,8 +739,8 @@ class ExponentialGlobalTool(BaseGlobalTool):
         if n_elec < 0.0:
             raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
         if not self._n0 - 1 <= n_elec <= self._n0 + 1:
-            warnings.warn('Energy evaluated for n_elec={0} outside of '.format(n_elec) +
-                          'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
+            log.warn('Energy evaluated for n_elec={0} outside of interpolation '
+                     'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
         # evaluate energy
         if np.isinf(n_elec):
             # limit of E(N) as N goes to infinity equals B
@@ -756,8 +755,8 @@ class ExponentialGlobalTool(BaseGlobalTool):
         if n_elec < 0.0:
             raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
         if not self._n0 - 1 <= n_elec <= self._n0 + 1:
-            warnings.warn('Energy derivative evaluated for n_elec={0} outside of '.format(n_elec) +
-                          'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
+            log.warn('Energy derivative evaluated for n_elec={0} outside of interpolation '
+                     'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
         if not (isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
         # evaluate derivative
@@ -819,8 +818,8 @@ class RationalGlobalTool(BaseGlobalTool):
         if n_elec < 0.0:
             raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
         if not self._n0 - 1 <= n_elec <= self._n0 + 1:
-            warnings.warn('Energy evaluated for n_elec={0} outside of '.format(n_elec) +
-                          'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
+            log.warn('Energy evaluated for n_elec={0} outside of interpolation '
+                     'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
         # evaluate energy
         if np.isinf(n_elec):
             # limit of E(N) as N goes to infinity equals a1/b1
@@ -834,8 +833,8 @@ class RationalGlobalTool(BaseGlobalTool):
         if n_elec < 0.0:
             raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
         if not self._n0 - 1 <= n_elec <= self._n0 + 1:
-            warnings.warn('Energy derivative evaluated for n_elec={0} outside of '.format(n_elec) +
-                          'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
+            log.warn('Energy derivative evaluated for n_elec={0} outside of interpolation '
+                     'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
         if not (isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
         # evaluate derivative
@@ -949,8 +948,8 @@ class GeneralGlobalTool(BaseGlobalTool):
         if n_elec < 0.0:
             raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
         if not self._n_min <= n_elec <= self._n_max:
-            warnings.warn('Energy evaluated for n_elec={0} outside of '.format(n_elec) +
-                          'interpolation region [{0}, {1}].'.format(self._n_min, self._n_max))
+            log.warn('Energy evaluated for n_elec={0} outside of interpolation '
+                     'region [{1}, {2}].'.format(n_elec, self._n_min, self._n_max))
         # evaluate energy
         value = self._expr.subs(self._n_symb, n_elec)
         return value
@@ -960,8 +959,8 @@ class GeneralGlobalTool(BaseGlobalTool):
         if n_elec < 0.0:
             raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
         if not self._n0 - 1 <= n_elec <= self._n0 + 1:
-            warnings.warn('Energy derivative evaluated for n_elec={0} outside of '.format(n_elec) +
-                          'interpolation region [{0}, {1}].'.format(self._n0 - 1, self._n0 + 1))
+            log.warn('Energy derivative evaluated for n_elec={0} outside of interpolation '
+                     'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
         if not (isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
 
@@ -1074,6 +1073,6 @@ class GeneralGlobalTool(BaseGlobalTool):
                     break
             else:
                 n_max = None
-                warnings.warn('The system of equations for Nmax could not be solved; Nmax=`None`.'
-                              ' message:{0}'.format(result.message))
+                log.warn('The system of equations for Nmax could not be solved; Nmax=`None`. '
+                         'message:{0}'.format(result.message))
         return n_max
