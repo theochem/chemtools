@@ -31,7 +31,9 @@ Submitting Issues
 =================
 
 In case you experience issues or bugs using this package, please feel free to
-submit a issue on our `issue page <https://github.com/QuantumElephant/chemtools/issues>`_.
+submit an issue on our `issue page <https://github.com/QuantumElephant/chemtools/issues>`_.
+
+.. _dev_build:
 
 Building ChemTools
 ==================
@@ -95,8 +97,8 @@ on github, make some changes, and then make a `Pull request`:
 
      git checkout -b your_feature_branch_name
 
-* Include your name and email in the ``AUTHERS`` file at the root directory of ChemTools.
-  Ensure the name and email is the same as your git config. You can check your
+* Include your name and email in the ``AUTHORS`` file at the root directory of ChemTools.
+  Ensure the name and email are the same as your git config. You can check your
   name and email with the commands:
 
   .. code-block:: bash
@@ -112,7 +114,7 @@ on github, make some changes, and then make a `Pull request`:
      git add files_you_modified
      git commit
 
-  Then write down the changes your made and save it.
+  to write down the changes your made and save it.
 
 * Push your changes to your own remote repo:
 
@@ -122,7 +124,7 @@ on github, make some changes, and then make a `Pull request`:
 
 * Finally, go to your forked github repo page, click ``Pull request`` to send your
   changes. All the changes need to pass the automatic quality test before your
-  pull request reviewed. you can go to the "Pull request" page of the main repo
+  pull request gets reviewed. You can go to the `"Pull request" <https://github.com/QuantumElephant/chemtools/pulls>`_ page of the main repo
   to check the status of the test and fix the errors if any of them fail.
 
 .. _usr_doc:
@@ -143,23 +145,31 @@ To install these dependencies,
 
   .. code-block:: bash
 
-     sudo apt-get install python-sphinx python-sphinx-rtd-theme ipython
+     sudo apt-get install python-sphinx ipython
      pip install --user --upgrade sphinxcontrib-bibtex
 
-* **Ubuntu Linux 15.04 & 14.04 and Mac OS**
+* **Ubuntu Linux 15.04 & 14.04**
 
   .. code-block:: bash
 
-     pip install --user --upgrade sphinx sphinx_rtd_theme sphinxcontrib-bibtex ipython
+     pip install --user --upgrade sphinx sphinxcontrib-bibtex ipython
 
-The Sphinx Read-The-Docs theme customized for ChemTools can be obtained cloning the repository
+* **Mac OS**
+
+  .. code-block:: bash
+
+     sudo port install py27-sphinx py27-ipython
+     pip install --user --upgrade sphinxcontrib-bibtex
+
+
+The Sphinx Read-The-Docs theme customized for ChemTools can be obtained by cloning the repository
 as a submodule from ChemTools parent directory:
 
 .. code-block:: bash
 
    git submodule update --init --recursive
 
-Also, make sure that the environment variable ``CTDATA`` is set and
+Also, make sure that the :ref:`environment variable <dev_build>` ``CTDATA`` is set and
 :ref:`examples files are downloaded <usr_lfs_installation>`.
 
 To automatically generate API documentation and generate HTML:
