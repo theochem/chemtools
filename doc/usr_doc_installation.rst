@@ -157,14 +157,6 @@ To install ChemTools run:
 
      ./setup.py install --user
 
-If you prefer to run ChemTools from the source folder, ``PYTHONPATH`` and ``CTDATA`` paths
-need to be add into your **~/.bashrc** (Linux) or **~/.profile** (MacOS)
-
-  .. code-block:: bash
-
-     export PYTHONPATH=$PYTHONPATH:{path_to_chemtools_repo}/chemtools
-     export CTDATA={path_to_chemtools_repo}/chemtools/data
-
 
 .. _usr_testing:
 
