@@ -48,10 +48,10 @@ quantum chemistry.
 
 Conceptual tools (mostly density-based tools will be considered here, so this is often called “conceptual DFT”) can be divided into three main categories:
 
-* **Global tools:** There is one number for the entire molecule. Examples: Energy, ionization potential, electron affinity, chemical potential,
-    chemical hardness, chemical softness, hyper-hardness, hyper-softness, electrophilicity, nucleophilicity.
-    It provides a quantitative expression for the intrinsic reactivity of reagents in terms of the properties of the isolated molecules.
-
+* **Global tools:** There is one number for the entire molecule.
+  Examples: Energy,  ionization potential, electron affinity, chemical potential,
+  chemical hardness, chemical softness, hyper-hardness, hyper-softness, electrophilicity, nucleophilicity.
+  It provides a quantitative expression for the intrinsic reactivity of reagents in terms of the properties of the isolated molecules.
 * **Local tools:** Every point in space, r, has a value. Examples: electron density, electrostatic potential, Fukui function.
 * **Nonlocal tools:** There is a value for pairs (or triples, quadruples, etc.) of points. For example, the linear response function measure the change in electron density at r due to a change in external potential at r’.
 
