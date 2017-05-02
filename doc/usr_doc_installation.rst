@@ -37,6 +37,8 @@ The latest code can be obtained through Github (private at present),
      git clone https://github.com/QuantumElephant/chemtools.git chemtools
 
 
+.. _usr_py_depend:
+
 Dependencies
 ============
 
@@ -108,9 +110,16 @@ To install Git LFS,
 
 * **Mac OS**
 
+  You can install LFS with MacPort
+
   .. code-block:: bash
 
      sudo port install git-lfs
+
+  Or Homebrew
+
+  .. code-block:: bash
+
      brew install git-lfs
 
 * **Linux OS**
@@ -171,114 +180,3 @@ automatic tests:
 
 At this stage, some ``UserWarning`` messages are printed in between tests which is expected.
 However, no test should fail.
-
-
-.. _usr_doc:
-
-Documentation
-=============
-
-If you are interested in generating the documentation from source, the following
-packages are also needed:
-
-* Sphinx >=1.3.1: http://sphinx.pocoo.org/
-* Sphinx Read-The-Docs theme >=0.1.8: https://github.com/snide/sphinx_rtd_theme
-* sphinxcontrib-bibtex >= 0.3.5: https://pypi.python.org/pypi/sphinxcontrib-bibtex
-* IPython >= 3.2.1: https://ipython.org/install.html
-
-To install these dependencies,
-
-* **Ubuntu Linux 16.04**
-
-  .. code-block:: bash
-
-     sudo apt-get install python-sphinx python-sphinx-rtd-theme sphinxcontrib-bibtex ipython
-
-* **Ubuntu Linux 15.04 & 14.04 and Mac OS**
-
-  .. code-block:: bash
-
-     pip install --user --upgrade sphinx sphinx_rtd_theme sphinxcontrib-bibtex ipython
-
-The Sphinx Read-The-Docs theme customized for ChemTools can be obtained cloning the repository
-as a submodule from ChemTools parent directory:
-
-.. code-block:: bash
-
-   git submodule update --init --recursive
-
-Also, make sure that the environment variable ``CTDATA`` is set and
-:ref:`examples files are downloaded <usr_lfs_files>`.
-
-To automatically generate API documentation and generate HTML:
-
-.. code-block:: bash
-
-   cd doc
-   make clean
-   make html
-
-To open the documentation in your default browser, either click on ``doc/_build/html/index.html``
-file directly, or run the command below from terminal:
-
-.. code-block:: bash
-
-   cd doc
-   open _build/html/index.html
-
-In case this command did not work, for example on Ubuntu 16.04 you may get a message like **"Couldn't get a
-file descriptor referring to the console"**, try:
-
-.. code-block:: bash
-
-   cd doc
-   see _build/html/index.html
-
-
-Quality Assurance
-=================
-
-When making a pull request to contribute to the ChemTools repository, the code is remotely tested to see
-if it passes all the tests and meets ChemTools' quality standards. To run the tests locally, please refer
-to :ref:`Testing <usr_testing>`. If you are interested to run the quality assurance scripts locally, first
-install the dependencies below:
-
-* PyLint >= 1.5.0: https://www.pylint.org/
-* pycodestyle >= 2.0.0: http://pycodestyle.readthedocs.io/
-* pydocstyle >= 1.0.0: http://pydocstyle.readthedocs.io/
-* coverage >= 4.1: https://coverage.readthedocs.io/
-* Git >= 1.8: https://git-scm.com/
-* GitPython >= 2.0.5: http://gitpython.readthedocs.io/
-
-Then, download the quality assurance code by cloning the corresponding submodule:
-
-.. code-block:: bash
-
-   git submodule update --init --recursive
-
-And, run the module's bash script to setup some pre-commit hooks and copy files to run the quality assurance
-scripts individually:
-
-.. code-block:: bash
-
-   cd tools/inspector
-   ./install.sh
-   cd ../..
-
-At this stage, the quality assurance tests can be simulated from the ChemTools parent directory.
-For example to run ``pylint`` check,
-
-.. code-block:: bash
-
-   # from ChemTools parent directory
-   ./tools/inspector/qa/simulate_trapdoor_pr.py tools/inspector/qa/trapdoor_pylint.py
-
-To run all of the quality assurance scripts,
-
-.. code-block:: bash
-
-   # from ChemTools parent directory
-   for i in tools/inspector/qa/trapdoor_*; do tools/inspector/qa/simulate_trapdoor_pr.py $i; done
-
-Note that you should be developing on a feature (not master) branch and merging/rebasing to the
-updated master when complete. There should be also no uncommitted changes when running these scripts.
