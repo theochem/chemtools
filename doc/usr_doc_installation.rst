@@ -52,7 +52,7 @@ The following dependencies will be necessary for ChemTools to build properly,
 * Matplotlib >= 1.0: http://matplotlib.org/
 * Nosetests >= 1.1.2: http://readthedocs.org/docs/nose/en/latest/
 * HORTON >= 2.0.1: http://theochem.github.io/horton/2.0.1/index.html
-* :ref:`Git Large File Storage (LFS) <usr_lfs_installation>`
+* :ref:`Git LFS <usr_lfs_installation>` >= 2.0.1: https://git-lfs.github.com/
 
 See :ref:`Documentation Dependencies <usr_doc>` for the dependencies
 required for building the documentations.
@@ -90,8 +90,13 @@ To install the first seven dependencies (Python related dependencies):
 HORTON
 ~~~~~~
 
-To install HORTON, follow the instructions from `Download and Install
-<http://theochem.github.io/horton/2.0.1/user_download_and_install.html>`_ of HORTON's documentation.
+To install HORTON, **Linux** users can follow the instructions from `Download and Install
+<http://theochem.github.io/horton/2.0.1/user_download_and_install_linux.html>`_ of HORTON's documentation.
+**MacOS** users can install HORTON with MacPort directly:
+
+.. code-block:: bash
+
+   sudo port install horton
 
 
 .. _usr_lfs_installation:

@@ -33,7 +33,7 @@ The following dependencies will be necessary for ChemTools to build properly,
 * Matplotlib >= 1.0: http://matplotlib.org/
 * Nosetests >= 1.1.2: http://readthedocs.org/docs/nose/en/latest/
 * HORTON >= 2.0.1: http://theochem.github.io/horton/2.0.1/index.html
-* LFS: https://git-lfs.github.com/
+* LFS >= 2.0.1: https://git-lfs.github.com/
 
 Installation
 ------------
