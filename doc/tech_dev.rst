@@ -55,7 +55,7 @@ You can build ChemTools with the commands:
    python setup.py build
 
 ``PYTHONPATH`` and ``CTDATA`` paths need to be
-added to your profile, **~/.bashrc** (Linux) or **~/.profile** (MacOS):
+added to your profile, **~/.bashrc** (Linux) or **~/.profile** (Mac OS):
 
 .. code-block:: bash
 

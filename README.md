@@ -22,8 +22,8 @@ License
 
 ChemTools is distributed under GPL License version 3 (GPLv3)
 
-Dependence
-----------
+Dependencies
+------------
 
 The following dependencies will be necessary for ChemTools to build properly,
 
@@ -49,8 +49,8 @@ python ./setup install --user
 Check our website for more detailed
 <a href='https://chemtools.org/usr_doc_installation.html'>installation guide</a>
 
-Tests
------
+Testing
+-------
 
 To run tests:
 

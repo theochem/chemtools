@@ -70,7 +70,7 @@ To install the first seven dependencies (Python related dependencies):
      sudo apt-get install python-dev python-pip python-numpy python-scipy python-sympy \
                   python-matplotlib python-nose
 
-* **Ubuntu Linux 15.04 & 14.04 and Mac OS**
+* **Ubuntu Linux 15.04 & 14.04**
 
   .. code-block:: bash
 
@@ -92,7 +92,7 @@ HORTON
 
 To install HORTON, **Linux** users can follow the instructions from `Download and Install
 <http://theochem.github.io/horton/2.0.1/user_download_and_install_linux.html>`_ of HORTON's documentation.
-**MacOS** users can install HORTON with MacPort directly:
+**Mac OS** users can install HORTON with MacPorts directly:
 
 .. code-block:: bash
 
@@ -115,7 +115,7 @@ To install Git LFS,
 
 * **Mac OS**
 
-  You can install LFS with MacPort
+  You can install LFS with MacPorts
 
   .. code-block:: bash
 
