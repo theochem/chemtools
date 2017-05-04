@@ -167,7 +167,7 @@ as a submodule from ChemTools parent directory:
 
 .. code-block:: bash
 
-   git submodule update --init --recursive
+   git submodule update --init doc/_themes/sphinx_rtd_theme
 
 Also, make sure that the :ref:`environment variable <dev_build>` ``CTDATA`` is set and
 :ref:`examples files are downloaded <usr_lfs_installation>`.
@@ -214,7 +214,7 @@ Then, download the quality assurance code by cloning the corresponding submodule
 
 .. code-block:: bash
 
-   git submodule update --init --recursive
+   git submodule update --init tools/inspector
 
 And, run the module's bash script to setup some pre-commit hooks and copy files to run the quality assurance
 scripts individually:
