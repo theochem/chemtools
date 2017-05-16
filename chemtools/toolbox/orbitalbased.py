@@ -139,7 +139,7 @@ class OrbitalLocalTool(DensityLocalTool):
         spin : str
             the spin of the orbitals to be calculated.
         """
-        iorbs = np.asarray(iorbs)
+        iorbs = np.copy(np.asarray(iorbs))
         # Our orbital numbering starts at 1, but HORTON starts at 0.
         iorbs -= 1
         if iorbs.ndim == 0:
@@ -151,3 +151,24 @@ class OrbitalLocalTool(DensityLocalTool):
         else:
             raise ValueError('Argument spin={0} is not known.'.format(spin) +
                              'Choose either "alpha" or "beta".')
+
+    @property
+    def local_ip(self):
+        r"""
+        Local Ionization Potential defined as,
+
+        .. math::
+           IP \left(\mathbf{r}\right) = \frac{\sum_{i \in \mathrm{MOs}} n_i \epsilon_i
+           \phi_i(\mathbf{r}) \phi_i^*(\mathbf{r})}{\rho(\mathbf{r})}
+        """
+        iorbs = np.arange(1, self._obasis.nbasis+1)
+        if hasattr(self, '_exp_beta'):
+            orbitals_alpha = self.orbitals_exp(iorbs, spin='alpha')**2
+            orbitals_beta = self.orbitals_exp(iorbs, spin='beta')**2
+            result = np.dot(self._exp_alpha.occupations*self._exp_alpha.energies, orbitals_alpha.T)
+            result += np.dot(self._exp_beta.occupations*self._exp_beta.energies, orbitals_beta.T)
+        else:
+            orbitals = self.orbitals_exp(iorbs)**2
+            result = np.dot(2.0*self._exp_alpha.occupations*self._exp_alpha.energies, orbitals.T)
+        result /= self.density
+        return result

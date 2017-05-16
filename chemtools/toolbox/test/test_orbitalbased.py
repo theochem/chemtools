@@ -194,3 +194,67 @@ def test_orbital_tool_elf_h2o_dimer():
 
     np.testing.assert_equal(test.shape, result.shape)
     np.testing.assert_array_almost_equal(test, result, decimal=5)
+
+
+def test_localip_ch4_uhf_ccpvdz_alpha():
+    file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
+    mol = IOData.from_file(file_path)
+
+    # creating cube file:
+    ori = np.array([-3.000000, -3.000000, -3.000000])
+    ax = np.array([[ 3.000000,  0.000000,  0.000000],
+                   [ 0.000000,  3.000000,  0.000000],
+                   [ 0.000000,  0.000000,  3.000000]])
+    sh = np.array([3, 3, 3])
+    cube = CubeGen(mol.numbers, mol.pseudo_numbers, mol.coordinates, ori, ax, sh)
+
+    # initialize OrbitalLocalTool:
+    orbtool = OrbitalLocalTool(cube.points, mol.obasis, mol.exp_alpha)
+
+    # local ip obtained with a Mathematica notebook:
+    expected = [-0.583314, -0.587023, -0.565793,
+                -0.582555, -0.623935, -0.581330,
+                -0.565933, -0.595541, -0.579717,
+                -0.588923, -0.620614, -0.589438,
+                -0.611751, -10.88100, -0.631027,
+                -0.583850, -0.621805, -0.583896,
+                -0.566106, -0.580425, -0.575995,
+                -0.592862, -0.629875, -0.589605,
+                -0.583253, -0.582762, -0.565703]
+
+    # compute the local ionization potential
+    test = orbtool.local_ip
+
+    np.testing.assert_almost_equal(expected, test, decimal=4)
+
+
+def test_localip_ch4_uhf_ccpvdz_both():
+    file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
+    # load fchk
+    mol = IOData.from_file(file_path)
+
+    # creating cube file:
+    ori = np.array([-3.000000, -3.000000, -3.000000])
+    ax = np.array([[ 3.000000,  0.000000,  0.000000],
+                   [ 0.000000,  3.000000,  0.000000],
+                   [ 0.000000,  0.000000,  3.000000]])
+    sh = np.array([3, 3, 3])
+    cube = CubeGen(mol.numbers, mol.pseudo_numbers, mol.coordinates, ori, ax, sh)
+
+    # initialize OrbitalLocalTool:
+    orbtool = OrbitalLocalTool(cube.points, mol.obasis, mol.exp_alpha, mol.exp_alpha)
+
+    # local ip obtained with a Mathematica notebook:
+    expected = [-0.583314, -0.587023, -0.565793,
+                -0.582555, -0.623935, -0.581330,
+                -0.565933, -0.595541, -0.579717,
+                -0.588923, -0.620614, -0.589438,
+                -0.611751, -10.88100, -0.631027,
+                -0.583850, -0.621805, -0.583896,
+                -0.566106, -0.580425, -0.575995,
+                -0.592862, -0.629875, -0.589605,
+                -0.583253, -0.582762, -0.565703]
+    # compute the local ionization potential
+    test = orbtool.local_ip
+
+    np.testing.assert_almost_equal(expected, test, decimal=4)
