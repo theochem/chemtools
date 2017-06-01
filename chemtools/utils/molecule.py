@@ -61,7 +61,7 @@ class Molecule(object):
 
         # check whether iodata has wave-function infromation
         if iodata is not None and hasattr(iodata, 'obasis') and iodata.obasis is not None:
-            self._wavefunction = WaveFunction(iodata)
+            self._wavefunction = HORTONWaveFunction(iodata)
         else:
             self._wavefunction = None
 
@@ -110,7 +110,7 @@ class Molecule(object):
         return self._natom
 
 
-class WaveFunction(object):
+class HORTONWaveFunction(object):
     """Wave Function Class."""
 
     def __init__(self, iodata):
@@ -228,9 +228,9 @@ class WaveFunction(object):
             dm = exp.to_dm()
         return dm
 
-    def compute_density(self, points, spin='ab', orbital_index=None):
+    def compute_density(self, points, spin='ab', orbital_index=None, output=None):
         """
-        Return the electronic density evaluated on the given points for the specified spin orbitals.
+        Return electron density evaluated on the given points for the spin orbitals.
 
         Parameters
         ----------
@@ -247,18 +247,183 @@ class WaveFunction(object):
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
            If ``None``, all occupied spin orbtails are included.
+        output : np.ndarray
+           Array with shape (n,) to store the output, where n in the number of points. When ``None``
+           the array is allocated.
         """
+        # allocate output array
+        if output is None:
+            output = np.zeros((points.shape[0],), float)
         # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin)
 
         # compute density
         if orbital_index is None:
             # include all orbitals
-            dens = self._iodata.obasis.compute_grid_density_dm(dm, points)
+            self._iodata.obasis.compute_grid_density_dm(dm, points, output=output)
         else:
             # HORTON index the orbitals from 0
             orbs = np.copy(np.asarray(orbital_index)) - 1
             # include specified set of orbitals
-            dens = self._iodata.obasis.compute_grid_orbitals_exp(dm, points, orbs)**2
-            dens = dens.flatten()
-        return dens
+            self._iodata.obasis.compute_grid_orbitals_exp(dm, points, orbs, output=output)**2
+            output = output.flatten()
+        return output
+
+    def compute_gradient(self, points, spin='ab', orbital_index=None, output=None):
+        """
+        Return gradient of electron density evaluated on the given points for the spin orbitals.
+
+        Parameters
+        ----------
+        points : ndarray
+           The 2d-array containing the cartesian coordinates of points on which density is
+           evaluated. It has a shape (n, 3) where n is the number of points.
+        spin : str
+           The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
+           alpha and beta occupied spin orbitals) are used for computing the electron density.
+               - 'a' or 'alpha': consider alpha electrons
+               - 'b' or 'beta': consider beta electrons
+               - 'ab': consider alpha and beta electrons
+        orbital_index : sequence
+           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
+           orbitals are each indexed from 1 to :attr:`nbasis`.
+           If ``None``, all occupied spin orbtails are included.
+        output : np.ndarray
+           Array with shape (n, 3) to store the output, where n in the number of points. When ``None``
+           the array is allocated.
+        """
+        # allocate output array
+        if output is None:
+            output = np.zeros((points.shape[0], 3), float)
+        # get density matrix corresponding to the specified spin
+        dm = self._get_density_matrix(spin)
+
+        # compute gradient
+        if orbital_index is None:
+            # include all orbitals
+            self._iodata.obasis.compute_grid_gradient_dm(dm, points, output=output)
+        else:
+            # include specified set of orbitals
+            raise NotImplementedError()
+        return output
+
+    def compute_hessian(self, points, spin='ab', orbital_index=None, output=None):
+        """
+        Return hessian of electron density evaluated on the given points for the spin orbitals.
+
+        Parameters
+        ----------
+        points : ndarray
+           The 2d-array containing the cartesian coordinates of points on which density is
+           evaluated. It has a shape (n, 3) where n is the number of points.
+        spin : str
+           The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
+           alpha and beta occupied spin orbitals) are used for computing the electron density.
+               - 'a' or 'alpha': consider alpha electrons
+               - 'b' or 'beta': consider beta electrons
+               - 'ab': consider alpha and beta electrons
+        orbital_index : sequence
+           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
+           orbitals are each indexed from 1 to :attr:`nbasis`.
+           If ``None``, all occupied spin orbtails are included.
+        output : np.ndarray
+           Array with shape (n, 6) to store the output, where n in the number of points. When ``None``
+           the array is allocated.
+        """
+        # allocate output array
+        if output is None:
+            output = np.zeros((points.shape[0], 6), float)
+        # get density matrix corresponding to the specified spin
+        dm = self._get_density_matrix(spin)
+
+        # compute hessian
+        if orbital_index is None:
+            # include all orbitals
+            self._iodata.obasis.compute_grid_hessian_dm(dm, points, output=output)
+        else:
+            # include specified set of orbitals
+            raise NotImplementedError()
+        return output
+
+    def compute_esp(self, points, spin='ab', orbital_index=None, output=None):
+        """
+        Return the molecular electrostatic potential on the given points for the specified spin.
+
+        Parameters
+        ----------
+        points : ndarray
+           The 2d-array containing the cartesian coordinates of points on which density is
+           evaluated. It has a shape (n, 3) where n is the number of points.
+        spin : str
+           The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
+           alpha and beta occupied spin orbitals) are used for computing the electron density.
+               - 'a' or 'alpha': consider alpha electrons
+               - 'b' or 'beta': consider beta electrons
+               - 'ab': consider alpha and beta electrons
+        orbital_index : sequence
+           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
+           orbitals are each indexed from 1 to :attr:`nbasis`.
+           If ``None``, all occupied spin orbtails are included.
+        output : np.ndarray
+           Array with shape (n,) to store the output, where n in the number of points. When ``None``
+           the array is allocated.
+        """
+        # allocate output array
+        if output is None:
+            output = np.zeros((points.shape[0],), float)
+        # get density matrix corresponding to the specified spin
+        dm = self._get_density_matrix(spin)
+
+        # compute esp
+        if orbital_index is None:
+            # include all orbitals
+            self._iodata.obasis.compute_grid_esp_dm(dm, self._iodata.coordinates,
+                                                    self._iodata.pseudo_numbers, points)
+        else:
+            # include specified set of orbitals
+            raise NotImplementedError()
+        return output
+
+    def compute_kinetic_energy_density(self, points, spin='ab', orbital_index=None, output=None):
+        r"""
+        Return positive definite kinetic energy density on the given points for the specified spin.
+
+        Positive definite kinetic energy density is defined as,
+
+        .. math::
+           \tau \left(\mathbf{r}\right) =
+           \sum_i^N n_i \frac{1}{2} \rvert \nabla \phi_i \left(\mathbf{r}\right) \lvert^2
+
+        Parameters
+        ----------
+        points : ndarray
+           The 2d-array containing the cartesian coordinates of points on which density is
+           evaluated. It has a shape (n, 3) where n is the number of points.
+        spin : str
+           The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
+           alpha and beta occupied spin orbitals) are used for computing the electron density.
+               - 'a' or 'alpha': consider alpha electrons
+               - 'b' or 'beta': consider beta electrons
+               - 'ab': consider alpha and beta electrons
+        orbital_index : sequence
+           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
+           orbitals are each indexed from 1 to :attr:`nbasis`.
+           If ``None``, all occupied spin orbtails are included.
+        output : np.ndarray
+           Array with shape (n,) to store the output, where n in the number of points. When ``None``
+           the array is allocated.
+        """
+        # allocate output array
+        if output is None:
+            output = np.zeros((points.shape[0],), float)
+        # get density matrix corresponding to the specified spin
+        dm = self._get_density_matrix(spin)
+
+        # compute kinetic energy
+        if orbital_index is None:
+            # include all orbitals
+            self._iodata.obasis.compute_grid_kinetic_dm(dm, points, output=output)
+        else:
+            # include specified set of orbitals
+            raise NotImplementedError()
+        return output
