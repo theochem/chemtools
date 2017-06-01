@@ -20,10 +20,10 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Test chemtools.toolbox.conceptuallocal."""
+"""Test chemtools.conceptual.linear Module."""
 
 import numpy as np
-from chemtools.toolbox.conceptuallocal import LinearLocalTool, QuadraticLocalTool
+from chemtools.conceptual.linear import LinearLocalTool
 
 
 def test_local_linear():
@@ -67,43 +67,3 @@ def test_local_linear():
     np.testing.assert_almost_equal(model.ff_zero, expected, decimal=6)
     np.testing.assert_almost_equal(model.fukui_function(None), expected, decimal=6)
     np.testing.assert_equal(model.fukui_function(10.), expected)
-
-
-def test_local_quadratic():
-    # Fake density arrays
-    d0 = np.array([1.0, 3.0, 5.0, 2.0, 7.0])
-    dp = np.array([0.5, 4.5, 6.0, 1.0, 5.0])
-    dm = np.array([1.0, 4.0, 3.0, 2.0, 8.0])
-    # Build a linear local model
-    model = QuadraticLocalTool(d0, dp, dm, 5)
-    # Check density
-    np.testing.assert_almost_equal(model.density_zero, d0, decimal=6)
-    np.testing.assert_almost_equal(model.density_plus, dp, decimal=6)
-    np.testing.assert_almost_equal(model.density_minus, dm, decimal=6)
-    np.testing.assert_almost_equal(model.density(5.), d0, decimal=6)
-    np.testing.assert_almost_equal(model.density(6.), dp, decimal=6)
-    np.testing.assert_almost_equal(model.density(4.), dm, decimal=6)
-    np.testing.assert_almost_equal(model.density(None), d0, decimal=6)
-    # Density
-    expected = np.array([-0.25, 0.25, 1.5, -0.5, -1.5])
-    np.testing.assert_almost_equal(model.fukui_function(None), expected, decimal=6)
-    np.testing.assert_almost_equal(model.fukui_function(5.), expected, decimal=6)
-    expected = np.array([-0.75, 2.75, 0.5, -1.5, -2.5])
-    np.testing.assert_almost_equal(model.fukui_function(6.), expected, decimal=6)
-    expected = np.array([0.25, -2.25, 2.5, 0.5, -0.5])
-    np.testing.assert_almost_equal(model.fukui_function(4.), expected, decimal=6)
-    expected = np.array([-0.3, 0.5, 1.4, -0.6, -1.6])
-    np.testing.assert_almost_equal(model.fukui_function(5.1), expected, decimal=6)
-    expected = np.array([-0.2, 0.0, 1.6, -0.4, -1.4])
-    np.testing.assert_almost_equal(model.fukui_function(4.9), expected, decimal=6)
-    # Dual Descriptor
-    expected = np.array([-0.5, 2.5, -1.0, -1.0, -1.0])
-    np.testing.assert_almost_equal(model.dual_descriptor(), expected, decimal=6)
-    # expected = np.array([-0.25, 0.25, 1.5, -0.5, -1.5]) / 3.5
-    # np.testing.assert_almost_equal(model.softness(3.5), expected, decimal=6)
-    # expected = np.array([-0.25, 0.25, 1.5, -0.5, -1.5]) / 0.5
-    # np.testing.assert_almost_equal(model.softness(0.5), expected, decimal=6)
-    # expected = np.array([-0.5, 2.5, -1.0, -1.0, -1.0]) / (1.5 * 1.5)
-    # np.testing.assert_almost_equal(model.hyper_softness(1.5), expected, decimal=6)
-    # expected = np.array([-0.5, 2.5, -1.0, -1.0, -1.0]) / (0.25 * 0.25)
-    # np.testing.assert_almost_equal(model.hyper_softness(0.25), expected, decimal=6)

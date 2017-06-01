@@ -20,12 +20,11 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""The Main ChemTools Package."""
+"""The Conceptual Density Functional Theory Module."""
 
-from chemtools.toolbox import *
-from chemtools.conceptual import *
-from chemtools.denstools import *
-from chemtools.orbtools import *
-from chemtools.utils import *
 
-__version__ = '0.9.0'
+from chemtools.conceptual.linear import *
+from chemtools.conceptual.quadratic import *
+from chemtools.conceptual.exponential import *
+from chemtools.conceptual.rational import *
+from chemtools.conceptual.general import *

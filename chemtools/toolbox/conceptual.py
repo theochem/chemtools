@@ -32,10 +32,11 @@ from abc import ABCMeta
 from horton import log
 from horton import IOData, BeckeMolGrid, ProAtomDB
 from horton.scripts.wpart import wpart_schemes
-from chemtools.toolbox.conceptualglobal import LinearGlobalTool, QuadraticGlobalTool
-from chemtools.toolbox.conceptualglobal import ExponentialGlobalTool, RationalGlobalTool
-from chemtools.toolbox.conceptualglobal import GeneralGlobalTool
-from chemtools.toolbox.conceptuallocal import LinearLocalTool, QuadraticLocalTool
+from chemtools.conceptual.linear import LinearGlobalTool, LinearLocalTool
+from chemtools.conceptual.quadratic import QuadraticGlobalTool, QuadraticLocalTool
+from chemtools.conceptual.exponential import ExponentialGlobalTool
+from chemtools.conceptual.rational import RationalGlobalTool
+from chemtools.conceptual.general import GeneralGlobalTool
 
 __all__ = ['GlobalConceptualDFT', 'LocalConceptualDFT', 'CondensedConceptualDFT']
 

@@ -22,9 +22,6 @@
 # --
 """The Toolbox Module."""
 
-
-from chemtools.toolbox.conceptualglobal import *
-from chemtools.toolbox.conceptuallocal import *
-from chemtools.toolbox.conceptualcondense import *
+from chemtools.toolbox.conceptual import *
 from chemtools.toolbox.densitybased import *
 from chemtools.toolbox.orbitalbased import *

@@ -28,51 +28,56 @@ API Documentation
 
 .. module:: chemtools
 
-Analysis Module
-===============
+Toolbox Module
+==============
 
 * Conceptual DFT Tools
 
-  * :class:`Global Conceptual DFT Tools <analysis.conceptual.GlobalConceptualDFT>`
-  * :class:`Local Conceptual DFT Tools <analysis.conceptual.LocalConceptualDFT>`
-  * :class:`Condense Conceptual DFT Tools <analysis.conceptual.CondensedConceptualDFT>`
+  * :class:`Global Conceptual DFT Tools <toolbox.conceptual.GlobalConceptualDFT>`
+  * :class:`Local Conceptual DFT Tools <toolbox.conceptual.LocalConceptualDFT>`
+  * :class:`Condense Conceptual DFT Tools <toolbox.conceptual.CondensedConceptualDFT>`
 
 * Density Based Tools
 
-  * :class:`Noncovalent Interaction (NCI) <analysis.densitybased.NCI>`
-  * :func:`_compute_hessian <analysis.densitybased._compute_hessian>`
+  * :class:`Noncovalent Interaction (NCI) <toolbox.densitybased.NCI>`
 
 * Orbital Based Tools
 
-  * :class:`Orbital Analysis <analysis.orbitalbased.OrbitalAnalysis>`
+  * :class:`Orbital Analysis <toolbox.orbitalbased.OrbitalAnalysis>`
 
-ToolBox Module
-==============
+Conceptual Module
+=================
 
 * Global Conceptual DFT Tools
 
-  * :class:`Base Global Tool <toolbox.conceptualglobal.BaseGlobalTool>`
-  * :class:`Linear Global Tool <toolbox.conceptualglobal.LinearGlobalTool>`
-  * :class:`Quadratic Global Tool <toolbox.conceptualglobal.QuadraticGlobalTool>`
-  * :class:`Exponential Global Tool <toolbox.conceptualglobal.ExponentialGlobalTool>`
-  * :class:`Rational Global Tool <toolbox.conceptualglobal.RationalGlobalTool>`
-  * :class:`General Global Tool <toolbox.conceptualglobal.GeneralGlobalTool>`
+  * :class:`Base Global Tool <conceptual.base.BaseGlobalTool>`
+  * :class:`Linear Global Tool <conceptual.linear.LinearGlobalTool>`
+  * :class:`Quadratic Global Tool <conceptual.quadratic.QuadraticGlobalTool>`
+  * :class:`Exponential Global Tool <conceptual.exponential.ExponentialGlobalTool>`
+  * :class:`Rational Global Tool <conceptual.rational.RationalGlobalTool>`
+  * :class:`General Global Tool <conceptual.general.GeneralGlobalTool>`
 
 * Local Conceptual DFT Tools
 
-  * :class:`Base Local Tool <toolbox.conceptuallocal.BaseLocalTool>`
-  * :class:`Linear Local Tool <toolbox.conceptuallocal.LinearLocalTool>`
-  * :class:`Quadratic Local Tool <toolbox.conceptuallocal.QuadraticLocalTool>`
+  * :class:`Base Local Tool <conceptual.base.BaseLocalTool>`
+  * :class:`Linear Local Tool <conceptual.linear.LinearLocalTool>`
+  * :class:`Quadratic Local Tool <conceptual.quadratic.QuadraticLocalTool>`
 
 * Condensed Conceptual DFT Tools
 
-  * :class:`Condensed Conceptual DFT Tool <toolbox.conceptualcondense.CondensedTool>`
+  * :class:`Condensed Conceptual DFT Tool <conceptual.conceptualcondense.CondensedTool>`
 
-* Density Based Tools
+Density-Based Module
+====================
+
+* Density-Based Tools
 
   * :class:`Density Local Tool <toolbox.densitybased.DensityLocalTool>`
 
-* Orbital Based Tools
+Orbital-Based Module
+====================
+
+* Orbital-Based Tools
 
   * :class:`Orbital Local Tool <toolbox.orbitalbased.OrbitalLocalTool>`
 
@@ -97,23 +102,22 @@ Utility Module
     .. autosummary::
       :toctree: modules/generated
 
-      analysis.conceptual.GlobalConceptualDFT
-      analysis.conceptual.LocalConceptualDFT
-      analysis.densitybased.NCI
-      analysis.densitybased._compute_hessian
-      analysis.orbitalbased.OrbitalAnalysis
-      toolbox.conceptualglobal.BaseGlobalTool
-      toolbox.conceptualglobal.LinearGlobalTool
-      toolbox.conceptualglobal.QuadraticGlobalTool
-      toolbox.conceptualglobal.ExponentialGlobalTool
-      toolbox.conceptualglobal.RationalGlobalTool
-      toolbox.conceptualglobal.GeneralGlobalTool
-      toolbox.conceptuallocal.BaseLocalTool
-      toolbox.conceptuallocal.LinearLocalTool
-      toolbox.conceptuallocal.QuadraticLocalTool
-      toolbox.conceptualcondense.CondensedTool
-      toolbox.densitybased.DensityLocalTool
-      toolbox.orbitalbased.OrbitalLocalTool
+      toolbox.conceptual.GlobalConceptualDFT
+      toolbox.conceptual.LocalConceptualDFT
+      toolbox.densitybased.NCI
+      toolbox.orbitalbased.OrbitalAnalysis
+      conceptual.base.BaseGlobalTool
+      conceptual.linear.LinearGlobalTool
+      conceptual.quadratic.QuadraticGlobalTool
+      conceptual.exponential.ExponentialGlobalTool
+      conceptual.rational.RationalGlobalTool
+      conceptual.general.GeneralGlobalTool
+      conceptual.base.BaseLocalTool
+      conceptual.linear.LinearLocalTool
+      conceptual.quadratic.QuadraticLocalTool
+      conceptual.conceptualcondense.CondensedTool
+      denstools.densitybased.DensityLocalTool
+      orbtools.orbitalbased.OrbitalLocalTool
       utils.utils.doc_inherit
       utils.cube.CubeGen
       utils.molecule.BaseMolecule

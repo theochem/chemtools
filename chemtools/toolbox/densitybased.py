@@ -20,219 +20,268 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Density-Based Local Conceptual Density Functional Theory (DFT) Reactivity Tools."""
+"""Module for Density-Based and Orbital-Based Analysis of Quantum Chemistry Output Files.
+
+This modules contains wrappers which take outputs of quantum chemistry software and
+compute various descriptive tools based on the density and orbital information.
+"""
 
 import numpy as np
+from horton import IOData
+from chemtools.denstools.densitybased import DensityLocalTool
+from chemtools.utils.cube import CubeGen
+from chemtools.utils.output import print_vmd_script_nci
+from matplotlib import rcParams
+import matplotlib.pyplot as plt
 
-__all__ = ['DensityLocalTool']
+__all__ = ['NCI']
 
 
-class DensityLocalTool(object):
-    """Class of density-based local descriptive tools."""
+class NCI(object):
+    """Class for the Non-Covalent Interactions (NCI)."""
 
-    def __init__(self, density, gradient, hessian=None):
-        """Initialize class with density and gradient.
+    def __init__(self, density, rdgradient, cube, hessian=None):
+        """Initialize class using density, Reduced density gradient and `CubeGen` instance.
 
         Parameters
         ----------
-        density : np.ndarray
-            Electron density of the system evaluated on a grid
-        gradient : np.ndarray
-            Gradient vector of electron density evaluated on a grid
-        hessian : np.ndarray
-            Hessian matrix of electron density evaluated on a grid
+        density : np.array
+            Density evaluated on grid points of `cube`.
+        rdgradient : np.array
+            Reduced density gradient evaluated on grid points of `cube`
+        cube : instance of `CubeGen`, default=None
+            Cubic grid used for calculating and visualizing the NCI.
+            If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
+        hessian : np.array, default=None
+            Hessian of density evaluated on grid points of `cube`. This is a 3D-array with
+            (n, 3, 3) shape where n is the number of grid points of `cube`.
         """
-        if density.ndim != 1:
-            raise ValueError('Argument density should be a 1-dimensional array.')
-        if gradient.shape != (density.size, 3):
-            raise ValueError('Argument gradient should have same shape as density array.' +
-                             ' {0}!={1}'.format(gradient.shape, density.shape))
-        if hessian is not None and hessian.shape != (density.size, 3, 3):
-            raise ValueError('Argument hessian\'s shape is not consistent with the density array.' +
-                             ' {0}!={1}'.format(hessian.shape, (density.size, 3, 3)))
+        if density.shape != (len(cube.points),):
+            raise ValueError('Shape of density argument {0} does not match '
+                             'expected ({1},) shape.'.format(density.shape, len(cube.points)))
+        if rdgradient.shape != (len(cube.points),):
+            raise ValueError('Shape of rdgradient argument {0} does not '
+                             'match expected ({1},) shape.'.format(density.shape, len(cube.points)))
+
+        if hessian is not None:
+            if hessian.shape != (len(cube.points), 3, 3):
+                raise ValueError('Shape of hessian argument {0} does not match expected ({1}, 3, 3)'
+                                 ' shape.'.format(hessian.shape, len(cube.points)))
+            # Compute hessian and its eigenvalues on cubuc grid
+            eigvalues = np.linalg.eigvalsh(hessian)
+
+            # Use sign of second eigenvalue to distinguish interaction types
+            sdens = np.sign(eigvalues[:, 1]) * density
+
+            self._signed_density = sdens
+            self._eigvalues = eigvalues
+
+        else:
+            self._signed_density = None
+            self._eigvalues = None
 
         self._density = density
-        self._gradient = gradient
-        self._hessian = hessian
+        self._rdgrad = rdgradient
+        self._cube = cube
 
-    @property
-    def density(self):
-        r"""Electron density.
-
-        Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on a grid.
-        """
-        return self._density
-
-    @property
-    def gradient(self):
-        r"""Gradient of electron density.
-
-        Gradient vector of electron :math:`\nabla \rho\left(\mathbf{r}\right)`
-        defined as the first-order partial derivatives of electron density w.r.t. coordinate
-        :math:`\mathbf{r} = \left(x\mathbf{i}, y\mathbf{j}, z\mathbf{k}\right)`,
-
-         .. math::
-            \nabla\rho\left(\mathbf{r}\right) =
-            \left(\frac{\partial}{\partial x}\mathbf{i}, \frac{\partial}{\partial y}\mathbf{j},
-                  \frac{\partial}{\partial z}\mathbf{k}\right) \rho\left(\mathbf{r}\right)
-        """
-        return self._gradient
-
-    @property
-    def hessian(self):
-        r"""Hessian of electron density.
-
-        Hessian matrix of electron density :math:`\nabla^2 \rho\left(\mathbf{r}\right)`
-        defined as the second-order partial derivatives of electron density w.r.t coordinate
-        :math:`\mathbf{r} = \left(x\mathbf{i}, y\mathbf{j}, z\mathbf{k}\right)`.
-        """
-        return self._hessian
-
-    @property
-    def laplacian(self):
-        r"""Laplacian of electron density.
-
-        Laplacian of electron density :math:`\nabla ^2 \rho\left(\mathbf{r}\right)` defined
-        as the trace of Hessian matrix of electron density which is equal to the sum of
-        :math:`\left(\lambda_1, \lambda_2, \lambda_3\right)` eigen-values of Hessian matrix,
-
-        .. math::
-           \nabla^2 \rho\left(\mathbf{r}\right) = \nabla\cdot\nabla\rho\left(\mathbf{r}\right) =
-                     \frac{\partial^2\rho\left(\mathbf{r}\right)}{\partial x^2} +
-                     \frac{\partial^2\rho\left(\mathbf{r}\right)}{\partial y^2} +
-                     \frac{\partial^2\rho\left(\mathbf{r}\right)}{\partial z^2} =
-                     \lambda_1 + \lambda_2 + \lambda_3
-        """
-        if self._hessian is not None:
-            return np.trace(self._hessian, axis1=1, axis2=2)
-
-    @property
-    def shanon_information(self):
-        r"""Shanon information defined as :math:`\rho(r) \ln \rho(r)`."""
-        # masking might be needed
-        value = self._density * np.log(self._density)
-        return value
-
-    @property
-    def gradient_norm(self):
-        r"""Norm of the gradient of electron density.
-
-        Gradient norm representing the norm of the gradient vector at every point,
-
-        .. math::
-           \lvert \nabla \rho\left(\mathbf{r}\right) \rvert = \sqrt{
-                  \left(\frac{\partial\rho\left(\mathbf{r}\right)}{\partial x}\right)^2 +
-                  \left(\frac{\partial\rho\left(\mathbf{r}\right)}{\partial y}\right)^2 +
-                  \left(\frac{\partial\rho\left(\mathbf{r}\right)}{\partial z}\right)^2 }
-        """
-        norm = np.linalg.norm(self._gradient, axis=1)
-        return norm
-
-    @property
-    def reduced_density_gradient(self):
-        r"""Reduced density gradient.
-
-        Reduced density gradient (RDG) defined as,
-
-        .. math::
-           s\left(\mathbf{r}\right) = \frac{1}{2\left(3\pi ^2 \right)^{1/3}}
-           \frac{\lvert \nabla\rho\left(\mathbf{r}\right) \rvert}{\rho\left(\mathbf{r}\right)^{4/3}}
-        """
-        # Mask density values less than 1.0d-30 to avoid diving by zero
-        mdens = np.ma.masked_less(self._density, 1.0e-30)
-        mdens.filled(1.0e-30)
-        # Compute reduced density gradient
-        prefactor = 0.5 / (3.0 * np.pi**2)**(1.0 / 3.0)
-        rdg = prefactor * self.gradient_norm / mdens**(4.0 / 3.0)
-        return rdg
-
-    @property
-    def weizsacker_kinetic_energy_density(self):
-        r"""Weizsacker kinetic energy density.
-
-        Weizsacker kinetic energy/local steric energy/Fisher information density defined as,
-
-        .. math::
-           T\left(\mathbf{r}\right) =
-           \frac{\lvert \nabla \rho\left(\mathbf{r}\right) \rvert ^2}{8 \rho\left(\mathbf{r}\right)}
-        """
-        # Mask density values less than 1.0d-30 to avoid diving by zero
-        mdens = np.ma.masked_less(self._density, 1.0e-30)
-        mdens.filled(1.0e-30)
-        # Compute Weizsacker kinetic energy
-        kinetic = self.gradient_norm**2.0 / (8.0 * mdens)
-        return kinetic
-
-    @property
-    def thomas_fermi_kinetic_energy_density(self):
-        r"""Thomas-Fermi kinetic energy density.
-
-        Thomas-Fermi kinetic energy density defined as,
-
-        .. math::
-           T\left(\mathbf{r}\right) = \frac{3}{10} \left(6 \pi^2 \right)^{2/3}
-                  \left(\frac{\rho\left(\mathbf{r}\right)}{2}\right)^{5/3}
-        """
-        # Compute Thomas-Fermi kinetic energy
-        prefactor = 0.3 * (3.0 * np.pi**2.0)**(2.0 / 3.0)
-        kinetic = prefactor * self._density**(5.0 / 3.0)
-        return kinetic
-
-    def electrostatic_potential(self, numbers, coordinates, int_weights, int_points, points):
-        r"""Electrostatic potential.
-
-        Electrostatic potential defined as,
-
-        .. math::
-           \Phi\left(\mathbf{r}\right) = - v \left(\mathbf{r}\right) -
-                     \int \frac{\rho\left(\mathbf{r}'\right)}{|\mathbf{r} -
-                     \mathbf{r}'|} d \mathbf{r}'
+    @classmethod
+    def from_file(cls, filename, cube=None):
+        """Initialize class using wave-function file.
 
         Parameters
         ----------
-        numbers : np.ndarray
-            The atomic numbers of the system
-        coordinates : np.ndarray
-            The coordinates of the (nuclear) charges of the system
-        int_weights : np.ndarray
-            The integration weights.
-            This should have the same dimension as the density used to initialize the class.
-        int_points : np.ndarray
-            The coordinates of the integration points.
-        points : np.ndarray
-            The coordinates of the point(s) on which to calculate the electrostatic potential.
+        filename : str
+            Path to molecule's files.
+        cube : instance of `CubeGen`, default=None
+            Cubic grid used for calculating and visualizing the NCI.
+            If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
         """
-        # check consistency of arrays
-        if len(coordinates) != len(numbers):
-            raise ValueError('Argument numbers & coordinates should have the same length. ' +
-                             '{0}!={1}'.format(len(coordinates), len(numbers)))
-        if len(int_weights) != len(self._density):
-            raise ValueError('Argument int_weights & density should have the same shape. ' +
-                             '{0}!={1}'.format(int_weights.shape, self._density.shape))
-        if len(int_points) != len(self._density):
-            raise ValueError('Argument int_points & density should have the same shape. ' +
-                             '{0}!={1}'.format(int_weights.shape, self._density.shape))
-        try:
-            if points.shape[1] != 3:
-                raise ValueError('Argument points should have the shape of (n,3)')
-        except:
-            raise ValueError('Argument points should have the shape of (n,3)')
+        # case of one file not given as a list
+        if isinstance(filename, (str, unicode)):
+            return cls.from_iodata(IOData.from_file(filename), cube)
+        # case of list of file(s)
+        for _ in filename:
+            raise ValueError('Multiple files are not supported')
 
-        # array to store esp
-        esp = np.zeros(points.shape[0])
+    @classmethod
+    def from_iodata(cls, iodata, cube=None):
+        """Initialize class from ``IOData`` object from ``HORTON`` library.
 
-        # compute esp at every point
-        for n, point in enumerate(points):
-            # esp at a given point from nuclei
-            deltas = point - coordinates
-            distance = np.linalg.norm(deltas, axis=1)
-            esp[n] = np.sum(numbers / distance)
+        Parameters
+        ----------
+        iodata : ``IOData``
+            Instance of ``IOData``.
+        cube : instance of `CubeGen`, default=None
+            Cubic grid used for calculating and visualizing the NCI.
+            If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
+        """
+        # Generate or check cubic grid
+        if cube is None:
+            cube = CubeGen.from_molecule(iodata.numbers, iodata.pseudo_numbers,
+                                         iodata.coordinates, spacing=0.1, threshold=2.0)
+        elif not isinstance(cube, CubeGen):
+            raise ValueError('Argument cube should be an instance of CubeGen!')
 
-            # esp at a given point from electron density multiplied by integration weight
-            deltas = point - int_points
-            distance = np.linalg.norm(deltas, axis=1)
-            # avoid computing esp, if points are very close
-            esp[n] -= np.sum(self._density[distance > 1e-6] * int_weights
-                             / distance[distance > 1e-6])
+        # Compute density & gradient on cubic grid
+        dm_full = iodata.get_dm_full()
+        dens = iodata.obasis.compute_grid_density_dm(dm_full, cube.points)
+        grad = iodata.obasis.compute_grid_gradient_dm(dm_full, cube.points)
+        # Compute hessian on cubic grid
+        hess = _compute_hessian(iodata, cube.points)
 
-        return esp
+        # initialize DensityLocalTool & compute reduced gradient
+        temp = DensityLocalTool(dens, grad)
+        rdgrad = temp.reduced_density_gradient
+
+        return cls(dens, rdgrad, cube, hessian=hess)
+
+    @property
+    def signed_density(self):
+        r"""Signed electron density.
+
+        Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on a grid,
+        signed by the second eigenvalue of the Hessian at that point, i.e.
+        :math:`\text{sgn}\left(\lambda_2\right) \times \rho\left(\mathbf{r}\right)`.
+        """
+        return self._signed_density
+
+    @property
+    def eigvalues(self):
+        r"""The eigenvalues of Hessian."""
+        return self._eigvalues
+
+    def plot(self, filename, color='b'):
+        r"""Plot reduced density gradient.
+
+        Reduced density gradient vs.
+        :math:`\text{sgn}\left(\lambda_2\right) \times \rho\left(\mathbf{r}\right)`.
+
+        Parameters
+        ----------
+        filename : str
+            Name of generated 2D plot.
+
+            If the given filename does not have a proper extension (representing its format),
+            the 'png' format is used by default (i.e. plot is saved as filename.png).
+
+            Supported formats (which should be specified as filename extensions) include:
+
+            - 'svgz' or 'svg' (Scalable Vector Graphics)
+            - 'tif' or 'tiff' (Tagged Image File Format)
+            - 'jpg' or 'jpeg' (Joint Photographic Experts Group)
+            - 'raw' (Raw RGBA bitmap)
+            - 'png' (Portable Network Graphics)
+            - 'ps' (Postscript)
+            - 'eps' (Encapsulated Postscript)
+            - 'rgba' (Raw RGBA bitmap)
+            - 'pdf' (Portable Document Format)
+
+        color : str, default='b'
+            Color of plot. Default is blue specified with 'b'.
+            For details on specifying colors, please refer to
+            http://matplotlib.org/users/colors.html
+        """
+        # set font
+        rcParams['font.family'] = 'serif'
+        rcParams['font.serif'] = ['Times New Roman']
+        rcParams['mathtext.fontset'] = 'stix'
+        # create figure
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        # scatter plot
+        plt.scatter(self._signed_density, self._rdgrad, marker='o', color=color)
+        # set axis range and label
+        plt.xlim(-0.2, 0.2)
+        plt.ylim(0.0, 2.0)
+        plt.xlabel(r'sgn$\mathbf{(\lambda_2)}$ $\times$ $\mathbf{\rho(r)}$ (a.u)',
+                   fontsize=12, fontweight='bold')
+        plt.ylabel('Reduced Density Gradient', fontsize=12, fontweight='bold')
+        # hide the right, top and bottom spines
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+        ax.xaxis.tick_bottom()
+        ax.yaxis.tick_left()
+        # save plot ('.png' extension is added by default, if filename is not a supported format)
+        plt.savefig(filename, dpi=800)
+
+    def dump_files(self, filename, isosurf=0.50, denscut=0.05):
+        r"""Generate cube files and VMD script to visualize non-covalent interactions (NCI).
+
+        Generate density and reduced density gradient cube files, as well as a VMD (Visual
+        Molecular Dynamics) script to visualize non-covalent interactions (NCI).
+
+        Parameters
+        ----------
+        filename : str
+            Name of generated cube files and vmd script.
+        isosurf : float, default=0.5
+            Value of reduced density gradient (RDG) iso-surface used in VMD script.
+        denscut : float, default=0.05
+            Density cutoff used in creating reduced density gradient cube file.
+            Similar to NCIPlot program, reduced density gradient of points with
+            density > denscut will be set to 100.0 to display reduced density gradient
+            iso-surface subject to the constraint of low density.
+            To visualize all reduced density gradient iso-surfaces, disregarding of the
+            corresponding density value, set this argument equal to infity using `float('inf')`.
+        Note
+        ----
+        The generated cube files and script imitate the NCIPlot software version 1.0.
+        """
+        # Similar to NCIPlot program, reduced density gradient of points with
+        # density > cutoff will be set to 100.0 before generating cube file to
+        # display reduced density gradient iso-surface subject to the constraint
+        # of low density, i.e. density < denscut.
+        cutrdg = np.array(self._rdgrad, copy=True)
+        cutrdg[abs(self._density) > denscut] = 100.0
+        # Similar to NCIPlot program, sign(hessian second eigenvalue)*density is
+        # multiplied by 100.0 before generating cube file used for coloring the
+        # reduced density gradient iso-surface.
+        if self._signed_density is not None:
+            dens = 100.0 * self._signed_density
+        else:
+            dens = 100.0 * self._density
+
+        # Name of output files:
+        densfile = filename + '-dens.cube'    # density cube file
+        rdgfile = filename + '-grad.cube'    # reduced density gradient cube file
+        vmdfile = filename + '.vmd'          # vmd script file
+        # Dump density & reduced density gradient cube files
+        self._cube.dump_cube(densfile, dens)
+        self._cube.dump_cube(rdgfile, cutrdg)
+        # Make VMD scripts for visualization
+        print_vmd_script_nci(vmdfile, densfile, rdgfile, isosurf, denscut * 100.0)
+
+
+def _compute_hessian(mol, points):
+    """Compute hessian of electron density w.r.t. coordinates.
+
+    Hessian is defined as the second-order partial derivative of electron density w.r.t.
+    coordinates.
+
+    Parameters
+    ----------
+    mol : instance of `IOData`
+        An `IOData` object.
+    points : np.ndarray
+        Coordinates of grid points for calculating hessian.
+
+    Note
+    ----
+    This finite difference implementation is temporary until hessian is implemented in HORTON.
+    """
+    # Make small change in coordinates along x, y, & z directions
+    eps = 1.0e-5
+    dx = points + np.array([[eps, 0.0, 0.0]])
+    dy = points + np.array([[0.0, eps, 0.0]])
+    dz = points + np.array([[0.0, 0.0, eps]])
+    # Calculate gradient on original grid points
+    dm = mol.get_dm_full()
+    gpnt = mol.obasis.compute_grid_gradient_dm(dm, points)
+    # Calculate hessian using finite difference
+    hess = np.zeros((points.shape[0], 3, 3), float)
+    hess[:, :, 0] = (mol.obasis.compute_grid_gradient_dm(dm, dx) - gpnt) / eps
+    hess[:, :, 1] = (mol.obasis.compute_grid_gradient_dm(dm, dy) - gpnt) / eps
+    hess[:, :, 2] = (mol.obasis.compute_grid_gradient_dm(dm, dz) - gpnt) / eps
+    # Make Hessian symmetric to avoid complex eigenvalues
+    hess = 0.5 * (hess + np.transpose(hess, axes=(0, 2, 1)))
+    return hess

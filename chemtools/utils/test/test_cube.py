@@ -30,7 +30,7 @@ from numpy.testing import assert_raises
 import numpy as np
 from horton import IOData
 from chemtools import context
-from chemtools.analysis.conceptual import LocalConceptualDFT
+from chemtools.toolbox.conceptual import LocalConceptualDFT
 from chemtools.utils.cube import CubeGen
 
 

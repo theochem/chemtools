@@ -20,111 +20,167 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Test chemtools.toolbox.densitybased."""
+"""Test chemtools.analysis.densitybased."""
+
+import os
+import shutil
+import tempfile
+from contextlib import contextmanager
 
 from numpy.testing import assert_raises
 import numpy as np
-from horton import IOData, BeckeMolGrid
-from chemtools.toolbox.densitybased import DensityLocalTool
-from chemtools.analysis.orbitalbased import OrbitalAnalysis
-from chemtools.utils.utils import context
-from chemtools.utils.cube import CubeGen
+
+from horton import IOData
+
+from chemtools import context
+from chemtools.utils import CubeGen
+from chemtools.toolbox.densitybased import NCI
 
 
-def test_density_local_tool():
-    # fake density, gradient and Hessian arrays
-    d = np.array([1.00, 3.00, 5.00, 2.00, 7.00])
-    g = np.array([[ 0.50,  0.50,  0.50],
-                  [ 0.35, -0.35,  0.40],
-                  [-0.30, -0.50, -0.50],
-                  [ 0.40,  0.40,  0.60],
-                  [ 0.25, -0.10, -0.50]])
-    h = np.array([[[ 0.50,  0.50,  0.50], [ 0.50,  0.50,  0.50], [ 0.50,  0.50,  0.50]],
-                  [[ 0.35, -0.35,  0.40], [ 0.35, -0.50,  0.40], [ 0.35, -0.35,  0.15]],
-                  [[-0.30, -0.50, -0.50], [ 0.40,  0.40,  0.60], [ 0.25, -0.10, -0.50]],
-                  [[ 0.40,  0.40,  0.60], [ 0.00,  0.00,  0.00], [ 0.00, -1.50,  0.60]],
-                  [[ 0.25, -0.10, -0.50], [ 0.35, -1.50,  0.40], [ 0.45, -0.20, -0.50]]])
-
-    # build a density local model without hessian
-    model = DensityLocalTool(d, g)
-    # check density and gradient
-    np.testing.assert_almost_equal(model.density, d, decimal=6)
-    np.testing.assert_almost_equal(model.gradient, g, decimal=6)
-    # check Shanon information
-    expected = np.array([0.00000000, 3.29583687, 8.04718956, 1.38629436, 13.62137104])
-    np.testing.assert_almost_equal(model.shanon_information, expected, decimal=6)
-    # check gradient norm
-    expected = np.array([0.86602540, 0.63639610, 0.76811457, 0.82462113, 0.56789083])
-    np.testing.assert_almost_equal(model.gradient_norm, expected, decimal=6)
-    # check reduced density gradient
-    expected = np.array([0.13996742, 0.02377181, 0.01451986, 0.05289047, 0.00685431])
-    np.testing.assert_almost_equal(model.reduced_density_gradient, expected, decimal=6)
-    # check Weizsacker kinetic energy
-    expected = np.array([0.09375000, 0.01687500, 0.01475000, 0.04250000, 0.00575893])
-    np.testing.assert_almost_equal(model.weizsacker_kinetic_energy_density, expected, decimal=6)
-    expected = np.array([2.871234, 17.91722219, 41.97769574, 9.115599745, 73.5470608])
-    np.testing.assert_almost_equal(model.thomas_fermi_kinetic_energy_density, expected, decimal=6)
-    # check hessian
-    assert model.hessian is None
-    # check laplacian
-    assert model.laplacian is None
-
-    # build a density local model with hessian
-    model = DensityLocalTool(d, g, h)
-    # check hessian
-    np.testing.assert_almost_equal(model.hessian, h, decimal=6)
-    # check laplacian
-    expected = np.array([1.5, 0.0, -0.4, 1.0, -1.75])
-    np.testing.assert_almost_equal(model.laplacian, expected, decimal=6)
-
-    # check ValueError
-    assert_raises(ValueError, DensityLocalTool, np.array([[0.], [0.]]), g)
-    assert_raises(ValueError, DensityLocalTool, d, np.array([0.]))
-    assert_raises(ValueError, DensityLocalTool, d, g, hessian=np.array([0.]))
+@contextmanager
+def tmpdir(name):
+    """Create temporary directory that gets deleted after accessing it."""
+    dn = tempfile.mkdtemp(name)
+    try:
+        yield dn
+    finally:
+        shutil.rmtree(dn)
 
 
-def test_density_local_tool_electrostatic_potential():
-    file_path = context.get_fn('test/water_b3lyp_sto3g.fchk')
+def test_analyze_nci_h2o_dimer_wfn():
+    file_path = context.get_fn('test/h2o_dimer_pbe_sto3g.wfn')
+    # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
+    dens_cube1_path = context.get_fn('test/h2o_dimer_pbe_sto3g-dens.cube')
+    cube = CubeGen.from_cube(dens_cube1_path)
+    # Build the NCI tool
+    desp = NCI.from_file(file_path, cube)
+    # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
+    grad_cube1_path = context.get_fn('test/h2o_dimer_pbe_sto3g-grad.cube')
+    dmol1 = IOData.from_file(dens_cube1_path)
+    gmol1 = IOData.from_file(grad_cube1_path)
+
+    with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_h2o_dimer_fchk') as dn:
+        cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g')
+        desp.dump_files(cube2)
+        cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')
+        mol2 = IOData.from_file(cube2)
+        # Check coordinates
+        np.testing.assert_array_almost_equal(dmol1.coordinates, mol2.coordinates, decimal=6)
+        np.testing.assert_equal(dmol1.numbers, mol2.numbers)
+        # Check grid data
+        ugrid1 = dmol1.grid
+        ugrid2 = mol2.grid
+        np.testing.assert_array_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
+        np.testing.assert_equal(ugrid1.shape, ugrid2.shape)
+        data1 = dmol1.cube_data / dmol1.cube_data
+        data2 = mol2.cube_data / dmol1.cube_data
+        np.testing.assert_array_almost_equal(data1, data2, decimal=4)
+        np.testing.assert_equal(dmol1.pseudo_numbers, mol2.pseudo_numbers)
+
+        cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-grad.cube')
+        mol2 = IOData.from_file(cube2)
+        # Check coordinates
+        np.testing.assert_array_almost_equal(gmol1.coordinates, mol2.coordinates, decimal=6)
+        np.testing.assert_equal(gmol1.numbers, mol2.numbers)
+        # Check grid data
+        ugrid1 = gmol1.grid
+        ugrid2 = mol2.grid
+        np.testing.assert_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
+        np.testing.assert_equal(ugrid1.shape, ugrid2.shape)
+        data1 = gmol1.cube_data / gmol1.cube_data
+        data2 = mol2.cube_data / gmol1.cube_data
+        np.testing.assert_array_almost_equal(data1, data2, decimal=4)
+        np.testing.assert_equal(gmol1.pseudo_numbers, mol2.pseudo_numbers)
+
+
+def test_analyze_nci_h2o_dimer_fchk():
+    file_path = context.get_fn('test/h2o_dimer_pbe_sto3g.fchk')
     mol = IOData.from_file(file_path)
-    grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
-                        agspec='coarse', random_rotate=False, mode='keep')
+    # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
+    dens_cube1_path = context.get_fn('test/h2o_dimer_pbe_sto3g-dens.cube')
+    cube = CubeGen.from_cube(dens_cube1_path)
+    # Build the NCI tool
+    desp = NCI.from_iodata(mol, cube)
+    # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
+    grad_cube1_path = context.get_fn('test/h2o_dimer_pbe_sto3g-grad.cube')
+    dmol1 = IOData.from_file(dens_cube1_path)
+    gmol1 = IOData.from_file(grad_cube1_path)
 
-    # creating cube file:
-    ori = np.array([-3.000000, -3.000000, -3.000000])
-    ax = np.array([[ 3.000000,  0.000000,  0.000000],
-                   [ 0.000000,  3.000000,  0.000000],
-                   [ 0.000000,  0.000000,  3.000000]])
-    sh = np.array([3, 3, 3])
-    cube = CubeGen(mol.numbers, mol.pseudo_numbers, mol.coordinates, ori, ax, sh)
+    with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_h2o_dimer_fchk') as dn:
+        cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g')
+        desp.dump_files(cube2)
+        cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')
+        mol2 = IOData.from_file(cube2)
+        # Check coordinates
+        np.testing.assert_array_almost_equal(dmol1.coordinates, mol2.coordinates, decimal=6)
+        np.testing.assert_equal(dmol1.numbers, mol2.numbers)
+        # Check grid data
+        ugrid1 = dmol1.grid
+        ugrid2 = mol2.grid
+        np.testing.assert_array_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
+        np.testing.assert_equal(ugrid1.shape, ugrid2.shape)
+        data1 = dmol1.cube_data / dmol1.cube_data
+        data2 = mol2.cube_data / dmol1.cube_data
+        np.testing.assert_array_almost_equal(data1, data2, decimal=4)
+        np.testing.assert_equal(dmol1.pseudo_numbers, mol2.pseudo_numbers)
 
-    orb = OrbitalAnalysis.from_file(file_path, grid.points)
+        cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-grad.cube')
+        mol2 = IOData.from_file(cube2)
+        # Check coordinates
+        np.testing.assert_array_almost_equal(gmol1.coordinates, mol2.coordinates, decimal=6)
+        np.testing.assert_equal(gmol1.numbers, mol2.numbers)
+        # Check grid data
+        ugrid1 = gmol1.grid
+        ugrid2 = mol2.grid
+        np.testing.assert_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
+        np.testing.assert_equal(ugrid1.shape, ugrid2.shape)
+        data1 = gmol1.cube_data / gmol1.cube_data
+        data2 = mol2.cube_data / gmol1.cube_data
+        np.testing.assert_array_almost_equal(data1, data2, decimal=4)
+        np.testing.assert_equal(gmol1.pseudo_numbers, mol2.pseudo_numbers)
 
-    # build a density local model
-    model = DensityLocalTool(orb.density, orb.gradient)
 
-    # mep results obtained from Fortran code:
-    expected = np.array([-0.01239766, -0.02982537, -0.02201149,   -0.01787292, -0.05682143,
-                         -0.02503563, -0.00405942, -0.00818772,   -0.00502268,  0.00321181,
-                         -0.03320573, -0.02788605,  0.02741914, 1290.21135500, -0.03319778,
-                          0.01428660,  0.10127092,  0.01518299,    0.01530548,  0.00197975,
-                         -0.00894206,  0.04330806,  0.03441681,   -0.00203017,  0.02272626,
-                          0.03730846,  0.01463959])
+def test_analyze_nci_assert_errors():
+    file_path = context.get_fn('test/h2o_dimer_pbe_sto3g.fchk')
+    mol = IOData.from_file(file_path)
+    cube = CubeGen.from_file(file_path, spacing=2., threshold=0.0)
 
-    test = model.electrostatic_potential(mol.numbers, mol.coordinates, grid.weights,
-                                   grid.points, cube.points)
+    dens = np.array([2.10160232e-04, 1.11307672e-05, 3.01244062e-04, 2.31768360e-05,
+                     6.56282686e-03, 2.62815892e-04, 2.46559574e-02, 1.82760928e-03,
+                     1.89299475e-02, 1.39689069e-03, 1.10257641e+00, 3.63942662e-02,
+                     8.01150391e-03, 2.79542971e-04, 1.98278511e-02, 1.89336116e-03])
 
-    np.testing.assert_almost_equal(test, expected, decimal=1)
+    rdg = np.array([6.434055294420, 19.330749118092, 5.927230664196, 13.593077700571,
+                    2.411123457672,  5.203993648485, 1.482717816902,  3.136335572700,
+                    1.779261001623,  3.395839461280, 0.226436405120,  0.912678557191,
+                    2.223911275208,  4.990189542067, 1.676113282597,  3.171756800841])
 
-    # check ValueError
-    assert_raises(ValueError, model.electrostatic_potential, np.array([0.]), mol.coordinates,
-                  grid.weights, grid.points, cube.points)
-    assert_raises(ValueError, model.electrostatic_potential, mol.numbers, np.array([0.]),
-              grid.weights, grid.points, cube.points)
-    assert_raises(ValueError, model.electrostatic_potential, mol.numbers, mol.coordinates,
-              np.array([0.]), grid.points, cube.points)
-    assert_raises(ValueError, model.electrostatic_potential, mol.numbers, mol.coordinates,
-              grid.weights, np.array([0.]), cube.points)
-    assert_raises(ValueError, model.electrostatic_potential, mol.numbers, mol.coordinates,
-                  grid.weights, grid.points, np.array([0.]))
-    assert_raises(ValueError, model.electrostatic_potential, mol.numbers, mol.coordinates,
-              grid.weights, grid.points, np.array([[0.]]))
+    assert_raises(ValueError, NCI, np.array([0.]), rdg, cube)
+    assert_raises(ValueError, NCI, dens, np.array([0.]), cube)
+    assert_raises(ValueError, NCI, dens, rdg, cube, hessian=np.array([0.]))
+    assert_raises(ValueError, NCI.from_file, [file_path, file_path])
+    assert_raises(ValueError, NCI.from_file, file_path, cube=1)
+
+    desp = NCI(dens, rdg, cube)
+    assert desp.signed_density is None
+    assert desp.eigvalues is None
+
+    with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_assert_errors') as dn:
+        test = '%s/%s' % (dn, 'test')
+        desp.dump_files(test)
+        test = '%s/%s' % (dn, 'test-dens.cube')
+        assert os.path.isfile(test) and os.access(test, os.R_OK)
+        test = '%s/%s' % (dn, 'test-grad.cube')
+        assert os.path.isfile(test) and os.access(test, os.R_OK)
+        test = '%s/%s' % (dn, 'test.vmd')
+        assert os.path.isfile(test) and os.access(test, os.R_OK)
+
+    desp = NCI.from_iodata(mol)
+    assert desp.signed_density.shape == desp._density.shape
+
+    desp = NCI.from_file(file_path, cube)
+
+    with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_assert_errors') as dn:
+        test = '%s/%s' % (dn, 'test.jpg')
+        desp.plot(test)
+        assert os.path.isfile(test) and os.access(test, os.R_OK)

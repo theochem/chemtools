@@ -20,12 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""The Main ChemTools Package."""
+"""The Orbital-Based Tools Module."""
 
-from chemtools.toolbox import *
-from chemtools.conceptual import *
-from chemtools.denstools import *
-from chemtools.orbtools import *
-from chemtools.utils import *
 
-__version__ = '0.9.0'
+from chemtools.orbtools.orbitalbased import *
