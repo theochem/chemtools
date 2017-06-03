@@ -115,9 +115,9 @@ class Molecule(object):
             If coordinates do not have three columns
         """
         # bare minimum attributes to define a molecule
-        if not isinstance(coordinates, np.ndarray) and len(numbers.shape) == 2:
+        if not (isinstance(coordinates, np.ndarray) and len(numbers.shape) == 2):
             raise TypeError('Coordinates must be given as a 2-D numpy array.')
-        elif isinstance(numbers, np.ndarray) and len(numbers.shape) == 1:
+        elif not (isinstance(numbers, np.ndarray) and len(numbers.shape) == 1):
             raise TypeError('Atomic numbers must be given as a 1-D numpy array')
         elif coordinates.shape[0] != numbers.size:
             raise ValueError('Arguments coordinates and numbers should represent the same number '
