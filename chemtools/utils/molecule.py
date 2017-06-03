@@ -30,7 +30,60 @@ __all__ = ['Molecule']
 
 
 class Molecule(object):
-    """Molecule Class."""
+    """Molecule Class.
+
+    This class serves as a template for the internal datatype used in ChemTools.
+    Each of the methods are required to run different parts of ChemTools.
+    If these methods are not defined, then a NotImplementedError will be raised to indicate that
+    this method is not compatible with the given Molecule instance/class.
+
+    Properties
+    ----------
+    coordinates : np.ndarray(M, 3)
+        Cartesian coordinates of atoms.
+    numbers : np.ndarray(M)
+        Atomic numbers
+    natoms : int
+        Number of atoms
+    nbasis : int
+        Number of basis functions
+    nelectrons : int
+        Number of alpha and beta electrons
+    homo_index : int
+        Index of the HOMO spatial orbital.
+    lumo_index : int
+        Index of the LUMO spatial orbital.
+    homo_energy : float
+        Energy of HOMO
+    lumo_energy : float
+        Energy of LUMO
+    orbital_occupation : np.ndarray(K)
+        Occupations of each molecular orbital
+    orbital_energy : np.ndarray(K)
+        Energies of each molecular orbital
+    orbital_coefficient : np.ndarray(K, K)
+        Transformation coefficient from basis functions to molecular orbitals
+
+    Class Methods
+    -------------
+    from_file(cls, filename)
+        Factory of class from a filename
+
+    Methods
+    -------
+    compute_density_matrix_array(self, spin='ab')
+        Compute the density matrix of the given spin.
+    compute_density(self, points, spin='ab', orbital_index=None, output=None)
+        Compute the density value at the given points.
+    compute_gradient(self, points, spin='ab', orbital_index=None, output=None)
+        Compute the graident value of the electron density at the given points.
+    compute_hessian(self, points, spin='ab', orbital_index=None, output=None)
+        Compute the hessian of the electron density at the given points.
+    compute_esp(self, points, spin='ab', orbital_index=None, output=None)
+        Compute the electrostatic potential of the molecular orbitals at the given points
+    compute_kinetic_energy_density(self, points, spin='ab', orbital_index=None, output=None)
+        Compute the kinetic energy density at the given points
+    """
 
     def __init__(self, coordinates, numbers, iodata=None):
         """
@@ -58,27 +111,6 @@ class Molecule(object):
         self._coordinates = coordinates
         self._numbers = numbers
         self._natom = len(self._numbers)
-
-        # check whether iodata has wave-function infromation
-        if iodata is not None and hasattr(iodata, 'obasis') and iodata.obasis is not None:
-            self._wavefunction = HORTONWaveFunction(iodata)
-        else:
-            self._wavefunction = None
-
-    def __getattr__(self, attr):
-        """
-        Return attribute.
-
-        Parameters
-        ----------
-        attr : str
-            The name of attribute to retrieve.
-        """
-        # None is returned if attr does not exist.
-        if self._wavefunction is None:
-            return None
-        value = getattr(self._wavefunction, attr, None)
-        return value
 
     @classmethod
     def from_file(cls, filename):
@@ -109,9 +141,204 @@ class Molecule(object):
         """Number of atoms."""
         return self._natom
 
+    @property
+    def nbasis(self):
+        """Number of basis functions."""
+        raise NotImplementedError
 
-class HORTONWaveFunction(object):
-    """Wave Function Class."""
+    @property
+    def nelectrons(self):
+        """Number of alpha and beta electrons."""
+        raise NotImplementedError
+
+    @property
+    def homo_index(self):
+        """Index of alpha and beta HOMO orbital."""
+        raise NotImplementedError
+
+    @property
+    def lumo_index(self):
+        """Index of alpha and beta LUMO orbital."""
+        raise NotImplementedError
+
+    @property
+    def homo_energy(self):
+        """Energy of alpha and beta HOMO orbital."""
+        raise NotImplementedError
+
+    @property
+    def lumo_energy(self):
+        """Energy of alpha and beta LUMO orbital."""
+        raise NotImplementedError
+
+    @property
+    def orbital_occupation(self):
+        """Orbital occupation of alpha and beta electrons."""
+        raise NotImplementedError
+
+    @property
+    def orbital_energy(self):
+        """Orbital energy of alpha and beta electrons."""
+        raise NotImplementedError
+
+    @property
+    def orbital_coefficient(self):
+        """Orbital coefficient of alpha and beta electrons.
+
+        The alpha and beta orbital coefficients are each storied in a 2d-array in which
+        the columns represent the basis coefficients of each molecular orbital.
+        """
+        raise NotImplementedError
+
+    def compute_density_matrix_array(self, spin='ab'):
+        """
+        Return the density matrix array for the specified spin orbitals.
+
+        Parameters
+        ----------
+           The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
+           alpha and beta occupied spin orbitals) are used for computing the electron density.
+               - 'a' or 'alpha': consider alpha electrons
+               - 'b' or 'beta': consider beta electrons
+               - 'ab': consider alpha and beta electrons
+        """
+        # get density matrix corresponding to the specified spin
+        raise NotImplementedError
+
+    def compute_density(self, points, spin='ab', orbital_index=None, output=None):
+        """
+        Return electron density evaluated on the given points for the spin orbitals.
+
+        Parameters
+        ----------
+        points : ndarray
+           The 2d-array containing the cartesian coordinates of points on which density is
+           evaluated. It has a shape (n, 3) where n is the number of points.
+        spin : str
+           The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
+           alpha and beta occupied spin orbitals) are used for computing the electron density.
+               - 'a' or 'alpha': consider alpha electrons
+               - 'b' or 'beta': consider beta electrons
+               - 'ab': consider alpha and beta electrons
+        orbital_index : sequence
+           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
+           orbitals are each indexed from 1 to :attr:`nbasis`.
+           If ``None``, all occupied spin orbtails are included.
+        output : np.ndarray
+           Array with shape (n,) to store the output, where n in the number of points. When ``None``
+           the array is allocated.
+        """
+        raise NotImplementedError
+
+    def compute_gradient(self, points, spin='ab', orbital_index=None, output=None):
+        """
+        Return gradient of electron density evaluated on the given points for the spin orbitals.
+
+        Parameters
+        ----------
+        points : ndarray
+           The 2d-array containing the cartesian coordinates of points on which density is
+           evaluated. It has a shape (n, 3) where n is the number of points.
+        spin : str
+           The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
+           alpha and beta occupied spin orbitals) are used for computing the electron density.
+               - 'a' or 'alpha': consider alpha electrons
+               - 'b' or 'beta': consider beta electrons
+               - 'ab': consider alpha and beta electrons
+        orbital_index : sequence
+           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
+           orbitals are each indexed from 1 to :attr:`nbasis`.
+           If ``None``, all occupied spin orbtails are included.
+        output : np.ndarray
+           Array with shape (n, 3) to store the output, where n in the number of points. When ``None``
+           the array is allocated.
+        """
+        raise NotImplementedError
+
+    def compute_hessian(self, points, spin='ab', orbital_index=None, output=None):
+        """
+        Return hessian of electron density evaluated on the given points for the spin orbitals.
+
+        Parameters
+        ----------
+        points : ndarray
+           The 2d-array containing the cartesian coordinates of points on which density is
+           evaluated. It has a shape (n, 3) where n is the number of points.
+        spin : str
+           The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
+           alpha and beta occupied spin orbitals) are used for computing the electron density.
+               - 'a' or 'alpha': consider alpha electrons
+               - 'b' or 'beta': consider beta electrons
+               - 'ab': consider alpha and beta electrons
+        orbital_index : sequence
+           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
+           orbitals are each indexed from 1 to :attr:`nbasis`.
+           If ``None``, all occupied spin orbtails are included.
+        output : np.ndarray
+           Array with shape (n, 6) to store the output, where n in the number of points. When ``None``
+           the array is allocated.
+        """
+        raise NotImplementedError
+
+    def compute_esp(self, points, spin='ab', orbital_index=None, output=None):
+        """
+        Return the molecular electrostatic potential on the given points for the specified spin.
+
+        Parameters
+        ----------
+        points : ndarray
+           The 2d-array containing the cartesian coordinates of points on which density is
+           evaluated. It has a shape (n, 3) where n is the number of points.
+        spin : str
+           The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
+           alpha and beta occupied spin orbitals) are used for computing the electron density.
+               - 'a' or 'alpha': consider alpha electrons
+               - 'b' or 'beta': consider beta electrons
+               - 'ab': consider alpha and beta electrons
+        orbital_index : sequence
+           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
+           orbitals are each indexed from 1 to :attr:`nbasis`.
+           If ``None``, all occupied spin orbtails are included.
+        output : np.ndarray
+           Array with shape (n,) to store the output, where n in the number of points. When ``None``
+           the array is allocated.
+        """
+        raise NotImplementedError
+
+    def compute_kinetic_energy_density(self, points, spin='ab', orbital_index=None, output=None):
+        r"""
+        Return positive definite kinetic energy density on the given points for the specified spin.
+
+        Positive definite kinetic energy density is defined as,
+
+        .. math::
+           \tau \left(\mathbf{r}\right) =
+           \sum_i^N n_i \frac{1}{2} \rvert \nabla \phi_i \left(\mathbf{r}\right) \lvert^2
+
+        Parameters
+        ----------
+        points : ndarray
+           The 2d-array containing the cartesian coordinates of points on which density is
+           evaluated. It has a shape (n, 3) where n is the number of points.
+        spin : str
+           The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
+           alpha and beta occupied spin orbitals) are used for computing the electron density.
+               - 'a' or 'alpha': consider alpha electrons
+               - 'b' or 'beta': consider beta electrons
+               - 'ab': consider alpha and beta electrons
+        orbital_index : sequence
+           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
+           orbitals are each indexed from 1 to :attr:`nbasis`.
+           If ``None``, all occupied spin orbtails are included.
+        output : np.ndarray
+           Array with shape (n,) to store the output, where n in the number of points. When ``None``
+           the array is allocated.
+        """
+        raise NotImplementedError
+
+
+class HORTONMolecule(Molecule):
+    """Molecule class for HORTON object."""
 
     def __init__(self, iodata):
         """
