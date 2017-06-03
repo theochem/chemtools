@@ -45,6 +45,9 @@ class Molecule(object):
         Atomic numbers
     natoms : int
         Number of atoms
+
+    Abstract Properties
+    -------------------
     nbasis : int
         Number of basis functions
     nelectrons : int
@@ -69,8 +72,8 @@ class Molecule(object):
     from_file(cls, filename)
         Factory of class from a filename
 
-    Methods
-    -------
+    Abstract Methods
+    ----------------
     compute_density_matrix_array(self, spin='ab')
         Compute the density matrix of the given spin.
     compute_density(self, points, spin='ab', orbital_index=None, output=None)
@@ -93,7 +96,7 @@ class Molecule(object):
         ----------
         coordinates : ndarray
            The 2d-array containing the cartesian coordinates of atomic centers.
-           It has a shape (M, 3) where M is the number of atoms.
+           It has a shjpe (M, 3) where M is the number of atoms.
         numbers : ndarray
            The 1d-array containing the atomic number of atoms.
            It has a shape of (M,) where M is the number of atoms.
@@ -101,16 +104,29 @@ class Molecule(object):
            An instance of `horton.IOData` object. If this instance contains wave-function
            information, they attributes/methods of `WaveFunction` class are accessible from
            `Molecule`.
+
+        Raise
+        -----
+        TypeError
+            If coordinates are not given as a 2D numpy array
+            If atomic numbers are not given as a 1D numpy array
+        ValueError
+            If number of atomic numbers and coordinates are not equal
+            If coordinates do not have three columns
         """
         # bare minimum attributes to define a molecule
-        if coordinates.shape[0] != len(numbers):
+        if not isinstance(coordinates, np.ndarray) and len(numbers.shape) == 2:
+            raise TypeError('Coordinates must be given as a 2-D numpy array.')
+        elif isinstance(numbers, np.ndarray) and len(numbers.shape) == 1:
+            raise TypeError('Atomic numbers must be given as a 1-D numpy array')
+        elif coordinates.shape[0] != numbers.size:
             raise ValueError('Arguments coordinates and numbers should represent the same number '
-                             'of atoms! {0} != {1}'.format(coordinates.shape[0], len(numbers)))
-        if coordinates.shape[1] != 3:
+                             'of atoms! {0} != {1}'.format(coordinates.shape[0], numbers.size))
+        elif coordinates.shape[1] != 3:
             raise ValueError('Argument coordinates should have 3 columns.')
+
         self._coordinates = coordinates
         self._numbers = numbers
-        self._natom = len(self._numbers)
 
     @classmethod
     def from_file(cls, filename):
@@ -139,7 +155,7 @@ class Molecule(object):
     @property
     def natom(self):
         """Number of atoms."""
-        return self._natom
+        return self.numbers.size
 
     @property
     def nbasis(self):
