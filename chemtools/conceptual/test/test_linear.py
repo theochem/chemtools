@@ -26,14 +26,14 @@ import numpy as np
 from chemtools.conceptual.linear import LinearLocalTool
 
 
-def test_local_linear():
-    # Fake density arrays
+def test_local_linear_fake_density():
+    # fake density arrays
     d0 = np.array([1.0, 3.0, 5.0, 2.0, 7.0])
     dp = np.array([0.5, 4.5, 6.0, 1.0, 5.0])
     dm = np.array([1.0, 4.0, 3.0, 2.0, 8.0])
-    # Build a linear local model
+    # build a linear local model
     model = LinearLocalTool(d0, dp, dm, 10)
-    # Check density
+    # check density
     np.testing.assert_equal(model.n0, 10.)
     np.testing.assert_almost_equal(model.density_zero, d0, decimal=6)
     np.testing.assert_almost_equal(model.density_plus, dp, decimal=6)
@@ -42,19 +42,22 @@ def test_local_linear():
     np.testing.assert_almost_equal(model.density(11.), dp, decimal=6)
     np.testing.assert_almost_equal(model.density(9.), dm, decimal=6)
     np.testing.assert_almost_equal(model.density(None), d0, decimal=6)
-    expected = 0.5 * d0 + 0.5 * dp
-    np.testing.assert_almost_equal(model.density(10.50), expected, decimal=6)
-    expected = 0.8 * d0 + 0.2 * dp
-    np.testing.assert_almost_equal(model.density(10.20), expected, decimal=6)
-    expected = 0.25 * d0 + 0.75 * dp
-    np.testing.assert_almost_equal(model.density(10.75), expected, decimal=6)
-    expected = 0.5 * dm + 0.5 * d0
-    np.testing.assert_almost_equal(model.density(9.50), expected, decimal=6)
-    expected = 0.68 * dm + 0.32 * d0
-    np.testing.assert_almost_equal(model.density(9.32), expected, decimal=6)
-    expected = 0.39 * dm + 0.61 * d0
-    np.testing.assert_almost_equal(model.density(9.61), expected, decimal=6)
-    # Check descriptor
+    np.testing.assert_almost_equal(model.density(10.50), 0.5 * d0 + 0.5 * dp, decimal=6)
+    np.testing.assert_almost_equal(model.density(10.20), 0.8 * d0 + 0.2 * dp, decimal=6)
+    np.testing.assert_almost_equal(model.density(10.75), 0.25 * d0 + 0.75 * dp, decimal=6)
+    np.testing.assert_almost_equal(model.density(9.50), 0.5 * dm + 0.5 * d0, decimal=6)
+    np.testing.assert_almost_equal(model.density(9.32), 0.68 * dm + 0.32 * d0, decimal=6)
+    np.testing.assert_almost_equal(model.density(9.61), 0.39 * dm + 0.61 * d0, decimal=6)
+
+
+def test_local_linear_fake_fukui_function():
+    # fake density arrays
+    d0 = np.array([1.0, 3.0, 5.0, 2.0, 7.0])
+    dp = np.array([0.5, 4.5, 6.0, 1.0, 5.0])
+    dm = np.array([1.0, 4.0, 3.0, 2.0, 8.0])
+    # build a linear local model
+    model = LinearLocalTool(d0, dp, dm, 10)
+    # check descriptor
     expected = np.array([-0.5, 1.5, 1.0, -1.0, -2.0])
     np.testing.assert_almost_equal(model.ff_plus, expected, decimal=6)
     np.testing.assert_almost_equal(model.fukui_function(10.10), expected, decimal=6)
