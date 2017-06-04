@@ -20,49 +20,37 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""The Input-Output (IO) Module."""
-
+"""Wrapper Module."""
 
 import numpy as np
+from horton import IOData
+from chemtools.utils.molecule import BaseMolecule
 
-__all__ = ['BaseMolecule']
+__all__ = ['HortonMolecule']
 
 
-class BaseMolecule(object):
-    """Molecule Class.
+class HortonMolecule(BaseMolecule):
+    """Molecule class from HORTON package."""
 
-    This class serves as a template for the internal datatype used in ChemTools.
-    Each of the methods are required to run different parts of ChemTools.
-    If these methods are not defined, then a NotImplementedError will be raised to indicate that
-    this method is not compatible with the given Molecule instance/class.
-    """
-
-    def __init__(self, coordinates, numbers):
+    def __init__(self, iodata):
         """
         Initialize class.
 
         Parameters
         ----------
-        coordinates : ndarray
-           The 2d-array containing the cartesian coordinates of atomic centers.
-           It has a shape of (M, 3) where M is the number of atoms.
-        numbers : ndarray
-           The 1d-array containing the atomic number of atoms.
-           It has a shape of (M,) where M is the number of atoms.
+        iodata : horton.IOData
+           An instance of horton.IOData object.
         """
-        # bare minimum attributes to define a molecule
-        if not (isinstance(coordinates, np.ndarray) and coordinates.ndim == 2):
-            raise TypeError('Coordinates must be given as a 2-D numpy array.')
-        elif not (isinstance(numbers, np.ndarray) and numbers.ndim == 1):
-            raise TypeError('Atomic numbers must be given as a 1-D numpy array')
-        elif coordinates.shape[0] != numbers.size:
-            raise ValueError('Arguments coordinates and numbers should represent the same number '
-                             'of atoms! {0} != {1}'.format(coordinates.shape[0], numbers.size))
-        elif coordinates.shape[1] != 3:
-            raise ValueError('Argument coordinates should have 3 columns.')
-
-        self._coordinates = coordinates
-        self._numbers = numbers
+        self._iodata = iodata
+        # initialize base class
+        super(HortonMolecule, self).__init__(self._iodata.coordinates, self._iodata.numbers)
+        # assign alpha orbital expression
+        self._exp_alpha = self._iodata.exp_alpha
+        # assign beta orbital expression
+        if hasattr(self._iodata, 'exp_beta') and self._iodata.exp_beta is not None:
+            self._exp_beta = self._iodata.exp_beta
+        else:
+            self._exp_beta = self._iodata.exp_alpha
 
     @classmethod
     def from_file(cls, filename):
@@ -74,62 +62,63 @@ class BaseMolecule(object):
         filename : str
             Path to molecule's files.
         """
-        raise NotImplementedError
+        # load molecule
+        iodata = IOData.from_file(filename)
+        return cls(iodata)
 
-    @property
-    def coordinates(self):
-        """Cartesian coordinates of atomic centers."""
-        return self._coordinates
+    def __getattr__(self, attr):
+        """
+        Return attribute.
 
-    @property
-    def numbers(self):
-        """Aomic number of atomic centers."""
-        return self._numbers
-
-    @property
-    def natom(self):
-        """Number of atoms."""
-        return self.numbers.size
+        Parameters
+        ----------
+        attr : str
+            The name of attribute to retrieve.
+        """
+        value = getattr(self._iodata, attr, None)
+        return value
 
     @property
     def nbasis(self):
         """Number of basis functions."""
-        raise NotImplementedError
+        return self._iodata.obasis.nbasis
 
     @property
     def nelectrons(self):
         """Number of alpha and beta electrons."""
-        raise NotImplementedError
+        return np.sum(self._exp_alpha.occupations), np.sum(self._exp_beta.occupations)
 
     @property
     def homo_index(self):
         """Index of alpha and beta HOMO orbital."""
-        raise NotImplementedError
+        # HORTON indexes the orbitals from 0, so 1 is added to get the intuitive index
+        return self._exp_alpha.get_homo_index() + 1, self._exp_beta.get_homo_index() + 1
 
     @property
     def lumo_index(self):
         """Index of alpha and beta LUMO orbital."""
-        raise NotImplementedError
+        # HORTON indexes the orbitals from 0, so 1 is added to get the intuitive index
+        return self._exp_alpha.get_lumo_index() + 1, self._exp_beta.get_lumo_index() + 1
 
     @property
     def homo_energy(self):
         """Energy of alpha and beta HOMO orbital."""
-        raise NotImplementedError
+        return self._exp_alpha.homo_energy, self._exp_beta.homo_energy
 
     @property
     def lumo_energy(self):
         """Energy of alpha and beta LUMO orbital."""
-        raise NotImplementedError
+        return self._exp_alpha.lumo_energy, self._exp_beta.lumo_energy
 
     @property
     def orbital_occupation(self):
         """Orbital occupation of alpha and beta electrons."""
-        raise NotImplementedError
+        return self._exp_alpha.occupations, self._exp_beta.occupations
 
     @property
     def orbital_energy(self):
         """Orbital energy of alpha and beta electrons."""
-        raise NotImplementedError
+        return self._exp_alpha.energies, self._exp_beta.energies
 
     @property
     def orbital_coefficient(self):
@@ -138,11 +127,19 @@ class BaseMolecule(object):
         The alpha and beta orbital coefficients are each storied in a 2d-array in which
         the columns represent the basis coefficients of each molecular orbital.
         """
-        raise NotImplementedError
+        return self._exp_alpha.coeffs, self._exp_beta.coeffs
 
     def compute_density_matrix_array(self, spin='ab'):
         """
         Return the density matrix array for the specified spin orbitals.
+        """
+        # get density matrix corresponding to the specified spin
+        dm = self._get_density_matrix(spin)
+        return dm._array
+
+    def _get_density_matrix(self, spin):
+        """
+        Return HORTON density matrix object corresponding to the specified spin.
 
         Parameters
         ----------
@@ -153,10 +150,22 @@ class BaseMolecule(object):
            - 'b' or 'beta': consider beta electrons
            - 'ab': consider alpha and beta electrons
         """
-        return NotImplementedError
+        if spin not in ['a', 'b', 'alpha', 'beta', 'ab']:
+            raise ValueError('Argument spin is not recognized!')
+
+        if spin == 'ab':
+            # get density matrix of alpha & beta electrons
+            dm = self._iodata.obasis.get_dm_full()
+        else:
+            # get orbital expression of specified spin
+            spin_type = {'a': 'alpha', 'alpha': 'alpha', 'b': 'beta', 'beta': 'beta'}
+            exp = getattr(self._iodata.obasis, 'exp_' + spin_type[spin])
+            # get density matrix of specified spin
+            dm = exp.to_dm()
+        return dm
 
     def compute_density(self, points, spin='ab', orbital_index=None, output=None):
-        """
+        r"""
         Return electron density evaluated on the given points for the spin orbitals.
 
         Parameters
@@ -178,10 +187,26 @@ class BaseMolecule(object):
            Array with shape (n,) to store the output, where n in the number of points.
            When ``None`` the array is allocated.
         """
-        return NotImplementedError
+        # allocate output array
+        if output is None:
+            output = np.zeros((points.shape[0],), float)
+        # get density matrix corresponding to the specified spin
+        dm = self._get_density_matrix(spin)
+
+        # compute density
+        if orbital_index is None:
+            # include all orbitals
+            self._iodata.obasis.compute_grid_density_dm(dm, points, output=output)
+        else:
+            # HORTON index the orbitals from 0
+            orbs = np.copy(np.asarray(orbital_index)) - 1
+            # include specified set of orbitals
+            self._iodata.obasis.compute_grid_orbitals_exp(dm, points, orbs, output=output)**2
+            output = output.flatten()
+        return output
 
     def compute_gradient(self, points, spin='ab', orbital_index=None, output=None):
-        """
+        r"""
         Return gradient of electron density evaluated on the given points for the spin orbitals.
 
         Parameters
@@ -203,10 +228,23 @@ class BaseMolecule(object):
            Array with shape (n, 3) to store the output, where n in the number of points.
            When ``None`` the array is allocated.
         """
-        raise NotImplementedError
+        # allocate output array
+        if output is None:
+            output = np.zeros((points.shape[0], 3), float)
+        # get density matrix corresponding to the specified spin
+        dm = self._get_density_matrix(spin)
+
+        # compute gradient
+        if orbital_index is None:
+            # include all orbitals
+            self._iodata.obasis.compute_grid_gradient_dm(dm, points, output=output)
+        else:
+            # include specified set of orbitals
+            raise NotImplementedError()
+        return output
 
     def compute_hessian(self, points, spin='ab', orbital_index=None, output=None):
-        """
+        r"""
         Return hessian of electron density evaluated on the given points for the spin orbitals.
 
         Parameters
@@ -228,10 +266,23 @@ class BaseMolecule(object):
            Array with shape (n, 6) to store the output, where n in the number of points.
            When ``None`` the array is allocated.
         """
-        raise NotImplementedError
+        # allocate output array
+        if output is None:
+            output = np.zeros((points.shape[0], 6), float)
+        # get density matrix corresponding to the specified spin
+        dm = self._get_density_matrix(spin)
+
+        # compute hessian
+        if orbital_index is None:
+            # include all orbitals
+            self._iodata.obasis.compute_grid_hessian_dm(dm, points, output=output)
+        else:
+            # include specified set of orbitals
+            raise NotImplementedError()
+        return output
 
     def compute_esp(self, points, spin='ab', orbital_index=None, output=None):
-        """
+        r"""
         Return the molecular electrostatic potential on the given points for the specified spin.
 
         Parameters
@@ -253,7 +304,21 @@ class BaseMolecule(object):
            Array with shape (n,) to store the output, where n in the number of points.
            When ``None`` the array is allocated.
         """
-        raise NotImplementedError
+        # allocate output array
+        if output is None:
+            output = np.zeros((points.shape[0],), float)
+        # get density matrix corresponding to the specified spin
+        dm = self._get_density_matrix(spin)
+
+        # compute esp
+        if orbital_index is None:
+            # include all orbitals
+            self._iodata.obasis.compute_grid_esp_dm(dm, self._iodata.coordinates,
+                                                    self._iodata.pseudo_numbers, points)
+        else:
+            # include specified set of orbitals
+            raise NotImplementedError()
+        return output
 
     def compute_kinetic_energy_density(self, points, spin='ab', orbital_index=None, output=None):
         r"""
@@ -284,4 +349,17 @@ class BaseMolecule(object):
            Array with shape (n,) to store the output, where n in the number of points.
            When ``None`` the array is allocated.
         """
-        raise NotImplementedError
+        # allocate output array
+        if output is None:
+            output = np.zeros((points.shape[0],), float)
+        # get density matrix corresponding to the specified spin
+        dm = self._get_density_matrix(spin)
+
+        # compute kinetic energy
+        if orbital_index is None:
+            # include all orbitals
+            self._iodata.obasis.compute_grid_kinetic_dm(dm, points, output=output)
+        else:
+            # include specified set of orbitals
+            raise NotImplementedError()
+        return output

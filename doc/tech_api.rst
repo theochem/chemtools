@@ -76,12 +76,12 @@ ToolBox Module
 
   * :class:`Orbital Local Tool <toolbox.orbitalbased.OrbitalLocalTool>`
 
-Utility Tools
-=============
+Utility Module
+==============
 
 * :func:`doc_inherit <utils.utils.doc_inherit>`
-* :class:`Molecule <utils.molecule.Molecule>`
-* :class:`WaveFunctions <utils.molecule.WaveFunction>`
+* :class:`BaseMolecule <utils.molecule.BaseMolecule>`
+* :class:`HortonMolecule <utils.wrappers.HortonMolecule>`
 * :class:`CubeGen <utils.cube.CubeGen>`
 
 * Visualization Tools
@@ -116,8 +116,8 @@ Utility Tools
       toolbox.orbitalbased.OrbitalLocalTool
       utils.utils.doc_inherit
       utils.cube.CubeGen
-      utils.molecule.Molecule
-      utils.molecule.WaveFunction
+      utils.molecule.BaseMolecule
+      utils.wrappers.HortonMolecule
       utils.output.print_vmd_script_nci
       utils.output.print_vmd_script_isosurface
       utils.output.print_vmd_script_multiple_cube
