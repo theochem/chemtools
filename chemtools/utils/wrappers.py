@@ -23,7 +23,7 @@
 """Wrapper Module."""
 
 import numpy as np
-from horton import IOData
+from horton import IOData, DenseLinalgFactory
 from chemtools.utils.molecule import BaseMolecule
 
 __all__ = ['HortonMolecule']
@@ -129,6 +129,14 @@ class HortonMolecule(BaseMolecule):
         """
         return self._exp_alpha.coeffs, self._exp_beta.coeffs
 
+    def compute_overlap(self):
+        """Return the overlap matrix of molecular orbitals."""
+        # make linear algebra factory
+        lf = DenseLinalgFactory(self.nbasis)
+        # compute overlap matrix
+        arr = self._iodata.obasis.compute_overlap(lf)._array
+        return arr
+
     def compute_density_matrix_array(self, spin='ab'):
         """
         Return the density matrix array for the specified spin orbitals.
@@ -146,6 +154,7 @@ class HortonMolecule(BaseMolecule):
         spin : str
            The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
            alpha and beta occupied spin orbitals) are used for computing the electron density.
+
            - 'a' or 'alpha': consider alpha electrons
            - 'b' or 'beta': consider beta electrons
            - 'ab': consider alpha and beta electrons
@@ -176,9 +185,11 @@ class HortonMolecule(BaseMolecule):
         spin : str
            The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
            alpha and beta occupied spin orbitals) are used for computing the electron density.
+
            - 'a' or 'alpha': consider alpha electrons
            - 'b' or 'beta': consider beta electrons
            - 'ab': consider alpha and beta electrons
+
         orbital_index : sequence
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
@@ -217,9 +228,11 @@ class HortonMolecule(BaseMolecule):
         spin : str
            The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
            alpha and beta occupied spin orbitals) are used for computing the electron density.
+
            - 'a' or 'alpha': consider alpha electrons
            - 'b' or 'beta': consider beta electrons
            - 'ab': consider alpha and beta electrons
+
         orbital_index : sequence
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
@@ -255,9 +268,11 @@ class HortonMolecule(BaseMolecule):
         spin : str
            The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
            alpha and beta occupied spin orbitals) are used for computing the electron density.
+
            - 'a' or 'alpha': consider alpha electrons
            - 'b' or 'beta': consider beta electrons
            - 'ab': consider alpha and beta electrons
+
         orbital_index : sequence
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
@@ -293,9 +308,11 @@ class HortonMolecule(BaseMolecule):
         spin : str
            The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
            alpha and beta occupied spin orbitals) are used for computing the electron density.
+
            - 'a' or 'alpha': consider alpha electrons
            - 'b' or 'beta': consider beta electrons
            - 'ab': consider alpha and beta electrons
+
         orbital_index : sequence
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
@@ -338,9 +355,11 @@ class HortonMolecule(BaseMolecule):
         spin : str
            The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
            alpha and beta occupied spin orbitals) are used for computing the electron density.
+
            - 'a' or 'alpha': consider alpha electrons
            - 'b' or 'beta': consider beta electrons
            - 'ab': consider alpha and beta electrons
+
         orbital_index : sequence
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.

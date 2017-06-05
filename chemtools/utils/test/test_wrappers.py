@@ -28,7 +28,7 @@ from horton import IOData
 from chemtools import context, HortonMolecule
 
 
-def test_molecule_basic_fchk_ch4_uhf():
+def test_molecule_basics_fchk_ch4_uhf():
     mol = HortonMolecule.from_file(context.get_fn('test/ch4_uhf_ccpvdz.fchk'))
     # check basic numerics
     np.testing.assert_equal(mol.natom, 5)
@@ -48,6 +48,17 @@ def test_molecule_basic_fchk_ch4_uhf():
                       [-1.46467003E+00, -7.02997019E-01,  1.25954026E+00],
                       [-8.64474117E-01,  7.29131931E-01, -1.71670281E+00]])
     np.testing.assert_almost_equal(mol.coordinates, coord, decimal=6)
+    # check charges
+    esp = np.array([-0.502277518, 0.125567970, 0.125569655, 0.125566743, 0.125573150])
+    np.testing.assert_almost_equal(mol.esp_charges, esp, decimal=6)
+    npa = np.array([-0.791299253, 0.197824989, 0.197825250, 0.197824326, 0.197824689])
+    np.testing.assert_almost_equal(mol.npa_charges, npa, decimal=6)
+    mul = np.array([-0.139702704, 0.0349253868, 0.0349266071, 0.0349235395, 0.0349271707])
+    np.testing.assert_almost_equal(mol.mulliken_charges, mul, decimal=6)
+
+
+def test_molecule_orbitals_fchk_ch4_uhf():
+    mol = HortonMolecule.from_file(context.get_fn('test/ch4_uhf_ccpvdz.fchk'))
     # check orbital energy
     orb_energy = np.array([-1.12152085E+01, -9.42914385E-01, -5.43117091E-01, -5.43114279E-01,
                            -5.43101269E-01,  1.93295185E-01,  2.74358942E-01,  2.74359310E-01,
@@ -66,17 +77,19 @@ def test_molecule_basic_fchk_ch4_uhf():
     np.testing.assert_almost_equal(mol.lumo_energy[1], orb_energy[5], decimal=6)
     # check orbital coefficients
     orb_coeff = np.array([9.97287609E-01, 1.86004593E-02, -8.24772487E-03])
-    print orb_coeff
-    print mol.orbital_coefficient[1][0, :3]
-    print mol.orbital_coefficient[1][:3, 0]
+    np.testing.assert_almost_equal(mol.orbital_coefficient[1][:3, 0], orb_coeff, decimal=6)
+    np.testing.assert_almost_equal(mol.orbital_coefficient[0][:3, 0], orb_coeff, decimal=6)
+    np.testing.assert_almost_equal(mol.orbital_coefficient[1][0, 1], -0.188285003, decimal=6)
+    np.testing.assert_almost_equal(mol.orbital_coefficient[0][0, 1], -0.188285003, decimal=6)
+    np.testing.assert_almost_equal(mol.orbital_coefficient[1][-1, -1], 1.02960200, decimal=6)
+    np.testing.assert_almost_equal(mol.orbital_coefficient[0][-1, -1], 1.02960200, decimal=6)
+    # check overlap matrix
+    overlap = mol.compute_overlap()
+    np.testing.assert_equal(overlap.shape, (34, 34))
+    np.testing.assert_almost_equal(np.diag(overlap), np.ones(34), decimal=6)
+    np.testing.assert_almost_equal(overlap, overlap.T, decimal=6)
+    # check density matrix against Gaussian (printed in log file)
 
-    # check charges
-    esp = np.array([-0.502277518, 0.125567970, 0.125569655, 0.125566743, 0.125573150])
-    np.testing.assert_almost_equal(mol.esp_charges, esp, decimal=6)
-    npa = np.array([-0.791299253, 0.197824989, 0.197825250, 0.197824326, 0.197824689])
-    np.testing.assert_almost_equal(mol.npa_charges, npa, decimal=6)
-    mul = np.array([-0.139702704, 0.0349253868, 0.0349266071, 0.0349235395, 0.0349271707])
-    np.testing.assert_almost_equal(mol.mulliken_charges, mul, decimal=6)
 
 
 
