@@ -88,7 +88,55 @@ def test_molecule_orbitals_fchk_ch4_uhf():
     np.testing.assert_equal(overlap.shape, (34, 34))
     np.testing.assert_almost_equal(np.diag(overlap), np.ones(34), decimal=6)
     np.testing.assert_almost_equal(overlap, overlap.T, decimal=6)
+
+
+def test_molecule_density_matrix_fchk_ch4_uhf():
+    mol = HortonMolecule.from_file(context.get_fn('test/ch4_uhf_ccpvdz.fchk'))
     # check density matrix against Gaussian (printed in log file)
+    expected_diag = np.array([1.03003, 0.13222, 0.05565, 0.17944, 0.17944, 0.17944, 0.03891,
+                              0.03891, 0.03891, 0.00028, 0.00064, 0.00045, 0.00011, 0.00072,
+                              0.18575, 0.02710, 0.00044, 0.00072, 0.00038, 0.18575, 0.02710,
+                              0.00057, 0.00074, 0.00023, 0.18575, 0.02710, 0.00069, 0.00029,
+                              0.00056, 0.18575, 0.02710, 0.00035, 0.00030, 0.00089])
+    # column 5, rows 15-21
+    expected_05 = np.array([0.12066, 0.05027, -0.00560, -0.00252, -0.00502, -0.12275, -0.05114])
+    # column 15, rows 16-34
+    expected_15 = np.array([ 0.06838, -0.00691, -0.00996, -0.00619, -0.01612, -0.01573, 0.00244,
+                             0.00393,  0.00238, -0.01612, -0.01573,  0.00277,  0.00383, 0.00217,
+                            -0.01612, -0.01573,  0.00270,  0.00366,  0.00253])
+    # column 19, rows 20-34
+    expected_19 = np.array([-0.00130,  0.00004,  0.00004, -0.00033,  0.00002,  0.00302, 0.00184,
+                             0.00001, -0.00010, -0.00003, -0.00438, -0.00125, -0.00032, 0.00003,
+                            -0.00035])
+    # column 29, rows 30-34
+    expected_29 = np.array([-0.00442, -0.00106, -0.00003, 0.00029, -0.00047])
+    # check alpha density matrix
+    dm_array_a = mol.compute_density_matrix_array(spin='a')
+    np.testing.assert_almost_equal(np.diag(dm_array_a), expected_diag, decimal=5)
+    np.testing.assert_almost_equal(dm_array_a, dm_array_a.T, decimal=5)
+    np.testing.assert_almost_equal(dm_array_a[0, 1:3], np.array([-0.04982, -0.05262]), decimal=5)
+    np.testing.assert_almost_equal(dm_array_a[4, 14:21], expected_05, decimal=5)
+    np.testing.assert_almost_equal(dm_array_a[14, 15:], expected_15, decimal=5)
+    np.testing.assert_almost_equal(dm_array_a[18, 19:], expected_19, decimal=5)
+    np.testing.assert_almost_equal(dm_array_a[28, 29:], expected_29, decimal=5)
+    # check beta density matrix
+    dm_array_b = mol.compute_density_matrix_array(spin='b')
+    np.testing.assert_almost_equal(np.diag(dm_array_b), expected_diag, decimal=5)
+    np.testing.assert_almost_equal(dm_array_b, dm_array_b.T, decimal=5)
+    np.testing.assert_almost_equal(dm_array_b[0, 1:3], np.array([-0.04982, -0.05262]), decimal=5)
+    np.testing.assert_almost_equal(dm_array_b[4, 14:21], expected_05, decimal=5)
+    np.testing.assert_almost_equal(dm_array_b[14, 15:], expected_15, decimal=5)
+    np.testing.assert_almost_equal(dm_array_b[18, 19:], expected_19, decimal=5)
+    np.testing.assert_almost_equal(dm_array_b[28, 29:], expected_29, decimal=5)
+    # check total density matrix
+    dm_array_ab = mol.compute_density_matrix_array(spin='ab')
+    np.testing.assert_almost_equal(np.diag(dm_array_ab), 2 * expected_diag, decimal=5)
+    np.testing.assert_almost_equal(dm_array_ab, dm_array_ab.T, decimal=5)
+    np.testing.assert_almost_equal(dm_array_ab[0, 1:3], 2*np.array([-0.04982, -0.05262]), decimal=5)
+    np.testing.assert_almost_equal(dm_array_ab[4, 14:21], 2*expected_05, decimal=5)
+    np.testing.assert_almost_equal(dm_array_ab[14, 15:], 2*expected_15, decimal=5)
+    np.testing.assert_almost_equal(dm_array_ab[18, 19:], 2*expected_19, decimal=5)
+    np.testing.assert_almost_equal(dm_array_ab[28, 29:], 2*expected_29, decimal=5)
 
 
 def test_molecule_grid_esp_fchk_ch4_uhf():

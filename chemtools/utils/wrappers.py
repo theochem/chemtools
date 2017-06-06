@@ -168,7 +168,7 @@ class HortonMolecule(BaseMolecule):
         else:
             # get orbital expression of specified spin
             spin_type = {'a': 'alpha', 'alpha': 'alpha', 'b': 'beta', 'beta': 'beta'}
-            exp = getattr(self._iodata.obasis, 'exp_' + spin_type[spin])
+            exp = getattr(self, '_exp_' + spin_type[spin])
             # get density matrix of specified spin
             dm = exp.to_dm()
         return dm
