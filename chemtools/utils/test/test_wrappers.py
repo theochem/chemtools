@@ -91,6 +91,38 @@ def test_molecule_orbitals_fchk_ch4_uhf():
     # check density matrix against Gaussian (printed in log file)
 
 
+def test_molecule_grid_esp_fchk_ch4_uhf():
+    mol = HortonMolecule.from_file(context.get_fn('test/ch4_uhf_ccpvdz.fchk'))
+    # check esp against Gaussian (printed in log file)
+    # check esp at the position of each nuclei (1.e-14 is added to avoid division by zero)
+    # excluding the nucleus itself.
+    point = mol.coordinates[0].reshape(1, 3) + 1.e-14
+    charge = np.array([0., 1., 1., 1., 1.])
+    np.testing.assert_almost_equal(mol.compute_esp(point, charges=charge), [-14.745629], decimal=5)
+    point = mol.coordinates[1].reshape(1, 3) + 1.e-14
+    charge = np.array([6., 0., 1., 1., 1.])
+    np.testing.assert_almost_equal(mol.compute_esp(point, charges=charge), [-1.116065], decimal=5)
+    point = mol.coordinates[2].reshape(1, 3) + 1.e-14
+    charge = np.array([6., 1., 0., 1., 1.])
+    np.testing.assert_almost_equal(mol.compute_esp(point, charges=charge), [-1.116065], decimal=5)
+    point = mol.coordinates[3].reshape(1, 3) + 1.e-14
+    charge = np.array([6., 1., 1., 0., 1.])
+    np.testing.assert_almost_equal(mol.compute_esp(point, charges=charge), [-1.116067], decimal=5)
+    point = mol.coordinates[4].reshape(1, 3) + 1.e-14
+    charge = np.array([6., 1., 1., 1., 0.])
+    np.testing.assert_almost_equal(mol.compute_esp(point, charges=charge), [-1.116065], decimal=5)
+    # check esp at non-nuclei points
+    points = np.array([[ 0.5,  0.5,  0.5],
+                       [-0.5, -0.5, -0.5],
+                       [-0.5,  0.5,  0.5],
+                       [-0.5, -0.5,  0.5],
+                       [-0.5,  0.5, -0.5],
+                       [ 0.5, -0.5, -0.5],
+                       [ 0.5, -0.5,  0.5],
+                       [ 0.5,  0.5, -0.5]]) / 0.529177
+    expected_esp = np.array([0.895650, 0.237257, 0.234243, 0.708301,
+                             0.499083, 0.479275, 0.241434, 0.235102])
+    np.testing.assert_almost_equal(mol.compute_esp(points), expected_esp, decimal=5)
 
 
 def test_molecule_basic_fchk_o2_uhf():

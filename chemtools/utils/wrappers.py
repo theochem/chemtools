@@ -164,7 +164,7 @@ class HortonMolecule(BaseMolecule):
 
         if spin == 'ab':
             # get density matrix of alpha & beta electrons
-            dm = self._iodata.obasis.get_dm_full()
+            dm = self._iodata.get_dm_full()
         else:
             # get orbital expression of specified spin
             spin_type = {'a': 'alpha', 'alpha': 'alpha', 'b': 'beta', 'beta': 'beta'}
@@ -296,16 +296,26 @@ class HortonMolecule(BaseMolecule):
             raise NotImplementedError()
         return output
 
-    def compute_esp(self, points, spin='ab', orbital_index=None, output=None):
+    def compute_esp(self, points, spin='ab', orbital_index=None, output=None, charges=None):
         r"""
         Return the molecular electrostatic potential on the given points for the specified spin.
+
+        The molecular electrostatic potential at point :math:`\mathbf{r}` is caused by the
+        electron density :math:`\rho` of the specified spin orbitals and set of point charges
+        :math:`\{q_A\}_{A=1}^{N_\text{atoms}}` placed at the position of the nuclei. i.e,
+
+        .. math::
+           V \left(\mathbf{r}\right) =
+             \sum_{A=1}^{N_\text{atoms}} \frac{q_A}{\rvert \mathbf{R}_A - \mathbf{r} \lvert} -
+             \int \frac{\rho \left(\mathbf{r}'\right)}{\rvert \mathbf{r}' - \mathbf{r} \lvert}
+                  d\mathbf{r}'
 
         Parameters
         ----------
         points : ndarray
            The 2d-array containing the cartesian coordinates of points on which density is
            evaluated. It has a shape (n, 3) where n is the number of points.
-        spin : str
+        spin : str, default='ab'
            The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
            alpha and beta occupied spin orbitals) are used for computing the electron density.
 
@@ -313,25 +323,33 @@ class HortonMolecule(BaseMolecule):
            - 'b' or 'beta': consider beta electrons
            - 'ab': consider alpha and beta electrons
 
-        orbital_index : sequence
+        orbital_index : sequence, default=None
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
            If ``None``, all occupied spin orbtails are included.
-        output : np.ndarray
+        output : np.ndarray, default=None
            Array with shape (n,) to store the output, where n in the number of points.
            When ``None`` the array is allocated.
+        charges : np.ndarray, default=None
+           Array with shape (n,) representing the point charges at the position of the nuclei.
+           When ``None``, the pseudo numbers are used.
         """
         # allocate output array
         if output is None:
             output = np.zeros((points.shape[0],), float)
         # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin)
+        # assign point charges
+        if charges is None:
+            charges = self.pseudo_numbers
+        elif charges.shape != self.numbers.shape:
+            raise ValueError('Argument charges should have {0} shape.'.format(self.numbers.shape))
 
         # compute esp
         if orbital_index is None:
             # include all orbitals
-            self._iodata.obasis.compute_grid_esp_dm(dm, self._iodata.coordinates,
-                                                    self._iodata.pseudo_numbers, points)
+            self._iodata.obasis.compute_grid_esp_dm(dm, self.coordinates, charges, points,
+                                                    output=output)
         else:
             # include specified set of orbitals
             raise NotImplementedError()
