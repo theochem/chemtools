@@ -24,8 +24,46 @@
 
 
 import numpy as np
+from numpy.testing import assert_raises
 from horton import IOData
 from chemtools import context, HortonMolecule
+
+
+def test_molecule_check_raises():
+    mol = HortonMolecule.from_file(context.get_fn('test/ch4_uhf_ccpvdz.fchk'))
+    points = np.array([[0., 0., 0.]])
+    # check invalid orbital spin argument
+    assert_raises(ValueError, mol.compute_density_matrix_array, 'alphabeta')
+    assert_raises(ValueError, mol.compute_density, points, spin='alph')
+    assert_raises(ValueError, mol.compute_gradient, points, spin='ba')
+    assert_raises(ValueError, mol.compute_hessian, points, spin='betaalpha')
+    assert_raises(ValueError, mol.compute_kinetic_energy_density, points, spin='balpha')
+    # check invalid points argument
+    assert_raises(ValueError, mol.compute_density, [0., 0., 0.])
+    assert_raises(ValueError, mol.compute_density, np.array([0., 0., 0.]))
+    assert_raises(ValueError, mol.compute_density, np.array([[0., 0.]]))
+    assert_raises(ValueError, mol.compute_gradient, [.1, .2, .3])
+    assert_raises(ValueError, mol.compute_gradient, np.array([.1, .2, .3]))
+    assert_raises(ValueError, mol.compute_gradient, np.array([[.1, 2., .3, .4]]))
+    assert_raises(ValueError, mol.compute_hessian, [.5, .5, .5])
+    assert_raises(ValueError, mol.compute_hessian, np.array([.5, .5, .5]))
+    assert_raises(ValueError, mol.compute_hessian, np.array([[.5, 5.]]))
+    assert_raises(ValueError, mol.compute_esp, [1., .5])
+    assert_raises(ValueError, mol.compute_esp, np.array([1., .5, .25]))
+    assert_raises(ValueError, mol.compute_esp, np.array([[1., .25]]))
+    assert_raises(ValueError, mol.compute_kinetic_energy_density, [.5, 0., .2])
+    assert_raises(ValueError, mol.compute_kinetic_energy_density, np.array([.5, 0., .2]))
+    assert_raises(ValueError, mol.compute_kinetic_energy_density, np.array([[.5, 0., .2, .1, .3]]))
+    # check invalid charges argument
+    assert_raises(ValueError, mol.compute_esp, points, charges=np.array([6., 1., 1.]))
+    assert_raises(ValueError, mol.compute_esp, points, charges=[6., 1., 1., 1., 1.])
+    # check not implemented erros
+    assert_raises(NotImplementedError, mol.compute_gradient, points, 'ab', [0, 1], None)
+    assert_raises(NotImplementedError, mol.compute_gradient, points, 'a', [5, 7], None)
+    assert_raises(NotImplementedError, mol.compute_gradient, points, 'b', [20], None)
+    assert_raises(NotImplementedError, mol.compute_hessian, points, 'ab', [32, 33], None)
+    assert_raises(NotImplementedError, mol.compute_esp, points, 'a', [33], None)
+    assert_raises(NotImplementedError, mol.compute_kinetic_energy_density, points, 'a', [30])
 
 
 def test_molecule_basics_fchk_ch4_uhf():

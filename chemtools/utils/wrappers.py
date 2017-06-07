@@ -159,9 +159,10 @@ class HortonMolecule(BaseMolecule):
            - 'b' or 'beta': consider beta electrons
            - 'ab': consider alpha and beta electrons
         """
+        # check orbital spin
         if spin not in ['a', 'b', 'alpha', 'beta', 'ab']:
             raise ValueError('Argument spin is not recognized!')
-
+        # compute density matrix
         if spin == 'ab':
             # get density matrix of alpha & beta electrons
             dm = self._iodata.get_dm_full()
@@ -198,12 +199,14 @@ class HortonMolecule(BaseMolecule):
            Array with shape (n,) to store the output, where n in the number of points.
            When ``None`` the array is allocated.
         """
+        # check points
+        if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
+            raise ValueError('Argument points should be a 2d-array with 3 columns.')
         # allocate output array
         if output is None:
             output = np.zeros((points.shape[0],), float)
         # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin)
-
         # compute density
         if orbital_index is None:
             # include all orbitals
@@ -241,12 +244,14 @@ class HortonMolecule(BaseMolecule):
            Array with shape (n, 3) to store the output, where n in the number of points.
            When ``None`` the array is allocated.
         """
+        # check points
+        if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
+            raise ValueError('Argument points should be a 2d-array with 3 columns.')
         # allocate output array
         if output is None:
             output = np.zeros((points.shape[0], 3), float)
         # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin)
-
         # compute gradient
         if orbital_index is None:
             # include all orbitals
@@ -281,12 +286,14 @@ class HortonMolecule(BaseMolecule):
            Array with shape (n, 6) to store the output, where n in the number of points.
            When ``None`` the array is allocated.
         """
+        # check points
+        if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
+            raise ValueError('Argument points should be a 2d-array with 3 columns.')
         # allocate output array
         if output is None:
             output = np.zeros((points.shape[0], 6), float)
         # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin)
-
         # compute hessian
         if orbital_index is None:
             # include all orbitals
@@ -334,6 +341,9 @@ class HortonMolecule(BaseMolecule):
            Array with shape (n,) representing the point charges at the position of the nuclei.
            When ``None``, the pseudo numbers are used.
         """
+        # check points
+        if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
+            raise ValueError('Argument points should be a 2d-array with 3 columns.')
         # allocate output array
         if output is None:
             output = np.zeros((points.shape[0],), float)
@@ -342,9 +352,9 @@ class HortonMolecule(BaseMolecule):
         # assign point charges
         if charges is None:
             charges = self.pseudo_numbers
-        elif charges.shape != self.numbers.shape:
-            raise ValueError('Argument charges should have {0} shape.'.format(self.numbers.shape))
-
+        elif not isinstance(charges, np.ndarray) or charges.shape != self.numbers.shape:
+            raise ValueError('Argument charges should be a 1d-array '
+                             'with {0} shape.'.format(self.numbers.shape))
         # compute esp
         if orbital_index is None:
             # include all orbitals
@@ -386,12 +396,14 @@ class HortonMolecule(BaseMolecule):
            Array with shape (n,) to store the output, where n in the number of points.
            When ``None`` the array is allocated.
         """
+        # check points
+        if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
+            raise ValueError('Argument points should be a 2d-array with 3 columns.')
         # allocate output array
         if output is None:
             output = np.zeros((points.shape[0],), float)
         # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin)
-
         # compute kinetic energy
         if orbital_index is None:
             # include all orbitals
