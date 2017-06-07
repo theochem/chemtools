@@ -22,6 +22,8 @@
 # --
 """The Input-Output (IO) Module that is user friendly."""
 
+__all__ = ['make_molecule']
+
 
 def make_molecule(*args, **kwargs):
     """Creates a Molecule instance using the given package.
@@ -53,7 +55,7 @@ def make_molecule(*args, **kwargs):
     """
     if 'package_name' not in kwargs:
         for abs_classname in ['chemtools.utils.wrappers.Psi4Molecule',
-                              'chemtools.utils.wrappers.HortonMolecule',]:
+                              'chemtools.utils.wrappers.HortonMolecule']:
             try:
                 modulename, classname = abs_classname.rsplit('.', 1)
                 Molecule = getattr(__import__(modulename), classname)
@@ -63,8 +65,8 @@ def make_molecule(*args, **kwargs):
                     return Molecule(*args, **kwargs)
             except (AttributeError, ImportError):
                 pass
-        else:
-            raise NotImplementedError('Cannot find any of the packages compatible with ChemTools.')
+            else:
+                raise NotImplementedError('Cannot find packages compatible with ChemTools.')
 
     package_name = kwargs['package_name'].lower()
     if package_name == 'horton':

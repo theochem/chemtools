@@ -215,8 +215,8 @@ class HortonMolecule(BaseMolecule):
             # HORTON index the orbitals from 0
             orbs = np.copy(np.asarray(orbital_index)) - 1
             # include specified set of orbitals
-            self._iodata.obasis.compute_grid_orbitals_exp(dm, points, orbs, output=output)**2
-            output = output.flatten()
+            self._iodata.obasis.compute_grid_orbitals_exp(dm, points, orbs, output=output)
+            output = output.flatten()**2
         return output
 
     def compute_gradient(self, points, spin='ab', orbital_index=None, output=None):
