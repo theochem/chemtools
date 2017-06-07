@@ -52,14 +52,14 @@ class BaseMolecule(object):
         """
         # bare minimum attributes to define a molecule
         if not (isinstance(coordinates, np.ndarray) and coordinates.ndim == 2):
-            raise TypeError('Coordinates must be given as a 2-D numpy array.')
-        elif not (isinstance(numbers, np.ndarray) and numbers.ndim == 1):
-            raise TypeError('Atomic numbers must be given as a 1-D numpy array')
-        elif coordinates.shape[0] != numbers.size:
-            raise ValueError('Arguments coordinates and numbers should represent the same number '
-                             'of atoms! {0} != {1}'.format(coordinates.shape[0], numbers.size))
-        elif coordinates.shape[1] != 3:
-            raise ValueError('Argument coordinates should have 3 columns.')
+            raise TypeError('Argument coordinates should be a 2d-array.')
+        if not (isinstance(numbers, np.ndarray) and numbers.ndim == 1):
+            raise TypeError('Argument numbers should be a 1d-array.')
+        if coordinates.shape[0] != numbers.size:
+            raise TypeError('Arguments coordinates and numbers should represent the same number '
+                            'of atoms! {0} != {1}'.format(coordinates.shape[0], numbers.size))
+        if coordinates.shape[1] != 3:
+            raise TypeError('Argument coordinates should be a 2d-array with 3 columns.')
 
         self._coordinates = coordinates
         self._numbers = numbers
