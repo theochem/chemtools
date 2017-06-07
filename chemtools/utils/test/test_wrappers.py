@@ -25,11 +25,11 @@
 
 import numpy as np
 from numpy.testing import assert_raises
-from horton import IOData
+from test_data import get_cube_data_ch4_uhf_ccpvdz
 from chemtools import context, HortonMolecule
 
 
-def test_molecule_check_raises():
+def test_horton_molecule_check_raises():
     mol = HortonMolecule.from_file(context.get_fn('test/ch4_uhf_ccpvdz.fchk'))
     points = np.array([[0., 0., 0.]])
     # check invalid orbital spin argument
@@ -66,7 +66,7 @@ def test_molecule_check_raises():
     assert_raises(NotImplementedError, mol.compute_kinetic_energy_density, points, 'a', [30])
 
 
-def test_molecule_basics_fchk_ch4_uhf():
+def test_horton_molecule_basics_fchk_ch4_uhf():
     mol = HortonMolecule.from_file(context.get_fn('test/ch4_uhf_ccpvdz.fchk'))
     # check basic numerics
     np.testing.assert_equal(mol.natom, 5)
@@ -95,7 +95,7 @@ def test_molecule_basics_fchk_ch4_uhf():
     np.testing.assert_almost_equal(mol.mulliken_charges, mul, decimal=6)
 
 
-def test_molecule_orbitals_fchk_ch4_uhf():
+def test_horton_molecule_orbitals_fchk_ch4_uhf():
     mol = HortonMolecule.from_file(context.get_fn('test/ch4_uhf_ccpvdz.fchk'))
     # check orbital energy
     orb_energy = np.array([-1.12152085E+01, -9.42914385E-01, -5.43117091E-01, -5.43114279E-01,
@@ -128,7 +128,7 @@ def test_molecule_orbitals_fchk_ch4_uhf():
     np.testing.assert_almost_equal(overlap, overlap.T, decimal=6)
 
 
-def test_molecule_density_matrix_fchk_ch4_uhf():
+def test_horton_molecule_density_matrix_fchk_ch4_uhf():
     mol = HortonMolecule.from_file(context.get_fn('test/ch4_uhf_ccpvdz.fchk'))
     # check density matrix against Gaussian (printed in log file)
     expected_diag = np.array([1.03003, 0.13222, 0.05565, 0.17944, 0.17944, 0.17944, 0.03891,
@@ -177,7 +177,7 @@ def test_molecule_density_matrix_fchk_ch4_uhf():
     np.testing.assert_almost_equal(dm_array_ab[28, 29:], 2*expected_29, decimal=5)
 
 
-def test_molecule_grid_esp_fchk_ch4_uhf():
+def test_horton_molecule_grid_esp_fchk_ch4_uhf():
     mol = HortonMolecule.from_file(context.get_fn('test/ch4_uhf_ccpvdz.fchk'))
     # check esp against Gaussian (printed in log file)
     # check esp at the position of each nuclei (1.e-14 is added to avoid division by zero)
@@ -211,7 +211,27 @@ def test_molecule_grid_esp_fchk_ch4_uhf():
     np.testing.assert_almost_equal(mol.compute_esp(points), expected_esp, decimal=5)
 
 
-def test_molecule_basic_fchk_o2_uhf():
+def test_horton_molecule_grid_dens_gradient_fchk_ch4_uhf():
+    # make an instance of molecule
+    mol = HortonMolecule.from_file(context.get_fn('test/ch4_uhf_ccpvdz.fchk'))
+    # check properties against Gaussian
+    points, density, gradient, esp = get_cube_data_ch4_uhf_ccpvdz()
+    np.testing.assert_almost_equal(mol.compute_density(points, 'ab'), density, decimal=5)
+    np.testing.assert_almost_equal(mol.compute_gradient(points, 'ab'), gradient, decimal=5)
+    np.testing.assert_almost_equal(mol.compute_esp(points, 'ab'), esp, decimal=5)
+
+
+def test_horton_molecule_grid_dens_gradient_wfn_ch4_uhf():
+    # make an instance of molecule
+    mol = HortonMolecule.from_file(context.get_fn('test/ch4_uhf_ccpvdz.wfn'))
+    # check properties against Gaussian
+    points, density, gradient, esp = get_cube_data_ch4_uhf_ccpvdz()
+    np.testing.assert_almost_equal(mol.compute_density(points, 'ab'), density, decimal=5)
+    np.testing.assert_almost_equal(mol.compute_gradient(points, 'ab'), gradient, decimal=5)
+    np.testing.assert_almost_equal(mol.compute_esp(points, 'ab'), esp, decimal=5)
+
+
+def test_horton_molecule_basic_fchk_o2_uhf():
     mol = HortonMolecule.from_file(context.get_fn('test/o2_uhf_virtual.fchk'))
     print mol.nelectrons
     # check basic numerics
@@ -263,15 +283,3 @@ def test_molecule_basic_fchk_o2_uhf():
     # check orbital coefficients
     np.testing.assert_almost_equal(mol.orbital_coefficient[0][:3, 0],
                                    np.array([0.389497609, 0.333421243, 0.]), decimal=6)
-
-
-def test_molecule_density_fchk_h2o_dimer():
-    # read cubic grid with density values
-    cube = IOData.from_file(context.get_fn('test/h2o_dimer_pbe_sto3g-dens.cube'))
-    mol = HortonMolecule.from_file(context.get_fn('test/h2o_dimer_pbe_sto3g.fchk'))
-    np.testing.assert_almost_equal(cube.coordinates, mol.coordinates, decimal=6)
-    print mol.coordinates
-    print cube.coordinates
-    print cube.grid.shape
-    print cube.cube_data.shape
-    # np.testing.assert_almost_equal(cube.cube_data, mol.compute_density(cube.points), decimal=6)
