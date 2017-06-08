@@ -200,6 +200,8 @@ class HortonMolecule(BaseMolecule):
         # check points
         if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
             raise ValueError('Argument points should be a 2d-array with 3 columns.')
+        if not np.issubdtype(points.dtype, float):
+            raise ValueError('Argument points should be a 2d-array of floats!')
 
         # assign orbital index (HORTON index the orbitals from 0)
         if orbital_index is None:
@@ -254,6 +256,9 @@ class HortonMolecule(BaseMolecule):
         # check points
         if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
             raise ValueError('Argument points should be a 2d-array with 3 columns.')
+        if not np.issubdtype(points.dtype, float):
+            raise ValueError('Argument points should be a 2d-array of floats!')
+
         # allocate output array
         if output is None:
             output = np.zeros((points.shape[0],), float)
@@ -310,9 +315,15 @@ class HortonMolecule(BaseMolecule):
         # check points
         if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
             raise ValueError('Argument points should be a 2d-array with 3 columns.')
+        if not np.issubdtype(points.dtype, float):
+            raise ValueError('Argument points should be a 2d-array of floats!')
+
         # allocate output array
         if output is None:
             output = np.zeros((points.shape[0], 3), float)
+        if output.shape != (points.shape[0], 3):
+            raise ValueError('Argument output should be a {0} array.'.format((points.shape[0], 3)))
+
         # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin)
         # compute gradient
@@ -352,9 +363,15 @@ class HortonMolecule(BaseMolecule):
         # check points
         if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
             raise ValueError('Argument points should be a 2d-array with 3 columns.')
+        if not np.issubdtype(points.dtype, float):
+            raise ValueError('Argument points should be a 2d-array of floats!')
+
         # allocate output array
         if output is None:
             output = np.zeros((points.shape[0], 6), float)
+        if output.shape != (points.shape[0], 6):
+            raise ValueError('Argument output should be a {0} array.'.format((points.shape[0], 6)))
+
         # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin)
         # compute hessian
@@ -407,9 +424,15 @@ class HortonMolecule(BaseMolecule):
         # check points
         if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
             raise ValueError('Argument points should be a 2d-array with 3 columns.')
+        if not np.issubdtype(points.dtype, float):
+            raise ValueError('Argument points should be a 2d-array of floats!')
+
         # allocate output array
         if output is None:
             output = np.zeros((points.shape[0],), float)
+        if output.shape != (points.shape[0],):
+            raise ValueError('Argument output should be a {0} array.'.format((points.shape[0],)))
+
         # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin)
         # assign point charges
@@ -462,9 +485,13 @@ class HortonMolecule(BaseMolecule):
         # check points
         if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
             raise ValueError('Argument points should be a 2d-array with 3 columns.')
+        if not np.issubdtype(points.dtype, float):
+            raise ValueError('Argument points should be a 2d-array of floats!')
         # allocate output array
         if output is None:
             output = np.zeros((points.shape[0],), float)
+        if output.shape != (points.shape[0],):
+            raise ValueError('Argument output should be a {0} array.'.format((points.shape[0],)))
         # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin)
         # compute kinetic energy
