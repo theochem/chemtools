@@ -24,8 +24,8 @@
 
 
 import numpy as np
-from numpy.testing import assert_raises
-from test_data import get_cube_data_ch4_uhf_ccpvdz
+from numpy.testing import assert_raises, assert_almost_equal
+from test_data import load_data_gaussian_cubegen_ch4_uhf_ccpvdz, load_data_fortran_ch4_uhf_ccpvdz
 from chemtools import context, HortonMolecule
 
 
@@ -211,24 +211,76 @@ def test_horton_molecule_grid_esp_fchk_ch4_uhf():
     np.testing.assert_almost_equal(mol.compute_esp(points), expected_esp, decimal=5)
 
 
-def test_horton_molecule_grid_dens_gradient_fchk_ch4_uhf():
-    # make an instance of molecule
-    mol = HortonMolecule.from_file(context.get_fn('test/ch4_uhf_ccpvdz.fchk'))
-    # check properties against Gaussian
-    points, density, gradient, esp = get_cube_data_ch4_uhf_ccpvdz()
-    np.testing.assert_almost_equal(mol.compute_density(points, 'ab'), density, decimal=5)
-    np.testing.assert_almost_equal(mol.compute_gradient(points, 'ab'), gradient, decimal=5)
-    np.testing.assert_almost_equal(mol.compute_esp(points, 'ab'), esp, decimal=5)
+def check_horton_molecule_against_gaussian_ch4_uhf_ccpvdz(mol):
+    # get expected data computed by Gaussian09_C.01's cubegen
+    points, dens, grad, laplacian, hessian_xx, esp = load_data_gaussian_cubegen_ch4_uhf_ccpvdz()
+    # check density, gradient, esp & hessian
+    assert_almost_equal(mol.compute_density(points, 'ab'), dens, decimal=5)
+    assert_almost_equal(mol.compute_density(points, 'a'), dens/2, decimal=5)
+    assert_almost_equal(mol.compute_density(points, 'b'), dens/2, decimal=5)
+    assert_almost_equal(mol.compute_gradient(points, 'ab'), grad, decimal=5)
+    assert_almost_equal(mol.compute_esp(points, 'ab'), esp, decimal=5)
+    hess = mol.compute_hessian(points, 'ab')
+    assert_almost_equal(hess[:, 0] + hess[:, 3] + hess[:, 5], laplacian, decimal=5)
+    assert_almost_equal(hess[:, 0], hessian_xx, decimal=5)
+    # density computed by summing squared mo expressions
+    assert_almost_equal(mol.compute_density(points, 'ab', range(1, 6)), dens, decimal=5)
+    assert_almost_equal(mol.compute_density(points, 'a', range(1, 6)), dens/2, decimal=5)
+    assert_almost_equal(mol.compute_density(points, 'alpha', range(1, 6), None), dens/2, decimal=5)
+    assert_almost_equal(mol.compute_density(points, 'beta', range(1, 6), None), dens/2, decimal=5)
 
 
-def test_horton_molecule_grid_dens_gradient_wfn_ch4_uhf():
+def test_horton_molecule_grid_gaussian_fchk_ch4_uhf_ccpvdz():
+    # make an instance of molecule from fchk file
+    molecule = HortonMolecule.from_file(context.get_fn('test/ch4_uhf_ccpvdz.fchk'))
+    check_horton_molecule_against_gaussian_ch4_uhf_ccpvdz(molecule)
+
+
+def test_horton_molecule_grid_gaussian_wfn_ch4_uhf_ccpvdz():
+    # make an instance of molecule from wfn file
+    molecule = HortonMolecule.from_file(context.get_fn('test/ch4_uhf_ccpvdz.wfn'))
+    check_horton_molecule_against_gaussian_ch4_uhf_ccpvdz(molecule)
+
+
+def check_horton_molecule_against_fortran_ch4_uhf_ccpvdz(mol):
+    # get expected data computed by Fortran code
+    points, exp8, exp9, dens, grad, ke, _, _ = load_data_fortran_ch4_uhf_ccpvdz()
+    # check density & gradient
+    assert_almost_equal(mol.compute_density(points, 'ab', None), dens, decimal=6)
+    assert_almost_equal(mol.compute_gradient(points, 'ab', None), grad, decimal=6)
+    # check alpha & beta density
+    assert_almost_equal(mol.compute_density(points, 'a', None), dens/2, decimal=6)
+    assert_almost_equal(mol.compute_density(points, 'b', None), dens/2, decimal=6)
+    # check density computed by summing squared mo expressions
+    assert_almost_equal(mol.compute_density(points, 'ab', range(1, 6)), dens, decimal=6)
+    assert_almost_equal(mol.compute_density(points, 'a', range(1, 6)), dens/2, decimal=6)
+    assert_almost_equal(mol.compute_density(points, 'alpha', range(1, 6)), dens/2, decimal=6)
+    assert_almost_equal(mol.compute_density(points, 'b', range(1, 6)), dens/2, decimal=6)
+    assert_almost_equal(mol.compute_density(points, 'beta', range(1, 6)), dens/2, decimal=6)
+    # check mo expression of 8th orbital
+    assert_almost_equal(mol.compute_molecular_orbital(points, 'a', 8), exp8, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, 'alpha', 8), exp8, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, 'b', 8), exp8, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, 'beta', 8), exp8, decimal=6)
+    # check mo expression of 9th orbital
+    assert_almost_equal(mol.compute_molecular_orbital(points, 'a', 9), exp9, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, 'alpha', 9), exp9, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, 'b', 9), exp9, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, 'beta', 9), exp9, decimal=6)
+    # check positive definite ke
+    assert_almost_equal(mol.compute_kinetic_energy_density(points, 'ab'), ke, decimal=6)
+
+
+def test_horton_molecule_grid_fortran_fchk_ch4_uhf_ccpvdz():
     # make an instance of molecule
-    mol = HortonMolecule.from_file(context.get_fn('test/ch4_uhf_ccpvdz.wfn'))
-    # check properties against Gaussian
-    points, density, gradient, esp = get_cube_data_ch4_uhf_ccpvdz()
-    np.testing.assert_almost_equal(mol.compute_density(points, 'ab'), density, decimal=5)
-    np.testing.assert_almost_equal(mol.compute_gradient(points, 'ab'), gradient, decimal=5)
-    np.testing.assert_almost_equal(mol.compute_esp(points, 'ab'), esp, decimal=5)
+    molecule = HortonMolecule.from_file(context.get_fn('test/ch4_uhf_ccpvdz.fchk'))
+    check_horton_molecule_against_fortran_ch4_uhf_ccpvdz(molecule)
+
+
+# def test_horton_molecule_fortran_wfn_ch4_uhf_ccpvdz():
+#     # make an instance of molecule
+#     molecule = HortonMolecule.from_file(context.get_fn('test/ch4_uhf_ccpvdz.wfn'))
+#     check_horton_molecule_against_fortran_ch4_uhf_ccpvdz(molecule)
 
 
 def test_horton_molecule_basic_fchk_o2_uhf():

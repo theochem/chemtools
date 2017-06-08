@@ -174,6 +174,58 @@ class HortonMolecule(BaseMolecule):
             dm = exp.to_dm()
         return dm
 
+    def compute_molecular_orbital(self, points, spin, orbital_index=None, output=None):
+        """
+        Return molecular orbitals evaluated on the given points for the spin orbitals.
+
+        Parameters
+        ----------
+        points : ndarray
+           The 2d-array containing the cartesian coordinates of points on which density is
+           evaluated. It has a shape (n, 3) where n is the number of points.
+        spin : str
+           The type of occupied spin orbitals.
+
+           - 'a' or 'alpha': consider alpha electrons
+           - 'b' or 'beta': consider beta electrons
+
+        orbital_index : sequence, default=None
+           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
+           orbitals are each indexed from 1 to :attr:`nbasis`.
+           If ``None``, all occupied spin orbtails are included.
+        output : np.ndarray, default=None
+           Array with shape (n, m) to store the output, where n in the number of points and m
+           is the number of molecular orbitals. When ``None`` the array is allocated.
+        """
+        # check points
+        if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
+            raise ValueError('Argument points should be a 2d-array with 3 columns.')
+
+        # assign orbital index (HORTON index the orbitals from 0)
+        if orbital_index is None:
+            # include all occupied orbitals of specified spin
+            spin_index = {'a': 0, 'alpha': 0, 'b': 1, 'beta': 1}
+            orbital_index = np.arange(self.homo_index[spin_index[spin]])
+        else:
+            # include specified set of orbitals
+            orbital_index = np.copy(np.asarray(orbital_index)) - 1
+            if orbital_index.ndim == 0:
+                orbital_index = np.array([orbital_index])
+
+        # allocate output array
+        if output is None:
+            output = np.zeros((points.shape[0], orbital_index.shape[0]), float)
+        npoints, norbs = points.shape[0], orbital_index.shape[0]
+        if output.shape != (npoints, norbs):
+            raise ValueError('Argument output should be a {0} array.'.format((npoints, norbs)))
+
+        # get orbital expression of specified spin
+        spin_type = {'a': 'alpha', 'alpha': 'alpha', 'b': 'beta', 'beta': 'beta'}
+        exp = getattr(self, '_exp_' + spin_type[spin])
+        # compute mo expression
+        self._iodata.obasis.compute_grid_orbitals_exp(exp, points, orbital_index, output=output)
+        return output
+
     def compute_density(self, points, spin='ab', orbital_index=None, output=None):
         r"""
         Return electron density evaluated on the given points for the spin orbitals.
@@ -205,18 +257,29 @@ class HortonMolecule(BaseMolecule):
         # allocate output array
         if output is None:
             output = np.zeros((points.shape[0],), float)
-        # get density matrix corresponding to the specified spin
-        dm = self._get_density_matrix(spin)
+        if output.shape != (points.shape[0],):
+            raise ValueError('Argument output should be a {0} array.'.format((points.shape[0],)))
+
         # compute density
         if orbital_index is None:
+            # get density matrix corresponding to the specified spin
+            dm = self._get_density_matrix(spin)
             # include all orbitals
             self._iodata.obasis.compute_grid_density_dm(dm, points, output=output)
         else:
-            # HORTON index the orbitals from 0
-            orbs = np.copy(np.asarray(orbital_index)) - 1
-            # include specified set of orbitals
-            self._iodata.obasis.compute_grid_orbitals_exp(dm, points, orbs, output=output)
-            output = output.flatten()**2
+            # include subset of molecular orbitals
+            if spin == 'ab':
+                # compute mo expression of alpha & beta orbitals
+                mo_a = self.compute_molecular_orbital(points, 'a', orbital_index)
+                mo_b = self.compute_molecular_orbital(points, 'b', orbital_index)
+                # add density of alpha & beta molecular orbitals
+                np.sum(mo_a**2, axis=1, out=output)
+                output += np.sum(mo_b**2, axis=1)
+            else:
+                # compute mo expression of specified molecular orbitals
+                mo = self.compute_molecular_orbital(points, spin, orbital_index)
+                # add density of specified molecular orbitals
+                np.sum(mo**2, axis=1, out=output)
         return output
 
     def compute_gradient(self, points, spin='ab', orbital_index=None, output=None):
