@@ -71,7 +71,9 @@ def make_molecule(*args, **kwargs):
     package_name = kwargs['package_name'].lower()
     if package_name == 'horton':
         from chemtools.utils.wrappers import HortonMolecule
-        return HortonMolecule(*args, **kwargs)
+        if len(args) == 1 and isinstance(args[0], str):
+            return HortonMolecule.from_file(*args)
+        return HortonMolecule(*args)
     else:
         raise NotImplementedError('Given package, {0}, is not supported with '
                                   'ChemTools.'.format(package_name))

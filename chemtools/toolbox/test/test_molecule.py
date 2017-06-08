@@ -24,6 +24,7 @@
 
 from numpy.testing import assert_raises
 import numpy as np
+from horton import IOData
 from chemtools import context
 from chemtools.toolbox import molecule
 from chemtools.utils.molecule import BaseMolecule
@@ -44,3 +45,23 @@ def test_make_molecule():
             assert getattr(test, key) == val
         except ValueError:
             assert np.allclose(getattr(test, key), val)
+
+
+def test_make_molecule_horton():
+    """Test chemtools.toolbox.molecule.make_molecule."""
+    file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
+    test = molecule.make_molecule(file_path, **{'package_name': 'HORTON'})
+    assert isinstance(test, BaseMolecule)
+    assert isinstance(test, HortonMolecule)
+
+
+def test_make_molecule_horton_from_iodata():
+    """Test chemtools.toolbox.molecule.make_molecule."""
+    iodata = IOData.from_file(context.get_fn('test/ch4_uhf_ccpvdz.fchk'))
+    test = molecule.make_molecule(iodata)
+    assert isinstance(test, BaseMolecule)
+    assert isinstance(test, HortonMolecule)
+    iodata = IOData.from_file(context.get_fn('test/ch4_uhf_ccpvdz.fchk'))
+    test = molecule.make_molecule(iodata, **{'package_name': 'HORTON'})
+    assert isinstance(test, BaseMolecule)
+    assert isinstance(test, HortonMolecule)

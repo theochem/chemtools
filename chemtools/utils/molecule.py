@@ -153,7 +153,7 @@ class BaseMolecule(object):
            - 'b' or 'beta': consider beta electrons
            - 'ab': consider alpha and beta electrons
         """
-        return NotImplementedError
+        raise NotImplementedError
 
     def compute_density(self, points, spin='ab', orbital_index=None, output=None):
         """
@@ -178,7 +178,7 @@ class BaseMolecule(object):
            Array with shape (n,) to store the output, where n in the number of points.
            When ``None`` the array is allocated.
         """
-        return NotImplementedError
+        raise NotImplementedError
 
     def compute_gradient(self, points, spin='ab', orbital_index=None, output=None):
         """
