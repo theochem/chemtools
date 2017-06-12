@@ -511,11 +511,11 @@ class BaseGlobalTool(object):
         if guess is None:
             guess = self._n0
         # solve for N corresponding to the given mu using scipy.optimize.newton
-        func = lambda n: self.energy_derivative(n, 1) - mu
-        fprime = lambda n: self.energy_derivative(n, 2)
-        fprime2 = lambda n: self.energy_derivative(n, 3)
         try:
-            n_elec = newton(func, guess, fprime=fprime, fprime2=fprime2)
+            n_elec = newton(lambda n: self.energy_derivative(n, 1) - mu,
+                            guess,
+                            fprime=lambda n: self.energy_derivative(n, 2),
+                            fprime2=lambda n: self.energy_derivative(n, 3))
         except ValueError:
             raise ValueError(
                 'Number of electrons corresponding to mu={0} could not be found!'.format(mu))
