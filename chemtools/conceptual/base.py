@@ -26,7 +26,6 @@ This module contains various global tool classes corresponding to
 linear, quadratic, exponential, general energy models.
 """
 
-from abc import ABCMeta, abstractmethod
 import numpy as np
 import sympy as sp
 from scipy.optimize import newton
@@ -37,8 +36,6 @@ __all__ = ['BaseGlobalTool']
 
 class BaseGlobalTool(object):
     """Base class of global conceptual DFT reactivity descriptors."""
-
-    __metaclass__ = ABCMeta
 
     def __init__(self, energy_zero, energy_plus, energy_minus, n0, n_max):
         """
@@ -280,7 +277,6 @@ class BaseGlobalTool(object):
         else:
             return -deriv
 
-    @abstractmethod
     def energy(self, n_elec):
         r"""
         Return the energy model :math:`E(N)` evaluated for the specified number of electrons.
@@ -290,9 +286,8 @@ class BaseGlobalTool(object):
         n_elec: float
             Number of electrons, :math:`N_{\text{elec}}`.
         """
-        pass
+        raise NotImplementedError
 
-    @abstractmethod
     def energy_derivative(self, n_elec, order=1):
         r"""
         Return the :math:`n^{\text{th}}`-order derivative of energy w.r.t. the number of electrons.
@@ -318,7 +313,7 @@ class BaseGlobalTool(object):
         to the :attr:`BaseGlobalTool.chemical_potential`, :attr:`BaseGlobalTool.chemical_hardness`
         and :attr:`BaseGlobalTool.hyper_hardness`, respectively.
         """
-        pass
+        raise NotImplementedError
 
     def grand_potential(self, n_elec):
         r"""
@@ -531,8 +526,6 @@ class BaseGlobalTool(object):
 class BaseLocalTool(object):
     """Base class of local conceptual DFT reactivity descriptors."""
 
-    __metaclass__ = ABCMeta
-
     def __init__(self, density_zero, density_plus, density_minus, n0):
         r"""
         Initialize class.
@@ -552,12 +545,12 @@ class BaseLocalTool(object):
             Reference number of electrons, i.e. :math:`N_0`, which corresponds
             to the integral of density_zero over all space.
         """
-        # if np.any(density_zero < 0):
-        #     raise ValueError('Argument density_zero should be all positive!')
-        # if np.any(density_plus < 0):
-        #     raise ValueError('Argument density_plus should be all positive!')
-        # if np.any(density_minus < 0):
-        #     raise ValueError('Argument density_minus should be all positive!')
+        if np.any(density_zero < 0):
+            raise ValueError('Argument density_zero should be an array of positive values!')
+        if np.any(density_plus < 0):
+            raise ValueError('Argument density_plus should be an array of positive values!')
+        if np.any(density_minus < 0):
+            raise ValueError('Argument density_minus should be an array of positive values!')
         self._density_zero = density_zero
         self._density_plus = density_plus
         self._density_minus = density_minus
