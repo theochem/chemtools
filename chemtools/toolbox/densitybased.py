@@ -168,7 +168,6 @@ class NCI(object):
 
             - 'svgz' or 'svg' (Scalable Vector Graphics)
             - 'tif' or 'tiff' (Tagged Image File Format)
-            - 'jpg' or 'jpeg' (Joint Photographic Experts Group)
             - 'raw' (Raw RGBA bitmap)
             - 'png' (Portable Network Graphics)
             - 'ps' (Postscript)
