@@ -110,7 +110,7 @@ class GeneralGlobalTool(BaseGlobalTool):
         energy_zero = self.energy(n0)
         energy_plus = self.energy(n0 + 1)
         energy_minus = self.energy(n0 - 1)
-        super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0, n_max)
+        super(GeneralGlobalTool, self).__init__(energy_zero, energy_plus, energy_minus, n0, n_max)
 
     @property
     def params(self):

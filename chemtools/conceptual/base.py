@@ -226,8 +226,11 @@ class BaseGlobalTool(object):
                         \right)_{v(\mathbf{r})}\right|_{N = N_0} = \frac{1}{\eta}
         """
         # compute 2nd-order derivative of grand potential w.r.t. mu at N0
-        value = - self.grand_potential_derivative(self._n0, 2)
-        return value
+        deriv = self.grand_potential_derivative(self._n0, 2)
+        if deriv is None:
+            return None
+        else:
+            return -deriv
 
     def hyper_hardness(self, order=2):
         r"""
@@ -271,8 +274,11 @@ class BaseGlobalTool(object):
         if not (isinstance(order, int) and order >= 2):
             raise ValueError('Argument order should be an integer greater than or equal to 2.')
         # compute derivative of grand potential w.r.t. mu at N0
-        value = - self.grand_potential_derivative(self._n0, order + 1)
-        return value
+        deriv = self.grand_potential_derivative(self._n0, order + 1)
+        if deriv is None:
+            return None
+        else:
+            return -deriv
 
     @abstractmethod
     def energy(self, n_elec):

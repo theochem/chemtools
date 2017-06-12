@@ -71,7 +71,8 @@ class ExponentialGlobalTool(BaseGlobalTool):
         self._params = [param_a, gamma, param_b]
         # calulate N_max
         n_max = float('inf')
-        super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0, n_max)
+        super(ExponentialGlobalTool, self).__init__(energy_zero, energy_plus, energy_minus, n0,
+                                                    n_max)
 
     @property
     def params(self):

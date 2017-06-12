@@ -136,7 +136,7 @@ def test_global_rational_pnpp_grand_potential():
     # d4omega = lambda n: dE(n, 4) / dE(n, 2)**4 - (3 * dE(n, 3)**2) / dE(n, 2)**5
     # d5omega = lambda n: (dE(n, 5)/dE(n, 2)**5 - (10 * dE(n, 3) * dE(n, 4))/dE(n, 2)**6 +
     #                      (15 * dE(n, 3)**3)/dE(n, 2)**7)
-    domega_n = lambda n, r: model.grand_potential_derivative(n, r)
+    domega_n = model.grand_potential_derivative
     np.testing.assert_almost_equal(domega_n(4.67, 1), -4.67, decimal=6)
     np.testing.assert_almost_equal(domega_n(3.5, 2), d2omega(3.5), decimal=6)
     np.testing.assert_almost_equal(domega_n(4.1, 2), d2omega(4.1), decimal=6)
@@ -158,7 +158,7 @@ def test_global_rational_pnpp_grand_potential():
     np.testing.assert_almost_equal(model.grand_potential_mu(-0.442708333), -0.73958333, decimal=6)
     np.testing.assert_almost_equal(model.grand_potential_mu(-0.232747054), -1.27423079, decimal=6)
     # check grand potential derivative (as a function of mu)
-    domega_mu = lambda mu, r: model.grand_potential_mu_derivative(mu, r)
+    domega_mu = model.grand_potential_mu_derivative
     np.testing.assert_almost_equal(domega_mu(dE(5.81, 1), 1), -5.81, decimal=6)
     np.testing.assert_almost_equal(domega_mu(dE(4.67, 1), 2), d2omega(4.67), decimal=5)
     # np.testing.assert_almost_equal(domega_mu(dE(6.45, 1), 3), d3omega(6.45), decimal=6)
@@ -263,7 +263,7 @@ def test_global_rational_nnpp_grand_potential():
     # d4omega = lambda n: dE(n, 4) / dE(n, 2)**4 - (3 * dE(n, 3)**2) / dE(n, 2)**5
     # d5omega = lambda n: (dE(n, 5)/dE(n, 2)**5 - (10 * dE(n, 3) * dE(n, 4))/dE(n, 2)**6 +
     #                      (15 * dE(n, 3)**3)/dE(n, 2)**7)
-    domega_n = lambda n, r: model.grand_potential_derivative(n, r)
+    domega_n = model.grand_potential_derivative
     np.testing.assert_almost_equal(domega_n(6.5, 1), -6.5, decimal=6)
     np.testing.assert_almost_equal(domega_n(7.1, 1), -7.1, decimal=6)
     np.testing.assert_almost_equal(domega_n(5.8, 2), d2omega(5.8), decimal=6)
@@ -283,7 +283,7 @@ def test_global_rational_nnpp_grand_potential():
     np.testing.assert_almost_equal(model.grand_potential_mu(-0.268246176), -5.2500304, decimal=6)
     np.testing.assert_almost_equal(model.grand_potential_mu(-0.198782625), -5.7468530, decimal=6)
     # check grand potential derivative (as a function of mu)
-    domega_mu = lambda mu, r: model.grand_potential_mu_derivative(mu, r)
+    domega_mu = model.grand_potential_mu_derivative
     np.testing.assert_almost_equal(domega_mu(dE(6.301, 1), 1), -6.301, decimal=6)
     np.testing.assert_almost_equal(domega_mu(dE(5.55, 1), 2), d2omega(5.55), decimal=6)
     np.testing.assert_almost_equal(domega_mu(dE(6.99, 1), 3), d3omega(6.99), decimal=6)

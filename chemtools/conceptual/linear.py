@@ -64,7 +64,7 @@ class LinearGlobalTool(BaseGlobalTool):
             n_max = n0
         else:
             n_max = None
-        super(self.__class__, self).__init__(energy_zero, energy_plus, energy_minus, n0, n_max)
+        super(LinearGlobalTool, self).__init__(energy_zero, energy_plus, energy_minus, n0, n_max)
 
     @property
     def mu_minus(self):
@@ -167,7 +167,7 @@ class LinearLocalTool(BaseLocalTool):
 
     @doc_inherit(BaseLocalTool)
     def __init__(self, density_zero, density_plus, density_minus, n0):
-        super(self.__class__, self).__init__(density_zero, density_plus, density_minus, n0)
+        super(LinearLocalTool, self).__init__(density_zero, density_plus, density_minus, n0)
         self._ff_plus = self._density_plus - self._density_zero
         self._ff_minus = self._density_zero - self._density_minus
         self._ff_zero = 0.5 * (self._density_plus - self._density_minus)

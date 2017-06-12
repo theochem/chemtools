@@ -108,7 +108,7 @@ def test_global_exponential_grand_potential_n():
     np.testing.assert_almost_equal(model.grand_potential(8.5), grand(8.5), decimal=6)
     np.testing.assert_almost_equal(model.grand_potential(10.001), grand(10.001), decimal=6)
     # check grand potential derivative (as a function of N)
-    domega_n = lambda n, r: model.grand_potential_derivative(n, r)
+    domega_n = model.grand_potential_derivative
     np.testing.assert_almost_equal(domega_n(9., 1), -9, decimal=6)
     np.testing.assert_almost_equal(domega_n(10.5, 1), -10.5, decimal=6)
     np.testing.assert_almost_equal(domega_n(11.001, 1), -11.001, decimal=6)
@@ -155,7 +155,7 @@ def test_global_exponential_grand_potential_mu():
     np.testing.assert_almost_equal(model.convert_mu_to_n(-0.4230574978), 11.671, decimal=6)
     np.testing.assert_almost_equal(model.convert_mu_to_n(-0.6086285202), 8.034, decimal=6)
     # check grand potential derivative (as a function of mu)
-    domega_mu = lambda mu, r: model.grand_potential_mu_derivative(mu, r)
+    domega_mu = model.grand_potential_mu_derivative
     np.testing.assert_almost_equal(domega_mu(deriv(5.81, 1), 1), -5.81, decimal=6)
     np.testing.assert_almost_equal(domega_mu(deriv(10.5, 1), 1), -10.5, decimal=6)
     np.testing.assert_almost_equal(domega_mu(deriv(11.2, 1), 2), -1/deriv(11.2, 2), decimal=6)

@@ -138,7 +138,7 @@ def test_global_quadratic_nnp_grand_potential_mu():
     np.testing.assert_almost_equal(model.grand_potential_mu(deriv(11.4)), grand(11.4), decimal=6)
     np.testing.assert_almost_equal(model.grand_potential_mu(deriv(15.05)), grand(15.05), decimal=6)
     # check grand potential derivative (as a function of mu)
-    domega_mu = lambda mu, r: model.grand_potential_mu_derivative(mu, r)
+    domega_mu = model.grand_potential_mu_derivative
     np.testing.assert_almost_equal(domega_mu(deriv(15.05), 1), -15.05, decimal=6)
     np.testing.assert_almost_equal(domega_mu(deriv(16.34), 1), -16.34, decimal=6)
     np.testing.assert_almost_equal(domega_mu(deriv(15.61), 2), -0.5, decimal=6)
@@ -259,7 +259,7 @@ def test_global_quadratic_pnp_grand_potential_mu():
     np.testing.assert_almost_equal(model.grand_potential_mu(deriv(5.15)), grand(5.15), decimal=6)
     np.testing.assert_almost_equal(model.grand_potential_mu(deriv(6.31)), grand(6.31), decimal=6)
     # check grand potential derivative (as a function of mu)
-    domega_mu = lambda mu, r: model.grand_potential_mu_derivative(mu, r)
+    domega_mu = model.grand_potential_mu_derivative
     np.testing.assert_almost_equal(domega_mu(deriv(5.81), 1), -5.81, decimal=6)
     np.testing.assert_almost_equal(domega_mu(deriv(4.2), 1), -4.2, decimal=6)
     np.testing.assert_almost_equal(domega_mu(deriv(5.81), 2), -1/6., decimal=6)
@@ -378,7 +378,7 @@ def test_global_quadratic_n0p_grand_potential_mu():
     np.testing.assert_almost_equal(model.grand_potential_mu(deriv(4.56)), grand(4.56), decimal=6)
     np.testing.assert_almost_equal(model.grand_potential_mu(deriv(3.905)), grand(3.905), decimal=6)
     # check grand potential derivative (as a function of mu)
-    domega_mu = lambda mu, r: model.grand_potential_mu_derivative(mu, r)
+    domega_mu = model.grand_potential_mu_derivative
     np.testing.assert_almost_equal(domega_mu(deriv(5.81), 1), -5.81, decimal=6)
     np.testing.assert_almost_equal(domega_mu(deriv(4.341), 1), -4.341, decimal=6)
     np.testing.assert_almost_equal(domega_mu(deriv(6.452), 1), -6.452, decimal=6)
