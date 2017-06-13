@@ -22,15 +22,20 @@
 # --
 """Test chemtools.utils.utils."""
 
+from numpy.testing import assert_equal, assert_raises
 from chemtools.utils.utils import doc_inherit
 
 
-def test_cubegen_o2_uhf():
+def test_doc_inherit():
     class Foo(object):
         """Dummy class for testing doc inheritance."""
 
         def foo(self):
             """Frobber."""
+            pass
+
+        def boo(self):
+            """Boo method."""
             pass
 
     class Bar(Foo):
@@ -40,5 +45,19 @@ def test_cubegen_o2_uhf():
         def foo(self):
             pass
 
-    assert Bar.foo.__doc__ == Bar().foo.__doc__
-    assert Bar.foo.__doc__ == Foo.foo.__doc__
+        @doc_inherit(Foo)
+        def boo(self):
+            """Boo method of Bar class."""
+            pass
+
+    class Poo(Foo):
+        """Dummy class for testing doc inheritance."""
+
+        def poo(self):
+            """Poo method of Poo class."""
+            pass
+
+    assert_equal(Bar.foo.__doc__, Bar().foo.__doc__)
+    assert_equal(Bar.foo.__doc__, Foo.foo.__doc__)
+    assert_equal(Bar.boo.__doc__, Foo.boo.__doc__)
+    assert_raises(AttributeError, doc_inherit(Foo), Poo.poo)

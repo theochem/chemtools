@@ -54,9 +54,11 @@ def doc_inherit(base_class):
     """
     def decorator(method):
         """Overwrite method docstring."""
+        # check whether the method exists
         overridden = getattr(base_class, method.__name__, None)
         if overridden is None:
-            raise NameError('Can\'t find method \'%s\' in base class.')
+            raise AttributeError('Can\'t find method \'%s\' in base class.')
+        # change docstring
         method.__doc__ = overridden.__doc__
         return method
 
