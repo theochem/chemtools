@@ -244,10 +244,6 @@ def test_global_rational_nnpp_energy_reactivity():
 
 def test_global_rational_nnpp_grand_potential():
     # E(N) = (-0.15 - 4.2 N) / (1 + 0.45 N)
-    ne = sp.symbols('ne')
-    energy_model = (0.5 - 2.2 * ne) / (1 + 0.7 * ne)
-    energy = lambda n: energy_model.subs({'ne': n})
-    deriv = lambda n, r: sp.diff(energy_model, 'ne', r).subs({'ne': n})
     model = RationalGlobalTool(-6.99363057, -7.23428571, -6.69064748, 6.5)
     # check grand potential (as a function of N)
     np.testing.assert_almost_equal(model.grand_potential(6.5), -5.2500304, decimal=6)
