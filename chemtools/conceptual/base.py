@@ -221,11 +221,10 @@ class BaseGlobalTool(object):
                         \right)_{v(\mathbf{r})}\right|_{N = N_0} = \frac{1}{\eta}
         """
         # compute 2nd-order derivative of grand potential w.r.t. mu at N0
-        deriv = self.grand_potential_derivative(self._n0, 2)
-        if deriv is None:
-            return None
-        else:
-            return -deriv
+        value = self.grand_potential_derivative(self._n0, 2)
+        if value is not None:
+            value *= -1.0
+        return value
 
     def hyper_hardness(self, order=2):
         r"""
@@ -269,11 +268,10 @@ class BaseGlobalTool(object):
         if not (isinstance(order, int) and order >= 2):
             raise ValueError('Argument order should be an integer greater than or equal to 2.')
         # compute derivative of grand potential w.r.t. mu at N0
-        deriv = self.grand_potential_derivative(self._n0, order + 1)
-        if deriv is None:
-            return None
-        else:
-            return -deriv
+        value = self.grand_potential_derivative(self._n0, order + 1)
+        if value is not None:
+            value *= -1.0
+        return value
 
     def energy(self, n_elec):
         r"""
@@ -328,7 +326,7 @@ class BaseGlobalTool(object):
         n_elec : float
             Number of electrons, :math:`N_{\text{elec}}`.
         """
-        if n_elec is None:
+        if n_elec is None or self.energy_derivative(n_elec, 1) is None:
             return None
         # compute grand potential as a function of N
         value = self.energy(n_elec) - self.energy_derivative(n_elec, 1) * n_elec
@@ -392,32 +390,35 @@ class BaseGlobalTool(object):
         order : int, default=1
             The order of derivative denoted by :math:`n` in the formula.
         """
-        if n_elec < 0.0:
+        if n_elec is not None and n_elec < 0.0:
             raise ValueError('Number of electrons cannot be negativ! #elec={0}'.format(n_elec))
         if not (isinstance(order, int) and order > 0):
             raise ValueError('Argument order should be an integer greater than or equal to 1.')
 
-        if order == 1:
+        if n_elec is None:
+            deriv = None
+        elif order == 1:
             # 1st order derivative is minus number of electrons
             deriv = - n_elec
         elif order == 2:
             # 2nd order derivative is inverse hardness
             hardness = self.energy_derivative(n_elec, order=2)
-            if hardness is None:
-                deriv = None
-            elif hardness != 0.0:
-                deriv = - 1.0 / hardness
+            if hardness is not None and hardness != 0.0:
+                deriv = -1.0 / hardness
             else:
                 deriv = None
         else:
             # higher-order derivatives are compute with Faa Di Bruno formula
             # list of hyper-hardneses (derivatives of energy w.r.t. N)
-            energy_deriv = [self.energy_derivative(n_elec, i + 1) for i in range(1, order)]
-            deriv = 0
-            for k in xrange(1, order - 1):
-                grand_potential = self.grand_potential_derivative(n_elec, k + 1)
-                deriv -= grand_potential * sp.bell(order - 1, k, energy_deriv[:order - k])
-            deriv /= sp.bell(order - 1, order - 1, [energy_deriv[0]])
+            e_deriv = [self.energy_derivative(n_elec, i + 1) for i in xrange(1, order)]
+            g_deriv = [self.grand_potential_derivative(n_elec, k + 1) for k in xrange(1, order - 1)]
+            if any([item is None for item in e_deriv]) or any([item is None for item in g_deriv]):
+                deriv = None
+            else:
+                deriv = 0
+                for k in xrange(1, order - 1):
+                    deriv -= g_deriv[k - 1] * sp.bell(order - 1, k, e_deriv[:order - k])
+                deriv /= sp.bell(order - 1, order - 1, [e_deriv[0]])
         return deriv
 
     def grand_potential_mu(self, mu):
