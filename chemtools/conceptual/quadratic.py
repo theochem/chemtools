@@ -55,6 +55,9 @@ class QuadraticGlobalTool(BaseGlobalTool):
 
     @doc_inherit(BaseGlobalTool)
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
+        # check N0
+        if n0 < 1:
+            raise ValueError('Argument n0 cannot be less than one! Given n0={0}'.format(n0))
         # calculate parameters a, b, c of quadratic energy model
         c = 0.5 * (energy_minus - 2 * energy_zero + energy_plus)
         b = 0.5 * (energy_plus - energy_minus) - 2 * c * n0

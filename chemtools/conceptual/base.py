@@ -52,8 +52,6 @@ class BaseGlobalTool(object):
         n0 : float
             Reference number of electrons, i.e. :math:`N_0`.
         """
-        if n0 <= 0:
-            raise ValueError('Argument n0 should be positive! Given n0={0}'.format(n0))
         if n_max is not None and n_max < 0:
             raise ValueError('Argument n_max cannot be negative! Given n0={0}'.format(n_max))
         self._n0 = n0
