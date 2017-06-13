@@ -55,6 +55,9 @@ class ExponentialGlobalTool(BaseGlobalTool):
 
     @doc_inherit(BaseGlobalTool)
     def __init__(self, energy_zero, energy_plus, energy_minus, n0):
+        # check N0
+        if n0 < 1:
+            raise ValueError('Argument n0 cannot be less than one! Given n0={0}'.format(n0))
         # check energy values are monotonic, i.e. E(N-1) > E(N) > E(N+1)
         if not energy_minus > energy_zero > energy_plus:
             energies = [energy_minus, energy_zero, energy_plus]
