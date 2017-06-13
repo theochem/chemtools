@@ -23,7 +23,6 @@
 """The Utility Module."""
 
 import os
-import sys
 from glob import glob
 
 __all__ = ['doc_inherit', 'Context', 'context']
@@ -66,35 +65,31 @@ def doc_inherit(base_class):
 
 
 class Context(object):
-    """
-    Find out where the data directory is located etc.
-
-    The data directory contains data files.
-    """
+    """Class for locating data files and header files."""
 
     def __init__(self):
         # Determine data directory (also for in-place build)
         self.data_dir = os.getenv('CTDATA')
-        if self.data_dir is None:
-            fn_data_dir = os.path.join(os.path.dirname(__file__), '../data_dir.txt')
-            if os.path.isfile(fn_data_dir):
-                with open(fn_data_dir) as f:
-                    self.data_dir = os.path.join(f.read().strip(), 'share/chemtools')
+        # if self.data_dir is None:
+        #     fn_data_dir = os.path.join(os.path.dirname(__file__), '../data_dir.txt')
+        #     if os.path.isfile(fn_data_dir):
+        #         with open(fn_data_dir) as f:
+        #             self.data_dir = os.path.join(f.read().strip(), 'share/chemtools')
         if self.data_dir is None:
             self.data_dir = './data'
         self.data_dir = os.path.abspath(self.data_dir)
         # Determine include directory
         self.include_dir = os.getenv('CTINCLUDE')
-        if self.include_dir is None:
-            fn_data_dir = os.path.join(os.path.dirname(__file__), 'data_dir.txt')
-            if os.path.isfile(fn_data_dir):
-                with open(fn_data_dir) as f:
-                    self.include_dir = os.path.join(
-                        f.read().strip(),
-                        'include/python%i.%i' % (sys.version_info.major, sys.version_info.minor))
+        # if self.include_dir is None:
+        #     fn_data_dir = os.path.join(os.path.dirname(__file__), 'data_dir.txt')
+        #     if os.path.isfile(fn_data_dir):
+        #         with open(fn_data_dir) as f:
+        #             self.include_dir = os.path.join(
+        #                 f.read().strip(),
+        #                 'include/python%i.%i' % (sys.version_info.major, sys.version_info.minor))
         if not os.path.isdir(self.data_dir):
-            raise IOError(
-                'Can not find data files. The directory {0} does not exist.'.format(self.data_dir))
+            raise IOError('Can not find data files. '
+                          'The directory {0} does not exist.'.format(self.data_dir))
 
     def get_fn(self, filename):
         """Return the full path to the given filename in the data directory."""

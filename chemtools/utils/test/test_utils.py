@@ -22,8 +22,9 @@
 # --
 """Test chemtools.utils.utils."""
 
+import os
 from numpy.testing import assert_equal, assert_raises
-from chemtools.utils.utils import doc_inherit
+from chemtools.utils.utils import doc_inherit, Context, context
 
 
 def test_doc_inherit():
@@ -61,3 +62,16 @@ def test_doc_inherit():
     assert_equal(Bar.foo.__doc__, Foo.foo.__doc__)
     assert_equal(Bar.boo.__doc__, Foo.boo.__doc__)
     assert_raises(AttributeError, doc_inherit(Foo), Poo.poo)
+
+
+def test_context():
+    assert_equal(context.get_include(), None)
+    assert_equal(hasattr(context.glob('test/*.fchk'), '__iter__'), True)
+    assert_equal(context.glob('test/*.gib'), [])
+    # change CTDATA
+    os.environ['CTDATA'] = 'gibberish'
+    assert_raises(IOError, Context)
+    # remove CTDATA
+    del os.environ['CTDATA']
+    assert_equal(Context().data_dir[-4:], 'data')
+    assert_equal(Context().get_include(), None)
