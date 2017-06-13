@@ -65,7 +65,6 @@ Conceptual Module
 
 * Condensed Conceptual DFT Tools
 
-  * :class:`Condensed Conceptual DFT Tool <conceptual.conceptualcondense.CondensedTool>`
 
 Density-Based Module
 ====================
@@ -115,7 +114,6 @@ Utility Module
       conceptual.base.BaseLocalTool
       conceptual.linear.LinearLocalTool
       conceptual.quadratic.QuadraticLocalTool
-      conceptual.conceptualcondense.CondensedTool
       denstools.densitybased.DensityLocalTool
       orbtools.orbitalbased.OrbitalLocalTool
       utils.utils.doc_inherit
