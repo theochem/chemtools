@@ -29,13 +29,12 @@ from chemtools.toolbox.conceptual import (GlobalConceptualDFT, LocalConceptualDF
                                           CondensedConceptualDFT)
 
 
-def test_global_linear_ch4_fchk():
-    # use context to get path
-    file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
+def check_global_linear_fmo_ch4_uhf_ccpvdz(filename):
+    """Check expected linear global indicators for ch4_uhf_ccpvdz within FMO approach."""
     # ip = -E(homo) & ea = E(lumo)
     ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
     # build global conceptual DFT tool
-    desp = GlobalConceptualDFT.from_file(file_path, model='linear')
+    desp = GlobalConceptualDFT.from_file(context.get_fn(filename), model='linear')
     # check energy values
     np.testing.assert_almost_equal(desp.energy(10.), energy, decimal=6)
     np.testing.assert_almost_equal(desp.energy(9.), energy + ip, decimal=6)
@@ -68,16 +67,23 @@ def test_global_linear_ch4_fchk():
     np.testing.assert_almost_equal(desp.energy_derivative(10.5, 1), -ea, decimal=6)
 
 
-def test_local_linear_ch4_fchk():
+def test_global_linear_fmo_ch4_uhf_ccpvdz_fchk():
+    check_global_linear_fmo_ch4_uhf_ccpvdz('test/ch4_uhf_ccpvdz.fchk')
+
+
+def test_global_linear_fmo_ch4_uhf_ccpvdz_wfn():
+    check_global_linear_fmo_ch4_uhf_ccpvdz('test/ch4_uhf_ccpvdz.wfn')
+
+
+def check_local_linear_fmo_ch4_uhf_ccpvdz(filename):
+    """Check expected linear local indicators for ch4_uhf_ccpvdz within FMO approach."""
     # Check softness & hyper-softness
-    # Check N_max and related descriptors
-    file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
     # make molecular grid
-    mol = IOData.from_file(file_path)
+    mol = IOData.from_file(context.get_fn(filename))
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec='exp:5e-4:2e1:175:434', random_rotate=False, mode='keep')
     # build local conceptual DFT tool
-    desp = LocalConceptualDFT.from_file(file_path, model='linear', points=grid.points)
+    desp = LocalConceptualDFT.from_file(context.get_fn(filename), 'linear', points=grid.points)
     # check shape of density
     np.testing.assert_equal(desp.density_zero.shape, grid.shape)
     np.testing.assert_equal(desp.density_plus.shape, grid.shape)
@@ -97,12 +103,20 @@ def test_local_linear_ch4_fchk():
     # check dual descriptor
 
 
-def test_global_quadratic_ch4_fchk():
-    file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
+def test_local_linear_fmo_ch4_uhf_ccpvdz_fchk():
+    check_local_linear_fmo_ch4_uhf_ccpvdz('test/ch4_uhf_ccpvdz.fchk')
+
+
+def test_local_linear_fmo_ch4_uhf_ccpvdz_wfn():
+    check_local_linear_fmo_ch4_uhf_ccpvdz('test/ch4_uhf_ccpvdz.wfn')
+
+
+def check_global_quadratic_fmo_ch4_uhf_ccpvdz(filename):
+    """Check expected quadratic global indicators for ch4_uhf_ccpvdz within FMO approach."""
     # ip = -E(homo) & ea = E(lumo)
     ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
     # build global conceptual DFT tool
-    desp = GlobalConceptualDFT.from_file(file_path, model='quadratic')
+    desp = GlobalConceptualDFT.from_file(context.get_fn(filename), model='quadratic')
     # check energy
     np.testing.assert_almost_equal(desp.energy(10.), energy, decimal=6)
     np.testing.assert_almost_equal(desp.energy(9.), energy + ip, decimal=6)
@@ -122,7 +136,7 @@ def test_global_quadratic_ch4_fchk():
     np.testing.assert_almost_equal(desp.hyper_hardness(3), 0.0, decimal=6)
     np.testing.assert_almost_equal(desp.hyper_hardness(4), 0.0, decimal=6)
     # check softness & hyper-softness
-    np.testing.assert_almost_equal(desp.softness, 1.0 / eta, decimal=6)
+    np.testing.assert_almost_equal(desp.softness, 1.0 / eta, decimal=5)
     # np.testing.assert_almost_equal(desp.hyper_softness(2), 0.0, decimal=6)
     # np.testing.assert_almost_equal(desp.hyper_softness(3), 0.0, decimal=6)
     # np.testing.assert_almost_equal(desp.hyper_softness(4), 0.0, decimal=6)
@@ -150,17 +164,25 @@ def test_global_quadratic_ch4_fchk():
     np.testing.assert_almost_equal(desp.electrofugality, value, decimal=6)
 
 
-def test_local_quadratic_ch4_fchk():
-    file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
+def test_global_quadratic_fmo_ch4_uhf_ccpvdz_fchk():
+    check_global_quadratic_fmo_ch4_uhf_ccpvdz('test/ch4_uhf_ccpvdz.fchk')
+
+
+def test_global_quadratic_fmo_ch4_uhf_ccpvdz_wfn():
+    check_global_quadratic_fmo_ch4_uhf_ccpvdz('test/ch4_uhf_ccpvdz.wfn')
+
+
+def check_local_quadratic_fmo_ch4_uhf_ccpvdz(filename):
+    """Check expected quadratic local indicators for ch4_uhf_ccpvdz within FMO approach."""
     # ip = -E(homo) & ea = E(lumo)
     ip, ea = -(-5.43101269E-01), -1.93295185E-01
     eta = ip - ea
     # make molecular grid
-    mol = IOData.from_file(file_path)
+    mol = IOData.from_file(context.get_fn(filename))
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec='exp:5e-4:2e1:175:434', random_rotate=False, mode='keep')
     # build global conceptual DFT tool
-    desp = LocalConceptualDFT.from_file(file_path, model='quadratic', points=grid.points)
+    desp = LocalConceptualDFT.from_file(context.get_fn(filename), 'quadratic', points=grid.points)
     # check shape of density
     np.testing.assert_equal(desp.density_zero.shape, grid.shape)
     np.testing.assert_equal(desp.density_plus.shape, grid.shape)
@@ -182,6 +204,14 @@ def test_local_quadratic_ch4_fchk():
     np.testing.assert_almost_equal(grid.integrate(desp.softness(1./eta, 10.3)), 1./eta, decimal=4)
     np.testing.assert_almost_equal(grid.integrate(desp.softness(1./eta, 9.1)), 1./eta, decimal=4)
     np.testing.assert_almost_equal(grid.integrate(desp.hyper_softness(eta)), 0., decimal=3)
+
+
+def test_local_quadratic_fmo_ch4_uhf_ccpvdz_fchk():
+    check_local_quadratic_fmo_ch4_uhf_ccpvdz('test/ch4_uhf_ccpvdz.fchk')
+
+
+def test_local_quadratic_fmo_ch4_uhf_ccpvdz_wfn():
+    check_local_quadratic_fmo_ch4_uhf_ccpvdz('test/ch4_uhf_ccpvdz.wfn')
 
 
 def test_condense_mbis_quadratic_ch4_fchk():
