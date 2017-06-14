@@ -528,11 +528,13 @@ class GlobalConceptualDFT(BaseConceptualDFT):
 
     def __repr__(self):
         """Print table of available class attributes and methods."""
-        available = dir(self._tool)
-        is_public = lambda item: not item.startswith('_')
-        attrs = [atr for atr in available if not callable(getattr(self, atr)) and is_public(atr)]
+        # get list of available attributes and methods
+        avs = dir(self._tool)
+        # get sorted list of public attributes
+        attrs = [atr for atr in avs if not callable(getattr(self, atr)) and not atr.startswith('_')]
         attrs.sort()
-        methods = [attr for attr in available if callable(getattr(self, attr)) and is_public(attr)]
+        # get sorted list of public methods
+        methods = [atr for atr in avs if callable(getattr(self, atr)) and not atr.startswith('_')]
         methods.sort()
         content = 'Available attributes in {0} global model:\n{1}\n'.format(self._model, '-' * 50)
         for attr in attrs:
@@ -629,13 +631,15 @@ class LocalConceptualDFT(BaseConceptualDFT):
 
     def __repr__(self):
         """Print table of available class attributes and methods."""
-        available = dir(self._tool) + dir(self)
-        is_public = lambda item: not item.startswith('_')
-        attrs = [atr for atr in available if not callable(getattr(self, atr)) and is_public(atr)]
+        # get list of available attributes and methods
+        avs = dir(self._tool) + dir(self)
+        # get sorted list of public attributes
+        attrs = [atr for atr in avs if not callable(getattr(self, atr)) and not atr.startswith('_')]
         attrs.sort()
         # remove n0, because it is both an attr of self._tool and self (duplicate)
         # attrs.remove('n0')
-        methods = [attr for attr in available if callable(getattr(self, attr)) and is_public(attr)]
+        # get sorted list of public methods
+        methods = [atr for atr in avs if callable(getattr(self, atr)) and not atr.startswith('_')]
         methods.sort()
         content = 'Available attributes in {0} global model:\n{1}\n'.format(self._model, '-' * 50)
         content += '\n'.join(attrs)
@@ -724,12 +728,14 @@ class CondensedConceptualDFT(BaseConceptualDFT):
 
     def __repr__(self):
         """Print table of available class attributes and methods."""
-        available = dir(self._tool)
-        is_public = lambda item: not item.startswith('_')
-        attrs = [atr for atr in available if not callable(getattr(self, atr)) and is_public(atr)]
+        # get list of available attributes and methods
+        avs = dir(self._tool)
+        # get sorted list of public attributes
+        attrs = [atr for atr in avs if not callable(getattr(self, atr)) and not atr.startswith('_')]
         attrs.sort()
         attrs.remove('n0')
-        methods = [attr for attr in available if callable(getattr(self, attr)) and is_public(attr)]
+        # get sorted list of public methods
+        methods = [atr for atr in avs if callable(getattr(self, atr)) and not atr.startswith('_')]
         content = 'Available attributes in {0} global model:\n{1}\n'.format(self._model, '-' * 50)
         content += '\n'.join(attrs)
         content += '\n\nAvailable methods in {0} global model:\n{1}\n'.format(self._model, '-' * 50)
