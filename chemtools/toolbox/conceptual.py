@@ -67,7 +67,7 @@ class BaseConceptualDFT(object):
         self._model = model.lower()
 
         # check shape of coordinates
-        if coordinates is not None and coordinates.shape[1] != 3:
+        if coordinates is not None and (coordinates.ndim != 2 or coordinates.shape[1] != 3):
             raise ValueError('Argument coordinate should be a 2D-array with 3 columns! '
                              'shape={0}'.format(coordinates.shape))
 
@@ -268,6 +268,8 @@ class BaseConceptualDFT(object):
                     # check coordinates of grid and molecule match
                     if not np.all(abs(grid.centers - molecule.coordinates) < 1.e-4):
                         raise ValueError('Coordinates of grid and molecule do not match!')
+                    if not np.all(abs(grid.numbers - molecule.numbers) < 1.e-4):
+                        raise ValueError('Atomic numbers of grid and molecule do not match!')
             else:
                 # make default grid
                 grid = BeckeMolGrid(molecule.coordinates, molecule.numbers, molecule.pseudo_numbers,
@@ -283,7 +285,7 @@ class BaseConceptualDFT(object):
             # get partitioning class
             if part['scheme'].lower() not in wpart_schemes:
                 raise ValueError('Partitioning scheme={0} not supported! '
-                                 'Select from: {1}'.format(part['scheme'], wpart_schemes))
+                                 'Select from: {1}'.format(part['scheme'], wpart_schemes.keys()))
             wpart = wpart_schemes[part['scheme']]
             # make proatom database
             kwargs = {}
@@ -329,8 +331,8 @@ class BaseConceptualDFT(object):
             return coordinates, atomic_numbers, dict_energy, dict_dens
         elif points is None:
             return coordinates, atomic_numbers, dict_energy, dict_pops
-        else:
-            return coordinates, atomic_numbers, dict_energy, dict_dens, dict_pops
+        # else:
+        #     return coordinates, atomic_numbers, dict_energy, dict_dens, dict_pops
 
     @staticmethod
     def load_finite_difference(molecules, points=None, part=None):
@@ -364,7 +366,8 @@ class BaseConceptualDFT(object):
             if index == 0:
                 atomic_numbers = molecule.numbers
             else:
-                if not np.all(abs(atomic_numbers - molecule.numbers) < 1.e-6):
+                reference, numbers = atomic_numbers, molecule.numbers
+                if reference.shape != numbers.shape or not np.all(abs(reference - numbers) < 1.e-6):
                     raise ValueError(
                         'Molecule 1 & {0} have different atomic numbers!'.format(index + 1))
 
@@ -377,8 +380,8 @@ class BaseConceptualDFT(object):
             dict_moleculea[nelec] = molecule
 
             # get and store energy
-            if not hasattr(molecule, 'energy'):
-                raise ValueError('Molecule object does not contain energy value!')
+            # if not hasattr(molecule, 'energy'):
+            #     raise ValueError('Molecule object does not contain energy value!')
             # store number of electron and energy in a dictionary
             dict_energy[nelec] = molecule.energy
 
@@ -404,9 +407,10 @@ class BaseConceptualDFT(object):
                     else:
                         grid = part['grid']
                         # check coordinates of grid and molecule match
-                        if not np.all(abs(grid.centers - molecule.coordinates) < 1.e-4):
-                            raise ValueError(
-                                'Coordinates of grid and molecule {0} should match!'.format(index))
+                        ref, cord = grid.centers, molecule.coordinates
+                        if ref.shape != cord.shape or not np.all(abs(ref - cord) < 1.e-4):
+                            raise ValueError('Coordinates of grid and molecule {0} '
+                                             'should match!'.format(index + 1))
                 else:
                     # default grid
                     grid = BeckeMolGrid(molecule.coordinates, molecule.numbers,
@@ -425,7 +429,7 @@ class BaseConceptualDFT(object):
         # Get sorted number of electrons
         nelectrons = sorted(dict_moleculea.keys())
         if len(nelectrons) != 3:
-            raise ValueError('Condensed conceptual DFT within FD approach, currently '
+            raise ValueError('Conceptual DFT within FD approach, currently '
                              'only works for 3 molecules!')
         # number of electrons of reference system
         reference = nelectrons[1]
@@ -490,8 +494,8 @@ class BaseConceptualDFT(object):
             return coordinates, atomic_numbers, dict_energy, dict_dens
         elif points is None:
             return coordinates, atomic_numbers, dict_energy, dict_pops
-        else:
-            return coordinates, atomic_numbers, dict_energy, dict_dens, dict_pops
+        # else:
+        #     return coordinates, atomic_numbers, dict_energy, dict_dens, dict_pops
 
 
 class GlobalConceptualDFT(BaseConceptualDFT):
@@ -538,8 +542,11 @@ class GlobalConceptualDFT(BaseConceptualDFT):
         methods.sort()
         content = 'Available attributes in {0} global model:\n{1}\n'.format(self._model, '-' * 50)
         for attr in attrs:
-            if getattr(self._tool, attr) is not None:
-                content += '\n%s   % .6f' % (attr.ljust(25), getattr(self._tool, attr))
+            value = getattr(self._tool, attr)
+            if value is not None and not hasattr(value, '__iter__'):
+                content += '\n%s   % .6f' % (attr.ljust(25), value)
+            elif value is not None and hasattr(value, '__iter__'):
+                content += '\n%s   [%s]' % (attr.ljust(25), ', '.join(['% .6f' % v for v in value]))
             else:
                 content += '\n%s   %s' % (attr.ljust(25), ' ---')
         content += '\n\nAvailable methods in {0} global model:\n{1}\n'.format(self._model, '-' * 50)

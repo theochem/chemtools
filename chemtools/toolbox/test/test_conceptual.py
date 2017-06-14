@@ -23,10 +23,94 @@
 """Test chemtools.analysis.conceptual."""
 
 import numpy as np
+from numpy.testing import assert_raises, assert_equal
 from horton import IOData, BeckeMolGrid
 from chemtools import context
 from chemtools.toolbox.conceptual import (GlobalConceptualDFT, LocalConceptualDFT,
                                           CondensedConceptualDFT)
+
+
+def test_global_conceptual_raises():
+    # dictionary of energy values
+    values = {0.0: 0.0, 1.0: -0.5, 2.0: -0.45}
+    # check invalid model
+    assert_raises(ValueError, GlobalConceptualDFT, values, 'quad')
+    assert_raises(ValueError, GlobalConceptualDFT, values, 'gibberish')
+    assert_raises(NotImplementedError, GlobalConceptualDFT, values, 'general')
+    # check invalid coordinates
+    assert_raises(ValueError, GlobalConceptualDFT, values, 'linear', np.array([0., 0., 0.]))
+    assert_raises(ValueError, GlobalConceptualDFT, values, 'linear', np.array([[0., 0.]]))
+    # check invalid atomic numbers
+    coord = np.array([[0., 0., 0.]])
+    assert_raises(ValueError, GlobalConceptualDFT, values, 'linear', coord, [])
+    assert_raises(ValueError, GlobalConceptualDFT, values, 'linear', coord, [1, 1])
+    # check invalid number of electrons
+    values = {'0': 0.0, 1: -0.5, 2: -0.45}
+    assert_raises(ValueError, GlobalConceptualDFT, values, 'quadratic', coord)
+    values = {0: 0.0, 1: -0.5, 3: -0.45}
+    assert_raises(ValueError, GlobalConceptualDFT, values, 'quadratic')
+    values = {0: 0.0, 1: -0.5, 2: -0.45, 3: -0.4}
+    assert_raises(NotImplementedError, GlobalConceptualDFT, values, 'quadratic', coord)
+    # check non-existing attribute
+    model = GlobalConceptualDFT({0.0: 0.0, 1.0: -0.5, 2.0: -0.45}, 'quadratic')
+    assert_raises(AttributeError, getattr, model, 'mu_plus')
+    assert_raises(AttributeError, getattr, model, 'gibberish')
+    # check molecule file inconsistency
+    fnames = [context.get_fn('test/ch4_uhf_ccpvdz.fchk'), context.get_fn('test/o2_uhf.fchk')]
+    assert_raises(ValueError, GlobalConceptualDFT.from_file, fnames, 'linear')
+    fname = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
+    assert_raises(ValueError, GlobalConceptualDFT.from_file, [fname, fname], 'linear')
+
+
+def test_local_conceptual_raises():
+    # check invalid densities
+    values = {1.0: np.array([0.0, 0.5]), 2.0: np.array([1.0]), 3.0: np.array([[2.0]])}
+    assert_raises(ValueError, LocalConceptualDFT, values)
+    # check in valid model
+    values = {1.0: np.array([0.0, 0.5]), 2.0: np.array([1.0, 1.2]), 3.0: np.array([2.0, 2.2])}
+    assert_raises(ValueError, LocalConceptualDFT, values, 'rational')
+    # check in valid points
+    fname = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
+    assert_raises(ValueError, LocalConceptualDFT.from_file, fname, 'linear', np.array([0., 0., 0.]))
+    assert_raises(ValueError, LocalConceptualDFT.from_file, fname, 'linear', np.array([[0., 0.]]))
+    # check molecule file inconsistency
+    points = np.array([[0., 0., 0.]])
+    fnames = [context.get_fn('test/ch4_uhf_ccpvdz.fchk'), context.get_fn('test/o2_uhf.fchk')]
+    assert_raises(ValueError, LocalConceptualDFT.from_file, fnames, 'linear', points)
+    fname = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
+    assert_raises(ValueError, LocalConceptualDFT.from_file, [fname, fname], 'linear', points)
+    # check invalid grid
+    fnames = [context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'),
+              context.get_fn('examples/ch2o_q+1_ub3lyp_augccpvtz.fchk'),
+              context.get_fn('examples/ch2o_q-1_ub3lyp_augccpvtz.fchk')]
+
+
+def test_condensed_conceptual_raises():
+    # file for FMO
+    fname = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
+    # files for FD
+    fnames = [context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'),
+              context.get_fn('examples/ch2o_q+1_ub3lyp_augccpvtz.fchk'),
+              context.get_fn('examples/ch2o_q-1_ub3lyp_augccpvtz.fchk')]
+    # check invalid scheme
+    assert_raises(ValueError, CondensedConceptualDFT.from_file, fname, 'quadratic', scheme='gib')
+    assert_raises(ValueError, CondensedConceptualDFT.from_file, fnames, 'linear', scheme='err')
+    # check invalid grid type
+    assert_raises(ValueError, CondensedConceptualDFT.from_file, fname, 'quadratic', grid='str')
+    assert_raises(ValueError, CondensedConceptualDFT.from_file, fnames, 'linear', grid='gibb')
+    # check invalid grid coordinates
+    grid = BeckeMolGrid(np.array([[0., 0., 0.]]), np.array([1]))
+    assert_raises(ValueError, CondensedConceptualDFT.from_file, fname, 'quadratic', grid=grid)
+    assert_raises(ValueError, CondensedConceptualDFT.from_file, fnames, 'quadratic', grid=grid)
+    # check invalid grid atomic numbers
+    coord = np.array([[-3.77945227E-05,  3.77945227E-05, -1.88972613E-05],
+                      [ 1.04290206E+00,  1.50497789E+00,  9.34507367E-01],
+                      [ 1.28607202E+00, -1.53098052E+00, -4.77307027E-01],
+                      [-1.46467003E+00, -7.02997019E-01,  1.25954026E+00],
+                      [-8.64474117E-01,  7.29131931E-01, -1.71670281E+00]])
+    grid = BeckeMolGrid(coord, np.array([7, 1, 1, 1, 1]))
+    assert_raises(ValueError, CondensedConceptualDFT.from_file, fname, 'quadratic', grid=grid)
+    assert_raises(ValueError, CondensedConceptualDFT.from_file, fnames, 'quadratic', grid=grid)
 
 
 def check_global_linear_fmo_ch4_uhf_ccpvdz(filename):
@@ -35,6 +119,8 @@ def check_global_linear_fmo_ch4_uhf_ccpvdz(filename):
     ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
     # build global conceptual DFT tool
     desp = GlobalConceptualDFT.from_file(context.get_fn(filename), model='linear')
+    # check print statement
+    assert_equal(type(desp.__repr__()), str)
     # check energy values
     np.testing.assert_almost_equal(desp.energy(10.), energy, decimal=6)
     np.testing.assert_almost_equal(desp.energy(9.), energy + ip, decimal=6)
@@ -84,6 +170,8 @@ def check_local_linear_fmo_ch4_uhf_ccpvdz(filename):
                         agspec='exp:5e-4:2e1:175:434', random_rotate=False, mode='keep')
     # build local conceptual DFT tool
     desp = LocalConceptualDFT.from_file(context.get_fn(filename), 'linear', points=grid.points)
+    # check print statement
+    assert_equal(type(desp.__repr__()), str)
     # check shape of density
     np.testing.assert_equal(desp.density_zero.shape, grid.shape)
     np.testing.assert_equal(desp.density_plus.shape, grid.shape)
@@ -117,6 +205,8 @@ def check_global_quadratic_fmo_ch4_uhf_ccpvdz(filename):
     ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
     # build global conceptual DFT tool
     desp = GlobalConceptualDFT.from_file(context.get_fn(filename), model='quadratic')
+    # check print statement
+    assert_equal(type(desp.__repr__()), str)
     # check energy
     np.testing.assert_almost_equal(desp.energy(10.), energy, decimal=6)
     np.testing.assert_almost_equal(desp.energy(9.), energy + ip, decimal=6)
@@ -183,6 +273,8 @@ def check_local_quadratic_fmo_ch4_uhf_ccpvdz(filename):
                         agspec='exp:5e-4:2e1:175:434', random_rotate=False, mode='keep')
     # build global conceptual DFT tool
     desp = LocalConceptualDFT.from_file(context.get_fn(filename), 'quadratic', points=grid.points)
+    # check print statement
+    assert_equal(type(desp.__repr__()), str)
     # check shape of density
     np.testing.assert_equal(desp.density_zero.shape, grid.shape)
     np.testing.assert_equal(desp.density_plus.shape, grid.shape)
@@ -222,6 +314,8 @@ def test_condense_mbis_quadratic_ch4_fchk():
                         random_rotate=False, mode='keep')
     # build global conceptual DFT tool
     desp = CondensedConceptualDFT.from_file([file_path], 'quadratic', grid=grid, scheme='mbis')
+    # check print statement
+    assert_equal(type(desp.__repr__()), str)
     # computed with horton separately
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
     np.testing.assert_almost_equal(desp.density_zero, expected, decimal=2)
@@ -251,6 +345,8 @@ def test_condense_mbis_linear_fmr_ch4_fchk():
                         agspec='insane', random_rotate=False, mode='keep')
     # build global conceptual DFT tool
     desp = CondensedConceptualDFT.from_file(file_path, 'linear', 'FMR', 'mbis', grid=grid)
+    # check print statement
+    assert_equal(type(desp.__repr__()), str)
     # computed with horton separately
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
     np.testing.assert_almost_equal(desp.density_zero, expected, decimal=4)
@@ -282,6 +378,8 @@ def test_condense_mbis_linear_ch4_fchk():
                         agspec='insane', random_rotate=False, mode='keep')
     # build global conceptual DFT tool
     desp = CondensedConceptualDFT.from_file(file_path, 'linear', 'FMR', 'mbis', grid=grid)
+    # check print statement
+    assert_equal(type(desp.__repr__()), str)
     # computed with horton separately
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
     np.testing.assert_almost_equal(desp.density_zero, expected, decimal=4)
