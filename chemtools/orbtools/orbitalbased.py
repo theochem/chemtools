@@ -24,7 +24,7 @@
 
 
 import numpy as np
-from chemtools.toolbox.densitybased import DensityLocalTool
+from chemtools.denstools.densitybased import DensityLocalTool
 
 __all__ = ['OrbitalLocalTool']
 
