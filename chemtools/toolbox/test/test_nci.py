@@ -20,7 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Test chemtools.analysis.densitybased."""
+"""Test chemtools.analysis.nci."""
 
 import os
 import shutil
@@ -31,10 +31,11 @@ from numpy.testing import assert_raises
 import numpy as np
 
 from horton import IOData
+from chemtools.toolbox.molecule import make_molecule
 
 from chemtools import context
 from chemtools.utils import CubeGen
-from chemtools.toolbox.densitybased import NCI
+from chemtools.toolbox.nci import NCI
 
 
 @contextmanager
@@ -95,12 +96,12 @@ def test_analyze_nci_h2o_dimer_wfn():
 
 def test_analyze_nci_h2o_dimer_fchk():
     file_path = context.get_fn('test/h2o_dimer_pbe_sto3g.fchk')
-    mol = IOData.from_file(file_path)
+    mol = make_molecule(file_path)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     dens_cube1_path = context.get_fn('test/h2o_dimer_pbe_sto3g-dens.cube')
     cube = CubeGen.from_cube(dens_cube1_path)
     # Build the NCI tool
-    desp = NCI.from_iodata(mol, cube)
+    desp = NCI.from_molecule(mol, cube)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     grad_cube1_path = context.get_fn('test/h2o_dimer_pbe_sto3g-grad.cube')
     dmol1 = IOData.from_file(dens_cube1_path)
@@ -142,7 +143,7 @@ def test_analyze_nci_h2o_dimer_fchk():
 
 def test_analyze_nci_assert_errors():
     file_path = context.get_fn('test/h2o_dimer_pbe_sto3g.fchk')
-    mol = IOData.from_file(file_path)
+    mol = make_molecule(file_path)
     cube = CubeGen.from_file(file_path, spacing=2., threshold=0.0)
 
     dens = np.array([2.10160232e-04, 1.11307672e-05, 3.01244062e-04, 2.31768360e-05,
@@ -175,7 +176,7 @@ def test_analyze_nci_assert_errors():
         test = '%s/%s' % (dn, 'test.vmd')
         assert os.path.isfile(test) and os.access(test, os.R_OK)
 
-    desp = NCI.from_iodata(mol)
+    desp = NCI.from_molecule(mol)
     assert desp.signed_density.shape == desp._density.shape
 
     desp = NCI.from_file(file_path, cube)

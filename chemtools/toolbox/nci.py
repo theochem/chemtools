@@ -20,14 +20,14 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Module for Density-Based and Orbital-Based Analysis of Quantum Chemistry Output Files.
+"""Module for Non-Covalent Interactions (NCI) analysis of Quantum Chemistry Output Files.
 
 This modules contains wrappers which take outputs of quantum chemistry software and
-compute various descriptive tools based on the density and orbital information.
+computes the Non-Covalent Interactions.
 """
 
 import numpy as np
-from horton import IOData
+from chemtools.toolbox.molecule import make_molecule
 from chemtools.denstools.densitybased import DensityLocalTool
 from chemtools.utils.cube import CubeGen
 from chemtools.utils.output import print_vmd_script_nci
@@ -53,8 +53,8 @@ class NCI(object):
             Cubic grid used for calculating and visualizing the NCI.
             If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
         hessian : np.array, default=None
-            Hessian of density evaluated on grid points of `cube`. This is a 3D-array with
-            (n, 3, 3) shape where n is the number of grid points of `cube`.
+            Hessian of density evaluated on grid points of `cube`. This is a array with shape
+            (n, 6) where n is the number of grid points of `cube`.
         """
         if density.shape != (len(cube.points),):
             raise ValueError('Shape of density argument {0} does not match '
@@ -64,11 +64,19 @@ class NCI(object):
                              'match expected ({1},) shape.'.format(density.shape, len(cube.points)))
 
         if hessian is not None:
-            if hessian.shape != (len(cube.points), 3, 3):
-                raise ValueError('Shape of hessian argument {0} does not match expected ({1}, 3, 3)'
+            if hessian.shape != (len(cube.points), 6):
+                raise ValueError('Shape of hessian argument {0} does not match expected ({1}, 6)'
                                  ' shape.'.format(hessian.shape, len(cube.points)))
+
+            # Convert the (n, 6) shape to (n, 3, 3) to calculate eigenvalues.
+            hestri = np.zeros((len(cube.points), 3, 3))
+            tmp = np.zeros((3, 3))
+            for i in range(0, len(cube.points)):
+                tmp[np.triu_indices(3)] = hessian[i, :]
+                hestri[i, :] = tmp
+
             # Compute hessian and its eigenvalues on cubuc grid
-            eigvalues = np.linalg.eigvalsh(hessian)
+            eigvalues = np.linalg.eigvalsh(hestri, UPLO='U')
 
             # Use sign of second eigenvalue to distinguish interaction types
             sdens = np.sign(eigvalues[:, 1]) * density
@@ -85,7 +93,7 @@ class NCI(object):
         self._cube = cube
 
     @classmethod
-    def from_file(cls, filename, cube=None):
+    def from_file(cls, filename, cube=None, package_name=None):
         """Initialize class using wave-function file.
 
         Parameters
@@ -95,16 +103,19 @@ class NCI(object):
         cube : instance of `CubeGen`, default=None
             Cubic grid used for calculating and visualizing the NCI.
             If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
+        package_name : str, default=None
+            Name of the package that will be used to create the Molecule instance
+            The wrapper for this package must exist in ChemTools
         """
         # case of one file not given as a list
         if isinstance(filename, (str, unicode)):
-            return cls.from_iodata(IOData.from_file(filename), cube)
+            return cls.from_molecule(make_molecule(filename), cube, package_name)
         # case of list of file(s)
         for _ in filename:
             raise ValueError('Multiple files are not supported')
 
     @classmethod
-    def from_iodata(cls, iodata, cube=None):
+    def from_molecule(cls, molecule, cube=None, package_name=None):
         """Initialize class from ``IOData`` object from ``HORTON`` library.
 
         Parameters
@@ -114,20 +125,22 @@ class NCI(object):
         cube : instance of `CubeGen`, default=None
             Cubic grid used for calculating and visualizing the NCI.
             If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
+        package_name : str, default=None
+            Name of the package that will be used to create the Molecule instance
+            The wrapper for this package must exist in ChemTools
         """
         # Generate or check cubic grid
         if cube is None:
-            cube = CubeGen.from_molecule(iodata.numbers, iodata.pseudo_numbers,
-                                         iodata.coordinates, spacing=0.1, threshold=2.0)
+            cube = CubeGen.from_molecule(molecule.numbers, molecule.pseudo_numbers,
+                                         molecule.coordinates, spacing=0.1, threshold=2.0)
         elif not isinstance(cube, CubeGen):
             raise ValueError('Argument cube should be an instance of CubeGen!')
 
         # Compute density & gradient on cubic grid
-        dm_full = iodata.get_dm_full()
-        dens = iodata.obasis.compute_grid_density_dm(dm_full, cube.points)
-        grad = iodata.obasis.compute_grid_gradient_dm(dm_full, cube.points)
+        dens = molecule.compute_density(cube.points)
+        grad = molecule.compute_gradient(cube.points)
         # Compute hessian on cubic grid
-        hess = _compute_hessian(iodata, cube.points)
+        hess = molecule.compute_hessian(cube.points)
 
         # initialize DensityLocalTool & compute reduced gradient
         temp = DensityLocalTool(dens, grad)
@@ -249,38 +262,3 @@ class NCI(object):
         self._cube.dump_cube(rdgfile, cutrdg)
         # Make VMD scripts for visualization
         print_vmd_script_nci(vmdfile, densfile, rdgfile, isosurf, denscut * 100.0)
-
-
-def _compute_hessian(mol, points):
-    """Compute hessian of electron density w.r.t. coordinates.
-
-    Hessian is defined as the second-order partial derivative of electron density w.r.t.
-    coordinates.
-
-    Parameters
-    ----------
-    mol : instance of `IOData`
-        An `IOData` object.
-    points : np.ndarray
-        Coordinates of grid points for calculating hessian.
-
-    Note
-    ----
-    This finite difference implementation is temporary until hessian is implemented in HORTON.
-    """
-    # Make small change in coordinates along x, y, & z directions
-    eps = 1.0e-5
-    dx = points + np.array([[eps, 0.0, 0.0]])
-    dy = points + np.array([[0.0, eps, 0.0]])
-    dz = points + np.array([[0.0, 0.0, eps]])
-    # Calculate gradient on original grid points
-    dm = mol.get_dm_full()
-    gpnt = mol.obasis.compute_grid_gradient_dm(dm, points)
-    # Calculate hessian using finite difference
-    hess = np.zeros((points.shape[0], 3, 3), float)
-    hess[:, :, 0] = (mol.obasis.compute_grid_gradient_dm(dm, dx) - gpnt) / eps
-    hess[:, :, 1] = (mol.obasis.compute_grid_gradient_dm(dm, dy) - gpnt) / eps
-    hess[:, :, 2] = (mol.obasis.compute_grid_gradient_dm(dm, dz) - gpnt) / eps
-    # Make Hessian symmetric to avoid complex eigenvalues
-    hess = 0.5 * (hess + np.transpose(hess, axes=(0, 2, 1)))
-    return hess

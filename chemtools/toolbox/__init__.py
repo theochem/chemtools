@@ -23,5 +23,5 @@
 """The Toolbox Module."""
 
 from chemtools.toolbox.conceptual import *
-from chemtools.toolbox.densitybased import *
+from chemtools.toolbox.nci import *
 from chemtools.toolbox.orbitalbased import *

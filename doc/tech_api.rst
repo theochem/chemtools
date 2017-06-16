@@ -39,7 +39,7 @@ Toolbox Module
 
 * Density Based Tools
 
-  * :class:`Noncovalent Interaction (NCI) <toolbox.densitybased.NCI>`
+  * :class:`Noncovalent Interaction (NCI) <toolbox.nci.NCI>`
 
 * Orbital Based Tools
 
@@ -103,7 +103,7 @@ Utility Module
 
       toolbox.conceptual.GlobalConceptualDFT
       toolbox.conceptual.LocalConceptualDFT
-      toolbox.densitybased.NCI
+      toolbox.nci.NCI
       toolbox.orbitalbased.OrbitalAnalysis
       conceptual.base.BaseGlobalTool
       conceptual.linear.LinearGlobalTool

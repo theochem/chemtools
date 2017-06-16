@@ -24,7 +24,7 @@
 
 .. _nci:
 
-Non-Covalent Interactions (NCI) :class:`chemtools.tool.analysis.nci`
+Non-Covalent Interactions (NCI) :class:`chemtools.toolbox.nci.NCI`
 ####################################################################
 
 NCI (Non-Covalent Interactions) is a tool to visualize an identify non-covalent interactions,
