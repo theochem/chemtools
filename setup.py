@@ -66,9 +66,10 @@ setup(
     author='Ayers Group',
     author_email='horton.chemtools@gmail.com',
     package_dir={'chemtools': 'chemtools'},
-    packages=['chemtools', 'chemtools.toolbox', 'chemtools.toolbox.test',
-              'chemtools.analysis', 'chemtools.analysis.test', 'chemtools.utils',
-              'chemtools.utils.test'],
+    packages=[
+        'chemtools', 'chemtools.toolbox', 'chemtools.conceptual',
+        'chemtools.orbtools', 'chemtools.denstools', 'chemtools.utils',
+    ],
     scripts=glob("scripts/*.py"),
     cmdclass={
         'install_data': my_install_data,
@@ -79,11 +80,11 @@ setup(
         ('share/chemtools/examples', glob('data/examples/*.*')),
     ],
     classifiers=[
-        'Environment :: Console',
-        'Intended Audience :: Science/Research',
+        'Environment :: Console', 'Intended Audience :: Science/Research',
         'Programming Language :: Python :: 2',
         'Topic :: Science/Engineering :: Molecular Science'
     ],
-    requires=['numpy', 'horton', 'numpy', 'sphinx', 'matplotlib', 'PIL', 'mayavi', 'Image',
-              'sympy', 'scipy']
-)
+    requires=[
+        'numpy', 'horton', 'numpy', 'sphinx', 'matplotlib', 'PIL', 'mayavi',
+        'Image', 'sympy', 'scipy'
+    ])
