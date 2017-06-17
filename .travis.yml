@@ -49,6 +49,9 @@ install:
   # pythonpath
   - export PYTHONPATH=$TRAVIS_BUILD_DIR:$PYTHONPATH
 
+# test installation process is ok when remove or add new contents
+  - ./setup.py build
+
 # Get the master branch and complete feature branch for a comparative analysis.
   - tools/inspector/qa/get_master.sh
 
