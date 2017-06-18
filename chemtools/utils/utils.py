@@ -70,13 +70,13 @@ class Context(object):
     def __init__(self):
         # Determine data directory (also for in-place build)
         self.data_dir = os.getenv('CTDATA')
-        # if self.data_dir is None:
-        #     fn_data_dir = os.path.join(os.path.dirname(__file__), '../data_dir.txt')
-        #     if os.path.isfile(fn_data_dir):
-        #         with open(fn_data_dir) as f:
-        #             self.data_dir = os.path.join(f.read().strip(), 'share/chemtools')
         if self.data_dir is None:
-            self.data_dir = './data'
+            fn_data_dir = os.path.join(os.path.dirname(__file__), '../data_dir.txt')
+            if os.path.isfile(fn_data_dir):
+                with open(fn_data_dir) as f:
+                    self.data_dir = os.path.join(f.read().strip(), 'share/chemtools')
+        if self.data_dir is None:
+            self.data_dir = os.path.join(os.path.dirname(__file__), '../../data')
         self.data_dir = os.path.abspath(self.data_dir)
         # Determine include directory
         self.include_dir = os.getenv('CTINCLUDE')
