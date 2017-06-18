@@ -69,6 +69,9 @@ setup(
     packages=[
         'chemtools', 'chemtools.toolbox', 'chemtools.conceptual',
         'chemtools.orbtools', 'chemtools.denstools', 'chemtools.utils',
+        'chemtools.toolbox.test', 'chemtools.conceptual.test',
+        'chemtools.orbtools.test', 'chemtools.denstools.test',
+        'chemtools.utils.test',
     ],
     scripts=glob("scripts/*.py"),
     cmdclass={

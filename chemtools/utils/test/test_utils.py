@@ -23,8 +23,10 @@
 """Test chemtools.utils.utils."""
 
 import os
+
 from numpy.testing import assert_equal, assert_raises
-from chemtools.utils.utils import doc_inherit, Context, context
+
+from chemtools.utils.utils import Context, context, doc_inherit
 
 
 def test_doc_inherit():
@@ -73,5 +75,6 @@ def test_context():
     assert_raises(IOError, Context)
     # remove CTDATA
     del os.environ['CTDATA']
-    assert_equal(Context().data_dir[-4:], 'data')
+    assert os.path.isdir(os.path.join(Context().data_dir, "examples"))
+    # assert_equal(Context().data_dir[-4:], 'data')
     assert_equal(Context().get_include(), None)
