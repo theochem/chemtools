@@ -109,43 +109,65 @@ def test_orbital_tool_ch4_uhf_ccpvdz():
     np.testing.assert_array_almost_equal(test, result, decimal=6)
 
     # HOMO orbital expansion results obtained from Fortran code:
-    homo_result = [ 0.00375367,  0.03178078,  0.05348131,  0.02726712,  0.01400675,
-                    0.07445751,  0.02320186,  0.00425437,  0.00577119, -0.02781335,
-                   -0.04082439,  0.03324904,  0.03689038,  0.00002702,  0.02901776,
-                    0.03288809, -0.04124146, -0.05165096, -0.02892164, -0.05043417,
-                   -0.00997580, -0.00024128,  0.00307327, -0.02688246,  0.00031094,
-                   -0.04755402, -0.04872100]
+    homo_result = [-0.00249675, -0.01320839, -0.00722774, -0.01116065, -0.05149882,
+                   -0.02020972, -0.00320152, -0.00673363, -0.00218699,  0.00155883,
+                    0.00418715, -0.00495368, -0.01006866,  0.00003386, -0.00863501,
+                   -0.00162681,  0.01993861,  0.00698478,  0.00422124,  0.01551245,
+                    0.00234245,  0.00843082,  0.04407199,  0.01013363,  0.00238077,
+                    0.01567561,  0.00627160]
     # LUMO orbital expansion results obtained from Fortran code:
-    lumo_result = [ 0.01019334, -0.03985858, -0.04740753,  0.08131806, -0.02842964,
-                   -0.06900307,  0.06019631,  0.01863115, -0.01397425,  0.00146082,
-                   -0.00519832, -0.01734235,  0.04867160,  0.00004154,  0.01719274,
-                    0.06485919, -0.01288644, -0.01262115, -0.00838637, -0.00849781,
-                    0.00009801, -0.00910972, -0.01612369,  0.00810636,  0.00485805,
-                   -0.02029558, -0.00936400]
+    lumo_result = [-0.01533933, -0.03700800, -0.03240375, -0.04711904, -0.04017300,
+                   -0.05128246, -0.02993671, -0.02987038, -0.01693414, -0.03617181,
+                   -0.04009498, -0.03576572, -0.04418628, -0.88010359, -0.03575185,
+                   -0.04420089, -0.03958405, -0.04396912, -0.02985073, -0.05428580,
+                   -0.01779872, -0.03181989, -0.03822247, -0.03474619, -0.01563934,
+                   -0.04577599, -0.03352035]
     # check homo expansion
-    test = orbtool.orbitals_exp(8)
+    test = orbtool.orbitals_exp(5)
     np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     # check homo expansion (beta should equal alpha)
-    test = orbtool.orbitals_exp(np.array([8]), spin='beta')
+    test = orbtool.orbitals_exp(np.array([5]), spin='beta')
     np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     # check lumo expansion
-    test = orbtool.orbitals_exp(9)
+    test = orbtool.orbitals_exp(6)
     np.testing.assert_array_almost_equal(test[:, 0], lumo_result, decimal=6)
     # check lumo expansion (beta should equal alpha)
-    test = orbtool.orbitals_exp(np.array([9]), spin='beta')
+    test = orbtool.orbitals_exp(np.array([6]), spin='beta')
     np.testing.assert_array_almost_equal(test[:, 0], lumo_result, decimal=6)
     # check homo & lumo expansion with list of orbital indices
-    test = orbtool.orbitals_exp([8, 9])
+    test = orbtool.orbitals_exp([5, 6])
     np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     # check homo & lumo expansion with tuple of orbital indices
-    test = orbtool.orbitals_exp((8, 9))
+    test = orbtool.orbitals_exp((5, 6))
     np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     # check homo & lumo expansion with array of orbital indices
-    test = orbtool.orbitals_exp(np.array([8, 9]))
+    test = orbtool.orbitals_exp(np.array([5, 6]))
     np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
+
+    # check spin chemical potential
+    # spin chemical potential result obtained from manually ecaluating the formula:
+    result = [-0.1606881912, -0.1606881912]
+    test = orbtool.spin_chemical_potential(25000.0)
+    np.testing.assert_array_almost_equal(test, result, decimal=6)
+
+    # check temperature dependent density at 25000K
+    # Density results obtained from Fortran code:
+    result = [0.00003919, 0.00058389, 0.00025735, 0.00121919, 0.00679814, 0.00166896,   0.00021239,
+              0.00032721, 0.00004793, 0.00049444, 0.00755612, 0.00047382, 0.01189356, 120.67872015,
+              0.00489612, 0.00093781, 0.00715898, 0.00092623, 0.00020734, 0.00207881,   0.00005839,
+              0.00037579, 0.00542211, 0.00046599, 0.00003973, 0.00113522, 0.00028249]
+
+    # check density array
+    test = orbtool.temperature_dependent_density(25000.0)
+    np.testing.assert_array_almost_equal(test, result, decimal=6)
+    # check density array only using exp_alpha
+    orbtool = OrbitalLocalTool(cube.points, mol.obasis, mol.exp_alpha)
+    test = orbtool.temperature_dependent_density(25000.0,
+                                                 spin_chemical_potential=[-0.160688, -0.160688])
+    np.testing.assert_array_almost_equal(test, result, decimal=6)
 
     # check ValueError
     assert_raises(ValueError, orbtool.orbitals_exp, np.array([9]), spin='error')
@@ -176,7 +198,13 @@ def test_orbital_tool_h2o_b3lyp_sto3g():
 
     test = orbtool.mep(mol.coordinates, mol.pseudo_numbers)
 
-    np.testing.assert_almost_equal(test, expected, decimal=6)
+    np.testing.assert_array_almost_equal(test, expected, decimal=6)
+
+    # check spin chemical potential
+    # spin chemical potential result obtained from manually ecaluating the formula
+    result = [0.10821228040, 0.10821228040]
+    test = orbtool.spin_chemical_potential(25000.0)
+    np.testing.assert_almost_equal(test, result, decimal=6)
 
 
 def test_orbital_tool_elf_h2o_dimer():

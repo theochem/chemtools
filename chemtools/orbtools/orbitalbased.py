@@ -24,6 +24,7 @@
 
 
 import numpy as np
+from scipy.optimize import bisect
 from chemtools.denstools.densitybased import DensityLocalTool
 
 __all__ = ['OrbitalLocalTool']
@@ -172,3 +173,124 @@ class OrbitalLocalTool(DensityLocalTool):
             result = np.dot(2.0*self._exp_alpha.occupations*self._exp_alpha.energies, orbitals.T)
         result /= self.density
         return result
+
+    def spin_chemical_potential(self, temperature, maxiter=500):
+        r"""
+        Spin Chemical Potential.
+
+        Spin Chemical Potential, :math:`\mu_{\sigma}` , found by solving the following
+        one-dimensional nonlinear equations:
+
+        .. math::
+           N_{\sigma} = \sum_{i = 1}^{N_{basis}} \frac{1}
+           {1 + e^{\beta(\epsilon_{i \sigma} - \mu_{sigma})}}
+
+        with :math:`\beta = \frac{1}{k_B T}`, the so-called thermodynamic beta,
+        :math:`\epsilon_{i \sigma}` the molecular orbital energies and
+        :math:`N_{\sigma}` the number of electrons with spin
+        :math:`\sigma = \{ \alpha, \beta\}`
+
+        Parameters
+        ----------
+        temperature : float
+            The temperature at which to evaluate the spin chemical potential (in Kelvin).
+        maxiter : int, default=500
+            The maximum number of iterations.
+
+        Returns
+        -------
+        np.array, shape=(2,)
+            the spin chemical potential as `[alpha_chemical_potential, beta_chemical_potential]`
+
+        """
+        kb = 3.1668144e-6  # Boltzman constant in Hartree/Kelvin
+        bt = np.divide(1.0, (kb * temperature))
+
+        e_alpha = np.array(self._exp_alpha.energies, dtype=np.float128, copy=True)
+        n_alpha = np.sum(self._exp_alpha.occupations)
+
+        spin_pot_a = bisect(lambda x: _spin_chemical_function(x, n_alpha, bt, e_alpha),
+                            e_alpha[0], e_alpha[-1], maxiter=maxiter)
+
+        if hasattr(self, '_exp_beta'):
+            e_beta = np.array(self._exp_beta.energies, dtype=np.float128)
+            n_beta = np.sum(self._exp_beta.occupations)
+            spin_pot_b = bisect(lambda x: _spin_chemical_function(x, n_beta, bt, e_beta),
+                                e_beta[0], e_beta[-1], maxiter=maxiter)
+
+            return np.array([spin_pot_a, spin_pot_b])
+
+        else:
+            return np.array([spin_pot_a, spin_pot_a])
+
+    def temperature_dependent_density(self, temperature, spin_chemical_potential=None):
+        r"""
+        Temperature-Dependent Density.
+
+        Parameters
+        ----------
+        temperature : float
+            The temperatire at which to evaluate the spin chemical potential (in Kelvin).
+        spin_chemical_potential : np.array, shape=(2,), default=None
+            The spin chemical potential, when not provided it is calculated.
+
+        Returns
+        -------
+        np.array
+            The Temperature-Dependent Density at the gridpoints.
+        """
+        kb = 3.1668144e-6  # Boltzman constant in Hartree/Kelvin
+        bt = np.divide(1.0, (kb * temperature))
+        nbf = self._exp_alpha.energies.shape[0]
+        tempdens = np.zeros(self._points.shape[0])
+        iorbs = np.arange(1, self._obasis.nbasis+1)
+
+        if spin_chemical_potential is None:
+            spin_chemical_potential = self.spin_chemical_potential(temperature)
+
+        orbdens = self.orbitals_exp(iorbs, spin='alpha')**2.
+
+        for i in range(0, nbf):
+            denom = (1. + np.exp(bt * (self._exp_alpha.energies[i] - spin_chemical_potential[0])))
+            tempdens[:] += orbdens[:, i] / denom
+
+        if hasattr(self, '_exp_beta'):
+            orbdens = self.orbitals_exp(iorbs, spin='beta')**2.
+
+            for i in range(0, nbf):
+                denom = (1. + np.exp(bt * (self._exp_beta.energies[i] -
+                                           spin_chemical_potential[1])))
+                tempdens[:] += orbdens[:, i] / denom
+            return tempdens
+
+        else:
+            return 2.0*tempdens
+
+
+def _spin_chemical_function(x, n, bt, en):
+    r"""
+    Function for calculating the spin chemical potential.
+
+    The function:
+    .. math::
+        f(\mu_{sigma}, \beta, N_{\sigma}) =  \sum_{i = 1}^{N_{basis}} \frac{1}
+        {1 + e^{\beta(\epsilon_{i \sigma} - \mu_{sigma})}} - N_{\sigma}
+
+    Parameters
+    ----------
+
+    x : float
+        \mu_{sigma}, the Spin Chemical Potential
+    bt : float
+        :math:`\beta = \frac{1}{k_B T}`
+    n : float
+        the number of electrons, :math:`N_{\sigma}`, with spin :math:`\sigma = \{ \alpha, \beta\}`
+    en : np.array
+        :math:`\epsilon_{i \sigma}` the molecular orbital energies
+
+    Returns
+    -------
+    float
+        The value of :math:`f(\mu_{sigma}, N)`.
+    """
+    return np.sum(1. / (1. + np.exp(bt * (en - x)))) - n
