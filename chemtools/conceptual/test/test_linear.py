@@ -29,12 +29,14 @@ from chemtools.conceptual.linear import LinearGlobalTool, LinearLocalTool
 
 def test_global_linear_raises():
     # check invalid N0
-    assert_raises(ValueError, LinearGlobalTool, -10.0, -15.0, -16.0, 0.0)
-    assert_raises(ValueError, LinearGlobalTool, -10.0, -15.0, -16.0, 0.5)
-    assert_raises(ValueError, LinearGlobalTool, -10.0, -15.0, -16.0, 0.9)
-    assert_raises(ValueError, LinearGlobalTool, -10.0, -15.0, -16.0, -5.0)
+    assert_raises(ValueError, LinearGlobalTool, {0.: -10.0, 1.: -15.0, -1.: -16.0})
+    assert_raises(ValueError, LinearGlobalTool, {0.5: -10.0, 1.5: -15.0, -0.5: -16.0})
+    assert_raises(ValueError, LinearGlobalTool, {0.9: -10.0, 1.9: -15.0, -0.1: -16.0})
+    assert_raises(ValueError, LinearGlobalTool, {-5.0: -10.0, -4.0: -15.0, -6.0: -16.0})
+    assert_raises(ValueError, LinearGlobalTool, {0.9: 10.0, 0.5: 15.0, 1.2: 16.0})
+    assert_raises(ValueError, LinearGlobalTool, {1.0: 10.0, 0.5: 15.0, 1.5: 16.0})
     # check invalid N
-    model = LinearGlobalTool(-10.5, -11.7, -12.3, 5.0)
+    model = LinearGlobalTool({5.: -10.5, 6.: -11.7, 4.: -12.3})
     assert_raises(ValueError, model.energy, -1.0)
     assert_raises(ValueError, model.energy, -2.3)
     assert_raises(ValueError, model.energy_derivative, -0.5, 1)
@@ -52,11 +54,10 @@ def test_global_linear_np_energy():
     # E(N) = -1.0 - 0.5 * N, N <= 10
     # E(N) = -7.0 + 0.1 * N, N >= 10
     # build global tool
-    model = LinearGlobalTool(-6.0, -5.9, -5.5, 10)
+    model = LinearGlobalTool({10: -6.0, 11: -5.9, 9: -5.5})
     # check parameters
     assert_equal(model.n0, 10)
     assert_equal(model.n_max, 10)
-    assert_almost_equal(model.energy_zero, -6., decimal=6)
     # check E(N)
     assert_equal(model.energy(None), None)
     assert_almost_equal(model.energy(10.), -6.0, decimal=6)
@@ -90,7 +91,7 @@ def test_global_linear_np_reactivity():
     # E(N) = -1.0 - 0.5 * N, N <= 10
     # E(N) = -7.0 + 0.1 * N, N >= 10
     # build global tool
-    model = LinearGlobalTool(-6.0, -5.9, -5.5, 10)
+    model = LinearGlobalTool({10: -6.0, 11: -5.9, 9: -5.5})
     # check ionization potential and electron affinity
     assert_almost_equal(model.ip, 0.5)
     assert_almost_equal(model.ea, -0.1)
@@ -115,7 +116,7 @@ def test_global_linear_np_grand_potential_n():
     # E(N) = -1.0 - 0.5 * N, N <= 10
     # E(N) = -7.0 + 0.1 * N, N >= 10
     # build global tool
-    model = LinearGlobalTool(-6.0, -5.9, -5.5, 10)
+    model = LinearGlobalTool({10: -6.0, 11: -5.9, 9: -5.5})
     # check grand potential (as a function of N)
     assert_equal(model.grand_potential(None), None)
     assert_equal(model.grand_potential(10.), None)
@@ -154,7 +155,7 @@ def test_global_linear_np_grand_potential_reactivity():
     # E(N) = -1.0 - 0.5 * N, N <= 10
     # E(N) = -7.0 + 0.1 * N, N >= 10
     # build global tool
-    model = LinearGlobalTool(-6.0, -5.9, -5.5, 10)
+    model = LinearGlobalTool({10: -6.0, 11: -5.9, 9: -5.5})
     # check fundamental descriptors
     assert_equal(model.softness, None)
     assert_equal(model.hyper_softness(2), None)
@@ -167,12 +168,11 @@ def test_global_linear_nn_energy():
     # E(N) =  0.0 - 0.7 * N, N <= 5
     # E(N) = -1.5 - 0.4 * N, N >= 5
     # build global tool
-    model = LinearGlobalTool(-3.5, -3.9, -2.8, 5)
+    model = LinearGlobalTool({5: -3.5, 6: -3.9, 4: -2.8})
     # check parameters
     assert_equal(model.n0, 5.)
     assert_equal(model.n_max, None)
-    assert_almost_equal(model.energy_zero, -3.5, decimal=6)
-    # # check E(N)
+    # check E(N)
     assert_equal(model.energy(None), None)
     assert_equal(model.energy(model.n_max), None)
     assert_almost_equal(model.energy(5), -3.5, decimal=6)
@@ -181,7 +181,7 @@ def test_global_linear_nn_energy():
     assert_almost_equal(model.energy(0.), 0.0, decimal=6)
     assert_almost_equal(model.energy(3.5), -2.45, decimal=6)
     assert_almost_equal(model.energy(5.7), -3.78, decimal=6)
-    # # check dE(N)
+    # check dE(N)
     assert_equal(model.energy_derivative(None), None)
     assert_equal(model.energy_derivative(model.n_max), None)
     assert_equal(model.energy_derivative(5., 1), None)
@@ -189,7 +189,7 @@ def test_global_linear_nn_energy():
     assert_almost_equal(model.energy_derivative(6., 1), -0.4, decimal=6)
     assert_almost_equal(model.energy_derivative(4.99, 1), -0.7, decimal=6)
     assert_almost_equal(model.energy_derivative(5.01, 1), -0.4, decimal=6)
-    # # check d^nE(N) for n > 1
+    # check d^nE(N) for n > 1
     assert_equal(model.energy_derivative(None, 2), None)
     assert_equal(model.energy_derivative(model.n_max, 2), None)
     assert_equal(model.energy_derivative(5.0, 2), None)
@@ -205,7 +205,7 @@ def test_global_linear_nn_reactivity():
     # E(N) =  0.0 - 0.7 * N, N <= 5
     # E(N) = -1.5 - 0.4 * N, N >= 5
     # build global tool
-    model = LinearGlobalTool(-3.5, -3.9, -2.8, 5)
+    model = LinearGlobalTool({5: -3.5, 6: -3.9, 4: -2.8})
     # check ionization potential and electron affinity
     assert_almost_equal(model.ip, 0.7)
     assert_almost_equal(model.ea, 0.4)
@@ -233,7 +233,7 @@ def test_global_linear_nn_grand_potential_n():
     # E(N) =  0.0 - 0.7 * N, N <= 5
     # E(N) = -1.5 - 0.4 * N, N >= 5
     # build global tool
-    model = LinearGlobalTool(-3.5, -3.9, -2.8, 5)
+    model = LinearGlobalTool({5: -3.5, 6: -3.9, 4: -2.8})
     # check grand potential (as a function of N)
     assert_equal(model.grand_potential(None), None)
     assert_equal(model.grand_potential(5.), None)
@@ -269,7 +269,7 @@ def test_global_linear_nn_grand_potential_reactivity():
     # E(N) =  0.0 - 0.7 * N, N <= 5
     # E(N) = -1.5 - 0.4 * N, N >= 5
     # build global tool
-    model = LinearGlobalTool(-3.5, -3.9, -2.8, 5)
+    model = LinearGlobalTool({5: -3.5, 6: -3.9, 4: -2.8})
     # check fundamental descriptors
     assert_equal(model.softness, None)
     assert_equal(model.hyper_softness(2), None)
@@ -283,8 +283,19 @@ def test_local_linear_raises():
     d0 = np.array([1.0, 3.0, 5.0, 2.0, 7.0])
     dp = np.array([0.5, 4.5, 6.0, 1.0, 5.0])
     dm = np.array([1.0, 4.0, 3.0, 2.0, 8.0])
+    # check dictionary
+    assert_raises(ValueError, LinearLocalTool, {10.: d0, 11.: dp})
+    assert_raises(ValueError, LinearLocalTool, {10.: d0, 11.: dp, 9: dm, 8: d0})
+    # check N
+    assert_raises(ValueError, LinearLocalTool, {-10.: d0, 11.: dp, 9: dm})
+    assert_raises(ValueError, LinearLocalTool, {10.: d0, -11.: dp, -9: dm})
+    assert_raises(ValueError, LinearLocalTool, {-10.: d0, -11.: dp, -9: dm})
+    assert_raises(ValueError, LinearLocalTool, {0.9: d0, 1.4: dp, 0.4: dm})
+    assert_raises(ValueError, LinearLocalTool, {10.: d0, 11.5: dp, 9: dm})
+    assert_raises(ValueError, LinearLocalTool, {10.: d0, 12.: dp, 8: dm})
+
     # build a linear local model
-    model = LinearLocalTool(d0, dp, dm, 10)
+    model = LinearLocalTool({10: d0, 11.: dp, 9: dm})
     # check invalid N
     assert_raises(ValueError, model.density, '10.0')
     assert_raises(ValueError, model.density, -1.)
@@ -300,7 +311,7 @@ def test_local_linear_fake_density():
     dp = np.array([0.5, 4.5, 6.0, 1.0, 5.0])
     dm = np.array([1.0, 4.0, 3.0, 2.0, 8.0])
     # build a linear local model
-    model = LinearLocalTool(d0, dp, dm, 10)
+    model = LinearLocalTool({10: d0, 11.: dp, 9: dm})
     # check density
     assert_equal(model.n0, 10.)
     assert_almost_equal(model.density_zero, d0, decimal=6)
@@ -324,7 +335,7 @@ def test_local_linear_fake_fukui_function():
     dp = np.array([0.5, 4.5, 6.0, 1.0, 5.0])
     dm = np.array([1.0, 4.0, 3.0, 2.0, 8.0])
     # build a linear local model
-    model = LinearLocalTool(d0, dp, dm, 10)
+    model = LinearLocalTool({10: d0, 11.: dp, 9: dm})
     # check fukui function
     expected = np.array([-0.5, 1.5, 1.0, -1.0, -2.0])
     assert_almost_equal(model.ff_plus, expected, decimal=6)
@@ -346,7 +357,7 @@ def test_local_linear_fake_softness():
     dp = np.array([0.5, 4.5, 6.0, 1.0, 5.0])
     dm = np.array([1.0, 4.0, 3.0, 2.0, 8.0])
     # build a linear local model
-    model = LinearLocalTool(d0, dp, dm, 10)
+    model = LinearLocalTool({10: d0, 11.: dp, 9: dm})
     # check softness
     expected = 0.5 * np.array([-0.25, 0.25, 1.5, -0.5, -1.5])
     assert_almost_equal(model.softness(0.5), expected, decimal=6)

@@ -54,28 +54,34 @@ class ExponentialGlobalTool(BaseGlobalTool):
     """
 
     @doc_inherit(BaseGlobalTool)
-    def __init__(self, energy_zero, energy_plus, energy_minus, n0):
-        # check N0
+    def __init__(self, dict_energy):
+        # check energy values
+        if len(dict_energy) != 3 or not all([key >= 0 for key in dict_energy.keys()]):
+            raise ValueError('Exponential model requires 3 energy values corresponding '
+                             'to positive number of electrons!')
+        # find reference number of electrons
+        n0 = sorted(dict_energy.keys())[1]
         if n0 < 1:
             raise ValueError('Argument n0 cannot be less than one! Given n0={0}'.format(n0))
+        # check number of electrons differ by one
+        if sorted(dict_energy.keys()) != [n0 - 1, n0, n0 + 1]:
+            raise ValueError('Number of electrons should differ by one!')
         # check energy values are monotonic, i.e. E(N-1) > E(N) > E(N+1)
-        if not energy_minus > energy_zero > energy_plus:
-            energies = [energy_minus, energy_zero, energy_plus]
-            n_values = [n0 - 1, n0, n0 + 1]
-            raise ValueError('To interpolate exponential energy model, E values vs. N should be ' +
-                             'monotonic! Given E={0} for N={1}.'.format(energies, n_values))
-
-        # calculate the A, B, gamma parameters of the model and N_max
-        param_a = (energy_minus - energy_zero) * (energy_zero - energy_plus)
-        param_a /= (energy_minus - 2 * energy_zero + energy_plus)
-        param_b = energy_zero - param_a
-        gamma = (energy_minus - 2 * energy_zero + energy_plus) / (energy_plus - energy_zero)
+        energy_m, energy_0, energy_p = [dict_energy[n] for n in sorted(dict_energy.keys())]
+        if not energy_m > energy_0 > energy_p:
+            energies = [energy_m, energy_0, energy_p]
+            raise ValueError('For exponential model, the energy values for consecutive number of '
+                             'electrons should be monotonic! E={0}'.format(energies))
+        # calculate parameters A, B, gamma parameters of the exponential model
+        param_a = (energy_m - energy_0) * (energy_0 - energy_p)
+        param_a /= (energy_m - 2 * energy_0 + energy_p)
+        param_b = energy_0 - param_a
+        gamma = (energy_m - 2 * energy_0 + energy_p) / (energy_p - energy_0)
         gamma = math.log(1. - gamma)
         self._params = [param_a, gamma, param_b]
         # calulate N_max
         n_max = float('inf')
-        super(ExponentialGlobalTool, self).__init__(energy_zero, energy_plus, energy_minus, n0,
-                                                    n_max)
+        super(ExponentialGlobalTool, self).__init__(dict_energy, n0, n_max)
 
     @property
     def params(self):

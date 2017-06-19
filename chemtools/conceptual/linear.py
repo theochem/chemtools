@@ -59,15 +59,36 @@ class LinearGlobalTool(BaseGlobalTool):
        \mu^{+} &= -EA \\
     """
 
-    def __init__(self, energy_zero, energy_plus, energy_minus, n0):
-        # check N0
+    def __init__(self, dict_energy):
+        # check energy values
+        if len(dict_energy) != 3 or not all([key >= 0 for key in dict_energy.keys()]):
+            raise ValueError('Linear model requires 3 energy values corresponding '
+                             'to positive number of electrons!')
+        # find reference number of electrons
+        n0 = sorted(dict_energy.keys())[1]
         if n0 < 1:
             raise ValueError('Argument n0 cannot be less than one! Given n0={0}'.format(n0))
-        if energy_zero < energy_plus:
+        # check number of electrons differ by one
+        if sorted(dict_energy.keys()) != [n0 - 1, n0, n0 + 1]:
+            raise ValueError('Number of electrons should differ by one!')
+        # calculate parameters a, b, a' and b' of linear energy model
+        energy_m, energy_0, energy_p = [dict_energy[n] for n in sorted(dict_energy.keys())]
+        b = energy_0 - energy_m
+        a = energy_0 - n0 * b
+        b_prime = energy_p - energy_0
+        a_prime = energy_0 - n0 * b_prime
+        self._params = [a, b, a_prime, b_prime]
+        # calculate Nmax
+        if energy_0 < energy_p:
             n_max = n0
         else:
             n_max = None
-        super(LinearGlobalTool, self).__init__(energy_zero, energy_plus, energy_minus, n0, n_max)
+        super(LinearGlobalTool, self).__init__(dict_energy, n0, n_max)
+
+    @property
+    def params(self):
+        r"""Parameter :math:`a`, :math:`b`, :math:`a^\prime` & :math:`b^\prime` of energy model."""
+        return self._params
 
     @property
     def mu_minus(self):
@@ -108,11 +129,10 @@ class LinearGlobalTool(BaseGlobalTool):
             log.warn('Energy evaluated for n_elec={0} outside of interpolation '
                      'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
         # evaluate energy
-        value = self._energy_zero
-        if n_elec < self._n0:
-            value += (self._n0 - n_elec) * self._ip
+        if n_elec <= self._n0:
+            value = self._params[0] + n_elec * self._params[1]
         elif n_elec > self._n0:
-            value += (self._n0 - n_elec) * self._ea
+            value = self._params[2] + n_elec * self._params[3]
         return value
 
     @doc_inherit(BaseGlobalTool)
@@ -132,9 +152,9 @@ class LinearGlobalTool(BaseGlobalTool):
         elif order >= 2:
             deriv = 0.0
         elif n_elec < self._n0:
-            deriv = - self._ip
+            deriv = self._params[1]
         elif n_elec > self._n0:
-            deriv = - self._ea
+            deriv = self._params[3]
         return deriv
 
 
@@ -169,11 +189,23 @@ class LinearLocalTool(BaseLocalTool):
     """
 
     @doc_inherit(BaseLocalTool)
-    def __init__(self, density_zero, density_plus, density_minus, n0):
-        super(LinearLocalTool, self).__init__(density_zero, density_plus, density_minus, n0)
-        self._ff_plus = self._density_plus - self._density_zero
-        self._ff_minus = self._density_zero - self._density_minus
-        self._ff_zero = 0.5 * (self._density_plus - self._density_minus)
+    def __init__(self, dict_density):
+        # check density values
+        if len(dict_density) != 3 or not all([key >= 0 for key in dict_density.keys()]):
+            raise ValueError('Linear model requires 3 density values corresponding '
+                             'to positive number of electrons!')
+        # find reference number of electrons
+        n0 = sorted(dict_density.keys())[1]
+        if n0 < 1:
+            raise ValueError('Argument n0 cannot be less than one! Given n0={0}'.format(n0))
+        # check number of electrons differ by one
+        if sorted(dict_density.keys()) != [n0 - 1, n0, n0 + 1]:
+            raise ValueError('Number of electrons should differ by one!')
+        # assign density corresponding to N-1, N and N+1
+        super(LinearLocalTool, self).__init__(dict_density, n0)
+        self._ff_plus = self._dens_p - self._dens_0
+        self._ff_minus = self._dens_0 - self._dens_m
+        self._ff_zero = 0.5 * (self._dens_p - self._dens_m)
 
     @property
     def ff_plus(self):
@@ -239,7 +271,8 @@ class LinearLocalTool(BaseLocalTool):
         if not self._n0 - 1 <= n_elec <= self._n0 + 1:
             log.warn('Electron density evaluated for n_elec={0} outside of interpolation '
                      'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
-        rho = self._density_zero.copy()
+        # compute density
+        rho = self.density_zero.copy()
         if (n_elec is not None) and (n_elec != self._n0):
             if n_elec < self._n0:
                 rho += self._ff_minus * (n_elec - self._n0)

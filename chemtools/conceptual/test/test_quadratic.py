@@ -37,13 +37,14 @@ def make_symbolic_quadratic_model(a, b, c):
 
 def test_global_quadratic_raises():
     # check invalid N0
-    assert_raises(ValueError, QuadraticGlobalTool, -5.5, -6.0, -7.0, 0)
-    assert_raises(ValueError, QuadraticGlobalTool, -5.5, -6.0, -7.0, 0.1)
-    assert_raises(ValueError, QuadraticGlobalTool, -5.5, -6.0, -7.0, 0.99)
-    assert_raises(ValueError, QuadraticGlobalTool, -5.5, -6.0, -7.0, -1.)
-    assert_raises(ValueError, QuadraticGlobalTool, -5.5, -6.0, -7.0, -2)
+    assert_raises(ValueError, QuadraticGlobalTool, {0: -5.5, 1: -6.0, -1: -7.0})
+    assert_raises(ValueError, QuadraticGlobalTool, {0.1: -5.5, 1.1: -6.0, -0.9: -7.0})
+    assert_raises(ValueError, QuadraticGlobalTool, {0.99: -5.5, 1.99: -6.0, -0.1: -7.0})
+    assert_raises(ValueError, QuadraticGlobalTool, {-1.: -5.5, 0.: -6.0, -2.: -7.0})
+    assert_raises(ValueError, QuadraticGlobalTool, {-2: -5.5, -1: -6.0, -3: -7.0})
+    assert_raises(ValueError, QuadraticGlobalTool, {0.0: -5.5, 0.5: -6.0, 1.0: -7.0})
     # check invalid N
-    model = QuadraticGlobalTool(5.0, 10.0, 8.0, 5.0)
+    model = QuadraticGlobalTool({5.0: 5.0, 6.0: 10.0, 4.0: 8.0})
     assert_raises(ValueError, model.energy, -0.0001)
     assert_raises(ValueError, model.energy, -1.7)
     assert_raises(ValueError, model.energy, -2.5)
@@ -63,7 +64,7 @@ def test_global_quadratic_nnp_energy():
     # E(N) = -9.0 + (-25.0)*N + N^2, N0=15
     energy, deriv, _ = make_symbolic_quadratic_model(1.0, -25.0, -9.0)
     # build global tool
-    model = QuadraticGlobalTool(-159.0, -153.0, -163.0, 15)
+    model = QuadraticGlobalTool({15: -159.0, 16: -153.0, 14: -163.0})
     # check parameters
     assert_almost_equal(model.params[0], -9.0, decimal=6)
     assert_almost_equal(model.params[1], -25.0, decimal=6)
@@ -92,7 +93,7 @@ def test_global_quadratic_nnp_energy_reactivity():
     # E(N) = -9.0 + (-25.0)*N + N^2, N0=15
     energy, _, _ = make_symbolic_quadratic_model(1.0, -25.0, -9.0)
     # build global tool
-    model = QuadraticGlobalTool(-159.0, -153.0, -163.0, 15)
+    model = QuadraticGlobalTool({15: -159.0, 16: -153.0, 14: -163.0})
     # check ionization potential and electron affinity
     ip = energy(14) - energy(15)
     ea = energy(15) - energy(16)
@@ -122,7 +123,7 @@ def test_global_quadratic_nnp_grand_potential_n():
     # E(N) = -9.0 + (-25.0)*N + N^2, N0=15
     _, _, grand = make_symbolic_quadratic_model(1.0, -25.0, -9.0)
     # build global tool
-    model = QuadraticGlobalTool(-159.0, -153.0, -163.0, 15)
+    model = QuadraticGlobalTool({15: -159.0, 16: -153.0, 14: -163.0})
     # check grand potential (as a function of N)
     assert_almost_equal(model.grand_potential(15), grand(15), decimal=6)
     assert_almost_equal(model.grand_potential(14), grand(14), decimal=6)
@@ -153,7 +154,7 @@ def test_global_quadratic_nnp_grand_potential_mu():
     # E(N) = -9.0 + (-25.0)*N + N^2, N0=15
     _, deriv, grand = make_symbolic_quadratic_model(1.0, -25.0, -9.0)
     # build global tool
-    model = QuadraticGlobalTool(-159.0, -153.0, -163.0, 15)
+    model = QuadraticGlobalTool({15: -159.0, 16: -153.0, 14: -163.0})
     # check mu to N conversion
     assert_almost_equal(model.convert_mu_to_n(5.0), 15., decimal=6)
     assert_almost_equal(model.convert_mu_to_n(5.004), 15.002, decimal=6)
@@ -179,7 +180,7 @@ def test_global_quadratic_nnp_grand_potential_mu():
 
 def test_global_quadratic_nnp_grand_potential_reactivity():
     # E(N) = -9.0 + (-25.0)*N + N^2, N0=15
-    model = QuadraticGlobalTool(-159.0, -153.0, -163.0, 15)
+    model = QuadraticGlobalTool({15: -159.0, 16: -153.0, 14: -163.0})
     # check hyper-softnesses
     assert_almost_equal(model.hyper_softness(2), 0.0, decimal=6)
     assert_almost_equal(model.hyper_softness(3), 0.0, decimal=6)
@@ -190,7 +191,7 @@ def test_global_quadratic_pnp_energy():
     # E(N) = 30.0 + (-6.0)*N + 3*N^2, N0=10
     energy, deriv, _ = make_symbolic_quadratic_model(3.0, -6.0, 30.0)
     # build global tool
-    model = QuadraticGlobalTool(75.0, 102.0, 54.0, 5)
+    model = QuadraticGlobalTool({5: 75.0, 6: 102.0, 4: 54.0})
     # check parameters
     assert_almost_equal(model.params[0], 30.0, decimal=6)
     assert_almost_equal(model.params[1], -6.0, decimal=6)
@@ -219,7 +220,7 @@ def test_global_quadratic_pnp_energy_reactivity():
     # E(N) = 30.0 + (-6.0)*N + 3*N^2, N0=10
     energy, _, _ = make_symbolic_quadratic_model(3.0, -6.0, 30.0)
     # build global tool
-    model = QuadraticGlobalTool(75.0, 102.0, 54.0, 5)
+    model = QuadraticGlobalTool({5: 75.0, 6: 102.0, 4: 54.0})
     # check ionization potential and electron affinity
     ip = energy(4) - energy(5)
     ea = energy(5) - energy(6)
@@ -249,7 +250,7 @@ def test_global_quadratic_pnp_grand_potential_n():
     # E(N) = 30.0 + (-6.0)*N + 3*N^2, N0=10
     _, _, grand = make_symbolic_quadratic_model(3.0, -6.0, 30.0)
     # build global tool
-    model = QuadraticGlobalTool(75.0, 102.0, 54.0, 5)
+    model = QuadraticGlobalTool({5: 75.0, 6: 102.0, 4: 54.0})
     # check grand potential (as a function of N)
     assert_almost_equal(model.grand_potential(5.), grand(5.), decimal=6)
     assert_almost_equal(model.grand_potential(5.75), grand(5.75), decimal=6)
@@ -274,7 +275,7 @@ def test_global_quadratic_pnp_grand_potential_mu():
     # E(N) = 30.0 + (-6.0)*N + 3*N^2, N0=10
     _, deriv, grand = make_symbolic_quadratic_model(3.0, -6.0, 30.0)
     # build global tool
-    model = QuadraticGlobalTool(75.0, 102.0, 54.0, 5)
+    model = QuadraticGlobalTool({5: 75.0, 6: 102.0, 4: 54.0})
     # check mu to N conversion
     assert_almost_equal(model.convert_mu_to_n(24.0), 5., decimal=6)
     assert_almost_equal(model.convert_mu_to_n(30.06), 6.01, decimal=6)
@@ -297,7 +298,7 @@ def test_global_quadratic_pnp_grand_potential_mu():
 
 def test_global_quadratic_pnp_grand_potential_reactivity():
     # E(N) = 30.0 + (-6.0)*N + 3*N^2, N0=10
-    model = QuadraticGlobalTool(75.0, 102.0, 54.0, 5)
+    model = QuadraticGlobalTool({5: 75.0, 6: 102.0, 4: 54.0})
     # check hyper-softnesses
     assert_almost_equal(model.hyper_softness(2), 0.0, decimal=6)
     assert_almost_equal(model.hyper_softness(3), 0.0, decimal=6)
@@ -308,7 +309,7 @@ def test_global_quadratic_n0p_energy():
     # E(N) = -100 + 5*N^2, N0=5
     energy, deriv, _ = make_symbolic_quadratic_model(5.0, 0., -100.)
     # build global tool
-    model = QuadraticGlobalTool(25.0, 80.0, -20.0, 5)
+    model = QuadraticGlobalTool({5: 25.0, 6: 80.0, 4: -20.0})
     # check parameters
     assert_almost_equal(model.params[0], -100.0, decimal=6)
     assert_almost_equal(model.params[1], 0.0, decimal=6)
@@ -339,7 +340,7 @@ def test_global_quadratic_n0p_energy_reactivity():
     ip = energy(4) - energy(5)
     ea = energy(5) - energy(6)
     # build global tool
-    model = QuadraticGlobalTool(25.0, 80.0, -20.0, 5)
+    model = QuadraticGlobalTool({5: 25.0, 6: 80.0, 4: -20.0})
     # check ionization potential and electron affinity
     assert_almost_equal(model.ionization_potential, ip, decimal=6)
     assert_almost_equal(model.electron_affinity, ea, decimal=6)
@@ -367,7 +368,7 @@ def test_global_quadratic_n0p_grand_potential_n():
     # E(N) = -100 + 5*N^2, N0=5
     _, _, grand = make_symbolic_quadratic_model(5.0, 0., -100.)
     # build global tool
-    model = QuadraticGlobalTool(25.0, 80.0, -20.0, 5)
+    model = QuadraticGlobalTool({5: 25.0, 6: 80.0, 4: -20.0})
     # check grand potential (as a function of N)
     assert_almost_equal(model.grand_potential(5.), grand(5.), decimal=6)
     assert_almost_equal(model.grand_potential(4.), grand(4.), decimal=6)
@@ -391,7 +392,7 @@ def test_global_quadratic_n0p_grand_potential_mu():
     # E(N) = -100 + 5*N^2, N0=5
     _, deriv, grand = make_symbolic_quadratic_model(5.0, 0., -100.)
     # build global tool
-    model = QuadraticGlobalTool(25.0, 80.0, -20.0, 5)
+    model = QuadraticGlobalTool({5: 25.0, 6: 80.0, 4: -20.0})
     # check mu to N conversion
     assert_almost_equal(model.convert_mu_to_n(50), 5., decimal=6)
     assert_almost_equal(model.convert_mu_to_n(34.6), 3.46, decimal=6)
@@ -414,11 +415,26 @@ def test_global_quadratic_n0p_grand_potential_mu():
 
 def test_global_quadratic_n0p_grand_potential_reactivity():
     # E(N) = -100 + 5*N^2, N0=5
-    model = QuadraticGlobalTool(25.0, 80.0, -20.0, 5)
+    model = QuadraticGlobalTool({5: 25.0, 6: 80.0, 4: -20.0})
     # check hyper-softnesses
     assert_almost_equal(model.hyper_softness(2), 0.0, decimal=6)
     assert_almost_equal(model.hyper_softness(3), 0.0, decimal=6)
     assert_almost_equal(model.hyper_softness(4), 0.0, decimal=6)
+
+
+def test_local_quadratic_raises():
+    # fake density arrays
+    d0 = np.array([1.0, 3.0, 5.0, 2.0, 7.0])
+    dp = np.array([0.5, 4.5, 6.0, 1.0, 5.0])
+    dm = np.array([1.0, 4.0, 3.0, 2.0, 8.0])
+    # check value of N0
+    assert_raises(ValueError, QuadraticLocalTool, {0.45: d0, 1.0: dp, 0.0: dm})
+    assert_raises(ValueError, QuadraticLocalTool, {1.0: d0, 1.5: dp, 0.5: dm})
+    assert_raises(ValueError, QuadraticLocalTool, {0.45: d0, 1.0: dp, 0.0: dm})
+    assert_raises(ValueError, QuadraticLocalTool, {3.0: d0, 5.0: dp, 1.0: dm})
+    # check number of items
+    assert_raises(ValueError, QuadraticLocalTool, {2.0: d0, 3.0: dp})
+    assert_raises(ValueError, QuadraticLocalTool, {2.0: d0, 3.0: dp, 1.0: dm, 4.0: 2 * d0})
 
 
 def test_local_quadratic_first_order():
@@ -427,7 +443,7 @@ def test_local_quadratic_first_order():
     dp = np.array([0.5, 4.5, 6.0, 1.0, 5.0])
     dm = np.array([1.0, 4.0, 3.0, 2.0, 8.0])
     # build a linear local model
-    model = QuadraticLocalTool(d0, dp, dm, 5)
+    model = QuadraticLocalTool({5: d0, 6: dp, 4: dm})
     # check density
     assert_almost_equal(model.density_zero, d0, decimal=6)
     assert_almost_equal(model.density_plus, dp, decimal=6)
@@ -456,7 +472,7 @@ def test_local_quadratic_higher_order():
     dp = np.array([0.5, 4.5, 6.0, 1.0, 5.0])
     dm = np.array([1.0, 4.0, 3.0, 2.0, 8.0])
     # build quadratic local model
-    model = QuadraticLocalTool(d0, dp, dm, 5)
+    model = QuadraticLocalTool({5: d0, 6: dp, 4: dm})
     # check dual Descriptor
     expected = np.array([-0.5, 2.5, -1.0, -1.0, -1.0])
     assert_almost_equal(model.dual_descriptor(), expected, decimal=6)

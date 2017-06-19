@@ -49,19 +49,22 @@ def make_analytical_rational_grand_derivatives(deriv):
 
 def test_global_rational_raises():
     # check invalid energy values
-    assert_raises(ValueError, RationalGlobalTool, 15.0, 16.5, 18.1, 5.0)
-    assert_raises(ValueError, RationalGlobalTool, -15.0, -16.5, -18.1, 6.0)
-    assert_raises(ValueError, RationalGlobalTool, -15.0, -14.5, -16.0, 10)
-    assert_raises(ValueError, RationalGlobalTool, -15.0, -14.9, -14.0, 8)
-    assert_raises(ValueError, RationalGlobalTool, -15.0, -15.0, -16.0, 8)
+    assert_raises(ValueError, RationalGlobalTool, {5.: 15.0, 6.: 16.5, 4.: 18.1})
+    assert_raises(ValueError, RationalGlobalTool, {6.: -15.0, 7.: -16.5, 5.: -18.1})
+    assert_raises(ValueError, RationalGlobalTool, {10: -15.0, 11: -14.5, 9: -16.0})
+    assert_raises(ValueError, RationalGlobalTool, {8: -15.0, 9: -14.9, 7: -14.0})
+    assert_raises(ValueError, RationalGlobalTool, {8: -15.0, 9: -15.0, 7: -16.0})
     # check invalid N0
-    assert_raises(ValueError, RationalGlobalTool, -15.0, -14.4, -14.0, 0)
-    assert_raises(ValueError, RationalGlobalTool, -15.0, -14.4, -14.0, 0.3)
-    assert_raises(ValueError, RationalGlobalTool, -15.0, -14.4, -14.0, 0.98)
-    assert_raises(ValueError, RationalGlobalTool, -15.0, -14.9, -14.0, -1.)
-    assert_raises(ValueError, RationalGlobalTool, -15.0, -14.9, -14.0, -2)
+    assert_raises(ValueError, RationalGlobalTool, {0: -15.0, 1: -14.4, -1: -14.0})
+    assert_raises(ValueError, RationalGlobalTool, {0.3: -15.0, 1.3: -14.4, -0.7: -14.0})
+    assert_raises(ValueError, RationalGlobalTool, {0.98: -15.0, 1.98: -14.4, -0.02: -14.0})
+    assert_raises(ValueError, RationalGlobalTool, {-1.: -15.0, 0.: -14.9, -2.: -14.0})
+    assert_raises(ValueError, RationalGlobalTool, {-2: -15.0, -1: -14.9, -3: -14.0})
+    assert_raises(ValueError, RationalGlobalTool, {0.8: -15.0, 0.0: -14.9, 1.5: -14.0})
+    assert_raises(ValueError, RationalGlobalTool, {5.0: -15.0, 4.5: -14.9, 5.5: -14.0})
+    assert_raises(ValueError, RationalGlobalTool, {4.0: -15.0, 2.0: -14.9, 6.0: -14.0})
     # check invalid N
-    model = RationalGlobalTool(5.2, 4.8, 6.0, 5.0)
+    model = RationalGlobalTool({5.: 5.2, 6.: 4.8, 4.: 6.0})
     assert_raises(ValueError, model.energy, -0.005)
     assert_raises(ValueError, model.energy, -1.35)
     assert_raises(ValueError, model.energy, -2.45)
@@ -81,7 +84,7 @@ def test_global_rational_pnpp_energy():
     # E(N) = (0.5 - 2.2 N) / (1 + 0.7 N)
     energy, deriv, _ = make_symbolic_rational_model(0.5, -2.2, 1., 0.7)
     # Build rational global tool instance
-    model = RationalGlobalTool(-1.6250, -1.96774193, -1.0, 2.0)
+    model = RationalGlobalTool({2.: -1.6250, 3.: -1.96774193, 1.: -1.0})
     # check parameters
     assert_almost_equal(model.n0, 2.0, decimal=6)
     assert_almost_equal(model.params[0], 0.5, decimal=6)
@@ -121,7 +124,7 @@ def test_global_rational_pnpp_energy_reactivity():
     # E(N) = (0.5 - 2.2 N) / (1 + 0.7 N)
     energy, deriv, _ = make_symbolic_rational_model(0.5, -2.2, 1., 0.7)
     # Build rational global tool instance
-    model = RationalGlobalTool(-1.6250, -1.96774193, -1.0, 2.0)
+    model = RationalGlobalTool({2.: -1.6250, 3.: -1.96774193, 1.: -1.0})
     # check global descriptors (expected values are computed symbolically)
     assert_almost_equal(model.ip, energy(1.0) - energy(2.0), decimal=6)
     assert_almost_equal(model.ea, energy(2.0) - energy(3.0), decimal=6)
@@ -153,7 +156,7 @@ def test_global_rational_pnpp_grand_potential():
     # E(N) = (0.5 - 2.2 N) / (1 + 0.7 N)
     _, deriv, grand = make_symbolic_rational_model(0.5, -2.2, 1., 0.7)
     # Build rational global tool instance
-    model = RationalGlobalTool(-1.6250, -1.96774193, -1.0, 2.0)
+    model = RationalGlobalTool({2.: -1.6250, 3.: -1.96774193, 1.: -1.0})
     # check grand potential (as a function of N)
     assert_almost_equal(model.grand_potential(1.), grand(1.), decimal=6)
     assert_almost_equal(model.grand_potential(2.), grand(2.0), decimal=6)
@@ -201,7 +204,7 @@ def test_global_rational_pnpp_grand_potential_reactivity():
     # E(N) = (0.5 - 2.2 N) / (1 + 0.7 N)
     n0, a0, a1, b1 = 2.0, 0.5, -2.2, 0.7
     # build global tool
-    model = RationalGlobalTool(-1.6250, -1.96774193, -1.0, 2.0)
+    model = RationalGlobalTool({2.: -1.6250, 3.: -1.96774193, 1.: -1.0})
     # check hyper-softnesses
     expected = 3.0 * (1 + b1 * n0)**5 / (4 * b1 * (a1 - a0 * b1)**2)
     assert_almost_equal(model.hyper_softness(2), expected, decimal=6)
@@ -215,7 +218,7 @@ def test_global_rational_nnpp_energy():
     # E(N) = (-0.15 - 4.2 N) / (1 + 0.45 N)
     energy, deriv, _ = make_symbolic_rational_model(-0.15, -4.2, 1., 0.45)
     # build global tool
-    model = RationalGlobalTool(-6.99363057, -7.23428571, -6.69064748, 6.5)
+    model = RationalGlobalTool({6.5: -6.99363057, 7.5: -7.23428571, 5.5: -6.69064748})
     # check parameters
     assert_almost_equal(model.n0, 6.5, decimal=6)
     assert_almost_equal(model.params[0], -0.15, decimal=6)
@@ -240,7 +243,7 @@ def test_global_rational_nnpp_energy_reactivity():
     # E(N) = (-0.15 - 4.2 N) / (1 + 0.45 N)
     energy, deriv, _ = make_symbolic_rational_model(-0.15, -4.2, 1., 0.45)
     # build global tool
-    model = RationalGlobalTool(-6.99363057, -7.23428571, -6.69064748, 6.5)
+    model = RationalGlobalTool({6.5: -6.99363057, 7.5: -7.23428571, 5.5: -6.69064748})
     # check global descriptors (expected values are computed symbolically)
     assert_almost_equal(model.ip, energy(5.5) - energy(6.5), decimal=6)
     assert_almost_equal(model.ea, energy(6.5) - energy(7.5), decimal=6)
@@ -272,7 +275,7 @@ def test_global_rational_nnpp_grand_potential():
     # E(N) = (-0.15 - 4.2 N) / (1 + 0.45 N)
     _, deriv, _ = make_symbolic_rational_model(-0.15, -4.2, 1., 0.45)
     # build global tool
-    model = RationalGlobalTool(-6.99363057, -7.23428571, -6.69064748, 6.5)
+    model = RationalGlobalTool({6.5: -6.99363057, 7.5: -7.23428571, 5.5: -6.69064748})
     # check grand potential (as a function of N)
     assert_almost_equal(model.grand_potential(6.5), -5.2500304, decimal=6)
     assert_almost_equal(model.grand_potential(7.91), -5.7468530, decimal=6)
@@ -313,7 +316,7 @@ def test_global_rational_nnpp_grand_potential_reactivity():
     # E(N) = (-0.15 - 4.2 N) / (1 + 0.45 N)
     n0, a0, a1, b1 = 6.5, -0.15, -4.2, 0.45
     # build global tool
-    model = RationalGlobalTool(-6.99363057, -7.23428571, -6.69064748, 6.5)
+    model = RationalGlobalTool({6.5: -6.99363057, 7.5: -7.23428571, 5.5: -6.69064748})
     # check hyper-softnesses
     expected = 3.0 * (1 + b1 * n0)**5 / (4 * b1 * (a1 - a0 * b1)**2)
     assert_almost_equal(model.hyper_softness(2), expected, decimal=5)

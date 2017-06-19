@@ -79,40 +79,17 @@ class BaseConceptualDFT(object):
         self._coordinates = coordinates
         self._numbers = numbers
 
-        if self._model != 'general':
-            # get sorted number of electrons
-            nelectrons = sorted(dict_values.keys())
-            # get value for sorted number of electrons
-            values = [dict_values[key] for key in nelectrons]
-
-            if len(nelectrons) != 3:
-                raise NotImplementedError(
-                    'For model={0}, three values are required!'.format(self._model))
-
-            # check number of electrons are integers
-            if not all(isinstance(item, int) or
-                       (isinstance(item, float) and (item).is_integer()) for item in nelectrons):
-                raise ValueError('For model={0}, integer number of electrons are required! '
-                                 '#electrons={1}'.format(self._model, nelectrons))
-
-            # check consecutive number of electrons change by one
-            if not all([y - x == 1 for x, y in zip(nelectrons[:-1], nelectrons[1:])]):
-                raise ValueError('For model={0}, consecutive number of electrons should differ by '
-                                 '1! #electrons={1}'.format(self._model, nelectrons))
-
-            # obtain reference number of electrons
-            if len(nelectrons) % 2 == 0:
-                raise NotImplementedError('Even number of molecules is not implemented yet!')
-            else:
-                # consider the middle system as reference
-                reference = nelectrons[len(nelectrons) // 2]
-
-            # make a list of arguments for global tool
-            args = [values[1], values[2], values[0], reference]
-            self._tool = dict_models[self._model](*args)
-        else:
+        if self._model == 'general':
             # self._tool = select_tool[model](*args, **kwargs)
             raise NotImplementedError('Model={0} is not covered yet!'.format(self._model))
+
+        # check number of electrons are integers
+        if not all([isinstance(item, (int, float)) for item in dict_values.keys()]):
+            raise ValueError('For model={0}, integer number of electrons are required! '
+                             '#electrons={1}'.format(self._model, dict_values.keys()))
+
+        # make an instance of global tool
+        self._tool = dict_models[self._model](dict_values)
 
         # print screen information
         self._log_init()
@@ -558,11 +535,8 @@ class GlobalConceptualDFT(BaseConceptualDFT):
         if log.do_medium:
             log('Initialize: %s' % self.__class__)
             log.deflist([('Energy Model', self._model),
-                         # ('Parameters', self._tool.params),
-                         ('Reference Energy', self._tool.energy_zero),
-                         ('Reference #Electrons', self._tool.n0),
-                         ('Energy Values', [getattr(self._tool, attr) for attr in
-                                            ['_energy_minus', 'energy_zero', '_energy_plus']])])
+                         ('Parameters', self._tool.params),
+                         ('Reference Energy', self._tool.dict_energy)])
             log.blank()
 
     @classmethod

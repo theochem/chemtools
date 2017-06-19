@@ -54,26 +54,33 @@ class RationalGlobalTool(BaseGlobalTool):
     """
 
     @doc_inherit(BaseGlobalTool)
-    def __init__(self, energy_zero, energy_plus, energy_minus, n0):
-        # check N0
+    def __init__(self, dict_energy):
+        # check energy values
+        if len(dict_energy) != 3 or not all([key >= 0 for key in dict_energy.keys()]):
+            raise ValueError('Rational model requires 3 energy values corresponding '
+                             'to positive number of electrons!')
+        # find reference number of electrons
+        n0 = sorted(dict_energy.keys())[1]
         if n0 < 1:
             raise ValueError('Argument n0 cannot be less than one! Given n0={0}'.format(n0))
+        # check number of electrons differ by one
+        if sorted(dict_energy.keys()) != [n0 - 1, n0, n0 + 1]:
+            raise ValueError('Number of electrons should differ by one!')
         # check energy values are monotonic, i.e. E(N-1) > E(N) > E(N+1)
-        if not energy_minus > energy_zero >= energy_plus:
-            energies = [energy_minus, energy_zero, energy_plus]
-            n_values = [n0 - 1, n0, n0 + 1]
-            raise ValueError('To interpolate rational energy model, E values vs. N should be ' +
-                             'monotonic! Given E={0} for N={1}.'.format(energies, n_values))
-
+        energy_m, energy_0, energy_p = [dict_energy[n] for n in sorted(dict_energy.keys())]
+        if not energy_m > energy_0 >= energy_p:
+            energies = [energy_m, energy_0, energy_p]
+            raise ValueError('For rational model, the energy values for consecutive number of '
+                             'electrons should be monotonic! E={0}'.format(energies))
         # calculate parameters a0, a1 and b1 of rational energy model
-        b1 = - (energy_plus - 2 * energy_zero + energy_minus)
-        b1 /= ((n0 + 1) * energy_plus - 2 * n0 * energy_zero + (n0 - 1) * energy_minus)
-        a1 = (1 + b1 * n0) * (energy_plus - energy_zero) + (b1 * energy_plus)
-        a0 = - a1 * n0 + energy_zero * (1 + b1 * n0)
+        b1 = - (energy_p - 2 * energy_0 + energy_m)
+        b1 /= ((n0 + 1) * energy_p - 2 * n0 * energy_0 + (n0 - 1) * energy_m)
+        a1 = (1 + b1 * n0) * (energy_p - energy_0) + (b1 * energy_p)
+        a0 = - a1 * n0 + energy_0 * (1 + b1 * n0)
         self._params = [a0, a1, b1]
         # calculate Nmax
         n_max = float('inf')
-        super(RationalGlobalTool, self).__init__(energy_zero, energy_plus, energy_minus, n0, n_max)
+        super(RationalGlobalTool, self).__init__(dict_energy, n0, n_max)
 
     @property
     def params(self):

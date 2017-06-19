@@ -49,18 +49,22 @@ def make_analytical_grand_derivatives(deriv):
 
 def test_global_exponential_raises():
     # check invalid energy values
-    assert_raises(ValueError, ExponentialGlobalTool, 15.0, 16.5, 18.1, 5.0)
-    assert_raises(ValueError, ExponentialGlobalTool, -15.0, -16.5, -18.1, 6.0)
-    assert_raises(ValueError, ExponentialGlobalTool, -15.0, -14.5, -16.0, 10)
-    assert_raises(ValueError, ExponentialGlobalTool, -15.0, -14.9, -14.0, 8)
+    assert_raises(ValueError, ExponentialGlobalTool, {5.: 15.0, 6.: 16.5, 4.: 18.1})
+    assert_raises(ValueError, ExponentialGlobalTool, {6.: -15.0, 7.: -16.5, 5.: -18.1})
+    assert_raises(ValueError, ExponentialGlobalTool, {10: -15.0, 11: -14.5, 9: -16.0})
+    assert_raises(ValueError, ExponentialGlobalTool, {8: -15.0, 9: -14.9, 7: -14.0})
+    assert_raises(ValueError, ExponentialGlobalTool, {8: 15.0, 9: 14.9, 7: 14.0, 10: 15.0})
     # check invalid N0
-    assert_raises(ValueError, ExponentialGlobalTool, -15.0, -14.4, -14.0, 0)
-    assert_raises(ValueError, ExponentialGlobalTool, -15.0, -14.4, -14.0, 0.3)
-    assert_raises(ValueError, ExponentialGlobalTool, -15.0, -14.4, -14.0, 0.98)
-    assert_raises(ValueError, ExponentialGlobalTool, -15.0, -14.9, -14.0, -1.)
-    assert_raises(ValueError, ExponentialGlobalTool, -15.0, -14.9, -14.0, -2)
+    assert_raises(ValueError, ExponentialGlobalTool, {0: -15.0, 1: -14.4, -1: -14.0})
+    assert_raises(ValueError, ExponentialGlobalTool, {0.3: -15.0, 1.3: -14.4, -0.7: -14.0})
+    assert_raises(ValueError, ExponentialGlobalTool, {0.98: -15.0, 1.98: -14.4, -0.02: -14.0})
+    assert_raises(ValueError, ExponentialGlobalTool, {-1.: -15.0, 0.: -14.9, -2.: -14.0})
+    assert_raises(ValueError, ExponentialGlobalTool, {-2: -15.0, -1: -14.9, -3: -14.0})
+    assert_raises(ValueError, ExponentialGlobalTool, {-2: -15.0, -1: -14.9, -3: -14.0})
+    assert_raises(ValueError, ExponentialGlobalTool, {0.0: -15.0, 0.5: -14.9, 1.0: -14.0})
+    assert_raises(ValueError, ExponentialGlobalTool, {2.: -15.0, 3.5: -14.9, 4.0: -14.0})
     # check invalid N
-    model = ExponentialGlobalTool(5.2, 4.8, 6.0, 5.0)
+    model = ExponentialGlobalTool({5.: 5.2, 6.: 4.8, 4.: 6.0})
     assert_raises(ValueError, model.energy, -0.005)
     assert_raises(ValueError, model.energy, -1.35)
     assert_raises(ValueError, model.energy, -2.45)
@@ -80,7 +84,7 @@ def test_global_exponential_energy():
     # E(N) = 5.0 * exp(-0.1 * (N - 10)) + 3.0
     energy, deriv, _ = make_symbolic_exponential_model(5.0, -0.1, 3.0, 10.)
     # build exponential global tool
-    model = ExponentialGlobalTool(8.0, 7.524187090179797, 8.525854590378238, 10)
+    model = ExponentialGlobalTool({10: 8.0, 11: 7.524187090179797, 9: 8.525854590378238})
     assert_almost_equal(model.params[0], 5.0, decimal=6)
     assert_almost_equal(model.params[2], 3.0, decimal=6)
     assert_almost_equal(model.params[1], 0.1, decimal=6)
@@ -112,7 +116,7 @@ def test_global_exponential_energy_reactivity():
     ip = energy(9) - energy(10)
     ea = energy(10) - energy(11)
     # build exponential global tool
-    model = ExponentialGlobalTool(8.0, 7.524187090179797, 8.525854590378238, 10)
+    model = ExponentialGlobalTool({10: 8.0, 11: 7.524187090179797, 9: 8.525854590378238})
     # check ionization potential and electron affinity
     assert_almost_equal(model.ionization_potential, ip, decimal=6)
     assert_almost_equal(model.electron_affinity, ea, decimal=6)
@@ -145,7 +149,7 @@ def test_global_exponential_grand_potential_n():
     # E(N) = 5.0 * exp(-0.1 * (N - 10)) + 3.0
     _, deriv, grand = make_symbolic_exponential_model(5.0, -0.1, 3.0, 10)
     # build exponential global tool
-    model = ExponentialGlobalTool(8.0, 7.524187090179797, 8.525854590378238, 10)
+    model = ExponentialGlobalTool({10: 8.0, 11: 7.524187090179797, 9: 8.525854590378238})
     # check grand potential (as a function of N)
     assert_almost_equal(model.grand_potential(9.), grand(9.), decimal=6)
     assert_almost_equal(model.grand_potential(10), grand(10), decimal=6)
@@ -181,7 +185,7 @@ def test_global_exponential_grand_potential_mu():
     # E(N) = 5.0 * exp(-0.1 * (N - 10)) + 3.0
     _, deriv, grand = make_symbolic_exponential_model(5.0, -0.1, 3.0, 10)
     # build exponential global tool
-    model = ExponentialGlobalTool(8.0, 7.524187090179797, 8.525854590378238, 10)
+    model = ExponentialGlobalTool({10: 8.0, 11: 7.524187090179797, 9: 8.525854590378238})
     # check mu to N conversion
     assert_almost_equal(model.convert_mu_to_n(-0.5), 10., decimal=6)
     assert_almost_equal(model.convert_mu_to_n(-0.5476345026), 9.09, decimal=6)
@@ -211,7 +215,7 @@ def test_global_exponential_grand_potential_mu():
 def test_global_exponential_grand_potential_reactivity():
     # E(N) = 5.0 * exp(-0.1 * (N - 10)) + 3.0
     # build exponential global tool
-    model = ExponentialGlobalTool(8.0, 7.524187090179797, 8.525854590378238, 10)
+    model = ExponentialGlobalTool({10: 8.0, 11: 7.524187090179797, 9: 8.525854590378238})
     # check hyper-softnesses
     assert_almost_equal(model.hyper_softness(2), 1.0 / (5.**2 * 0.1**3), decimal=6)
     assert_almost_equal(model.hyper_softness(3), 2.0 / (5.**3 * 0.1**4), decimal=6)

@@ -107,10 +107,10 @@ class GeneralGlobalTool(BaseGlobalTool):
         n_max = self._solve_nmax(n0)
 
         # calculate E(N0 - 1), E(N0) and E(N0 + 1) values
-        energy_zero = self.energy(n0)
-        energy_plus = self.energy(n0 + 1)
-        energy_minus = self.energy(n0 - 1)
-        super(GeneralGlobalTool, self).__init__(energy_zero, energy_plus, energy_minus, n0, n_max)
+        dict_energy = {n0: self.energy(n0),
+                       n0 + 1: self.energy(n0 + 1),
+                       n0 - 1: self.energy(n0 - 1)}
+        super(GeneralGlobalTool, self).__init__(dict_energy, n0, n_max)
 
     @property
     def params(self):

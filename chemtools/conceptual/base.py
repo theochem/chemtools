@@ -37,7 +37,7 @@ __all__ = ['BaseGlobalTool']
 class BaseGlobalTool(object):
     """Base class of global conceptual DFT reactivity descriptors."""
 
-    def __init__(self, energy_zero, energy_plus, energy_minus, n0, n_max):
+    def __init__(self, dict_energy, n0, n_max):
         """
         Initialize class.
 
@@ -52,16 +52,20 @@ class BaseGlobalTool(object):
         n0 : float
             Reference number of electrons, i.e. :math:`N_0`.
         """
+        if not all([key >= 0 for key in dict_energy.keys()]):
+            raise ValueError('Number of electrons in dict_energy cannot be negative!')
         if n_max is not None and n_max < 0:
             raise ValueError('Argument n_max cannot be negative! Given n0={0}'.format(n_max))
         self._n0 = n0
         self._n_max = n_max
-        self._energy_zero = energy_zero
-        self._energy_plus = energy_plus
-        self._energy_minus = energy_minus
+        self._dict_energy = dict_energy
         # calculate ionization potential and electron affinity
-        self._ip = energy_minus - energy_zero
-        self._ea = energy_zero - energy_plus
+        if len(dict_energy) == 3:
+            energy_m, energy_0, energy_p = [dict_energy[n] for n in sorted(dict_energy.keys())]
+            self._ip = energy_m - energy_0
+            self._ea = energy_0 - energy_p
+        else:
+            raise NotImplementedError('Only 3 energy values are supported!')
 
     @property
     def n0(self):
@@ -78,9 +82,9 @@ class BaseGlobalTool(object):
         return self._n_max
 
     @property
-    def energy_zero(self):
-        """Energy of the system with :math:`N_0` electrons, i.e. :math:`E(N_0)`."""
-        return self._energy_zero
+    def dict_energy(self):
+        """Dictionary of number of electrons (key) and corresponding energy (value)."""
+        return self._dict_energy
 
     @property
     def ionization_potential(self):
@@ -134,7 +138,7 @@ class BaseGlobalTool(object):
         if self._n_max is None:
             return None
         sign = np.sign(self._n_max - self._n0)
-        value = sign * (self._energy_zero - self.energy(self._n_max))
+        value = sign * (self.energy(self._n0) - self.energy(self._n_max))
         return value
 
     @property
@@ -525,7 +529,7 @@ class BaseGlobalTool(object):
 class BaseLocalTool(object):
     """Base class of local conceptual DFT reactivity descriptors."""
 
-    def __init__(self, density_zero, density_plus, density_minus, n0):
+    def __init__(self, dict_density, n0):
         r"""
         Initialize class.
 
@@ -544,15 +548,20 @@ class BaseLocalTool(object):
             Reference number of electrons, i.e. :math:`N_0`, which corresponds
             to the integral of density_zero over all space.
         """
-        if np.any(density_zero < 0):
-            raise ValueError('Argument density_zero should be an array of positive values!')
-        if np.any(density_plus < 0):
-            raise ValueError('Argument density_plus should be an array of positive values!')
-        if np.any(density_minus < 0):
-            raise ValueError('Argument density_minus should be an array of positive values!')
-        self._density_zero = density_zero
-        self._density_plus = density_plus
-        self._density_minus = density_minus
+        if not all([key >= 0 for key in dict_density.keys()]):
+            raise ValueError('Number of electrons in dict_density cannot be negative!')
+        if any([np.any(dens < 0) for dens in dict_density.values()]):
+            raise ValueError('Density arrays should not contain negative values!')
+
+        self._dict_density = dict_density
+        # calculate ionization potential and electron affinity
+        if len(dict_density) != 3:
+            raise NotImplementedError('Only 3 density values are supported!')
+
+        # sorted number of electrons
+        nelectrons = sorted(dict_density.keys())
+        self._dens_m, self._dens_0, self._dens_p = [dict_density[n] for n in nelectrons]
+        self._dict_density = dict_density
         self._n0 = n0
 
     @property
@@ -563,14 +572,19 @@ class BaseLocalTool(object):
     @property
     def density_zero(self):
         r"""Electron density of :math:`N_0`-electron system :math:`\rho_{N_0}(\mathbf{r})`."""
-        return self._density_zero
+        return self._dens_0
 
     @property
     def density_plus(self):
         r"""Electron density of :math:`(N_0+1)`-electron system :math:`\rho_{N_0+1}(\mathbf{r})`."""
-        return self._density_plus
+        return self._dens_p
 
     @property
     def density_minus(self):
         r"""Electron density of :math:`(N_0-1)`-electron system :math:`\rho_{N_0-1}(\mathbf{r})`."""
-        return self._density_minus
+        return self._dens_m
+
+    @property
+    def dict_density(self):
+        """Dictionary of number of electrons (key) and corresponding density array (value)."""
+        return self._dict_density

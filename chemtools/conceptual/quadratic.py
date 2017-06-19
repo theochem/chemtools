@@ -54,18 +54,27 @@ class QuadraticGlobalTool(BaseGlobalTool):
     """
 
     @doc_inherit(BaseGlobalTool)
-    def __init__(self, energy_zero, energy_plus, energy_minus, n0):
-        # check N0
+    def __init__(self, dict_energy):
+        # check energy values
+        if len(dict_energy) != 3 or not all([key >= 0 for key in dict_energy.keys()]):
+            raise ValueError('Quadratic model requires 3 energy values corresponding '
+                             'to positive number of electrons!')
+        # find reference number of electrons
+        n0 = sorted(dict_energy.keys())[1]
         if n0 < 1:
             raise ValueError('Argument n0 cannot be less than one! Given n0={0}'.format(n0))
+        # check number of electrons differ by one
+        if sorted(dict_energy.keys()) != [n0 - 1, n0, n0 + 1]:
+            raise ValueError('Number of electrons should differ by one!')
         # calculate parameters a, b, c of quadratic energy model
-        c = 0.5 * (energy_minus - 2 * energy_zero + energy_plus)
-        b = 0.5 * (energy_plus - energy_minus) - 2 * c * n0
-        a = energy_zero - b * n0 - c * (n0**2)
+        energy_m, energy_0, energy_p = [dict_energy[n] for n in sorted(dict_energy.keys())]
+        c = 0.5 * (energy_m - 2 * energy_0 + energy_p)
+        b = 0.5 * (energy_p - energy_m) - 2 * c * n0
+        a = energy_0 - b * n0 - c * (n0**2)
         self._params = [a, b, c]
         # calculate Nmax (number of electrons for which energy is minimum)
         n_max = - b / (2 * c)
-        super(QuadraticGlobalTool, self).__init__(energy_zero, energy_plus, energy_minus, n0, n_max)
+        super(QuadraticGlobalTool, self).__init__(dict_energy, n0, n_max)
 
     @property
     def params(self):
@@ -132,11 +141,22 @@ class QuadraticLocalTool(BaseLocalTool):
     """
 
     @doc_inherit(BaseLocalTool)
-    def __init__(self, density_zero, density_plus, density_minus, n0):
-        super(QuadraticLocalTool, self).__init__(density_zero, density_plus, density_minus, n0)
+    def __init__(self, dict_density):
+        # check density values
+        if len(dict_density) != 3 or not all([key >= 0 for key in dict_density.keys()]):
+            raise ValueError('Quadratic model requires 3 density values corresponding '
+                             'to positive number of electrons!')
+        # find reference number of electrons
+        n0 = sorted(dict_density.keys())[1]
+        if n0 < 1:
+            raise ValueError('Argument n0 cannot be less than one! Given n0={0}'.format(n0))
+        # check number of electrons differ by one
+        if sorted(dict_density.keys()) != [n0 - 1, n0, n0 + 1]:
+            raise ValueError('Number of electrons should differ by one!')
+        super(QuadraticLocalTool, self).__init__(dict_density, n0)
         # Fukui function and dual descriptor of N0-electron system
-        self._ff0 = 0.5 * (self._density_plus - self._density_minus)
-        self._df0 = self._density_plus - 2 * self._density_zero + self._density_minus
+        self._ff0 = 0.5 * (self.density_plus - self.density_minus)
+        self._df0 = self.density_plus - 2 * self.density_zero + self.density_minus
 
     def density(self, number_electrons=None):
         r"""
@@ -158,12 +178,11 @@ class QuadraticLocalTool(BaseLocalTool):
         number_electrons : float, default=None
             Number of electrons. If None, the :math:`\rho_{N_0}\left(\mathbf{r}\right)` is returned.
         """
-        if (number_electrons is None) or (number_electrons == self._n0):
-            return self._density_zero
-        else:
+        rho = self.density_zero.copy()
+        if (number_electrons is not None) and (number_electrons != self._n0):
             dN = (number_electrons - self._n0)
-            rho = self._density_zero + self._ff0 * dN + 0.5 * self._df0 * dN**2
-            return rho
+            rho += self._ff0 * dN + 0.5 * self._df0 * dN**2
+        return rho
 
     def fukui_function(self, number_electrons=None):
         r"""

@@ -50,7 +50,7 @@ def test_global_conceptual_raises():
     values = {0: 0.0, 1: -0.5, 3: -0.45}
     assert_raises(ValueError, GlobalConceptualDFT, values, 'quadratic')
     values = {0: 0.0, 1: -0.5, 2: -0.45, 3: -0.4}
-    assert_raises(NotImplementedError, GlobalConceptualDFT, values, 'quadratic', coord)
+    assert_raises(ValueError, GlobalConceptualDFT, values, 'quadratic', coord)
     # check non-existing attribute
     model = GlobalConceptualDFT({0.0: 0.0, 1.0: -0.5, 2.0: -0.45}, 'quadratic')
     assert_raises(AttributeError, getattr, model, 'mu_plus')
