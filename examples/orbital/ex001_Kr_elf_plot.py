@@ -14,6 +14,7 @@ from horton import IOData, get_gobasis, CholeskyLinalgFactory, guess_core_hamilt
 from horton import compute_nucnuc, REffHam, AufbauOccModel, PlainSCFSolver, AtomicGrid
 from horton.meanfield import RTwoIndexTerm, RDirectTerm, RExchangeTerm
 from chemtools import OrbitalLocalTool
+from chemtools.toolbox.molecule import make_molecule
 
 # 1. Run a Hartree-Fock calculation with cc-pVDZ basis-set using HORTON
 
@@ -23,22 +24,22 @@ mol.coordinates = np.array([[0.0, 0.0, 0.0]])
 mol.numbers = np.array([36])
 
 # make a cc-pVDZ basis-set
-obasis = get_gobasis(mol.coordinates, mol.numbers, 'cc-pVDZ')
+mol.obasis = get_gobasis(mol.coordinates, mol.numbers, 'cc-pVDZ')
 
 # create a linalg factory
-lf = CholeskyLinalgFactory(obasis.nbasis)
+mol.lf = CholeskyLinalgFactory(mol.obasis.nbasis)
 
 # compute Gaussian integrals
-olp = obasis.compute_overlap(lf)
-kin = obasis.compute_kinetic(lf)
-na = obasis.compute_nuclear_attraction(mol.coordinates, mol.pseudo_numbers, lf)
-er = obasis.compute_electron_repulsion(lf)
+olp = mol.obasis.compute_overlap(mol.lf)
+kin = mol.obasis.compute_kinetic(mol.lf)
+na = mol.obasis.compute_nuclear_attraction(mol.coordinates, mol.pseudo_numbers, mol.lf)
+er = mol.obasis.compute_electron_repulsion(mol.lf)
 
 # create alpha orbitals
-exp_alpha = lf.create_expansion()
+mol.exp_alpha = mol.lf.create_expansion()
 
 # initial guess
-guess_core_hamiltonian(olp, kin, na, exp_alpha)
+guess_core_hamiltonian(olp, kin, na, mol.exp_alpha)
 
 # construct restricted HF effective Hamiltonian
 external = {'nn': compute_nucnuc(mol.coordinates, mol.pseudo_numbers)}
@@ -54,7 +55,7 @@ occ_model = AufbauOccModel(18)
 
 # compute WFN with plain SCF
 scf_solver = PlainSCFSolver(1e-6)
-scf_solver(ham, lf, olp, occ_model, exp_alpha)
+scf_solver(ham, mol.lf, olp, occ_model, mol.exp_alpha)
 
 # 2. Post-processing
 # ------------------
@@ -67,7 +68,8 @@ grid = AtomicGrid(mol.numbers[0], mol.pseudo_numbers[0], mol.coordinates[0],
 radii = grid.rgrid.radii
 
 # construct an OrbitalLocalTool
-tool = OrbitalLocalTool(grid.points, obasis, exp_alpha)
+molecule = make_molecule(mol, package_name='horton')
+tool = OrbitalLocalTool(molecule, grid.points)
 
 # calculate spherically-averaged density & Electron Localization Function (ELF)
 dens = grid.get_spherical_average(tool.density)

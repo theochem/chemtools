@@ -25,6 +25,7 @@
 import numpy as np
 from numpy.testing import assert_raises
 from horton import IOData
+from chemtools.toolbox.molecule import make_molecule
 from chemtools import context, CubeGen, OrbitalAnalysis
 
 
@@ -262,7 +263,7 @@ def test_orbital_analysis_from_file_ch4_rhf_ccpvdz():
     assert_raises(ValueError, OrbitalAnalysis.from_file, [file_path, file_path], cube.points)
 
 
-def test_orbital_analysis_from_iodata_ch4_uhf_ccpvdz():
+def test_orbital_analysis_from_molecule_ch4_uhf_ccpvdz():
     file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
     mol = IOData.from_file(file_path)
     rmol = IOData.from_file(file_path)
@@ -277,8 +278,8 @@ def test_orbital_analysis_from_iodata_ch4_uhf_ccpvdz():
     cube = CubeGen(mol.numbers, mol.pseudo_numbers, mol.coordinates, ori, ax, sh)
 
     # initialize OrbitalLocalTool:
-    orbtool = OrbitalAnalysis.from_iodata(mol, cube.points)
-    rorbtool = OrbitalAnalysis.from_iodata(rmol, cube.points)
+    orbtool = OrbitalAnalysis.from_molecule(make_molecule(mol), cube.points)
+    rorbtool = OrbitalAnalysis.from_molecule(make_molecule(rmol), cube.points)
 
     # density results obtained from Fortran code:
     result = [0.00003304, 0.00053319, 0.00019292, 0.00111552, 0.00679461,

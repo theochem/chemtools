@@ -26,7 +26,7 @@ This modules contains wrappers which take outputs of quantum chemistry software 
 compute various descriptive tools based on the density and orbital information.
 """
 
-from horton import IOData
+from chemtools.toolbox.molecule import make_molecule
 from chemtools.orbtools.orbitalbased import OrbitalLocalTool
 
 __all__ = ['OrbitalAnalysis']
@@ -35,11 +35,11 @@ __all__ = ['OrbitalAnalysis']
 class OrbitalAnalysis(OrbitalLocalTool):
     """Class for orbital-based analysis."""
 
-    def __init__(self, points, obasis, exp_alpha, exp_beta=None):
-        super(OrbitalAnalysis, self).__init__(points, obasis, exp_alpha, exp_beta=exp_beta)
+    def __init__(self, molecule, points):
+        super(OrbitalAnalysis, self).__init__(molecule, points)
 
     @classmethod
-    def from_file(cls, filename, points):
+    def from_file(cls, filename, points, package_name=None):
         """
         Initialize class from file.
 
@@ -49,32 +49,27 @@ class OrbitalAnalysis(OrbitalLocalTool):
             Path to molecule's files.
         points : np.ndarray
             Gridpoints used to calculate the properties.
+        package_name : str, default=None
+            Name of the package that will be used to create the Molecule instance
+            The wrapper for this package must exist in ChemTools
         """
         # case of one file not given as a list
         if isinstance(filename, (str, unicode)):
-            mol = IOData.from_file(filename)
-            if hasattr(mol, 'exp_beta'):
-                return cls(points, mol.obasis, mol.exp_alpha, mol.exp_beta)
-            else:
-                return cls(points, mol.obasis, mol.exp_alpha)
+            return cls.from_molecule(make_molecule(filename, package_name=package_name), points)
         # case of list of file(s)
         for _ in filename:
             raise ValueError('Multiple files are not supported')
 
     @classmethod
-    def from_iodata(cls, iodata, points):
+    def from_molecule(cls, molecule, points):
         """
-        Initialize class from `IOData` object.
+        Initialize class from `Molecule` object.
 
         Parameters
         ----------
-        iodata : `IOData`
-            Instance of `IOData`.
+        molecule : ``Molecule``
+            Instance of ``Molecule``.
         points : np.ndarray
             Gridpoints used to calculate the properties.
         """
-        # check if iodata has exp_beta
-        if hasattr(iodata, 'exp_beta'):
-            return cls(points, iodata.obasis, iodata.exp_alpha, iodata.exp_beta)
-        else:
-            return cls(points, iodata.obasis, iodata.exp_alpha)
+        return cls(molecule, points)
