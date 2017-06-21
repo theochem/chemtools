@@ -51,16 +51,7 @@ You can build ChemTools with the commands:
 
 .. code-block:: bash
 
-   cd chemtools
-   python setup.py build
-
-``PYTHONPATH`` and ``CTDATA`` paths need to be
-added to your profile, **~/.bashrc** (Linux) or **~/.profile** (Mac OS):
-
-.. code-block:: bash
-
-   export PYTHONPATH=$PYTHONPATH:{path_to_chemtools_repo}
-   export CTDATA={path_to_chemtools_repo}/data
+   pip install -e chemtools
 
 Running Tests
 =============
@@ -169,8 +160,7 @@ as a submodule from ChemTools parent directory:
 
    git submodule update --init doc/_themes/sphinx_rtd_theme
 
-Also, make sure that the :ref:`environment variable <dev_build>` ``CTDATA`` is set and
-:ref:`examples files are downloaded <usr_lfs_installation>`.
+Also, make sure that the :ref:`examples files are downloaded <usr_lfs_installation>`.
 
 To automatically generate API documentation and generate HTML:
 

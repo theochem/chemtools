@@ -32,9 +32,9 @@ Downloading Code
 
 The latest code can be obtained through Github (private at present),
 
-  .. code-block:: bash
+.. code-block:: bash
 
-     git clone https://github.com/QuantumElephant/chemtools.git chemtools
+  git clone https://github.com/QuantumElephant/chemtools.git chemtools
 
 
 .. _usr_py_depend:
@@ -86,6 +86,27 @@ To install the first seven dependencies (Python related dependencies):
      sudo port install py27-nose; sudo port select --set nosetests nosetests27
      sudo port install py27-numpy py27-scipy py27-sympy py27-matplotlib
      sudo port install py27-pip; sudo port select --set pip pip27
+
+* **All other systems**
+
+  All the system compatible with `Docker <https://www.docker.com/>`_ can run
+  ChemTools in the pre-build container. Refer `this page <https://www.docker.com/community-edition>`_
+  for Docker installation guide. To install ChemTools container, you can run
+
+  .. code-block:: bash
+
+     docker pull tczorro/chemtools:0.9.0  # normal 0.9.0 version
+     docker run -it tczorro/chemtools:0.9.0  # enter linux bash environment
+
+  Or, if you prefer using Jupyter, you can download Jupyter version Chemtools and have the
+  notebook webpage forwarded to your local machine.
+
+  .. code-block:: bash
+
+     docker pull tczorro/chemtools:0.9.0_jupyter  # 0.9.0 version with jupyter
+     docker run -p 8888:8888 tczorro/chemtools:0.9.0_jupyter # forward jupyter notebook to host machine
+
+  Then copy the ``http`` link to your browser.
 
 HORTON
 ~~~~~~
@@ -139,14 +160,14 @@ To install Git LFS,
 
 .. _usr_lfs_files:
 
-To download the examples files,
+  To download the examples files,
 
   .. code-block:: bash
 
      git lfs pull
 
 
-To get a list of all the files tracked with Git LFS,
+  To get a list of all the files tracked with Git LFS,
 
   .. code-block:: bash
 
@@ -158,9 +179,9 @@ Installation
 
 To install ChemTools run:
 
-  .. code-block:: bash
+.. code-block:: bash
 
-     ./setup.py install --user
+  ./setup.py install --user
 
 
 .. _usr_testing:
@@ -171,9 +192,9 @@ Testing
 To ensure that all the parts of ChemTools working properly, nosetests can be used to run ChemTool's
 automatic tests:
 
-  .. code-block:: bash
+.. code-block:: bash
 
-     nosetests -v chemtools
+  nosetests -v chemtools
 
 At this stage, some ``UserWarning`` messages are printed in between tests which is expected.
 However, no test should fail.
