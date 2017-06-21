@@ -109,25 +109,22 @@ class NCI(object):
         """
         # case of one file not given as a list
         if isinstance(filename, (str, unicode)):
-            return cls.from_molecule(make_molecule(filename), cube, package_name)
+            return cls.from_molecule(make_molecule(filename, package_name=package_name), cube)
         # case of list of file(s)
         for _ in filename:
             raise ValueError('Multiple files are not supported')
 
     @classmethod
-    def from_molecule(cls, molecule, cube=None, package_name=None):
-        """Initialize class from ``IOData`` object from ``HORTON`` library.
+    def from_molecule(cls, molecule, cube=None):
+        """Initialize class from ``Molecule`` object.
 
         Parameters
         ----------
-        iodata : ``IOData``
-            Instance of ``IOData``.
+        molecule : ``Molecule``
+            Instance of ``Molecule``.
         cube : instance of `CubeGen`, default=None
             Cubic grid used for calculating and visualizing the NCI.
             If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
-        package_name : str, default=None
-            Name of the package that will be used to create the Molecule instance
-            The wrapper for this package must exist in ChemTools
         """
         # Generate or check cubic grid
         if cube is None:
