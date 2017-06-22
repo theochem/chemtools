@@ -53,7 +53,10 @@ def make_molecule(*args, **kwargs):
         If there are no packages available that can be used with ChemTools
         If the specified package cannot be found
     """
-    if 'package_name' not in kwargs:
+    # get package_name (set it to None, if it does not exist)
+    package_name = kwargs.setdefault('package_name', None)
+
+    if package_name is None:
         for abs_classname in ['chemtools.utils.wrappers.Psi4Molecule',
                               'chemtools.utils.wrappers.HortonMolecule']:
             try:
@@ -62,18 +65,19 @@ def make_molecule(*args, **kwargs):
                 if len(args) == 1 and isinstance(args[0], str):
                     return Molecule.from_file(*args)
                 else:
-                    return Molecule(*args, **kwargs)
+                    # return Molecule(*args, **kwargs)
+                    return Molecule(*args)
             except (AttributeError, ImportError):
                 pass
             else:
                 raise NotImplementedError('Cannot find packages compatible with ChemTools.')
 
-    package_name = kwargs['package_name'].lower()
-    if package_name == 'horton':
+    elif package_name.lower() == 'horton':
         from chemtools.utils.wrappers import HortonMolecule
         if len(args) == 1 and isinstance(args[0], str):
             return HortonMolecule.from_file(*args)
         return HortonMolecule(*args)
+
     else:
         raise NotImplementedError('Given package, {0}, is not supported with '
                                   'ChemTools.'.format(package_name))
