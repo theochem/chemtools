@@ -53,6 +53,12 @@ You can build ChemTools with the commands:
 
    pip install -e chemtools
 
+If you'd like to remove ChemTools from your path but keep your ChemTools repo,
+
+.. code-block:: bash
+
+   pip uninstall chemtools
+
 Running Tests
 =============
 

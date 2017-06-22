@@ -89,7 +89,7 @@ To install the first seven dependencies (Python related dependencies):
 
 * **All other systems**
 
-  All the system compatible with `Docker <https://www.docker.com/>`_ can run
+  All the systems compatible with `Docker <https://www.docker.com/>`_ can run
   ChemTools in the pre-build container. Refer `this page <https://www.docker.com/community-edition>`_
   for Docker installation guide. To install ChemTools container, you can run
 
@@ -99,7 +99,7 @@ To install the first seven dependencies (Python related dependencies):
      docker run -it tczorro/chemtools:0.9.0  # enter linux bash environment
 
   Or, if you prefer using Jupyter, you can download Jupyter version Chemtools and have the
-  notebook webpage forwarded to your local machine.
+  notebook webpage forwarded to your local machine,
 
   .. code-block:: bash
 
