@@ -25,7 +25,8 @@
 
 import numpy as np
 from numpy.testing import assert_raises, assert_equal, assert_almost_equal
-from test_data import load_data_gaussian_cubegen_ch4_uhf_ccpvdz, load_data_fortran_ch4_uhf_ccpvdz
+from chemtools.utils.test.test_data import (load_data_gaussian_cubegen_ch4_uhf_ccpvdz,
+                                            load_data_fortran_ch4_uhf_ccpvdz)
 from chemtools import context, HortonMolecule
 
 
