@@ -8,3 +8,8 @@
 	url = https://github.com/QuantumElephant/sphinx_rtd_theme.git
 	branch = chemtools
 	ignore = dirty
+[submodule "doc/sphinxext/sphinx-gallery"]
+        path = doc/sphinxext/sphinx-gallery
+        url = https://github.com/QuantumElephant/sphinx-gallery.git
+        branch = chemtools
+        ignore = dirty

@@ -36,7 +36,7 @@
 import sys
 import os
 
-sys.path.insert(0, os.path.abspath('sphinxext'))
+sys.path.insert(0, os.path.abspath('sphinxext/sphinx-gallery'))
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -123,7 +123,7 @@ language = None
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build','_themes/*',]
+exclude_patterns = ['_build','_themes/*','sphinxext']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
