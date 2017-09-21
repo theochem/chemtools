@@ -1,8 +1,3 @@
-[submodule "InspectorElephant"]
-	path = tools/inspector
-	url = https://github.com/QuantumElephant/InspectorElephant.git
-	branch = chemtools
-	ignore = dirty
 [submodule "doc/_themes/sphinx_rtd_theme"]
 	path = doc/_themes/sphinx_rtd_theme
 	url = https://github.com/QuantumElephant/sphinx_rtd_theme.git
