@@ -9,8 +9,8 @@ python:
 
 env:
   global:
-    - QAWORKDIR=$HOME/qaworkdir
-    - CACHED=$QAWORKDIR/cached
+    # - QAWORKDIR=$HOME/qaworkdir
+    # - CACHED=$QAWORKDIR/cached
     - PIP_WHEEL_DIR=$CACHED/wheels
     - PIP_FIND_LINKS=file://$CACHED/wheels
     - PIP_NO_CACHE_DIR=no
@@ -41,6 +41,8 @@ install:
   - conda install -p $HOME/py -c anaconda ipython pil mayavi
   - source activate $HOME/py
   - pip install --user sphinxcontrib-bibtex
+  - pip install --upgrade pylint codecov coverage pycodestyle pydocstyle
+  - pip install --upgrade git+https://github.com/theochem/cardboardlint.git@master#egg=cardboardlint;
   # git lfs
   - wget https://github.com/git-lfs/git-lfs/releases/download/v2.0.2/git-lfs-linux-amd64-2.0.2.tar.gz -P $HOME
   - tar -xzvf ~/git-lfs-linux-amd64-2.0.2.tar.gz --directory $HOME
@@ -53,10 +55,10 @@ install:
   - ./setup.py build
 
 # Get the master branch and complete feature branch for a comparative analysis.
-  - tools/inspector/qa/get_master.sh
+#  - tools/inspector/qa/get_master.sh
 
 # Handle detached-HEAD situations that seem to be common on Travis-CI.
-  - tools/inspector/qa/fix_detached_head.sh
+#  - tools/inspector/qa/fix_detached_head.sh
 
 script:
 # Run all checks. The behavior of the test script also depends on the current branch:
@@ -71,4 +73,5 @@ script:
 #    whose output needs to compared to the results from the feature branch (the trapdoor
 #    tests). Finally, it compares the outputs of both branches to check for regressions.
   - source activate $HOME/py
-  - tools/inspector/qa/test_all_twobranches.sh
+  - cardboardlinter --refspec $TRAVIS_BRANCH -f static;
+#  - tools/inspector/qa/test_all_twobranches.sh

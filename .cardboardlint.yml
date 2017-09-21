@@ -1,0 +1,10 @@
+linters:
+- import:
+    packages: ['chemtools']
+- namespace:
+    filefilter: ['- */__init__.py', '- */test_*.py', '- *setup.py', '- tools/*',
+                 '+ *.py', '+ *.pyx']
+- pylint:
+- pycodestyle:
+- pydocstyle:
+- whitespace:
