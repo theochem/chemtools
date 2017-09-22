@@ -1,0 +1,47 @@
+package:
+  version: "{{ load_setup_py_data().version }}"
+  name: 'chemtools'
+
+source:
+  path: ../../
+
+build:
+  number: 0
+  script: python setup.py install
+
+requirements:
+  run:
+    - python
+    - numpy
+    - scipy
+    - sympy
+    - horton
+    - matplotlib
+    - nose
+  build:
+    - python
+    - numpy
+    - scipy
+    - sympy
+    - matplotlib
+    - nose
+    - horton
+    - git-lfs
+    - sphinxcontrib-bibtex
+    - ipython
+    - pil
+    - mayavi
+    - setuptools
+
+about:
+  dev_url: https://github.com/QuantumElephant/chemtools
+  description: Package of Chemical Tools for Interpreting Quantum Chemistry Calculations
+  license: GNU General Public License v3 or later (GPLv3+)
+  license_family: GPL3
+  summary: Package of Chemical Tools for Interpreting Quantum Chemistry Calculations
+  home: https://github.com/QuantumElephant/chemtools
+  license_file: LICENSE
+  doc_url: https://chemtools.org
+
+extra:
+  recipe-maintainers: Farnaz Heidar-Zadeh <farnazhz@gmail.com>

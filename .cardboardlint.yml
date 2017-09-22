@@ -3,8 +3,11 @@ linters:
     packages: ['chemtools']
 - namespace:
     filefilter: ['- */__init__.py', '- */test_*.py', '- *setup.py', '- tools/*',
-                 '+ *.py', '+ *.pyx']
+                 '+ *.py', '+ */*.py']
 - pylint:
+    config: .pylintrc
 - pycodestyle:
+    config: .pycodestylerc
 - pydocstyle:
+    config: .pydocstylerc
 - whitespace:
