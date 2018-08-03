@@ -29,8 +29,8 @@ Orbital-Based Local Descriptors
 
 All the tools for calculating which the orbital information of the :math:`N` electron reference state is enough.
 
-Positive Definite Kinetic Energy Density: :class:`chemtools.tool.orbitaltool.kinetic_energy_density`
-----------------------------------------------------------------------------------------------------
+Positive Definite Kinetic Energy Density
+----------------------------------------
 
 .. math::
 
@@ -38,8 +38,8 @@ Positive Definite Kinetic Energy Density: :class:`chemtools.tool.orbitaltool.kin
         \sum_i^{\sigma} \lvert \nabla \phi_i (\mathbf{r}) \rvert^2
 
 
-Electron Localisation Function: :class:`chemtools.tool.orbitaltool.elf`
------------------------------------------------------------------------
+Electron Localisation Function
+------------------------------
 
 The concepts of chemical bonds and electron pairs are fundamental in our
 understanding of chemistry. Quantum chemical calculations, however,

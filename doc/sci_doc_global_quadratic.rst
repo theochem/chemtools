@@ -24,8 +24,8 @@
 
 .. _quadratic_energy:
 
-Quadratic Energy Model :class:`chemtools.tool.globaltool.QuadraticGlobalTool`
-=============================================================================
+Quadratic Energy Model
+======================
 
 In this model, the energy is approximated as a quadratic function of the number of electrons:
 

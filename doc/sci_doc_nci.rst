@@ -24,8 +24,8 @@
 
 .. _nci:
 
-Non-Covalent Interactions (NCI) :class:`chemtools.toolbox.nci.NCI`
-####################################################################
+Non-Covalent Interactions (NCI)
+###############################
 
 NCI (Non-Covalent Interactions) is a tool to visualize an identify non-covalent interactions,
 such as van der Waals interactions, hydrogen bonds, and steric clashes. The index is based on

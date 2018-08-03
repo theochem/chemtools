@@ -24,8 +24,8 @@
 
 .. _global_tools:
 
-Global Descriptive Tools :mod:`chemtools.tool.globaltool`
-#########################################################
+Global Descriptive Tools
+########################
 
 Global descriptive tools assign a single value to the entire molecule. In other words,
 the property value :math:`P_{\text{global}}` describes the intrinsic reactivity of the molecule

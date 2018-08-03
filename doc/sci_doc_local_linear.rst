@@ -24,8 +24,8 @@
 
 .. _local_linear:
 
-Linear Energy Model :class:`chemtools.tool.localtool.LinearLocalTool`
-=====================================================================
+Linear Energy Model
+===================
 
 Complementing the :ref:`linear global tools <linear_energy>`, the fitted piece-wise linear
 energy expression,

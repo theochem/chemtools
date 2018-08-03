@@ -24,8 +24,8 @@
 
 .. _local_tools:
 
-Local Descriptive Tools :class:`chemtools.tool.localtool`
-#########################################################
+Local Descriptive Tools
+#######################
 
 Local descriptors, :math:`p_{\text{local}} (\mathbf{r})`, assign a value to every point in space.
 These values then provide insight into the reactivity of the molecule at point :math:`\mathbf{r}` in space.

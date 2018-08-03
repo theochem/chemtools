@@ -24,8 +24,8 @@
 
 .. _condensed_tools:
 
-Condensed Descriptive Tools :mod:`chemtools.tool.condensedtool`
-###############################################################
+Condensed Descriptive Tools
+###########################
 
 Local reactivity indicators indicate the susceptibility of a particular point in space to reactions.
 Chemists usually think, however, in terms of the reactivity of atoms and functional groups.

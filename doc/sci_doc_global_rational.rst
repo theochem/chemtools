@@ -24,8 +24,8 @@
 
 .. _rational_energy:
 
-Rational Energy Model :class:`chemtools.tool.globaltool.RationalGlobalTool`
-===========================================================================
+Rational Energy Model
+=====================
 
 In this model, energy is approximated by a rational function of the number of electrons.
 In the most general form, this model can be written as:

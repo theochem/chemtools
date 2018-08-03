@@ -24,8 +24,8 @@
 
 .. _linear_energy:
 
-Linear Energy Model :class:`chemtools.tool.globaltool.LinearGlobalTool`
-=======================================================================
+Linear Energy Model
+===================
 
 In this model, the energy is approximated as a piece-wise linear function of the number of electrons:
 

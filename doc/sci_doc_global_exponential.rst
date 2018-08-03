@@ -24,8 +24,8 @@
 
 .. _exponential_energy:
 
-Exponential Energy Model :class:`chemtools.tool.globaltool.ExponentialGlobalTool`
-=================================================================================
+Exponential Energy Model
+========================
 
 In this model, energy is approximated by an exponential function of the number of electrons:
 

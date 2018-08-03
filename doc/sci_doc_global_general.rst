@@ -23,8 +23,8 @@
 
 .. _general_energy:
 
-General Energy Model :class:`chemtools.tool.globaltool.GeneralGlobalTool`
-=========================================================================
+General Energy Model
+====================
 
 Because it is tedious to implement all the energy models that have been explored in the literature and
 impossible to anticipate all the energy models users may wish to explore, ChemTools allows users to define

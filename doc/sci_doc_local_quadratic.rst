@@ -24,8 +24,8 @@
 
 .. _local_quadratic:
 
-Quadratic Energy Model :class:`chemtools.tool.localtool.QuadraticLocalTool`
-===========================================================================
+Quadratic Energy Model
+======================
 
 Complementing the :ref:`quadratic global tools <quadratic_energy>`, the fitted quadratic energy expression
 
