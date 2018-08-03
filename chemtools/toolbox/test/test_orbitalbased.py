@@ -22,15 +22,14 @@
 # --
 """Test chemtools.analysis.orbitalbased."""
 
+
 import numpy as np
-from numpy.testing import assert_raises
+
+from numpy.testing import assert_raises, assert_array_almost_equal, assert_allclose
+
 from horton import IOData
 from chemtools.toolbox.molecule import make_molecule
 from chemtools import context, CubeGen, OrbitalAnalysis
-
-
-# here both chemtools and horton has context
-# import chemtools later to overwrite horton one
 
 
 def test_orbital_analysis_from_file_ch4_uhf_ccpvdz():
@@ -57,7 +56,7 @@ def test_orbital_analysis_from_file_ch4_uhf_ccpvdz():
               0.00103735, 0.00021200]
     # check density array
     test = orbtool.density
-    np.testing.assert_array_almost_equal(test, result, decimal=6)
+    assert_array_almost_equal(test, result, decimal=6)
 
     # gradient results obtained from Fortran code:
     result = [[ 0.00004568,  0.00005560,  0.00004170], [ 0.00071421,  0.00090481,  0.00031958],
@@ -76,7 +75,7 @@ def test_orbital_analysis_from_file_ch4_uhf_ccpvdz():
               [-0.00029870, -0.00024190, -0.00031205]]
     # check gradient
     test = orbtool.gradient
-    np.testing.assert_array_almost_equal(test, result, decimal=6)
+    assert_array_almost_equal(test, result, decimal=6)
 
     # Weizsacker KE results obtained from Fortran code:
     result = [0.00002617, 0.00033546, 0.00013043, 0.00079549, 0.00421069,
@@ -87,7 +86,7 @@ def test_orbital_analysis_from_file_ch4_uhf_ccpvdz():
               0.00073611, 0.00014453]
     # check Weizsacker kinetic energy density
     test = orbtool.weizsacker_kinetic_energy_density
-    np.testing.assert_array_almost_equal(test, result, decimal=6)
+    assert_array_almost_equal(test, result, decimal=6)
 
     # Thomas-Fermi KE results obtained from Fortran code:
     result = [0.00000010, 0.00001007, 0.00000185,    0.00003445, 0.00069986,
@@ -98,7 +97,7 @@ def test_orbital_analysis_from_file_ch4_uhf_ccpvdz():
               0.00003052, 0.00000216]
     # check Thomas-Fermi kinetic energy density
     test = orbtool.thomas_fermi_kinetic_energy_density
-    np.testing.assert_allclose(test, result, rtol=1e-08, atol=1e-08)
+    assert_allclose(test, result, rtol=1e-08, atol=1e-08)
 
     # Positive Definite KE results obtained from Fortran code:
     result = [0.00002941, 0.00036577, 0.00013191, 0.00082047, 0.00530631,
@@ -109,7 +108,7 @@ def test_orbital_analysis_from_file_ch4_uhf_ccpvdz():
               0.00076019, 0.00014593]
     # check positive definite kinetic energy density
     test = orbtool.kinetic_energy_density
-    np.testing.assert_array_almost_equal(test, result, decimal=6)
+    assert_array_almost_equal(test, result, decimal=6)
 
     # HOMO orbital expansion results obtained from Fortran code:
     homo_result = [ 0.00375367,  0.03178078,  0.05348131,  0.02726712,  0.01400675,
@@ -127,22 +126,22 @@ def test_orbital_analysis_from_file_ch4_uhf_ccpvdz():
                    -0.02029558, -0.00936400]
     # check homo expansion
     test = orbtool.orbitals_exp(8)
-    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
+    assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     # check lumo expansion
     test = orbtool.orbitals_exp(9)
-    np.testing.assert_array_almost_equal(test[:, 0], lumo_result, decimal=6)
+    assert_array_almost_equal(test[:, 0], lumo_result, decimal=6)
     # check homo & lumo expansion with list of orbital indices
     test = orbtool.orbitals_exp([8, 9])
-    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
-    np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
+    assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
+    assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     # check homo & lumo expansion with tuple of orbital indices
     test = orbtool.orbitals_exp((8, 9))
-    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
-    np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
+    assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
+    assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     # check homo & lumo expansion with array of orbital indices
     test = orbtool.orbitals_exp(np.array([8, 9]))
-    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
-    np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
+    assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
+    assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
 
     # assert the ValueError for using multiple files:
     assert_raises(ValueError, OrbitalAnalysis.from_file, [file_path, file_path], cube.points)
@@ -172,7 +171,7 @@ def test_orbital_analysis_from_file_ch4_rhf_ccpvdz():
               0.00103735, 0.00021200]
     # check density array
     test = orbtool.density
-    np.testing.assert_array_almost_equal(test, result, decimal=6)
+    assert_array_almost_equal(test, result, decimal=6)
 
     # gradient results obtained from Fortran code:
     result = [[ 0.00004568,  0.00005560,  0.00004170], [ 0.00071421,  0.00090481,  0.00031958],
@@ -191,7 +190,7 @@ def test_orbital_analysis_from_file_ch4_rhf_ccpvdz():
               [-0.00029870, -0.00024190, -0.00031205]]
     # check gradient
     test = orbtool.gradient
-    np.testing.assert_array_almost_equal(test, result, decimal=6)
+    assert_array_almost_equal(test, result, decimal=6)
 
     # Weizsacker KE results obtained from Fortran code:
     result = [0.00002617, 0.00033546, 0.00013043, 0.00079549, 0.00421069,
@@ -202,7 +201,7 @@ def test_orbital_analysis_from_file_ch4_rhf_ccpvdz():
               0.00073611, 0.00014453]
     # check Weizsacker kinetic energy density
     test = orbtool.weizsacker_kinetic_energy_density
-    np.testing.assert_array_almost_equal(test, result, decimal=6)
+    assert_array_almost_equal(test, result, decimal=6)
 
     # Thomas-Fermi KE results obtained from Fortran code:
     result = [0.00000010, 0.00001007, 0.00000185,    0.00003445, 0.00069986,
@@ -213,7 +212,7 @@ def test_orbital_analysis_from_file_ch4_rhf_ccpvdz():
               0.00003052, 0.00000216]
     # check Thomas-Fermi kinetic energy density
     test = orbtool.thomas_fermi_kinetic_energy_density
-    np.testing.assert_allclose(test, result, rtol=1e-08, atol=1e-08)
+    assert_allclose(test, result, rtol=1e-08, atol=1e-08)
 
     # Positive Definite KE results obtained from Fortran code:
     result = [0.00002941, 0.00036577, 0.00013191, 0.00082047, 0.00530631,
@@ -224,7 +223,7 @@ def test_orbital_analysis_from_file_ch4_rhf_ccpvdz():
               0.00076019, 0.00014593]
     # check positive definite kinetic energy density
     test = orbtool.kinetic_energy_density
-    np.testing.assert_array_almost_equal(test, result, decimal=6)
+    assert_array_almost_equal(test, result, decimal=6)
 
     # HOMO orbital expansion results obtained from Fortran code:
     homo_result = [ 0.00375367,  0.03178078,  0.05348131,  0.02726712,  0.01400675,
@@ -242,22 +241,22 @@ def test_orbital_analysis_from_file_ch4_rhf_ccpvdz():
                    -0.02029558, -0.00936400]
     # check homo expansion
     test = orbtool.orbitals_exp(8)
-    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
+    assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     # check lumo expansion
     test = orbtool.orbitals_exp(9)
-    np.testing.assert_array_almost_equal(test[:, 0], lumo_result, decimal=6)
+    assert_array_almost_equal(test[:, 0], lumo_result, decimal=6)
     # check homo & lumo expansion with list of orbital indices
     test = orbtool.orbitals_exp([8, 9])
-    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
-    np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
+    assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
+    assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     # check homo & lumo expansion with tuple of orbital indices
     test = orbtool.orbitals_exp((8, 9))
-    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
-    np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
+    assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
+    assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     # check homo & lumo expansion with array of orbital indices
     test = orbtool.orbitals_exp(np.array([8, 9]))
-    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
-    np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
+    assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
+    assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
 
     # assert the ValueError for using multiple files:
     assert_raises(ValueError, OrbitalAnalysis.from_file, [file_path, file_path], cube.points)
@@ -290,9 +289,9 @@ def test_orbital_analysis_from_molecule_ch4_uhf_ccpvdz():
               0.00103735, 0.00021200]
     # check density array
     test = orbtool.density
-    np.testing.assert_array_almost_equal(test, result, decimal=6)
+    assert_array_almost_equal(test, result, decimal=6)
     test = rorbtool.density
-    np.testing.assert_array_almost_equal(test, result, decimal=6)
+    assert_array_almost_equal(test, result, decimal=6)
 
     # gradient results obtained from Fortran code:
     result = [[ 0.00004568,  0.00005560,  0.00004170], [ 0.00071421,  0.00090481,  0.00031958],
@@ -311,9 +310,9 @@ def test_orbital_analysis_from_molecule_ch4_uhf_ccpvdz():
               [-0.00029870, -0.00024190, -0.00031205]]
     # check gradient
     test = orbtool.gradient
-    np.testing.assert_array_almost_equal(test, result, decimal=6)
+    assert_array_almost_equal(test, result, decimal=6)
     test = rorbtool.gradient
-    np.testing.assert_array_almost_equal(test, result, decimal=6)
+    assert_array_almost_equal(test, result, decimal=6)
 
     # Weizsacker KE results obtained from Fortran code:
     result = [0.00002617, 0.00033546, 0.00013043, 0.00079549, 0.00421069,
@@ -324,9 +323,9 @@ def test_orbital_analysis_from_molecule_ch4_uhf_ccpvdz():
               0.00073611, 0.00014453]
     # check Weizsacker kinetic energy density
     test = orbtool.weizsacker_kinetic_energy_density
-    np.testing.assert_array_almost_equal(test, result, decimal=6)
+    assert_array_almost_equal(test, result, decimal=6)
     test = rorbtool.weizsacker_kinetic_energy_density
-    np.testing.assert_array_almost_equal(test, result, decimal=6)
+    assert_array_almost_equal(test, result, decimal=6)
 
     # Thomas-Fermi KE results obtained from Fortran code:
     result = [0.00000010, 0.00001007, 0.00000185,    0.00003445, 0.00069986,
@@ -337,9 +336,9 @@ def test_orbital_analysis_from_molecule_ch4_uhf_ccpvdz():
               0.00003052, 0.00000216]
     # check Thomas-Fermi kinetic energy density
     test = orbtool.thomas_fermi_kinetic_energy_density
-    np.testing.assert_allclose(test, result, rtol=1e-08, atol=1e-08)
+    assert_allclose(test, result, rtol=1e-08, atol=1e-08)
     test = rorbtool.thomas_fermi_kinetic_energy_density
-    np.testing.assert_allclose(test, result, rtol=1e-08, atol=1e-08)
+    assert_allclose(test, result, rtol=1e-08, atol=1e-08)
 
     # Positive Definite KE results obtained from Fortran code:
     result = [0.00002941, 0.00036577, 0.00013191, 0.00082047, 0.00530631,
@@ -350,9 +349,9 @@ def test_orbital_analysis_from_molecule_ch4_uhf_ccpvdz():
               0.00076019, 0.00014593]
     # check positive definite kinetic energy density
     test = orbtool.kinetic_energy_density
-    np.testing.assert_array_almost_equal(test, result, decimal=6)
+    assert_array_almost_equal(test, result, decimal=6)
     test = rorbtool.kinetic_energy_density
-    np.testing.assert_array_almost_equal(test, result, decimal=6)
+    assert_array_almost_equal(test, result, decimal=6)
 
     # HOMO orbital expansion results obtained from Fortran code:
     homo_result = [ 0.00375367,  0.03178078,  0.05348131,  0.02726712,  0.01400675,
@@ -370,32 +369,32 @@ def test_orbital_analysis_from_molecule_ch4_uhf_ccpvdz():
                    -0.02029558, -0.00936400]
     # check homo expansion
     test = orbtool.orbitals_exp(8)
-    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
+    assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     test = rorbtool.orbitals_exp(8)
-    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
+    assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     # check lumo expansion
     test = orbtool.orbitals_exp(9)
-    np.testing.assert_array_almost_equal(test[:, 0], lumo_result, decimal=6)
+    assert_array_almost_equal(test[:, 0], lumo_result, decimal=6)
     test = rorbtool.orbitals_exp(9)
-    np.testing.assert_array_almost_equal(test[:, 0], lumo_result, decimal=6)
+    assert_array_almost_equal(test[:, 0], lumo_result, decimal=6)
     # check homo & lumo expansion with list of orbital indices
     test = orbtool.orbitals_exp([8, 9])
-    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
-    np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
+    assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
+    assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     test = rorbtool.orbitals_exp([8, 9])
-    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
-    np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
+    assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
+    assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     # check homo & lumo expansion with tuple of orbital indices
     test = orbtool.orbitals_exp((8, 9))
-    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
-    np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
+    assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
+    assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     test = rorbtool.orbitals_exp((8, 9))
-    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
-    np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
+    assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
+    assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     # check homo & lumo expansion with array of orbital indices
     test = orbtool.orbitals_exp(np.array([8, 9]))
-    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
-    np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
+    assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
+    assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     test = rorbtool.orbitals_exp(np.array([8, 9]))
-    np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
-    np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
+    assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
+    assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)

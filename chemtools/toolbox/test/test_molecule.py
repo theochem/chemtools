@@ -22,8 +22,11 @@
 # --
 """Test chemtools.toolbox.molecule."""
 
-from numpy.testing import assert_raises
+
 import numpy as np
+
+from numpy.testing import assert_raises
+
 from horton import IOData
 from chemtools import context
 from chemtools.toolbox import molecule
@@ -32,7 +35,7 @@ from chemtools.utils.wrappers import HortonMolecule
 
 
 def test_make_molecule():
-    """Test chemtools.toolbox.molecule.make_molecule."""
+    # test make molecule
     assert_raises(NotImplementedError, molecule.make_molecule, package_name='gibberish')
     file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
     test = molecule.make_molecule(file_path)
@@ -48,7 +51,7 @@ def test_make_molecule():
 
 
 def test_make_molecule_horton():
-    """Test chemtools.toolbox.molecule.make_molecule."""
+    # test make molecule with horton
     file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
     test = molecule.make_molecule(file_path, **{'package_name': 'HORTON'})
     assert isinstance(test, BaseMolecule)
@@ -56,7 +59,7 @@ def test_make_molecule_horton():
 
 
 def test_make_molecule_horton_from_iodata():
-    """Test chemtools.toolbox.molecule.make_molecule."""
+    # test make molecule with horton from iodata
     iodata = IOData.from_file(context.get_fn('test/ch4_uhf_ccpvdz.fchk'))
     test = molecule.make_molecule(iodata)
     assert isinstance(test, BaseMolecule)

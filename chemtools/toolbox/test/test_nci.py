@@ -22,20 +22,20 @@
 # --
 """Test chemtools.analysis.nci."""
 
+
 import os
 import shutil
 import tempfile
-from contextlib import contextmanager
-
-from numpy.testing import assert_raises
 import numpy as np
 
-from horton import IOData
-from chemtools.toolbox.molecule import make_molecule
+from contextlib import contextmanager
+from numpy.testing import assert_raises, assert_equal, assert_almost_equal
 
+from horton import IOData
 from chemtools import context
 from chemtools.utils import CubeGen
 from chemtools.toolbox.nci import NCI
+from chemtools.toolbox.molecule import make_molecule
 
 
 @contextmanager
@@ -66,32 +66,32 @@ def test_analyze_nci_h2o_dimer_wfn():
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')
         mol2 = IOData.from_file(cube2)
         # Check coordinates
-        np.testing.assert_array_almost_equal(dmol1.coordinates, mol2.coordinates, decimal=6)
-        np.testing.assert_equal(dmol1.numbers, mol2.numbers)
+        assert_almost_equal(dmol1.coordinates, mol2.coordinates, decimal=6)
+        assert_equal(dmol1.numbers, mol2.numbers)
         # Check grid data
         ugrid1 = dmol1.grid
         ugrid2 = mol2.grid
-        np.testing.assert_array_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
-        np.testing.assert_equal(ugrid1.shape, ugrid2.shape)
+        assert_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
+        assert_equal(ugrid1.shape, ugrid2.shape)
         data1 = dmol1.cube_data / dmol1.cube_data
         data2 = mol2.cube_data / dmol1.cube_data
-        np.testing.assert_array_almost_equal(data1, data2, decimal=4)
-        np.testing.assert_equal(dmol1.pseudo_numbers, mol2.pseudo_numbers)
+        assert_almost_equal(data1, data2, decimal=4)
+        assert_equal(dmol1.pseudo_numbers, mol2.pseudo_numbers)
 
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-grad.cube')
         mol2 = IOData.from_file(cube2)
         # Check coordinates
-        np.testing.assert_array_almost_equal(gmol1.coordinates, mol2.coordinates, decimal=6)
-        np.testing.assert_equal(gmol1.numbers, mol2.numbers)
+        assert_almost_equal(gmol1.coordinates, mol2.coordinates, decimal=6)
+        assert_equal(gmol1.numbers, mol2.numbers)
         # Check grid data
         ugrid1 = gmol1.grid
         ugrid2 = mol2.grid
-        np.testing.assert_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
-        np.testing.assert_equal(ugrid1.shape, ugrid2.shape)
+        assert_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
+        assert_equal(ugrid1.shape, ugrid2.shape)
         data1 = gmol1.cube_data / gmol1.cube_data
         data2 = mol2.cube_data / gmol1.cube_data
-        np.testing.assert_array_almost_equal(data1, data2, decimal=4)
-        np.testing.assert_equal(gmol1.pseudo_numbers, mol2.pseudo_numbers)
+        assert_almost_equal(data1, data2, decimal=4)
+        assert_equal(gmol1.pseudo_numbers, mol2.pseudo_numbers)
 
 
 def test_analyze_nci_h2o_dimer_fchk():
@@ -113,32 +113,32 @@ def test_analyze_nci_h2o_dimer_fchk():
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')
         mol2 = IOData.from_file(cube2)
         # Check coordinates
-        np.testing.assert_array_almost_equal(dmol1.coordinates, mol2.coordinates, decimal=6)
-        np.testing.assert_equal(dmol1.numbers, mol2.numbers)
+        assert_almost_equal(dmol1.coordinates, mol2.coordinates, decimal=6)
+        assert_equal(dmol1.numbers, mol2.numbers)
         # Check grid data
         ugrid1 = dmol1.grid
         ugrid2 = mol2.grid
-        np.testing.assert_array_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
-        np.testing.assert_equal(ugrid1.shape, ugrid2.shape)
+        assert_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
+        assert_equal(ugrid1.shape, ugrid2.shape)
         data1 = dmol1.cube_data / dmol1.cube_data
         data2 = mol2.cube_data / dmol1.cube_data
-        np.testing.assert_array_almost_equal(data1, data2, decimal=4)
-        np.testing.assert_equal(dmol1.pseudo_numbers, mol2.pseudo_numbers)
+        assert_almost_equal(data1, data2, decimal=4)
+        assert_equal(dmol1.pseudo_numbers, mol2.pseudo_numbers)
 
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-grad.cube')
         mol2 = IOData.from_file(cube2)
         # Check coordinates
-        np.testing.assert_array_almost_equal(gmol1.coordinates, mol2.coordinates, decimal=6)
-        np.testing.assert_equal(gmol1.numbers, mol2.numbers)
+        assert_almost_equal(gmol1.coordinates, mol2.coordinates, decimal=6)
+        assert_equal(gmol1.numbers, mol2.numbers)
         # Check grid data
         ugrid1 = gmol1.grid
         ugrid2 = mol2.grid
-        np.testing.assert_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
-        np.testing.assert_equal(ugrid1.shape, ugrid2.shape)
+        assert_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
+        assert_equal(ugrid1.shape, ugrid2.shape)
         data1 = gmol1.cube_data / gmol1.cube_data
         data2 = mol2.cube_data / gmol1.cube_data
-        np.testing.assert_array_almost_equal(data1, data2, decimal=4)
-        np.testing.assert_equal(gmol1.pseudo_numbers, mol2.pseudo_numbers)
+        assert_almost_equal(data1, data2, decimal=4)
+        assert_equal(gmol1.pseudo_numbers, mol2.pseudo_numbers)
 
 
 def test_analyze_nci_assert_errors():
