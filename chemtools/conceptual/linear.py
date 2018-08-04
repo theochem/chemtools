@@ -133,6 +133,8 @@ class LinearGlobalTool(BaseGlobalTool):
             value = self._params[0] + n_elec * self._params[1]
         elif n_elec > self._n0:
             value = self._params[2] + n_elec * self._params[3]
+        else:
+            raise ValueError("Argument n_elec should be a positive real number!")
         return value
 
     @doc_inherit(BaseGlobalTool)
@@ -155,6 +157,8 @@ class LinearGlobalTool(BaseGlobalTool):
             deriv = self._params[1]
         elif n_elec > self._n0:
             deriv = self._params[3]
+        else:
+            raise ValueError("Argument n_elec should be a positive real number!")
         return deriv
 
 
