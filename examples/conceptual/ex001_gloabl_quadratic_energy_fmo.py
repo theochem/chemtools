@@ -27,7 +27,6 @@ print 'Chemical Hardness   :', tool.eta, tool.chemical_hardness
 print 'Chemical Softness   :', tool.softness
 print 'Electronegativity   :', tool.electronegativity
 print 'Electrophilicity    :', tool.electrophilicity
-print 'Nucleophilicity     :', tool.nucleophilicity
 print 'Electrofugality     :', tool.electrofugality
 print 'Nucleofugality      :', tool.nucleofugality
 print 'N_max               :', tool.n_max
