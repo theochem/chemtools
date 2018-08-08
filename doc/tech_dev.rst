@@ -159,12 +159,13 @@ To install these dependencies,
      pip install --user --upgrade sphinxcontrib-bibtex
 
 
-The Sphinx Read-The-Docs theme customized for ChemTools can be obtained by cloning the repository
-as a submodule from ChemTools parent directory:
+The Sphinx Read-The-Docs theme as well as Sphinx Gallery customized for ChemTools can be
+obtained by cloning the repository as a submodule from ChemTools parent directory:
 
 .. code-block:: bash
 
    git submodule update --init doc/_themes/sphinx_rtd_theme
+   git submodule update --init doc/sphinxext/sphinx-gallery
 
 Also, make sure that the :ref:`examples files are downloaded <usr_lfs_installation>`.
 
