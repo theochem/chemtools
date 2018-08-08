@@ -22,6 +22,8 @@
     : --
 
 
+.. _conceptual_dft:
+
 Conceptual Density Functional Theory
 ####################################
 

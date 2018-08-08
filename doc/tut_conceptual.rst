@@ -27,38 +27,20 @@
 Conceptual Density Functional Theory
 ####################################
 
-An extensive set of examples are presented to demonstrate how to compute various descriptors with ChemTools.
+This tutorial explains how to use ChemTools for computing reactivity descriptors defined within the
+framework of conceptual DFT. To refresh your mind on theoretical background, please refer to
+:ref:`Scientific Documentaion on Conceptual Density Functional Theory <conceptual_dft>`.
 
-Code block
+For an extensive set of examples demonstrating how to compute various global, local, condensed, and
+non-local reactivity descriptors with ChemTools, please refer to
+:ref:`Examples on Conceptual Density Functional Theory <examples_conceptual_dft>`.
 
-  .. code-block:: python
-     :linenos:
-     :emphasize-lines: 2,4,7
-     :caption: sample.py
+In this tutorial, `formaldehyde <https://en.wikipedia.org/wiki/Formaldehyde>`_ is considered as an example.
+If you are interested in following this tutorial step-by-step, make sure that the example files are download.
+To do so, please refer to :ref:`Download Example Files <usr_lfs_files>`.
 
-     import chemtools as ct
+.. toctree::
+   :maxdepth: 1
 
-     descriptor = ct.Analyze('h2o.fchk', model='quadratic', approx='FMO')
+   tut_conceptual_global
 
-     # 1st derivative of energy w.r.t. N
-     print descriptor.glob.chemical_potential
-     print descriptor.glob.mu
-
-     # 2nd derivative of energy w.r.t N
-     print descriptor.glob.chemical_hardness
-     print descriptor.glob.eta
-
-
-Code block::
-
-     import chemtools
-     descriptor = Analyze('h2o.fchk', model='quadratic', approx='FMO')
-     # 1st derivative of energy w.r.t. N
-     print descriptor.glob.chemical_potential
-     print descriptor.glob.mu
-     # 2nd derivative of energy w.r.t N
-     print descriptor.glob.chemical_hardness
-     print descriptor.glob.eta
-
-
-Objective: :math:`BF_3` is susceptible to nucleophilic attack at the boron cite.

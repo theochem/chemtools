@@ -513,11 +513,12 @@ class GlobalConceptualDFT(BaseConceptualDFT):
         avs = dir(self._tool)
         # get sorted list of public attributes
         attrs = [atr for atr in avs if not callable(getattr(self, atr)) and not atr.startswith('_')]
+        attrs.remove("params")
         attrs.sort()
         # get sorted list of public methods
         methods = [atr for atr in avs if callable(getattr(self, atr)) and not atr.startswith('_')]
         methods.sort()
-        content = 'Available attributes in {0} global model:\n{1}\n'.format(self._model, '-' * 50)
+        content = '\nAvailable attributes in {0} global model:\n{1}\n'.format(self._model, '-' * 50)
         for attr in attrs:
             value = getattr(self._tool, attr)
             if value is not None and not hasattr(value, '__iter__'):
