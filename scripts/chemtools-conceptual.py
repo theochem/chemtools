@@ -24,12 +24,16 @@
 """
 Conceptual Density Functional Theory Script.
 
-This script allows the user to use ChemTools from a command line without being required to program.
+This script allows the user to use ChemTools from a command line.
 """
+
+
+from __future__ import print_function
 
 import sys
 import argparse
-from horton import IOData
+
+from chemtools import HortonMolecule
 from chemtools import __version__, CubeGen, print_vmd_script_isosurface
 from chemtools import GlobalConceptualDFT, LocalConceptualDFT
 
@@ -42,8 +46,7 @@ def parse_args_global(arguments):
 
     parser = argparse.ArgumentParser(prog='chemtools-conceptual.py global',
                                      description=description,
-                                     formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     )
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
 
     parser.add_argument('-v', '--version', action='version',
                         version="%%(prog)s (ChemTools version %s)" % __version__)
@@ -63,8 +66,7 @@ def parse_args_local(arguments):
     """
     parser = argparse.ArgumentParser(prog='chemtools-conceptual.py local',
                                      description=description,
-                                     formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     )
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
 
     parser.add_argument('-v', '--version', action='version',
                         version="%%(prog)s (ChemTools version %s)" % __version__)
@@ -99,18 +101,17 @@ def parse_args_local(arguments):
 
 
 def main_conceptual_global(args):
-    """ """
+    """Build GlobalConceptualDFT class and print global descriptors."""
     # build global tool
     model = GlobalConceptualDFT.from_file(args.file_wfn, args.model)
     # print available descriptors
-    print model
+    print(model)
 
 
 def main_conceptual_local(args):
-    """ """
+    """Build LocalConceptualDFT class and dump a cube file of local descriptor."""
     # load the first molecule
-    print args.file_wfn
-    mol = IOData.from_file(args.file_wfn[0])
+    mol = HortonMolecule.from_file(args.file_wfn[0])
 
     # make cubic grid
     if args.cube.endswith('.cube'):
@@ -145,21 +146,21 @@ def main_conceptual_local(args):
 
 if __name__ == '__main__':
     # get command-line arguments & task
-    args = sys.argv[1:]
-    task = args.pop(0)
+    command_args = sys.argv[1:]
+    task = command_args.pop(0)
 
     if task == 'global':
         # parse command-line arguments
-        parsed_args = parse_args_global(args)
+        parsed_args = parse_args_global(command_args)
         main_conceptual_global(parsed_args)
 
     elif task == 'local':
         # parse command-line arguments
-        parsed_args = parse_args_local(args)
+        parsed_args = parse_args_local(command_args)
         main_conceptual_local(parsed_args)
 
     elif task == 'condensed':
-        pass
+        raise NotImplementedError("")
 
     else:
-        raise ValueError()
+        raise ValueError("Task not recognized! options: [global, local, condensed].")
