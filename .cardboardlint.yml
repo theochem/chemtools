@@ -2,7 +2,7 @@ linters:
 - import:
     packages: ['chemtools']
 - namespace:
-    filefilter: ['- */__init__.py', '- */test_*.py', '- *setup.py', '- tools/*',
+    filefilter: ['- */__init__.py', '- */test_*.py', '- *setup.py', '- tools/*', '- examples/*/*.py',
                  '+ *.py', '+ */*.py']
 - pylint:
     config: .pylintrc
