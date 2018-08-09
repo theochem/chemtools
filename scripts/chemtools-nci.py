@@ -24,12 +24,13 @@
 """
 Non-Covalent Interactions (NCI) Script.
 
-This script allows the user to use ChemTools from a command line without being required to program.
+This script allows the user to use ChemTools from a command line.
 """
 
+
 import argparse
-from horton import IOData
-from chemtools import CubeGen, NCI, __version__
+
+from chemtools import HortonMolecule, CubeGen, NCI, __version__
 
 
 def parse_args_nci():
@@ -66,8 +67,7 @@ def parse_args_nci():
 
     parser = argparse.ArgumentParser(prog='chemtools-nci.py',
                                      description=description,
-                                     formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     )
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
 
     parser.add_argument('-v', '--version', action='version',
                         version="%%(prog)s (ChemTools version %s)" % __version__)
@@ -112,15 +112,12 @@ def parse_args_nci():
 
 
 def main_nci():
-    """
-    Build NCI model using given command-line settings, and dump VMD script and
-    cube files for visualizing NCI with VMD given specified command-line arguments.
-    """
+    """Build NCI model and dump VMD script and cube files for visualizing NCI with VMD."""
     # parse command-line arguments
     args = parse_args_nci()
 
     # load molecule
-    mol = IOData.from_file(args.file_wfn)
+    mol = HortonMolecule.from_file(args.file_wfn)
 
     # make cubic grid
     if args.cube.endswith('.cube'):
@@ -135,7 +132,7 @@ def main_nci():
         raise ValueError('Argument cube={0} is not recognized!'.format(args.cube))
 
     # build NCI model
-    nci = NCI.from_iodata(mol, cube)
+    nci = NCI.from_molecule(mol, cube)
 
     # dump files/scripts for visualizing NCI
     nci.dump_files(args.output_name, args.isosurface, args.denscut)
