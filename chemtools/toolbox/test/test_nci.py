@@ -26,9 +26,9 @@
 import os
 import shutil
 import tempfile
-import numpy as np
-
 from contextlib import contextmanager
+
+import numpy as np
 from numpy.testing import assert_raises, assert_equal, assert_almost_equal
 
 from horton import IOData
