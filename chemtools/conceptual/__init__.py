@@ -27,4 +27,5 @@ from chemtools.conceptual.linear import *
 from chemtools.conceptual.quadratic import *
 from chemtools.conceptual.exponential import *
 from chemtools.conceptual.rational import *
+from chemtools.conceptual.cubic import *
 from chemtools.conceptual.general import *
