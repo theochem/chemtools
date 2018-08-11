@@ -32,6 +32,9 @@ from chemtools.conceptual.base import BaseGlobalTool
 from chemtools.utils.utils import doc_inherit
 
 
+__all__ = ["CubicGlobalTool"]
+
+
 class CubicGlobalTool(BaseGlobalTool):
     r"""
     Class of global conceptual DFT reactivity descriptors based on the cubic energy model.
@@ -53,6 +56,7 @@ class CubicGlobalTool(BaseGlobalTool):
        \left(\frac{\partial^n E}{\partial N^n}\right)_{v(\mathbf{r})} &= 0
              \quad \text{for} \quad n \geq 3
     """
+
     @doc_inherit(BaseGlobalTool)
     def __init__(self, dict_energy, omega=0.5):
         # check energy values
@@ -75,11 +79,11 @@ class CubicGlobalTool(BaseGlobalTool):
         param_c = (energy_m - 2. * energy_0 + energy_p) / 2.
         param_d = (2. * omega - 1.) * (energy_m - 2. * energy_0 + energy_p) / 2.
         self._params = np.array([param_a, param_b, param_c, param_d])
-        super(self.__class__, self).__init__(dict_energy, n0, self._n_max)
+        super(CubicGlobalTool, self).__init__(dict_energy, n0, self._n_max)
 
     @property
     def omega(self):
-        r"""The parameter :math:`\omega` in the energy model."""
+        r"""Parameter :math:`\omega` in the energy model."""
         return self._omega
 
     @property

@@ -20,6 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+# pragma pylint: disable=invalid-name
 
 
 import numpy as np
@@ -31,10 +32,8 @@ from chemtools.conceptual.cubic import CubicGlobalTool
 
 
 class TestCubicRootModel(TestCase):
-    """
-    Three Different Cubic Objects are instantiated with different omega values of a half, a third
-    and one.
-    """
+    """Cubic Objects are instantiated with different omega values."""
+
     def setUp(self):
         # Set Up Different Cubic Objects
         self.energy_zero1 = 100.
@@ -46,7 +45,7 @@ class TestCubicRootModel(TestCase):
         self.omega2 = 1. / 3.
         self.omega3 = 1.
         self.cubic_half = CubicGlobalTool(dict_energy, self.omega1)
-        self.cubic_third = CubicGlobalTool(dict_energy,  self.omega2)
+        self.cubic_third = CubicGlobalTool(dict_energy, self.omega2)
         self.cubic_one = CubicGlobalTool(dict_energy, self.omega3)
 
         # Set Up Parameters for substitution
