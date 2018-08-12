@@ -25,9 +25,35 @@
 
 import numpy as np
 
-from numpy.testing import assert_almost_equal
+from numpy.testing import assert_raises, assert_almost_equal
 
 from chemtools.conceptual.cubic import CubicGlobalTool
+
+
+def test_global_cubic_raises():
+    # check invalid N0
+    assert_raises(ValueError, CubicGlobalTool, {5: -5.5, 4: -6.0, 6: -7.0, 7: -7.5})
+    assert_raises(ValueError, CubicGlobalTool, {0: -5.5, 1: -6.0, -1: -7.0})
+    assert_raises(ValueError, CubicGlobalTool, {0.1: -5.5, 1.1: -6.0, -0.9: -7.0})
+    assert_raises(ValueError, CubicGlobalTool, {0.99: -5.5, 1.99: -6.0, -0.1: -7.0})
+    assert_raises(ValueError, CubicGlobalTool, {-1.: -5.5, 0.: -6.0, -2.: -7.0})
+    assert_raises(ValueError, CubicGlobalTool, {-2: -5.5, -1: -6.0, -3: -7.0})
+    assert_raises(ValueError, CubicGlobalTool, {0.0: -5.5, 0.5: -6.0, 1.0: -7.0})
+    # check invalid N
+    model = CubicGlobalTool({5.0: 5.0, 6.0: 10.0, 4.0: 8.0})
+    assert_raises(ValueError, model.energy, -0.0001)
+    assert_raises(ValueError, model.energy, -1.7)
+    assert_raises(ValueError, model.energy, -2.5)
+    assert_raises(ValueError, model.energy_derivative, -0.025, 1)
+    assert_raises(ValueError, model.energy_derivative, -1.91, 2)
+    # check invalid derivative order
+    assert_raises(ValueError, model.energy_derivative, 5.0, 1.)
+    assert_raises(ValueError, model.energy_derivative, 5.0, 0.2)
+    assert_raises(ValueError, model.energy_derivative, 5.0, -1)
+    assert_raises(ValueError, model.energy_derivative, 5.0, -3)
+    assert_raises(ValueError, model.energy_derivative, 5, '1')
+    assert_raises(ValueError, model.energy_derivative, 5, [1])
+    assert_raises(ValueError, model.energy_derivative, 3, 1.1)
 
 
 def test_global_cubic_omega_half():
