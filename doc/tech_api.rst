@@ -55,6 +55,7 @@ Conceptual Module
   * :class:`Quadratic Global Tool <conceptual.quadratic.QuadraticGlobalTool>`
   * :class:`Exponential Global Tool <conceptual.exponential.ExponentialGlobalTool>`
   * :class:`Rational Global Tool <conceptual.rational.RationalGlobalTool>`
+  * :class:`Cubic Global Tool <conceptual.cubic.CubicGlobalTool>`
   * :class:`General Global Tool <conceptual.general.GeneralGlobalTool>`
 
 * Local Conceptual DFT Tools
@@ -110,6 +111,7 @@ Utility Module
       conceptual.quadratic.QuadraticGlobalTool
       conceptual.exponential.ExponentialGlobalTool
       conceptual.rational.RationalGlobalTool
+      conceptual.cubic.CubicGlobalTool
       conceptual.general.GeneralGlobalTool
       conceptual.base.BaseLocalTool
       conceptual.linear.LinearLocalTool
