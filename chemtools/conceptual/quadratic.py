@@ -74,12 +74,12 @@ class QuadraticGlobalTool(BaseGlobalTool):
         n_ref, energy_m, energy_0, energy_p = check_dict_energy(dict_energy)
         # calculate parameters a, b, c of quadratic energy model
         energy_m, energy_0, energy_p = [dict_energy[n] for n in sorted(dict_energy.keys())]
-        c = 0.5 * (energy_m - 2 * energy_0 + energy_p)
-        b = 0.5 * (energy_p - energy_m) - 2 * c * n_ref
-        a = energy_0 - b * n_ref - c * (n_ref**2)
-        self._params = [a, b, c]
+        param_c = 0.5 * (energy_m - 2 * energy_0 + energy_p)
+        param_b = 0.5 * (energy_p - energy_m) - 2 * param_c * n_ref
+        param_a = energy_0 - param_b * n_ref - param_c * (n_ref**2)
+        self._params = [param_a, param_b, param_c]
         # calculate N_max (number of electrons for which energy is minimum)
-        n_max = - b / (2 * c)
+        n_max = - param_b / (2 * param_c)
         super(QuadraticGlobalTool, self).__init__(dict_energy, n_ref, n_max)
 
     @property

@@ -79,11 +79,11 @@ class RationalGlobalTool(BaseGlobalTool):
             raise ValueError("For rational model, the energy values for consecutive number of "
                              "electrons should be monotonic! E={0}".format(energies))
         # calculate parameters a0, a1 and b1 of rational energy model
-        b1 = - (energy_p - 2 * energy_0 + energy_m)
-        b1 /= ((n_ref + 1) * energy_p - 2 * n_ref * energy_0 + (n_ref - 1) * energy_m)
-        a1 = (1 + b1 * n_ref) * (energy_p - energy_0) + (b1 * energy_p)
-        a0 = - a1 * n_ref + energy_0 * (1 + b1 * n_ref)
-        self._params = [a0, a1, b1]
+        param_b1 = - (energy_p - 2 * energy_0 + energy_m)
+        param_b1 /= ((n_ref + 1) * energy_p - 2 * n_ref * energy_0 + (n_ref - 1) * energy_m)
+        param_a1 = (1 + param_b1 * n_ref) * (energy_p - energy_0) + (param_b1 * energy_p)
+        param_a0 = - param_a1 * n_ref + energy_0 * (1 + param_b1 * n_ref)
+        self._params = [param_a0, param_a1, param_b1]
         # calculate N_max
         n_max = float('inf')
         super(RationalGlobalTool, self).__init__(dict_energy, n_ref, n_max)

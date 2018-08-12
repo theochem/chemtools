@@ -82,9 +82,9 @@ class ExponentialGlobalTool(BaseGlobalTool):
         param_a = (energy_m - energy_0) * (energy_0 - energy_p)
         param_a /= (energy_m - 2 * energy_0 + energy_p)
         param_b = energy_0 - param_a
-        gamma = (energy_m - 2 * energy_0 + energy_p) / (energy_p - energy_0)
-        gamma = math.log(1. - gamma)
-        self._params = [param_a, gamma, param_b]
+        param_g = (energy_m - 2 * energy_0 + energy_p) / (energy_p - energy_0)
+        param_g = math.log(1. - param_g)
+        self._params = [param_a, param_g, param_b]
         # calculate N_max
         n_max = float('inf')
         super(ExponentialGlobalTool, self).__init__(dict_energy, n_ref, n_max)

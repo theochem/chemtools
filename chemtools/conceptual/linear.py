@@ -79,11 +79,11 @@ class LinearGlobalTool(BaseGlobalTool):
         # check number of electrons & energy values
         n_ref, energy_m, energy_0, energy_p = check_dict_energy(dict_energy)
         # calculate parameters a, b, a' and b' of linear energy model
-        b = energy_0 - energy_m
-        a = energy_0 - n_ref * b
-        b_prime = energy_p - energy_0
-        a_prime = energy_0 - n_ref * b_prime
-        self._params = [a, b, a_prime, b_prime]
+        param_b = energy_0 - energy_m
+        param_a = energy_0 - n_ref * param_b
+        param_b_prime = energy_p - energy_0
+        param_a_prime = energy_0 - n_ref * param_b_prime
+        self._params = [param_a, param_b, param_a_prime, param_b_prime]
         # calculate N_max
         if energy_0 < energy_p:
             n_max = n_ref
