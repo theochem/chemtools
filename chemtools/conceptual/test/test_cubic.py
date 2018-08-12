@@ -74,7 +74,8 @@ class TestCubicRootModel(TestCase):
         self.a3 = (2. * omega - 1) * (self.I - self.A) / 2.
 
         # Set Up Energy Symbolic Function for Testing
-        self.energy_function = self.a0 + self.a1 * N + self.a2 * N ** 2 + self.a3 * N ** 3
+        self.energy_function = self.a0 + self.a1 * (N - 10) + self.a2 * (N - 10)**2
+        self.energy_function += self.a3 * (N - 10)**3
         self.first_deriv = sp.diff(self.energy_function, N)
         self.sec_deriv = sp.diff(self.first_deriv, N)
         self.third_deriv = sp.diff(self.sec_deriv, N)
@@ -114,23 +115,26 @@ class TestCubicRootModel(TestCase):
                                              decimal=5)
 
     def test_energy_model_with_omega_half(self):
-        n_values = [1., 1.5, 2., 3.5, 4., 4.5, 5., 8., 9.5, 10., 11.]
+        n_values = [1., 1.5, 2., 3.5, 4., 4.5, 5., 8., 9.0, 10., 11.]
         energy_function_half = self.energy_function.subs(self.parameters_half)
         energy_values = [energy_function_half.subs('N', n).evalf() for n in n_values]
+        np.testing.assert_array_almost_equal(energy_values[-3:], np.array([25.3, 100., 50.5]))
         actual_energy_values = [self.cubic_half.energy(n) for n in n_values]
         np.testing.assert_array_almost_equal(actual_energy_values, energy_values)
 
     def test_energy_model_with_omega_third(self):
-        n_values = [1., 1.5, 2., 3.5, 4., 4.5, 5., 8., 9.5, 10., 11.]
+        n_values = [1., 1.5, 2., 3.5, 4., 4.5, 5., 8., 9.0, 10., 11.]
         energy_function_third = self.energy_function.subs(self.parameters_third)
         energy_values = [energy_function_third.subs('N', n).evalf() for n in n_values]
+        np.testing.assert_array_almost_equal(energy_values[-3:], np.array([25.3, 100., 50.5]))
         actual_energy_values = [self.cubic_third.energy(n) for n in n_values]
         np.testing.assert_array_almost_equal(actual_energy_values, energy_values)
 
     def test_energy_model_with_omega_one(self):
-        n_values = [1., 1.5, 2., 3.5, 4., 4.5, 5., 8., 9.5, 10., 11.]
+        n_values = [1., 1.5, 2., 3.5, 4., 4.5, 5., 8., 9.0, 10., 11.]
         energy_function_one = self.energy_function.subs(self.parameters_one)
         energy_values = [energy_function_one.subs('N', n).evalf() for n in n_values]
+        np.testing.assert_array_almost_equal(energy_values[-3:], np.array([25.3, 100., 50.5]))
         actual_energy_values = [self.cubic_one.energy(n) for n in n_values]
         np.testing.assert_array_almost_equal(actual_energy_values, energy_values)
 

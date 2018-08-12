@@ -102,17 +102,23 @@ class CubicGlobalTool(BaseGlobalTool):
 
     @doc_inherit(BaseGlobalTool)
     def energy(self, n_elec):
-        result = self._params[0] + self._params[1] * n_elec + self._params[2] * n_elec ** 2
-        result += self._params[3] * n_elec ** 3.
+        # compute the change in the number of electrons w.r.t. N0
+        delta_n = n_elec - self._n0
+        # compute energy
+        result = self._params[0] + self._params[1] * delta_n + self._params[2] * delta_n ** 2
+        result += self._params[3] * delta_n ** 3.
         return result
 
     @doc_inherit(BaseGlobalTool)
     def energy_derivative(self, n_elec, order=1):
+        # compute the change in the number of electrons w.r.t. N0
+        delta_n = n_elec - self._n0
+        # compute derivative of energy
         if order == 1:
-            result = self._params[1] + 2. * self._params[2] * n_elec + \
-                     3. * self._params[3] * n_elec ** 2.
+            result = self._params[1] + 2. * self._params[2] * delta_n + \
+                     3. * self._params[3] * delta_n ** 2.
         elif order == 2:
-            result = 2. * self._params[2] + 6. * self._params[3] * n_elec
+            result = 2. * self._params[2] + 6. * self._params[3] * delta_n
         elif order == 3:
             result = 6. * self._params[3]
         else:
