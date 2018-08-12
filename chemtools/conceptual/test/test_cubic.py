@@ -21,6 +21,7 @@
 #
 # --
 # pragma pylint: disable=invalid-name
+"""Test chemtools.conceptual.cubic Module."""
 
 
 import numpy as np

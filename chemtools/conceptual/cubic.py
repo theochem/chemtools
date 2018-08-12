@@ -75,22 +75,21 @@ class CubicGlobalTool(BaseGlobalTool):
             raise ValueError('Cubic model requires 3 energy values corresponding '
                              'to positive number of electrons!')
         # find reference number of electrons
-        n0 = sorted(dict_energy.keys())[1]
-        if n0 < 1:
-            raise ValueError('Argument n0 cannot be less than one! Given n0={0}'.format(n0))
-        if sorted(dict_energy.keys()) != [n0 - 1, n0, n0 + 1]:
+        n_ref = sorted(dict_energy.keys())[1]
+        if n_ref < 1:
+            raise ValueError('The n_ref cannot be less than one! Given n_ref={0}'.format(n_ref))
+        if sorted(dict_energy.keys()) != [n_ref - 1, n_ref, n_ref + 1]:
             raise ValueError('Number of electrons should differ by one!')
         energy_m, energy_0, energy_p = [dict_energy[n] for n in sorted(dict_energy.keys())]
 
         self._omega = omega
-        self._n_max = None
         param_a = energy_0
         param_b = -omega * energy_m + 2. * omega * energy_0 - omega * energy_p
         param_b += energy_p - energy_0
         param_c = (energy_m - 2. * energy_0 + energy_p) / 2.
         param_d = (2. * omega - 1.) * (energy_m - 2. * energy_0 + energy_p) / 2.
         self._params = np.array([param_a, param_b, param_c, param_d])
-        super(CubicGlobalTool, self).__init__(dict_energy, n0, self._n_max)
+        super(CubicGlobalTool, self).__init__(dict_energy, n_ref, None)
 
     @property
     def omega(self):
