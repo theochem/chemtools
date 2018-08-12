@@ -28,8 +28,8 @@ This module contains the global and local tool classes corresponding to cubic en
 
 import numpy as np
 
-from chemtools.conceptual.base import BaseGlobalTool
 from chemtools.utils.utils import doc_inherit
+from chemtools.conceptual.base import BaseGlobalTool
 
 
 __all__ = ["CubicGlobalTool"]
@@ -57,8 +57,17 @@ class CubicGlobalTool(BaseGlobalTool):
              \quad \text{for} \quad n \geq 3
     """
 
-    @doc_inherit(BaseGlobalTool)
     def __init__(self, dict_energy, omega=0.5):
+        """Initialize a cubic energy model.
+
+        Parameters
+        ----------
+        dict_energy : dict
+            Dictionary of number of electrons (keys) and corresponding energy (values).
+        omega : float
+            Value of omega parameter in the energy model.
+
+        """
         # check energy values
         if len(dict_energy) != 3 or not all([key >= 0 for key in dict_energy.keys()]):
             raise ValueError('Cubic model requires 3 energy values corresponding '
