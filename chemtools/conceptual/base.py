@@ -31,26 +31,23 @@ import sympy as sp
 from scipy.optimize import newton
 from horton import log
 
-__all__ = ['BaseGlobalTool']
-
 
 class BaseGlobalTool(object):
     """Base class of global conceptual DFT reactivity descriptors."""
 
     def __init__(self, dict_energy, n0, n_max):
-        """
-        Initialize class.
+        r"""Initialize base global tool.
 
         Parameters
         ----------
-        energy_zero : float
-            Energy of the :math:`N_0` -electron system, i.e. :math:`E(N_0)`.
-        energy_plus : float
-            Energy of the :math:`(N_0 + 1)` -electron system, i.e. :math:`E(N_0 + 1)`.
-        energy_minus : float
-            Energy of the :math:`(N_0 - 1)` -electron system, i.e. :math:`E(N_0 - 1)`.
+        dict_energy : dict
+            Dictionary of number of electrons :math:`N` (keys) and corresponding energy values
+            :math:`E(N)` (values).
         n0 : float
             Reference number of electrons, i.e. :math:`N_0`.
+        n_max : float
+            Maximum number of electrons that system can accept, i.e. :math:`N_{\text{max}}`.
+
         """
         if not all([key >= 0 for key in dict_energy.keys()]):
             raise ValueError('Number of electrons in dict_energy cannot be negative!')

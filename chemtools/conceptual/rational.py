@@ -25,11 +25,16 @@
 This module contains the global tool class corresponding to rational energy models.
 """
 
+
 import math
 import numpy as np
+
 from horton import log
+
 from chemtools.conceptual.base import BaseGlobalTool
+from chemtools.conceptual.utils import check_dict_energy
 from chemtools.utils.utils import doc_inherit
+
 
 __all__ = ['RationalGlobalTool']
 
@@ -53,34 +58,35 @@ class RationalGlobalTool(BaseGlobalTool):
              \frac{b_1^{n - 1} (a_1 - a_0 b_1) n!}{(1 + b_1 N)^{2n}}
     """
 
-    @doc_inherit(BaseGlobalTool)
     def __init__(self, dict_energy):
+        r"""Initialize rational energy model to compute global reactivity descriptors.
+
+        Parameters
+        ----------
+        dict_energy : dict
+            Dictionary of number of electrons (keys) and corresponding energy (values).
+            This model expects three energy values corresponding to three consecutive number of
+            electrons differing by one, i.e. :math:`\{(N_0 - 1): E(N_0 - 1), N_0: E(N_0),
+            (N_0 + 1): E(N_0 + 1)\}`. The :math:`N_0` value is considered as the reference number
+            of electrons.
+
+        """
+        # check number of electrons & energy values
+        n_ref, energy_m, energy_0, energy_p = check_dict_energy(dict_energy)
         # check energy values
-        if len(dict_energy) != 3 or not all([key >= 0 for key in dict_energy.keys()]):
-            raise ValueError('Rational model requires 3 energy values corresponding '
-                             'to positive number of electrons!')
-        # find reference number of electrons
-        n0 = sorted(dict_energy.keys())[1]
-        if n0 < 1:
-            raise ValueError('Argument n0 cannot be less than one! Given n0={0}'.format(n0))
-        # check number of electrons differ by one
-        if sorted(dict_energy.keys()) != [n0 - 1, n0, n0 + 1]:
-            raise ValueError('Number of electrons should differ by one!')
-        # check energy values are monotonic, i.e. E(N-1) > E(N) > E(N+1)
-        energy_m, energy_0, energy_p = [dict_energy[n] for n in sorted(dict_energy.keys())]
         if not energy_m > energy_0 >= energy_p:
             energies = [energy_m, energy_0, energy_p]
-            raise ValueError('For rational model, the energy values for consecutive number of '
-                             'electrons should be monotonic! E={0}'.format(energies))
+            raise ValueError("For rational model, the energy values for consecutive number of "
+                             "electrons should be monotonic! E={0}".format(energies))
         # calculate parameters a0, a1 and b1 of rational energy model
         b1 = - (energy_p - 2 * energy_0 + energy_m)
-        b1 /= ((n0 + 1) * energy_p - 2 * n0 * energy_0 + (n0 - 1) * energy_m)
-        a1 = (1 + b1 * n0) * (energy_p - energy_0) + (b1 * energy_p)
-        a0 = - a1 * n0 + energy_0 * (1 + b1 * n0)
+        b1 /= ((n_ref + 1) * energy_p - 2 * n_ref * energy_0 + (n_ref - 1) * energy_m)
+        a1 = (1 + b1 * n_ref) * (energy_p - energy_0) + (b1 * energy_p)
+        a0 = - a1 * n_ref + energy_0 * (1 + b1 * n_ref)
         self._params = [a0, a1, b1]
-        # calculate Nmax
+        # calculate N_max
         n_max = float('inf')
-        super(RationalGlobalTool, self).__init__(dict_energy, n0, n_max)
+        super(RationalGlobalTool, self).__init__(dict_energy, n_ref, n_max)
 
     @property
     def params(self):

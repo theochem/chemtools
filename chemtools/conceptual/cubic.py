@@ -32,6 +32,7 @@ from horton import log
 
 from chemtools.utils.utils import doc_inherit
 from chemtools.conceptual.base import BaseGlobalTool
+from chemtools.conceptual.utils import check_dict_energy
 
 
 __all__ = ["CubicGlobalTool"]
@@ -60,34 +61,29 @@ class CubicGlobalTool(BaseGlobalTool):
     """
 
     def __init__(self, dict_energy, omega=0.5):
-        """Initialize a cubic energy model.
+        r"""Initialize cubic energy model to compute global reactivity descriptors.
 
         Parameters
         ----------
         dict_energy : dict
             Dictionary of number of electrons (keys) and corresponding energy (values).
+            This model expects three energy values corresponding to three consecutive number of
+            electrons differing by one, i.e. :math:`\{(N_0 - 1): E(N_0 - 1), N_0: E(N_0),
+            (N_0 + 1): E(N_0 + 1)\}`. The :math:`N_0` value is considered as the reference number
+            of electrons.
         omega : float
             Value of omega parameter in the energy model.
 
         """
-        # check energy values
-        if len(dict_energy) != 3 or not all([key >= 0 for key in dict_energy.keys()]):
-            raise ValueError('Cubic model requires 3 energy values corresponding '
-                             'to positive number of electrons!')
-        # find reference number of electrons
-        n_ref = sorted(dict_energy.keys())[1]
-        if n_ref < 1:
-            raise ValueError('The n_ref cannot be less than one! Given n_ref={0}'.format(n_ref))
-        if sorted(dict_energy.keys()) != [n_ref - 1, n_ref, n_ref + 1]:
-            raise ValueError('Number of electrons should differ by one!')
-        energy_m, energy_0, energy_p = [dict_energy[n] for n in sorted(dict_energy.keys())]
-
-        self._omega = omega
+        # check number of electrons & energy values
+        n_ref, energy_m, energy_0, energy_p = check_dict_energy(dict_energy)
+        # compute parameters of energy model
         param_a = energy_0
         param_b = -omega * energy_m + 2. * omega * energy_0 - omega * energy_p
         param_b += energy_p - energy_0
         param_c = (energy_m - 2. * energy_0 + energy_p) / 2.
         param_d = (2. * omega - 1.) * (energy_m - 2. * energy_0 + energy_p) / 2.
+        self._omega = omega
         self._params = np.array([param_a, param_b, param_c, param_d])
         super(CubicGlobalTool, self).__init__(dict_energy, n_ref, None)
 

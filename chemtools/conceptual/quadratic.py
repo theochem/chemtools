@@ -25,9 +25,13 @@
 This module contains the global and local tool classes corresponding to quadratic energy models.
 """
 
+
 from horton import log
+
 from chemtools.utils.utils import doc_inherit
 from chemtools.conceptual.base import BaseGlobalTool, BaseLocalTool
+from chemtools.conceptual.utils import check_dict_energy
+
 
 __all__ = ['QuadraticGlobalTool', 'QuadraticLocalTool']
 
@@ -53,28 +57,30 @@ class QuadraticGlobalTool(BaseGlobalTool):
              \quad \text{for} \quad n \geq 2
     """
 
-    @doc_inherit(BaseGlobalTool)
     def __init__(self, dict_energy):
-        # check energy values
-        if len(dict_energy) != 3 or not all([key >= 0 for key in dict_energy.keys()]):
-            raise ValueError('Quadratic model requires 3 energy values corresponding '
-                             'to positive number of electrons!')
-        # find reference number of electrons
-        n0 = sorted(dict_energy.keys())[1]
-        if n0 < 1:
-            raise ValueError('Argument n0 cannot be less than one! Given n0={0}'.format(n0))
-        # check number of electrons differ by one
-        if sorted(dict_energy.keys()) != [n0 - 1, n0, n0 + 1]:
-            raise ValueError('Number of electrons should differ by one!')
+        r"""Initialize quadratic energy model to compute global reactivity descriptors.
+
+        Parameters
+        ----------
+        dict_energy : dict
+            Dictionary of number of electrons (keys) and corresponding energy (values).
+            This model expects three energy values corresponding to three consecutive number of
+            electrons differing by one, i.e. :math:`\{(N_0 - 1): E(N_0 - 1), N_0: E(N_0),
+            (N_0 + 1): E(N_0 + 1)\}`. The :math:`N_0` value is considered as the reference number
+            of electrons.
+
+        """
+        # check number of electrons & energy values
+        n_ref, energy_m, energy_0, energy_p = check_dict_energy(dict_energy)
         # calculate parameters a, b, c of quadratic energy model
         energy_m, energy_0, energy_p = [dict_energy[n] for n in sorted(dict_energy.keys())]
         c = 0.5 * (energy_m - 2 * energy_0 + energy_p)
-        b = 0.5 * (energy_p - energy_m) - 2 * c * n0
-        a = energy_0 - b * n0 - c * (n0**2)
+        b = 0.5 * (energy_p - energy_m) - 2 * c * n_ref
+        a = energy_0 - b * n_ref - c * (n_ref**2)
         self._params = [a, b, c]
-        # calculate Nmax (number of electrons for which energy is minimum)
+        # calculate N_max (number of electrons for which energy is minimum)
         n_max = - b / (2 * c)
-        super(QuadraticGlobalTool, self).__init__(dict_energy, n0, n_max)
+        super(QuadraticGlobalTool, self).__init__(dict_energy, n_ref, n_max)
 
     @property
     def params(self):

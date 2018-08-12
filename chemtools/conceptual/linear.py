@@ -25,9 +25,13 @@
 This module contains the global and local tool classes corresponding to linear energy models.
 """
 
+
 from horton import log
+
 from chemtools.conceptual.base import BaseGlobalTool, BaseLocalTool
+from chemtools.conceptual.utils import check_dict_energy
 from chemtools.utils.utils import doc_inherit
+
 
 __all__ = ['LinearGlobalTool', 'LinearLocalTool']
 
@@ -60,30 +64,32 @@ class LinearGlobalTool(BaseGlobalTool):
     """
 
     def __init__(self, dict_energy):
-        # check energy values
-        if len(dict_energy) != 3 or not all([key >= 0 for key in dict_energy.keys()]):
-            raise ValueError('Linear model requires 3 energy values corresponding '
-                             'to positive number of electrons!')
-        # find reference number of electrons
-        n0 = sorted(dict_energy.keys())[1]
-        if n0 < 1:
-            raise ValueError('Argument n0 cannot be less than one! Given n0={0}'.format(n0))
-        # check number of electrons differ by one
-        if sorted(dict_energy.keys()) != [n0 - 1, n0, n0 + 1]:
-            raise ValueError('Number of electrons should differ by one!')
+        r"""Initialize linear energy model to compute global reactivity descriptors.
+
+        Parameters
+        ----------
+        dict_energy : dict
+            Dictionary of number of electrons (keys) and corresponding energy (values).
+            This model expects three energy values corresponding to three consecutive number of
+            electrons differing by one, i.e. :math:`\{(N_0 - 1): E(N_0 - 1), N_0: E(N_0),
+            (N_0 + 1): E(N_0 + 1)\}`. The :math:`N_0` value is considered as the reference number
+            of electrons.
+
+        """
+        # check number of electrons & energy values
+        n_ref, energy_m, energy_0, energy_p = check_dict_energy(dict_energy)
         # calculate parameters a, b, a' and b' of linear energy model
-        energy_m, energy_0, energy_p = [dict_energy[n] for n in sorted(dict_energy.keys())]
         b = energy_0 - energy_m
-        a = energy_0 - n0 * b
+        a = energy_0 - n_ref * b
         b_prime = energy_p - energy_0
-        a_prime = energy_0 - n0 * b_prime
+        a_prime = energy_0 - n_ref * b_prime
         self._params = [a, b, a_prime, b_prime]
-        # calculate Nmax
+        # calculate N_max
         if energy_0 < energy_p:
-            n_max = n0
+            n_max = n_ref
         else:
             n_max = None
-        super(LinearGlobalTool, self).__init__(dict_energy, n0, n_max)
+        super(LinearGlobalTool, self).__init__(dict_energy, n_ref, n_max)
 
     @property
     def params(self):
