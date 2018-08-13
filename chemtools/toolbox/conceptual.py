@@ -238,7 +238,7 @@ class BaseConceptualDFT(object):
         """
         if isinstance(molecule, BaseMolecule):
             # get homo/lumo energy and spin
-            homo_e, lumo_e, homo_s, lumo_s = BaseConceptualDFT._get_homo_lumo_data(molecule)
+            _, _, homo_s, lumo_s = BaseConceptualDFT._get_homo_lumo_data(molecule)
             # compute homo & lumo density
             spin_to_index = {"a": 0, "b": 1}
             homo_dens = molecule.compute_density(points, homo_s,
