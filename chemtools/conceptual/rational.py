@@ -86,7 +86,8 @@ class RationalGlobalTool(BaseGlobalTool):
         self._params = [param_a0, param_a1, param_b1]
         # calculate N_max
         n_max = float('inf')
-        super(RationalGlobalTool, self).__init__(dict_energy, n_ref, n_max)
+        super(RationalGlobalTool, self).__init__(n_ref, n_max)
+        self.dict_energy = dict_energy
 
     @property
     def params(self):

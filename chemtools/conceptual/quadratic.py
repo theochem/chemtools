@@ -80,7 +80,8 @@ class QuadraticGlobalTool(BaseGlobalTool):
         self._params = [param_a, param_b, param_c]
         # calculate N_max (number of electrons for which energy is minimum)
         n_max = - param_b / (2 * param_c)
-        super(QuadraticGlobalTool, self).__init__(dict_energy, n_ref, n_max)
+        super(QuadraticGlobalTool, self).__init__(n_ref, n_max)
+        self.dict_energy = dict_energy
 
     @property
     def params(self):

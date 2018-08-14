@@ -85,7 +85,8 @@ class CubicGlobalTool(BaseGlobalTool):
         param_d = (2. * omega - 1.) * (energy_m - 2. * energy_0 + energy_p) / 2.
         self._omega = omega
         self._params = np.array([param_a, param_b, param_c, param_d])
-        super(CubicGlobalTool, self).__init__(dict_energy, n_ref, None)
+        super(CubicGlobalTool, self).__init__(n_ref, None)
+        self.dict_energy = dict_energy
 
     @property
     def omega(self):

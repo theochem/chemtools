@@ -28,34 +28,12 @@ from chemtools.conceptual.base import BaseGlobalTool, BaseLocalTool
 
 
 def test_global_base_raises():
-    # check invalid N
-    assert_raises(ValueError, BaseGlobalTool, {0.: 7.0, -1.: 6.2, 1.: 6.8}, 8.0, 1.0)
-    assert_raises(ValueError, BaseGlobalTool, {-0.5: 7.0, 1.: 6.2, 1.5: 6.8}, 8.0, 2.0)
+    # check invalid N0
+    assert_raises(ValueError, BaseGlobalTool, -3.0, 1.0)
+    assert_raises(ValueError, BaseGlobalTool, 0.0, 0.1)
     # check invalid Nmax
-    assert_raises(ValueError, BaseGlobalTool, {8.: 7.0, 9.: 6.2, 7.: 6.8}, 8.0, -1.0)
-    assert_raises(ValueError, BaseGlobalTool, {8.: 7.0, 9.: 6.2, 7.: 6.8}, 8.0, -0.1)
-    # check not implemented methods
-    model = BaseGlobalTool({5.: -5.0, 6.: -6.2, 4.: -6.5}, 5.0, 4.5)
-    assert_raises(NotImplementedError, model.energy, 4.8)
-    assert_raises(NotImplementedError, model.energy, 5.0)
-    assert_raises(NotImplementedError, model.energy_derivative, 5.1, 1)
-    assert_raises(NotImplementedError, model.energy_derivative, 5.5, 2)
-    # check invalid order
-    assert_raises(ValueError, model.hyper_hardness, 1)
-    assert_raises(ValueError, model.hyper_hardness, 2.)
-    assert_raises(ValueError, model.hyper_hardness, 0.5)
-    assert_raises(ValueError, model.hyper_hardness, '2')
-    assert_raises(ValueError, model.hyper_softness, 1)
-    assert_raises(ValueError, model.hyper_softness, 2.)
-    assert_raises(ValueError, model.hyper_softness, 3.1)
-    assert_raises(ValueError, model.hyper_softness, '2')
-    assert_raises(ValueError, model.grand_potential_derivative, 4.5, 1.0)
-    assert_raises(ValueError, model.grand_potential_derivative, 4.5, -1)
-    assert_raises(ValueError, model.grand_potential_mu_derivative, 5., 2.0)
-    assert_raises(ValueError, model.grand_potential_mu_derivative, 5.1, -0.5)
-    # check invalid N (nunmber of electrons)
-    assert_raises(ValueError, model.grand_potential_derivative, -0.1, 1)
-    assert_raises(ValueError, model.grand_potential_derivative, -1.0, 2)
+    assert_raises(ValueError, BaseGlobalTool, 8.0, -1.0)
+    assert_raises(ValueError, BaseGlobalTool, 8.0, -0.1)
 
 
 def test_local_base_raises():

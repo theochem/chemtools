@@ -89,7 +89,8 @@ class LinearGlobalTool(BaseGlobalTool):
             n_max = n_ref
         else:
             n_max = None
-        super(LinearGlobalTool, self).__init__(dict_energy, n_ref, n_max)
+        super(LinearGlobalTool, self).__init__(n_ref, n_max)
+        self.dict_energy = dict_energy
 
     @property
     def params(self):

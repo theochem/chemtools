@@ -38,34 +38,25 @@ __all__ = []
 class BaseGlobalTool(object):
     """Base class of global conceptual DFT reactivity descriptors."""
 
-    def __init__(self, dict_energy, n0, n_max):
-        r"""Initialize base global tool.
+    def __init__(self, n0, n_max):
+        r"""Initialize class.
 
         Parameters
         ----------
-        dict_energy : dict
-            Dictionary of number of electrons :math:`N` (keys) and corresponding energy values
-            :math:`E(N)` (values).
         n0 : float
             Reference number of electrons, i.e. :math:`N_0`.
         n_max : float
             Maximum number of electrons that system can accept, i.e. :math:`N_{\text{max}}`.
-
         """
-        if not all([key >= 0 for key in dict_energy.keys()]):
-            raise ValueError('Number of electrons in dict_energy cannot be negative!')
+        if n0 <= 0:
+            raise ValueError("Argument n0 should be positive! Given n0={0}".format(n0))
         if n_max is not None and n_max < 0:
-            raise ValueError('Argument n_max cannot be negative! Given n0={0}'.format(n_max))
+            raise ValueError("Argument n_max cannot be negative! Given n_max={0}".format(n_max))
         self._n0 = n0
         self._n_max = n_max
-        self._dict_energy = dict_energy
-        # calculate ionization potential and electron affinity
-        if len(dict_energy) == 3:
-            energy_m, energy_0, energy_p = [dict_energy[n] for n in sorted(dict_energy.keys())]
-            self._ip = energy_m - energy_0
-            self._ea = energy_0 - energy_p
-        else:
-            raise NotImplementedError('Only 3 energy values are supported!')
+        # calculate ionization potential & electron affinity
+        self._ip = self.energy(self._n0 - 1) - self.energy(self._n0)
+        self._ea = self.energy(self._n0) - self.energy(self._n0 + 1)
 
     @property
     def n0(self):
@@ -80,11 +71,6 @@ class BaseGlobalTool(object):
         .. math:: N_{\text{max}} = \underbrace {\min }_N E(N)
         """
         return self._n_max
-
-    @property
-    def dict_energy(self):
-        """Dictionary of number of electrons (key) and corresponding energy (value)."""
-        return self._dict_energy
 
     @property
     def ionization_potential(self):

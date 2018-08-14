@@ -86,8 +86,9 @@ class ExponentialGlobalTool(BaseGlobalTool):
         param_g = math.log(1. - param_g)
         self._params = [param_a, param_g, param_b]
         # calculate N_max
-        n_max = float('inf')
-        super(ExponentialGlobalTool, self).__init__(dict_energy, n_ref, n_max)
+        n_max = float("inf")
+        super(ExponentialGlobalTool, self).__init__(n_ref, n_max)
+        self.dict_energy = dict_energy
 
     @property
     def params(self):
