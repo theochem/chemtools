@@ -20,167 +20,317 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Test chemtools.analysis.conceptual."""
+# pragma pylint: disable=invalid-name
+"""Test chemtools.analysis.conceptual.GlobalConceptualDFT."""
+
 
 import numpy as np
 
-from numpy.testing import assert_raises, assert_equal, assert_almost_equal
+from numpy.testing import assert_raises, assert_almost_equal
 
-from horton import IOData, BeckeMolGrid
 from chemtools import context
-from chemtools.toolbox.conceptual import GlobalConceptualDFT, LocalConceptualDFT
-from chemtools.toolbox.conceptual import CondensedConceptualDFT
+from chemtools.toolbox.conceptual import GlobalConceptualDFT
 
 
 def test_global_conceptual_raises():
     # dictionary of energy values
     values = {0.0: 0.0, 1.0: -0.5, 2.0: -0.45}
     # check invalid model
-    assert_raises(ValueError, GlobalConceptualDFT, values, 'quad')
-    assert_raises(ValueError, GlobalConceptualDFT, values, 'gibberish')
-    assert_raises(NotImplementedError, GlobalConceptualDFT, values, 'general')
+    assert_raises(ValueError, GlobalConceptualDFT, values, "quad")
+    assert_raises(ValueError, GlobalConceptualDFT, values, "Gibberish")
+    assert_raises(NotImplementedError, GlobalConceptualDFT, values, "general")
     # check invalid coordinates
-    assert_raises(ValueError, GlobalConceptualDFT, values, 'linear', np.array([0., 0., 0.]))
-    assert_raises(ValueError, GlobalConceptualDFT, values, 'linear', np.array([[0., 0.]]))
+    assert_raises(ValueError, GlobalConceptualDFT, values, "linear", np.array([0., 0., 0.]))
+    assert_raises(ValueError, GlobalConceptualDFT, values, "linear", np.array([[0., 0.]]))
     # check invalid atomic numbers
     coord = np.array([[0., 0., 0.]])
-    assert_raises(ValueError, GlobalConceptualDFT, values, 'linear', coord, [])
-    assert_raises(ValueError, GlobalConceptualDFT, values, 'linear', coord, [1, 1])
+    assert_raises(ValueError, GlobalConceptualDFT, values, "linear", coord, [])
+    assert_raises(ValueError, GlobalConceptualDFT, values, "linear", coord, [1, 1])
     # check invalid number of electrons
-    values = {'0': 0.0, 1: -0.5, 2: -0.45}
-    assert_raises(ValueError, GlobalConceptualDFT, values, 'quadratic', coord)
+    values = {"0": 0.0, 1: -0.5, 2: -0.45}
+    assert_raises(ValueError, GlobalConceptualDFT, values, "linear", coord)
+    assert_raises(ValueError, GlobalConceptualDFT, values, "quadratic", coord)
+    values = {0.5: 0.0, 1.3: -0.5, 2: -0.45}
+    assert_raises(ValueError, GlobalConceptualDFT, values, "linear", coord)
+    assert_raises(ValueError, GlobalConceptualDFT, values, "quadratic", coord)
     values = {0: 0.0, 1: -0.5, 3: -0.45}
-    assert_raises(ValueError, GlobalConceptualDFT, values, 'quadratic')
+    assert_raises(ValueError, GlobalConceptualDFT, values, "linear")
+    assert_raises(ValueError, GlobalConceptualDFT, values, "quadratic")
     values = {0: 0.0, 1: -0.5, 2: -0.45, 3: -0.4}
-    assert_raises(ValueError, GlobalConceptualDFT, values, 'quadratic', coord)
+    assert_raises(ValueError, GlobalConceptualDFT, values, "linear", coord)
+    assert_raises(ValueError, GlobalConceptualDFT, values, "quadratic", coord)
     # check non-existing attribute
-    model = GlobalConceptualDFT({0.0: 0.0, 1.0: -0.5, 2.0: -0.45}, 'quadratic')
-    assert_raises(AttributeError, getattr, model, 'mu_plus')
-    assert_raises(AttributeError, getattr, model, 'gibberish')
+    model = GlobalConceptualDFT({0.0: 0.0, 1.0: -0.5, 2.0: -0.45}, "quadratic")
+    assert_raises(AttributeError, getattr, model, "mu_plus")
+    assert_raises(AttributeError, getattr, model, "gibberish")
     # check molecule file inconsistency
-    fnames = [context.get_fn('test/ch4_uhf_ccpvdz.fchk'), context.get_fn('test/o2_uhf.fchk')]
-    assert_raises(ValueError, GlobalConceptualDFT.from_file, fnames, 'linear')
-    fname = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
-    assert_raises(ValueError, GlobalConceptualDFT.from_file, [fname, fname], 'linear')
+    fnames = [context.get_fn("test/ch4_uhf_ccpvdz.fchk"), context.get_fn("test/o2_uhf.fchk")]
+    assert_raises(ValueError, GlobalConceptualDFT.from_file, fnames, "linear")
+    assert_raises(ValueError, GlobalConceptualDFT.from_file, fnames, "quadratic")
+    fname = context.get_fn("test/ch4_uhf_ccpvdz.fchk")
+    assert_raises(ValueError, GlobalConceptualDFT.from_file, [fname, fname], "linear")
+    assert_raises(ValueError, GlobalConceptualDFT.from_file, [fname, fname], "quadratic")
+    assert_raises(ValueError, GlobalConceptualDFT.from_file, [fname, fname, fname], "linear")
+    assert_raises(ValueError, GlobalConceptualDFT.from_file, [fname, fname, fname], "quadratic")
 
 
-def check_global_linear_fmo_ch4_uhf_ccpvdz(filename):
-    """Check expected linear global indicators for ch4_uhf_ccpvdz within FMO approach."""
-    # ip = -E(homo) & ea = E(lumo)
-    ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
-    # build global conceptual DFT tool
-    desp = GlobalConceptualDFT.from_file(context.get_fn(filename), model='linear')
+def check_global_reactivity_linear(model, ip, ea, energy, n):
+    """Check expected linear global reactivity descriptors."""
     # check print statement
-    assert_equal(type(desp.__repr__()), str)
+    assert isinstance(model.__repr__(), str)
     # check energy values
-    assert_almost_equal(desp.energy(10.), energy, decimal=6)
-    assert_almost_equal(desp.energy(9.), energy + ip, decimal=6)
-    assert_almost_equal(desp.energy(11.), energy - ea, decimal=6)
+    assert_almost_equal(model.energy(n), energy, decimal=6)
+    assert_almost_equal(model.energy(n - 1), energy + ip, decimal=6)
+    assert_almost_equal(model.energy(n + 1), energy - ea, decimal=6)
     # check ionization potential and electron affinity
-    assert_almost_equal(desp.ip, ip, decimal=6)
-    assert_almost_equal(desp.ionization_potential, ip, decimal=6)
-    assert_almost_equal(desp.ea, ea, decimal=6)
-    assert_almost_equal(desp.electron_affinity, ea, decimal=6)
+    assert_almost_equal(model.ip, ip, decimal=6)
+    assert_almost_equal(model.ionization_potential, ip, decimal=6)
+    assert_almost_equal(model.ea, ea, decimal=6)
+    assert_almost_equal(model.electron_affinity, ea, decimal=6)
+    # check N0
+    assert_almost_equal(model.n0, n, decimal=6)
     # check chemical-potential, chemical-hardness & hyper-hardness
-    assert_equal(desp.mu, None)
-    assert_equal(desp.chemical_potential, None)
-    assert_equal(desp.eta, None)
-    assert_equal(desp.chemical_hardness, None)
-    assert_equal(desp.hyper_hardness(2), None)
-    assert_equal(desp.hyper_hardness(3), None)
-    assert_equal(desp.hyper_hardness(4), None)
+    assert model.mu is None
+    assert model.chemical_potential is None
+    assert model.eta is None
+    assert model.chemical_hardness is None
+    assert model.hyper_hardness(2) is None
+    assert model.hyper_hardness(3) is None
+    assert model.hyper_hardness(4) is None
     # check mu+, mu-, mu0
-    assert_almost_equal(desp.mu_plus, -ea, decimal=6)
-    assert_almost_equal(desp.mu_minus, -ip, decimal=6)
-    assert_almost_equal(desp.mu_zero, -0.5 * (ip + ea), decimal=6)
+    assert_almost_equal(model.mu_plus, -ea, decimal=6)
+    assert_almost_equal(model.mu_minus, -ip, decimal=6)
+    assert_almost_equal(model.mu_zero, -0.5 * (ip + ea), decimal=6)
     # check derivatives of energy w.r.t. number of electrons
-    assert_equal(desp.energy_derivative(10, 3), None)
-    assert_almost_equal(desp.energy_derivative(9.5, 4), 0.0, decimal=6)
-    assert_almost_equal(desp.energy_derivative(9.0, 3), 0.0, decimal=6)
-    assert_almost_equal(desp.energy_derivative(10.4, 2), 0.0, decimal=6)
-    assert_almost_equal(desp.energy_derivative(11, 1), -ea, decimal=6)
-    assert_almost_equal(desp.energy_derivative(9.0, 1), -ip, decimal=6)
-    assert_almost_equal(desp.energy_derivative(9.7, 1), -ip, decimal=6)
-    assert_almost_equal(desp.energy_derivative(10.5, 1), -ea, decimal=6)
+    assert model.energy_derivative(n, 1) is None
+    assert model.energy_derivative(n, 2) is None
+    assert model.energy_derivative(n, 3) is None
+    assert_almost_equal(model.energy_derivative(n + 1, 1), -ea, decimal=6)
+    assert_almost_equal(model.energy_derivative(n - 1, 1), -ip, decimal=6)
+    assert_almost_equal(model.energy_derivative(n - 0.3, 1), -ip, decimal=6)
+    assert_almost_equal(model.energy_derivative(n + 0.5, 1), -ea, decimal=6)
+    assert_almost_equal(model.energy_derivative(n + 1, 4), 0.0, decimal=6)
+    assert_almost_equal(model.energy_derivative(n - 1, 3), 0.0, decimal=6)
+    assert_almost_equal(model.energy_derivative(n + 0.4, 2), 0.0, decimal=6)
+    # check electrophilicity, nucleofugality & electrofugality
+    if model.n_max is not None:
+        assert_almost_equal(model.electrophilicity, 0., decimal=6)
+        assert_almost_equal(model.nucleofugality, -ea, decimal=6)
+        assert_almost_equal(model.electrofugality, ip, decimal=6)
 
 
-def test_global_linear_fmo_ch4_uhf_ccpvdz_fchk():
-    check_global_linear_fmo_ch4_uhf_ccpvdz('test/ch4_uhf_ccpvdz.fchk')
-
-
-def test_global_linear_fmo_ch4_uhf_ccpvdz_wfn():
-    check_global_linear_fmo_ch4_uhf_ccpvdz('test/ch4_uhf_ccpvdz.wfn')
-
-
-def check_global_quadratic_fmo_ch4_uhf_ccpvdz(filename):
-    """Check expected quadratic global indicators for ch4_uhf_ccpvdz within FMO approach."""
-    # ip = -E(homo) & ea = E(lumo)
+def test_global_linear_fmo_ch4_fchk():
+    # FMO: ip = -E(HOMO) & ea = -E(LUMO)
     ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
-    # build global conceptual DFT tool
-    desp = GlobalConceptualDFT.from_file(context.get_fn(filename), model='quadratic')
+    # check linear global conceptual DFT model from a filename given as string
+    model = GlobalConceptualDFT.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"), "linear")
+    check_global_reactivity_linear(model, ip, ea, energy, 10)
+    # check linear global conceptual DFT model from a filename given as a list of string
+    model = GlobalConceptualDFT.from_file([context.get_fn("test/ch4_uhf_ccpvdz.fchk")], "linear")
+    check_global_reactivity_linear(model, ip, ea, energy, 10)
+
+
+def test_global_linear_fmo_ch4_wfn():
+    # FMO: ip = -E(HOMO) & ea = -E(LUMO)
+    ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
+    # check linear global conceptual DFT model from a filename given as string
+    model = GlobalConceptualDFT.from_file(context.get_fn("test/ch4_uhf_ccpvdz.wfn"), "linear")
+    check_global_reactivity_linear(model, ip, ea, energy, 10)
+    # check linear global conceptual DFT model from a filename given as a list of string
+    model = GlobalConceptualDFT.from_file([context.get_fn("test/ch4_uhf_ccpvdz.wfn")], "linear")
+    check_global_reactivity_linear(model, ip, ea, energy, 10)
+
+
+def test_global_linear_fmo_h2o_fchk():
+    # FMO: ip = -E(HOMO) & ea = -E(LUMO)
+    ip, ea, energy = -(-3.09871604E-01), -2.48704636E-02, -7.645980351270224E+01
+    # check linear global conceptual DFT model from a filename given as string
+    filename = context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")
+    model = GlobalConceptualDFT.from_file(filename, "linear")
+    check_global_reactivity_linear(model, ip, ea, energy, 10)
+    # check linear global conceptual DFT model from a filename given as a list of string
+    filename = context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")
+    model = GlobalConceptualDFT.from_file([filename], "linear")
+    check_global_reactivity_linear(model, ip, ea, energy, 10)
+
+
+def test_global_linear_fmo_h2o_cation_fchk():
+    # FMO: ip = -E(HOMO) & ea = -E(LUMO)
+    ip, ea, energy = -(-8.47044131E-01), -(-6.19391831E-01), -7.599493522312368E+01
+    # check linear global conceptual DFT model from a filename given as string
+    filename = context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk")
+    model = GlobalConceptualDFT.from_file(filename, "linear")
+    check_global_reactivity_linear(model, ip, ea, energy, 9)
+    # check linear global conceptual DFT model from a filename given as a list of string
+    model = GlobalConceptualDFT.from_file([filename], "linear")
+    check_global_reactivity_linear(model, ip, ea, energy, 9)
+
+
+def test_global_linear_fmo_h2o_anion_fchk():
+    # FMO: ip = -E(HOMO) & ea = -E(LUMO)
+    ip, ea, energy = -1.93118022E-01, -2.69116912E-01, -7.635212549312298E+01
+    # check linear global conceptual DFT model from a filename given as string
+    filename = context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk")
+    model = GlobalConceptualDFT.from_file(filename, "linear")
+    check_global_reactivity_linear(model, ip, ea, energy, 11)
+    # check linear global conceptual DFT model from a filename given as a list of string
+    filename = context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk")
+    model = GlobalConceptualDFT.from_file([filename], "linear")
+    check_global_reactivity_linear(model, ip, ea, energy, 11)
+
+
+def test_global_linear_fd_h2o_fchk():
+    ep, e0, en = -7.599493522312368E+01, -7.645980351270224E+01, -7.635212549312298E+01
+    ip, ea, energy = ep - e0, e0 - en, e0
+    # check linear global conceptual DFT model
+    filename = [context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"),
+                context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"),
+                context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk")]
+    model = GlobalConceptualDFT.from_file(filename, "linear")
+    check_global_reactivity_linear(model, ip, ea, energy, 10)
+    # rearrange input files
+    filename = [context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk"),
+                context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"),
+                context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk")]
+    model = GlobalConceptualDFT.from_file(filename, "linear")
+    check_global_reactivity_linear(model, ip, ea, energy, 10)
+    # rearrange input files
+    filename = [context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"),
+                context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk"),
+                context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")]
+    model = GlobalConceptualDFT.from_file(filename, "linear")
+    check_global_reactivity_linear(model, ip, ea, energy, 10)
+
+
+def check_global_reactivity_quadratic(model, ip, ea, energy, n):
+    """Check expected quadratic global reactivity descriptors."""
     # check print statement
-    assert_equal(type(desp.__repr__()), str)
+    assert isinstance(model.__repr__(), str)
     # check energy
-    assert_almost_equal(desp.energy(10.), energy, decimal=6)
-    assert_almost_equal(desp.energy(9.), energy + ip, decimal=6)
-    assert_almost_equal(desp.energy(11.), energy - ea, decimal=6)
+    assert_almost_equal(model.energy(n), energy, decimal=6)
+    assert_almost_equal(model.energy(n - 1), energy + ip, decimal=6)
+    assert_almost_equal(model.energy(n + 1), energy - ea, decimal=6)
     # check ionization-potential & electron-affinity
-    assert_almost_equal(desp.ip, ip, decimal=6)
-    assert_almost_equal(desp.ionization_potential, ip, decimal=6)
-    assert_almost_equal(desp.ea, ea, decimal=6)
-    assert_almost_equal(desp.electron_affinity, ea, decimal=6)
+    assert_almost_equal(model.ip, ip, decimal=6)
+    assert_almost_equal(model.ionization_potential, ip, decimal=6)
+    assert_almost_equal(model.ea, ea, decimal=6)
+    assert_almost_equal(model.electron_affinity, ea, decimal=6)
     # check chemical-potential, chemical-hardness & hyper-hardness
     mu, eta = -0.5 * (ip + ea), ip - ea
-    assert_almost_equal(desp.mu, mu, decimal=6)
-    assert_almost_equal(desp.chemical_potential, mu, decimal=6)
-    assert_almost_equal(desp.eta, eta, decimal=6)
-    assert_almost_equal(desp.chemical_hardness, eta, decimal=6)
-    assert_almost_equal(desp.hyper_hardness(2), 0.0, decimal=6)
-    assert_almost_equal(desp.hyper_hardness(3), 0.0, decimal=6)
-    assert_almost_equal(desp.hyper_hardness(4), 0.0, decimal=6)
+    assert_almost_equal(model.mu, mu, decimal=6)
+    assert_almost_equal(model.chemical_potential, mu, decimal=6)
+    assert_almost_equal(model.eta, eta, decimal=6)
+    assert_almost_equal(model.chemical_hardness, eta, decimal=6)
+    assert_almost_equal(model.hyper_hardness(2), 0.0, decimal=6)
+    assert_almost_equal(model.hyper_hardness(3), 0.0, decimal=6)
+    assert_almost_equal(model.hyper_hardness(4), 0.0, decimal=6)
     # check softness & hyper-softness
-    assert_almost_equal(desp.softness, 1.0 / eta, decimal=5)
-    # assert_almost_equal(desp.hyper_softness(2), 0.0, decimal=6)
-    # assert_almost_equal(desp.hyper_softness(3), 0.0, decimal=6)
-    # assert_almost_equal(desp.hyper_softness(4), 0.0, decimal=6)
-    # check N_max and related descriptors
-    assert_almost_equal(desp.n0, 10, decimal=6)
-    assert_almost_equal(desp.n_max, 10 - mu / eta, decimal=6)
-    # check Electrophilicity
-    value = 0.5 * mu * mu / eta
-    assert_almost_equal(desp.electrophilicity, value, decimal=6)
-    value = (ip + ea)**2 / (8 * (ip - ea))
-    assert_almost_equal(desp.electrophilicity, value, decimal=6)
-    # check Nucleofugality
-    value = (ip - 3 * ea)**2 / (8 * (ip - ea))
-    assert_almost_equal(desp.nucleofugality, value, decimal=6)
-    value = (mu + eta)**2 / (2 * eta)
-    assert_almost_equal(desp.nucleofugality, value, decimal=6)
-    value = - ea + 0.5 * mu * mu / eta
-    assert_almost_equal(desp.nucleofugality, value, decimal=6)
-    # check Electrofugality
-    value = (3 * ip - ea)**2 / (8 * (ip - ea))
-    assert_almost_equal(desp.electrofugality, value, decimal=6)
-    value = (mu - eta)**2 / (2 * eta)
-    assert_almost_equal(desp.electrofugality, value, decimal=6)
-    value = ip + 0.5 * mu * mu / eta
-    assert_almost_equal(desp.electrofugality, value, decimal=6)
+    assert_almost_equal(model.softness, 1.0 / eta, decimal=5)
+    assert_almost_equal(model.hyper_softness(2), 0.0, decimal=6)
+    assert_almost_equal(model.hyper_softness(3), 0.0, decimal=6)
+    assert_almost_equal(model.hyper_softness(4), 0.0, decimal=6)
+    # check N0 & N_max
+    assert_almost_equal(model.n0, n, decimal=6)
+    assert_almost_equal(model.n_max, n - mu / eta, decimal=6)
+    # check electrophilicity
+    sgn = np.sign(n - mu / eta - n)
+    assert_almost_equal(model.electrophilicity, sgn * 0.5 * mu**2 / eta, decimal=6)
+    assert_almost_equal(model.electrophilicity, sgn * (ip + ea)**2 / (8 * (ip - ea)), decimal=6)
+    # check nucleofugality
+    sgn = np.sign(n + 1 - n + mu / eta)
+    assert_almost_equal(model.nucleofugality, sgn * (ip - 3 * ea)**2 / (8 * (ip - ea)), decimal=6)
+    assert_almost_equal(model.nucleofugality, sgn * (mu + eta)**2 / (2 * eta), decimal=6)
+    assert_almost_equal(model.nucleofugality, sgn * (-ea + 0.5 * mu**2 / eta), decimal=6)
+    # check electrofugality
+    sgn = np.sign(n - mu / eta - n + 1)
+    assert_almost_equal(model.electrofugality, sgn * (3 * ip - ea)**2 / (8 * (ip - ea)), decimal=6)
+    assert_almost_equal(model.electrofugality, sgn * (mu - eta)**2 / (2 * eta), decimal=6)
+    assert_almost_equal(model.electrofugality, sgn * (ip + 0.5 * mu**2 / eta), decimal=6)
 
 
-def test_global_quadratic_fmo_ch4_uhf_ccpvdz_fchk():
-    check_global_quadratic_fmo_ch4_uhf_ccpvdz('test/ch4_uhf_ccpvdz.fchk')
+def test_global_quadratic_fmo_ch4_fchk():
+    # FMO: ip = -E(HOMO) & ea = -E(LUMO)
+    ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
+    # check quadratic global conceptual DFT model from filename given as string
+    model = GlobalConceptualDFT.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"), "quadratic")
+    check_global_reactivity_quadratic(model, ip, ea, energy, 10)
 
 
-def test_global_quadratic_fmo_ch4_uhf_ccpvdz_wfn():
-    check_global_quadratic_fmo_ch4_uhf_ccpvdz('test/ch4_uhf_ccpvdz.wfn')
+def test_global_quadratic_fmo_ch4_wfn():
+    # FMO: ip = -E(HOMO) & ea = -E(LUMO)
+    ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
+    # check quadratic global conceptual DFT model from filename given as string
+    model = GlobalConceptualDFT.from_file(context.get_fn("test/ch4_uhf_ccpvdz.wfn"), "quadratic")
+    check_global_reactivity_quadratic(model, ip, ea, energy, 10)
+
+
+def test_global_quadratic_fmo_h2o_fchk():
+    # FMO: ip = -E(HOMO) & ea = -E(LUMO)
+    ip, ea, energy = -(-3.09871604E-01), -2.48704636E-02, -7.645980351270224E+01
+    # check quadratic global conceptual DFT model from a filename given as string
+    filename = context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")
+    model = GlobalConceptualDFT.from_file(filename, "quadratic")
+    check_global_reactivity_quadratic(model, ip, ea, energy, 10)
+    # check quadratic global conceptual DFT model from a filename given as a list of string
+    filename = context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")
+    model = GlobalConceptualDFT.from_file([filename], "quadratic")
+    check_global_reactivity_quadratic(model, ip, ea, energy, 10)
+
+
+def test_global_quadratic_fmo_h2o_cation_fchk():
+    # FMO: ip = -E(HOMO) & ea = -E(LUMO)
+    ip, ea, energy = -(-8.47044131E-01), -(-6.19391831E-01), -7.599493522312368E+01
+    # check quadratic global conceptual DFT model from a filename given as string
+    filename = context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk")
+    model = GlobalConceptualDFT.from_file(filename, "quadratic")
+    check_global_reactivity_quadratic(model, ip, ea, energy, 9)
+    # check quadratic global conceptual DFT model from a filename given as a list of string
+    # model = GlobalConceptualDFT.from_file([filename], "quadratic")
+    # check_global_reactivity_quadratic(model, ip, ea, energy, 9)
+
+
+def test_global_quadratic_fmo_h2o_anion_fchk():
+    # FMO: ip = -E(HOMO) & ea = -E(LUMO)
+    ip, ea, energy = -1.93118022E-01, -2.69116912E-01, -7.635212549312298E+01
+    # check quadratic global conceptual DFT model from a filename given as string
+    filename = context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk")
+    model = GlobalConceptualDFT.from_file(filename, "quadratic")
+    check_global_reactivity_quadratic(model, ip, ea, energy, 11)
+    # check quadratic global conceptual DFT model from a filename given as a list of string
+    filename = context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk")
+    model = GlobalConceptualDFT.from_file([filename], "quadratic")
+    check_global_reactivity_quadratic(model, ip, ea, energy, 11)
+
+
+def test_global_quadratic_fd_h2o_fchk():
+    ep, e0, en = -7.599493522312368E+01, -7.645980351270224E+01, -7.635212549312298E+01
+    ip, ea, energy = ep - e0, e0 - en, e0
+    # check quadratic global conceptual DFT model
+    filename = [context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"),
+                context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk"),
+                context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk")]
+    model = GlobalConceptualDFT.from_file(filename, "quadratic")
+    check_global_reactivity_quadratic(model, ip, ea, energy, 10)
+    # rearrange input files
+    filename = [context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"),
+                context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"),
+                context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk")]
+    model = GlobalConceptualDFT.from_file(filename, "quadratic")
+    check_global_reactivity_quadratic(model, ip, ea, energy, 10)
+    # rearrange input files
+    filename = [context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk"),
+                context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"),
+                context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")]
+    model = GlobalConceptualDFT.from_file(filename, "quadratic")
+    check_global_reactivity_quadratic(model, ip, ea, energy, 10)
 
 
 # def test_global_rational_ch4_fchk():
-#     file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
-#     # ip = -E(homo) & ea = E(lumo)
+#     file_path = context.get_fn("test/ch4_uhf_ccpvdz.fchk")
+#     # ip = -E(HOMO) & ea = -E(LUMO)
 #     ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
-#     # build global conceptual DFT tool
-#     desp = GlobalConceptualDFT.from_file(file_path, model='rational')
+#     # build global conceptual DFT desp
+#     desp = GlobalConceptualDFT.from_file(file_path, desp="rational")
 #     assert_almost_equal(desp.energy(10.), energy, decimal=6)
 #     assert_almost_equal(desp.energy(9.), energy + ip, decimal=6)
 #     assert_almost_equal(desp.energy(11.), energy - ea, decimal=6)

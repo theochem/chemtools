@@ -157,7 +157,7 @@ class BaseConceptualDFT(object):
             homo_spin = "b"
         lumo_energy = molecule.lumo_energy[0]
         lumo_spin = "a"
-        if molecule.lumo_energy[1] > lumo_energy:
+        if molecule.lumo_energy[1] < lumo_energy:
             lumo_energy = molecule.lumo_energy[1]
             lumo_spin = "b"
         return homo_energy, lumo_energy, homo_spin, lumo_spin
