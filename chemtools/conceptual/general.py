@@ -30,10 +30,13 @@ import numpy as np
 import sympy as sp
 from horton import log
 from scipy.optimize import root, least_squares
+
+from chemtools.conceptual.utils import check_number_electrons
 from chemtools.utils.utils import doc_inherit
 from chemtools.conceptual.base import BaseGlobalTool
 
-__all__ = ['GeneralGlobalTool']
+
+__all__ = ["GeneralGlobalTool"]
 
 
 class GeneralGlobalTool(BaseGlobalTool):
@@ -125,25 +128,19 @@ class GeneralGlobalTool(BaseGlobalTool):
 
     @doc_inherit(BaseGlobalTool)
     def energy(self, n_elec):
-        if n_elec < 0.0:
-            raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
-        if not self._n_min <= n_elec <= self._n_max:
-            log.warn('Energy evaluated for n_elec={0} outside of interpolation '
-                     'region [{1}, {2}].'.format(n_elec, self._n_min, self._n_max))
+        # check n_elec argument
+        check_number_electrons(n_elec, self._n_min, self._n_max)
         # evaluate energy
         value = self._expr.subs(self._n_symb, n_elec)
         return value
 
     @doc_inherit(BaseGlobalTool)
     def energy_derivative(self, n_elec, order=1):
-        if n_elec < 0.0:
-            raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
-        if not self._n0 - 1 <= n_elec <= self._n0 + 1:
-            log.warn('Energy derivative evaluated for n_elec={0} outside of interpolation '
-                     'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
+        # check n_elec argument
+        check_number_electrons(n_elec, self._n_min, self._n_max)
+        # check order
         if not (isinstance(order, int) and order > 0):
-            raise ValueError('Argument order should be an integer greater than or equal to 1.')
-
+            raise ValueError("Argument order should be an integer greater than or equal to 1.")
         # obtain derivative expression
         deriv = self._expr.diff(self._n_symb, order)
         # evaluate derivative expression at n_elec

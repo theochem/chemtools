@@ -23,39 +23,58 @@
 """The Utility Functions of Conceptual Module."""
 
 
-__all__ = []
+from horton import log
 
 
-def check_dict_energy(dict_energy):
-    """Check sanity of number of electrons and corresponding energy values.
+__all__ = ["check_dict_values", "check_number_electrons"]
+
+
+def check_dict_values(dict_values):
+    """Check sanity of number of electrons and corresponding property values.
 
     Parameters
     ----------
-    dict_energy : dict
-        Dictionary of number of electrons (keys) and corresponding energy (values).
-
-    Returns
-    -------
-    n_ref : float
-
-    energy_m : float
-
-    energy_0 : float
-
-    energy_p : float
-
+    dict_values : dict
+        Dictionary of number of electrons (keys) and corresponding property value (values).
     """
     # check length of dictionary & its keys
-    if len(dict_energy) != 3 or not all([key >= 0 for key in dict_energy.keys()]):
-        raise ValueError('The energy model requires 3 energy values corresponding '
-                         'to positive number of electrons!')
+    if len(dict_values) != 3 or not all([key >= 0 for key in dict_values.keys()]):
+        raise ValueError("The energy model requires 3 keys corresponding to positive "
+                         "number of electrons! Given keys={0}".format(dict_values.keys()))
     # find reference number of electrons
-    n_ref = sorted(dict_energy.keys())[1]
+    n_ref = sorted(dict_values.keys())[1]
     if n_ref < 1:
-        raise ValueError('The n_ref cannot be less than one! Given n_ref={0}'.format(n_ref))
-    # check number of electrons differ by one
-    if sorted(dict_energy.keys()) != [n_ref - 1, n_ref, n_ref + 1]:
-        raise ValueError('Number of electrons should differ by one!')
-    # get energy values
-    energy_m, energy_0, energy_p = [dict_energy[n] for n in sorted(dict_energy.keys())]
-    return n_ref, energy_m, energy_0, energy_p
+        raise ValueError("The n_ref cannot be less than one! Given n_ref={0}".format(n_ref))
+    # check that number of electrons differ by one
+    if sorted(dict_values.keys()) != [n_ref - 1, n_ref, n_ref + 1]:
+        raise ValueError("In current implementation, the number of electrons (keys) should "
+                         "differ by one! Given keys={0}".format(dict_values.keys()))
+    # check that all values have the same type
+    if not all([isinstance(value, type(dict_values[n_ref])) for value in dict_values.values()]):
+        raise ValueError("All values in dict_values should be of the same type!")
+    # check size of array values are the same
+    if hasattr(dict_values[n_ref], "__len__"):
+        if not all([value.shape == dict_values[n_ref].shape for value in dict_values.values()]):
+            raise ValueError("All array values in dict_values should have the same shape!")
+    # get property values
+    value_m, value_0, value_p = [dict_values[n] for n in sorted(dict_values.keys())]
+    return n_ref, value_m, value_0, value_p
+
+
+def check_number_electrons(n_elec, n_min, n_max):
+    """Check number of electrons to be positive & print warning if outside of interpolation range.
+
+    Parameters
+    ----------
+    n_elec : float
+        Number of electrons.
+    n_min : float
+        Minimum number of electrons used for interpolation.
+    n_max : float
+        Maximum number of electrons used for interpolation.
+    """
+    if n_elec < 0.0:
+        raise ValueError("Number of electrons cannot be negative! n_elec={0}".format(n_elec))
+    if not n_min <= n_elec <= n_max:
+        log.warn("Property evaluated for n_elec={0} outside of interpolation "
+                 "region [{1}, {2}].".format(n_elec, n_min, n_max))

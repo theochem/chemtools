@@ -26,11 +26,9 @@ This module contains the global and local tool classes corresponding to quadrati
 """
 
 
-from horton import log
-
 from chemtools.utils.utils import doc_inherit
 from chemtools.conceptual.base import BaseGlobalTool, BaseLocalTool
-from chemtools.conceptual.utils import check_dict_energy
+from chemtools.conceptual.utils import check_dict_values, check_number_electrons
 
 
 __all__ = ['QuadraticGlobalTool', 'QuadraticLocalTool']
@@ -71,7 +69,7 @@ class QuadraticGlobalTool(BaseGlobalTool):
 
         """
         # check number of electrons & energy values
-        n_ref, energy_m, energy_0, energy_p = check_dict_energy(dict_energy)
+        n_ref, energy_m, energy_0, energy_p = check_dict_values(dict_energy)
         # calculate parameters a, b, c of quadratic energy model
         energy_m, energy_0, energy_p = [dict_energy[n] for n in sorted(dict_energy.keys())]
         param_c = 0.5 * (energy_m - 2 * energy_0 + energy_p)
@@ -90,24 +88,19 @@ class QuadraticGlobalTool(BaseGlobalTool):
 
     @doc_inherit(BaseGlobalTool)
     def energy(self, n_elec):
-        if n_elec < 0.0:
-            raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
-        if not self._n0 - 1 <= n_elec <= self._n0 + 1:
-            log.warn('Energy evaluated for n_elec={0} outside of interpolation '
-                     'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
+        # check n_elec argument
+        check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
         # evaluate energy
         value = self._params[0] + self._params[1] * n_elec + self._params[2] * n_elec**2
         return value
 
     @doc_inherit(BaseGlobalTool)
     def energy_derivative(self, n_elec, order=1):
-        if n_elec < 0.0:
-            raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
-        if not self._n0 - 1 <= n_elec <= self._n0 + 1:
-            log.warn('Energy derivative evaluated for n_elec={0} outside of interpolation '
-                     'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
+        # check n_elec argument
+        check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
+        # check order
         if not (isinstance(order, int) and order > 0):
-            raise ValueError('Argument order should be an integer greater than or equal to 1.')
+            raise ValueError("Argument order should be an integer greater than or equal to 1.")
         # evaluate derivative
         if order == 1:
             deriv = self._params[1] + 2 * n_elec * self._params[2]

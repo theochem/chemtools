@@ -29,14 +29,12 @@ This module contains the global tool class corresponding to exponential energy m
 import math
 import numpy as np
 
-from horton import log
-
 from chemtools.conceptual.base import BaseGlobalTool
-from chemtools.conceptual.utils import check_dict_energy
+from chemtools.conceptual.utils import check_dict_values, check_number_electrons
 from chemtools.utils.utils import doc_inherit
 
 
-__all__ = ['ExponentialGlobalTool']
+__all__ = ["ExponentialGlobalTool"]
 
 
 class ExponentialGlobalTool(BaseGlobalTool):
@@ -72,7 +70,7 @@ class ExponentialGlobalTool(BaseGlobalTool):
 
         """
         # check number of electrons & energy values
-        n_ref, energy_m, energy_0, energy_p = check_dict_energy(dict_energy)
+        n_ref, energy_m, energy_0, energy_p = check_dict_values(dict_energy)
         # check energy values
         if not energy_m > energy_0 > energy_p:
             energies = [energy_m, energy_0, energy_p]
@@ -97,11 +95,8 @@ class ExponentialGlobalTool(BaseGlobalTool):
 
     @doc_inherit(BaseGlobalTool)
     def energy(self, n_elec):
-        if n_elec < 0.0:
-            raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
-        if not self._n0 - 1 <= n_elec <= self._n0 + 1:
-            log.warn('Energy evaluated for n_elec={0} outside of interpolation '
-                     'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
+        # check n_elec argument
+        check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
         # evaluate energy
         if np.isinf(n_elec):
             # limit of E(N) as N goes to infinity equals B
@@ -113,13 +108,11 @@ class ExponentialGlobalTool(BaseGlobalTool):
 
     @doc_inherit(BaseGlobalTool)
     def energy_derivative(self, n_elec, order=1):
-        if n_elec < 0.0:
-            raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
-        if not self._n0 - 1 <= n_elec <= self._n0 + 1:
-            log.warn('Energy derivative evaluated for n_elec={0} outside of interpolation '
-                     'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
+        # check n_elec argument
+        check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
+        # check order
         if not (isinstance(order, int) and order > 0):
-            raise ValueError('Argument order should be an integer greater than or equal to 1.')
+            raise ValueError("Argument order should be an integer greater than or equal to 1.")
         # evaluate derivative
         if np.isinf(n_elec):
             # limit of E(N) derivatives as N goes to infinity equals zero

@@ -28,11 +28,9 @@ This module contains the global and local tool classes corresponding to cubic en
 
 import numpy as np
 
-from horton import log
-
 from chemtools.utils.utils import doc_inherit
 from chemtools.conceptual.base import BaseGlobalTool
-from chemtools.conceptual.utils import check_dict_energy
+from chemtools.conceptual.utils import check_dict_values, check_number_electrons
 
 
 __all__ = ["CubicGlobalTool"]
@@ -73,10 +71,9 @@ class CubicGlobalTool(BaseGlobalTool):
             of electrons.
         omega : float
             Value of omega parameter in the energy model.
-
         """
         # check number of electrons & energy values
-        n_ref, energy_m, energy_0, energy_p = check_dict_energy(dict_energy)
+        n_ref, energy_m, energy_0, energy_p = check_dict_values(dict_energy)
         # compute parameters of energy model
         param_a = energy_0
         param_b = -omega * energy_m + 2. * omega * energy_0 - omega * energy_p
@@ -100,11 +97,8 @@ class CubicGlobalTool(BaseGlobalTool):
 
     @doc_inherit(BaseGlobalTool)
     def energy(self, n_elec):
-        if n_elec < 0.0:
-            raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
-        if not self._n0 - 1 <= n_elec <= self._n0 + 1:
-            log.warn('Energy evaluated for n_elec={0} outside of interpolation '
-                     'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
+        # check n_elec argument
+        check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
         # compute the change in the number of electrons w.r.t. N0
         delta_n = n_elec - self._n0
         # compute energy
@@ -114,13 +108,11 @@ class CubicGlobalTool(BaseGlobalTool):
 
     @doc_inherit(BaseGlobalTool)
     def energy_derivative(self, n_elec, order=1):
-        if n_elec < 0.0:
-            raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
-        if not self._n0 - 1 <= n_elec <= self._n0 + 1:
-            log.warn('Energy derivative evaluated for n_elec={0} outside of interpolation '
-                     'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
+        # check n_elec argument
+        check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
+        # check order
         if not (isinstance(order, int) and order > 0):
-            raise ValueError('Argument order should be an integer greater than or equal to 1.')
+            raise ValueError("Argument order should be an integer greater than or equal to 1.")
         # compute the change in the number of electrons w.r.t. N0
         delta_n = n_elec - self._n0
         # compute derivative of energy
