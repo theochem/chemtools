@@ -21,7 +21,7 @@
 #
 # --
 # pragma pylint: disable=invalid-name
-"""Test chemtools.analysis.conceptual.CondensedConceptualDFT"""
+"""Test chemtools.analysis.conceptual.CondensedConceptualDFT."""
 
 
 import numpy as np
@@ -378,3 +378,4 @@ def test_condense_h_linear_ch4_fchk():
     assert_almost_equal(condense(15.5), 1.0, decimal=2)
     assert_almost_equal(condense(16.0), 1.0, decimal=2)
     assert_almost_equal(condense(16.5), 1.0, decimal=2)
+
