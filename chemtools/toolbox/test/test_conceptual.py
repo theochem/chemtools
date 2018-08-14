@@ -289,14 +289,14 @@ def check_local_quadratic_fmo_ch4_uhf_ccpvdz(filename):
     assert_almost_equal(grid.integrate(desp.density(9.78)), 9.78, decimal=4)
     assert_almost_equal(grid.integrate(desp.density(10.0)), 10.0, decimal=4)
     # Check Fukui function, dual descriptor & softness
-    assert_almost_equal(grid.integrate(desp.fukui_function()), 1., decimal=4)
+    assert_almost_equal(grid.integrate(desp.fukui_function(10.)), 1., decimal=4)
     assert_almost_equal(grid.integrate(desp.fukui_function(10.5)), 1., decimal=4)
     assert_almost_equal(grid.integrate(desp.fukui_function(9.50)), 1., decimal=4)
     assert_almost_equal(grid.integrate(desp.dual_descriptor()), 0., decimal=4)
     # Check local softness
-    assert_almost_equal(grid.integrate(desp.softness(1./eta)), 1./eta, decimal=4)
-    assert_almost_equal(grid.integrate(desp.softness(1./eta, 10.3)), 1./eta, decimal=4)
-    assert_almost_equal(grid.integrate(desp.softness(1./eta, 9.1)), 1./eta, decimal=4)
+    assert_almost_equal(grid.integrate(desp.softness(10.0, 1. / eta)), 1. / eta, decimal=4)
+    assert_almost_equal(grid.integrate(desp.softness(10.3, 1. / eta)), 1. / eta, decimal=4)
+    assert_almost_equal(grid.integrate(desp.softness(9.10, 1. / eta)), 1. / eta, decimal=4)
     assert_almost_equal(grid.integrate(desp.hyper_softness(eta)), 0., decimal=3)
 
 

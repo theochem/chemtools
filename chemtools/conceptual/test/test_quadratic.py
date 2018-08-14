@@ -455,10 +455,8 @@ def test_local_quadratic_first_order():
     assert_almost_equal(model.density(5.), d0, decimal=6)
     assert_almost_equal(model.density(6.), dp, decimal=6)
     assert_almost_equal(model.density(4.), dm, decimal=6)
-    assert_almost_equal(model.density(None), d0, decimal=6)
     # check density
     expected = np.array([-0.25, 0.25, 1.5, -0.5, -1.5])
-    assert_almost_equal(model.fukui_function(None), expected, decimal=6)
     assert_almost_equal(model.fukui_function(5.), expected, decimal=6)
     expected = np.array([-0.75, 2.75, 0.5, -1.5, -2.5])
     assert_almost_equal(model.fukui_function(6.), expected, decimal=6)

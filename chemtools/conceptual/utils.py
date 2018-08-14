@@ -73,6 +73,9 @@ def check_number_electrons(n_elec, n_min, n_max):
     n_max : float
         Maximum number of electrons used for interpolation.
     """
+    if not isinstance(n_elec, (int, float)):
+        raise ValueError("Number of electrons should be a single number. "
+                         "Given n_elec={0}".format(n_elec))
     if n_elec < 0.0:
         raise ValueError("Number of electrons cannot be negative! n_elec={0}".format(n_elec))
     if not n_min <= n_elec <= n_max:

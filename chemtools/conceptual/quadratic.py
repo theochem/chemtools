@@ -149,7 +149,7 @@ class QuadraticLocalTool(BaseLocalTool):
         self._df0 = dens_p - 2 * dens_0 + dens_m
         super(QuadraticLocalTool, self).__init__(dict_density, n_ref)
 
-    def density(self, number_electrons=None):
+    def density(self, n_elec):
         r"""
         Return quadratic electron density of :math:`N`-electron system :math:`\rho_{N}(\mathbf{r})`.
 
@@ -166,16 +166,19 @@ class QuadraticLocalTool(BaseLocalTool):
 
         Parameters
         ----------
-        number_electrons : float, default=None
-            Number of electrons. If None, the :math:`\rho_{N_0}\left(\mathbf{r}\right)` is returned.
+        n_elec : float
+            Number of electrons.
         """
+        # check n_elec argument
+        check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
+        # compute density
         rho = self.density_zero.copy()
-        if (number_electrons is not None) and (number_electrons != self._n0):
-            dN = (number_electrons - self._n0)
+        if n_elec != self._n0:
+            dN = n_elec - self._n0
             rho += self._ff0 * dN + 0.5 * self._df0 * dN**2
         return rho
 
-    def fukui_function(self, number_electrons=None):
+    def fukui_function(self, n_elec):
         r"""
         Return quadratic Fukui function of :math:`N`-electron system, :math:`f_{N}(\mathbf{r})`.
 
@@ -191,13 +194,16 @@ class QuadraticLocalTool(BaseLocalTool):
 
         Parameters
         ----------
-        number_electrons : float, default=None
-            Number of electrons. If None, the :math:`f_{N_0}\left(\mathbf{r}\right)` is returned.
+        n_elec : float
+            Number of electrons.
         """
-        if (number_electrons is None) or (number_electrons == self._n0):
+        # check n_elec argument
+        check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
+        # compute fukui function
+        if n_elec == self._n0:
             return self._ff0
         else:
-            ff = self._ff0 + self._df0 * (number_electrons - self.n0)
+            ff = self._ff0 + self._df0 * (n_elec - self.n0)
             return ff
 
     def dual_descriptor(self):
@@ -215,7 +221,7 @@ class QuadraticLocalTool(BaseLocalTool):
         """
         return self._df0
 
-    def softness(self, global_softness, number_electrons=None):
+    def softness(self, n_elec, global_softness):
         r"""
         Return quadratic softness of :math:`N`-electron system, :math:`s_{N}(\mathbf{r})`.
 
@@ -224,12 +230,15 @@ class QuadraticLocalTool(BaseLocalTool):
 
         Parameters
         ----------
+        n_elec : float
+            Number of electrons.
         global_softness : float
             The value of global softness.
-        number_electrons : float, default=None
-            Number of electrons. If None, the :math:`s_{N_0}\left(\mathbf{r}\right)` is returned.
         """
-        s_value = global_softness * self.fukui_function(number_electrons)
+        # check n_elec argument
+        check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
+        # compute softness
+        s_value = global_softness * self.fukui_function(n_elec)
         return s_value
 
     def hyper_softness(self, global_softness):

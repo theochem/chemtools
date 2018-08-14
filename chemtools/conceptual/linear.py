@@ -236,7 +236,7 @@ class LinearLocalTool(BaseLocalTool):
         """
         return self._ff_zero
 
-    def density(self, n_elec=None):
+    def density(self, n_elec):
         r"""
         Return linear electron density of :math:`N`-electron system, :math:`\rho_{N}(\mathbf{r})`.
 
@@ -254,26 +254,21 @@ class LinearLocalTool(BaseLocalTool):
 
         Parameters
         ----------
-        n_elec : float, default=None
-            Number of electrons. If None, the :math:`\rho_{N_0}\left(\mathbf{r}\right)` is returned.
+        n_elec : float
+            Number of electrons.
         """
-        if n_elec is not None and not isinstance(n_elec, (int, float, long)):
-            raise ValueError('Number of electrons should be numeric! n_elec={0}'.format(n_elec))
-        if n_elec is not None and n_elec < 0.0:
-            raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
-        if not self._n0 - 1 <= n_elec <= self._n0 + 1:
-            log.warn('Electron density evaluated for n_elec={0} outside of interpolation '
-                     'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
+        # check n_elec argument
+        check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
         # compute density
         rho = self.density_zero.copy()
-        if (n_elec is not None) and (n_elec != self._n0):
+        if n_elec != self._n0:
             if n_elec < self._n0:
                 rho += self._ff_minus * (n_elec - self._n0)
             elif n_elec > self._n0:
                 rho += self._ff_plus * (n_elec - self._n0)
         return rho
 
-    def fukui_function(self, n_elec=None):
+    def fukui_function(self, n_elec):
         r"""
         Return linear Fukui function of :math:`N`-electron system, :math:`f_{N}(\mathbf{r})`.
 
@@ -291,17 +286,13 @@ class LinearLocalTool(BaseLocalTool):
 
         Parameters
         ----------
-        n_elec : float, default=None
-            Number of electrons. If None, the :math:`f^0\left(\mathbf{r}\right)` is returned.
+        n_elec : float
+            Number of electrons.
         """
-        if n_elec is not None and not isinstance(n_elec, (int, float, long)):
-            raise ValueError('Number of electrons should be numeric! n_elec={0}'.format(n_elec))
-        if n_elec is not None and n_elec < 0.0:
-            raise ValueError('Number of electrons cannot be negative! n_elec={0}'.format(n_elec))
-        if not self._n0 - 1 <= n_elec <= self._n0 + 1:
-            log.warn('Fukui function evaluated for n_elec={0} outside of interpolation '
-                     'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
-        if n_elec is None or n_elec == self._n0:
+        # check n_elec argument
+        check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
+        # compute fukui function
+        if n_elec == self._n0:
             ff = self._ff_zero
         elif n_elec < self._n0:
             ff = self._ff_minus
@@ -309,7 +300,7 @@ class LinearLocalTool(BaseLocalTool):
             ff = self._ff_plus
         return ff
 
-    def softness(self, global_softness, n_elec=None):
+    def softness(self, n_elec, global_softness):
         r"""
         Return linear softness of :math:`N`-electron system, :math:`s_N(\mathbf{r})`.
 
@@ -325,18 +316,13 @@ class LinearLocalTool(BaseLocalTool):
         ----------
         global_softness : float
             The value of global softness.
-        n_elec : float, default=None
-            Number of electrons. If None, the :math:`S \cdot f^0\left(\mathbf{r}\right)`
-            is returned.
+        n_elec : float
+            Number of electrons.
         """
-        if n_elec is not None and not isinstance(n_elec, (int, float, long)):
-            raise ValueError('Number of electrons should be numeric! n_elec={0}'.format(n_elec))
-        if n_elec is not None and n_elec < 0.0:
-            raise ValueError('Number of electrons cannot be negativ! n_elec={0}'.format(n_elec))
-        if not self._n0 - 1 <= n_elec <= self._n0 + 1:
-            log.warn('Local softness evaluated for n_elec={0} outside of interpolation '
-                     'region [{1}, {2}].'.format(n_elec, self._n0 - 1, self._n0 + 1))
-        if (n_elec is None) or (n_elec == self._n0):
+        # check n_elec argument
+        check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
+        # compute softness
+        if n_elec == self._n0:
             softness = global_softness * self._ff_zero
         elif n_elec < self._n0:
             softness = global_softness * self._ff_minus

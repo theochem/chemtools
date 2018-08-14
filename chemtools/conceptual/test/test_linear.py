@@ -293,8 +293,8 @@ def test_local_linear_raises():
     assert_raises(ValueError, model.density, -1.)
     assert_raises(ValueError, model.fukui_function, '9.5')
     assert_raises(ValueError, model.fukui_function, -0.1)
-    assert_raises(ValueError, model.softness, 2., '11.0')
-    assert_raises(ValueError, model.softness, 2., -0.5)
+    assert_raises(ValueError, model.softness, '11.0', 2.)
+    assert_raises(ValueError, model.softness, -0.5, 2.)
 
 
 def test_local_linear_fake_density():
@@ -312,7 +312,6 @@ def test_local_linear_fake_density():
     assert_almost_equal(model.density(10.), d0, decimal=6)
     assert_almost_equal(model.density(11.), dp, decimal=6)
     assert_almost_equal(model.density(9.), dm, decimal=6)
-    assert_almost_equal(model.density(None), d0, decimal=6)
     assert_almost_equal(model.density(10.50), 0.5 * d0 + 0.5 * dp, decimal=6)
     assert_almost_equal(model.density(10.20), 0.8 * d0 + 0.2 * dp, decimal=6)
     assert_almost_equal(model.density(10.75), 0.25 * d0 + 0.75 * dp, decimal=6)
@@ -339,7 +338,6 @@ def test_local_linear_fake_fukui_function():
     assert_almost_equal(model.fukui_function(9.95), expected, decimal=6)
     expected = np.array([-0.25, 0.25, 1.5, -0.5, -1.5])
     assert_almost_equal(model.ff_zero, expected, decimal=6)
-    assert_almost_equal(model.fukui_function(None), expected, decimal=6)
     assert_almost_equal(model.fukui_function(10.), expected, decimal=6)
 
 
@@ -352,12 +350,10 @@ def test_local_linear_fake_softness():
     model = LinearLocalTool({10: d0, 11.: dp, 9: dm})
     # check softness
     expected = 0.5 * np.array([-0.25, 0.25, 1.5, -0.5, -1.5])
-    assert_almost_equal(model.softness(0.5), expected, decimal=6)
-    assert_almost_equal(model.softness(0.5, None), expected, decimal=6)
-    assert_almost_equal(model.softness(0.5, 10), expected, decimal=6)
+    assert_almost_equal(model.softness(10, 0.5), expected, decimal=6)
     expected = 1.5 * np.array([0.0, -1.0, 2.0, 0.0, -1.0])
-    assert_almost_equal(model.softness(1.5, 9.34), expected, decimal=6)
-    assert_almost_equal(model.softness(1.5, 8.51), expected, decimal=6)
+    assert_almost_equal(model.softness(9.34, 1.5), expected, decimal=6)
+    assert_almost_equal(model.softness(8.51, 1.5), expected, decimal=6)
     expected = 0.8 * np.array([-0.5, 1.5, 1.0, -1.0, -2.0])
-    assert_almost_equal(model.softness(0.8, 10.42), expected, decimal=6)
-    assert_almost_equal(model.softness(0.8, 11.20), expected, decimal=6)
+    assert_almost_equal(model.softness(10.42, 0.8), expected, decimal=6)
+    assert_almost_equal(model.softness(11.20, 0.8), expected, decimal=6)
