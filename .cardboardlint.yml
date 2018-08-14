@@ -12,3 +12,4 @@ linters:
 - pydocstyle:
     config: .pydocstylerc
 - whitespace:
+    filefilter: ['- data/test/*']
