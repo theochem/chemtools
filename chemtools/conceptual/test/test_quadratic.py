@@ -435,6 +435,10 @@ def test_local_quadratic_raises():
     # check number of items
     assert_raises(ValueError, QuadraticLocalTool, {2.0: d0, 3.0: dp})
     assert_raises(ValueError, QuadraticLocalTool, {2.0: d0, 3.0: dp, 1.0: dm, 4.0: 2 * d0})
+    # check array size
+    assert_raises(ValueError, QuadraticLocalTool, {2.0: d0, 3.0: dp, 1.0: dm[:-1]})
+    assert_raises(ValueError, QuadraticLocalTool, {2.0: d0, 3.0: dp[:-2], 1.0: dm[:-1]})
+    assert_raises(ValueError, QuadraticLocalTool, {2.0: d0[:-1], 3.0: dp, 1.0: dm[:-1]})
 
 
 def test_local_quadratic_first_order():

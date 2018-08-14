@@ -51,11 +51,11 @@ def check_dict_values(dict_values):
                          "differ by one! Given keys={0}".format(dict_values.keys()))
     # check that all values have the same type
     if not all([isinstance(value, type(dict_values[n_ref])) for value in dict_values.values()]):
-        raise ValueError("All values in dict_values should be of the same type!")
+        raise ValueError("All values in dictionary should be of the same type!")
     # check size of array values are the same
     if hasattr(dict_values[n_ref], "__len__"):
         if not all([value.shape == dict_values[n_ref].shape for value in dict_values.values()]):
-            raise ValueError("All array values in dict_values should have the same shape!")
+            raise ValueError("All array values in dictionary should have the same shape!")
     # get property values
     value_m, value_0, value_p = [dict_values[n] for n in sorted(dict_values.keys())]
     return n_ref, value_m, value_0, value_p

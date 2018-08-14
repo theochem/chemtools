@@ -282,7 +282,10 @@ def test_local_linear_raises():
     assert_raises(ValueError, LinearLocalTool, {0.9: d0, 1.4: dp, 0.4: dm})
     assert_raises(ValueError, LinearLocalTool, {10.: d0, 11.5: dp, 9: dm})
     assert_raises(ValueError, LinearLocalTool, {10.: d0, 12.: dp, 8: dm})
-
+    # check array size
+    assert_raises(ValueError, LinearLocalTool, {2.0: d0, 3.0: dp, 1.0: dm[:-1]})
+    assert_raises(ValueError, LinearLocalTool, {2.0: d0, 3.0: dp[:-2], 1.0: dm[:-1]})
+    assert_raises(ValueError, LinearLocalTool, {2.0: d0[:-1], 3.0: dp, 1.0: dm[:-1]})
     # build a linear local model
     model = LinearLocalTool({10: d0, 11.: dp, 9: dm})
     # check invalid N

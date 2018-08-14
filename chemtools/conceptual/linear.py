@@ -192,22 +192,13 @@ class LinearLocalTool(BaseLocalTool):
 
     @doc_inherit(BaseLocalTool)
     def __init__(self, dict_density):
-        # check density values
-        if len(dict_density) != 3 or not all([key >= 0 for key in dict_density.keys()]):
-            raise ValueError('Linear model requires 3 density values corresponding '
-                             'to positive number of electrons!')
-        # find reference number of electrons
-        n0 = sorted(dict_density.keys())[1]
-        if n0 < 1:
-            raise ValueError('Argument n0 cannot be less than one! Given n0={0}'.format(n0))
-        # check number of electrons differ by one
-        if sorted(dict_density.keys()) != [n0 - 1, n0, n0 + 1]:
-            raise ValueError('Number of electrons should differ by one!')
-        # assign density corresponding to N-1, N and N+1
-        super(LinearLocalTool, self).__init__(dict_density, n0)
-        self._ff_plus = self._dens_p - self._dens_0
-        self._ff_minus = self._dens_0 - self._dens_m
-        self._ff_zero = 0.5 * (self._dens_p - self._dens_m)
+        # check number of electrons & density values
+        n_ref, dens_m, dens_0, dens_p = check_dict_values(dict_density)
+        # compute ff+, ff- & ff0
+        self._ff_plus = dens_p - dens_0
+        self._ff_minus = dens_0 - dens_m
+        self._ff_zero = 0.5 * (dens_p - dens_m)
+        super(LinearLocalTool, self).__init__(dict_density, n_ref)
 
     @property
     def ff_plus(self):
