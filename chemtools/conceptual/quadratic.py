@@ -106,8 +106,8 @@ class QuadraticGlobalTool(BaseGlobalTool):
             deriv = self._params[1] + 2 * n_elec * self._params[2]
         elif order == 2:
             deriv = 2 * self._params[2]
-        elif order >= 2:
-            deriv = 0.0
+        else:
+            deriv = 0.
         return deriv
 
 
