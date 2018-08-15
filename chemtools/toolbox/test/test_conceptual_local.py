@@ -20,8 +20,8 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-# pragma pylint: disable=invalid-name
-"""Test chemtools.analysis.conceptual.LocalConceptualDFT"""
+# pragma pylint: disable=invalid-name,bad-whitespace
+"""Test chemtools.analysis.conceptual.LocalConceptualDFT."""
 
 
 import numpy as np
@@ -93,8 +93,8 @@ def test_local_linear_fmo_ch4_uhf_ccpvdz_wfn():
 def check_local_quadratic_fmo_ch4_uhf_ccpvdz(filename):
     """Check expected quadratic local indicators for ch4_uhf_ccpvdz within FMO approach."""
     # ip = -E(homo) & ea = E(lumo)
-    ip, ea = -(-5.43101269E-01), -1.93295185E-01
-    eta = ip - ea
+    # ip, ea = -(-5.43101269E-01), -1.93295185E-01
+    # eta = ip - ea
     # make molecular grid
     mol = IOData.from_file(context.get_fn(filename))
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,

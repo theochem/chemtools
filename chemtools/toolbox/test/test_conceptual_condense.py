@@ -20,7 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-# pragma pylint: disable=invalid-name
+# pragma pylint: disable=invalid-name,bad-whitespace
 """Test chemtools.analysis.conceptual.CondensedConceptualDFT."""
 
 
@@ -369,4 +369,3 @@ def test_condense_h_linear_ch4_fchk():
     assert_almost_equal(np.sum(desp.density_derivative(15.5, 1)), 1.0, decimal=2)
     assert_almost_equal(np.sum(desp.density_derivative(16.0, 1)), 1.0, decimal=2)
     assert_almost_equal(np.sum(desp.density_derivative(16.5, 1)), 1.0, decimal=2)
-

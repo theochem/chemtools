@@ -432,7 +432,6 @@ def test_local_quadratic_raises():
     assert_raises(ValueError, QuadraticLocalTool, {1.0: d0, 1.5: dp, 0.5: dm})
     assert_raises(ValueError, QuadraticLocalTool, {0.45: d0, 1.0: dp, 0.0: dm})
     assert_raises(ValueError, QuadraticLocalTool, {3.0: d0, 5.0: dp, 1.0: dm})
-    assert_raises(ValueError, QuadraticLocalTool, {1.0: d0, 5.0: dp, 1.0: dm})
     # check number of items
     assert_raises(ValueError, QuadraticLocalTool, {2.0: d0, 3.0: dp})
     assert_raises(ValueError, QuadraticLocalTool, {2.0: d0, 3.0: dp, 1.0: dm, 4.0: 2 * d0})
