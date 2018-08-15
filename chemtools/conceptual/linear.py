@@ -56,9 +56,13 @@ class LinearGlobalTool(BaseGlobalTool):
     and averaged:
 
     .. math::
-       \mu^{-} &= -IP \\\
-       \mu^{0} &= \frac{\mu^{+} + \mu^{-}}{2} \\
-       \mu^{+} &= -EA \\
+       \mu\left(N\right) =
+        \begin{cases}
+         \mu^- &= E\left(N_0\right) - E\left(N_0 - 1\right) = - IP &&  N < N_0 \\
+         \mu^0 &= 0.5 \left[E\left(N_0 + 1\right) - E\left(N_0 - 1\right)\right] = -0.5 (IP + EA)
+               && N = N_0 \\
+         \mu^+ &= E\left(N_0 + 1\right) - E\left(N_0\right) = - EA &&  N > N_0 \\
+        \end{cases}
     """
 
     def __init__(self, dict_energy):
