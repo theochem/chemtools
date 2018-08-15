@@ -115,145 +115,85 @@ class QuadraticLocalTool(BaseLocalTool):
     r"""
     Class of local conceptual DFT reactivity descriptors based on the quadratic energy model.
 
-    Considering the interpolated quadratic energy expression,
+    Considering the interpolated :class:`quadratic energy model <QuadraticGlobalTool>` and its
+    derivatives, the quadratic local tools are obtained by taking the functional derivative
+    of these expressions with respect to external potential :math:`v(\mathbf{r})` at fixed
+    number of electrons :math:`N`.
+
+    Given the electron density corresponding to energy values used for interpolating the
+    energy model, i.e., :math:`\rho_{N_0 - 1}(\mathbf{r})`, :math:`\rho_{N_0}(\mathbf{r})`
+    and :math:`\rho_{N_0 + 1}(\mathbf{r})`, the :func:`density <QuadraticLocalTool.density>`
+    of the :math:`N` electron system :math:`\rho_{N}(\mathbf{r})` is given by:
 
     .. math::
-       E\left(N\right) = E\left(N_0\right) &+ \left(\frac{E\left(N_0 + 1\right) -
-                         E\left(N_0 - 1\right)}{2}\right) \left(N - N_0\right) \\
-                &+ \left(\frac{E\left(N_0 - 1\right) - 2 E\left(N_0\right) +
-                   E\left(N_0 + 1\right)}{2}\right) \left(N - N_0\right)^2 \\
+       \rho_{N}(\mathbf{r}) = \rho_{N_0}\left(\mathbf{r}\right)
+         &+ \left(\frac{\rho_{N_0 + 1}\left(\mathbf{r}\right) -
+            \rho_{N_0 - 1}\left(\mathbf{r}\right)}{2}\right) \left(N - N_0\right) \\
+         &+ \left(\frac{\rho_{N_0 - 1}\left(\mathbf{r}\right) - 2
+            \rho_{N_0}\left(\mathbf{r}\right) + \rho_{N_0 + 1}\left(\mathbf{r}\right)}{2}\right)
+            \left(N - N_0\right)^2
 
-    and its first and second derivatives with respect to the number of electrons at constant
-    external potential,
+    The :func:`density derivative <QuadraticLocalTool.density_derivative>` with respect to the
+    number of electrons at fixed external potential is given by:
 
     .. math::
-       \mu\left(N\right) &= \left(\frac{\partial E\left(N\right)}{\partial N}
-                            \right)_{v(\mathbf{r})} \\
-         &= \left(\frac{E\left(N_0 + 1\right) - E\left(N_0 - 1\right)}{2}\right) +
-            \left[E\left(N_0 - 1\right) - 2 E\left(N_0\right) + E\left(N_0 + 1\right)
-            \right] \left(N - N_0\right) \\
-       \eta\left(N\right) &= \left(\frac{\partial^2 E\left(N\right)}{\partial^2 N}
-                             \right)_{v(\mathbf{r})}
-         = E\left(N_0 - 1\right) - 2 E\left(N_0\right) + E\left(N_0 + 1\right)
-
-    the quadratic local tools are obtained by taking the functional derivative of these expressions
-    with respect to external potential :math:`v(\mathbf{r})` at fixed number of electrons.
+      \left(\frac{\partial \rho_N(\mathbf{r})}{\partial N}\right)_{v(\mathbf{r})} &=
+      \left(\frac{\rho_{N_0 + 1}\left(\mathbf{r}\right) - \rho_{N_0 - 1}\left(\mathbf{r}\right)}{2}
+      \right) + \left[\rho_{N_0 + 1}\left(\mathbf{r}\right) - 2 \rho_{N_0}\left(\mathbf{r}\right) +
+      \rho_{N_0 - 1}\left(\mathbf{r}\right) \right] \left(N - N_0\right) \\
+      \left(\frac{\partial^2 \rho_N(\mathbf{r})}{\partial N^2}\right)_{v(\mathbf{r})} &=
+      \rho_{N_0 + 1}\left(\mathbf{r}\right) - 2 \rho_{N_0}\left(\mathbf{r}\right) +
+      \rho_{N_0 - 1}\left(\mathbf{r}\right) \\
+      \left(\frac{\partial^n \rho_N(\mathbf{r})}{\partial N^n}\right)_{v(\mathbf{r})} &= 0
+      \text{ for } n \geqslant 3
     """
 
-    @doc_inherit(BaseLocalTool)
-    def __init__(self, dict_density):
+    def __init__(self, dict_density, n_max=None, global_softness=None):
+        r"""Initialize quadratic density model to compute local reactivity descriptors.
+
+        Parameters
+        ----------
+        dict_density : dict
+            Dictionary of number of electrons (keys) and corresponding density array (values).
+            This model expects three energy values corresponding to three consecutive number of
+            electrons differing by one, i.e. :math:`\{(N_0 - 1): \rho_{N_0 - 1}\left(\mathbf{
+            r}\right), N_0: \rho_{N_0}\left(\mathbf{r}\right), (N_0 + 1): \rho_{N_0 + 1}\left(
+            \mathbf{r}\right)\}`. The :math:`N_0` value is considered as the reference number
+            of electrons.
+        n_max : float, optional
+            Maximum number of electrons that system can accept, i.e. :math:`N_{\text{max}}`.
+            See :attr:`BaseGlobalTool.n_max`.
+        global_softness : float, optional
+            Global softness. See :attr:`BaseGlobalTool.softness`.
+        """
         # check number of electrons & density values
         n_ref, dens_m, dens_0, dens_p = check_dict_values(dict_density)
         # compute fukui function & dual descriptor of N0-electron system
         self._ff0 = 0.5 * (dens_p - dens_m)
         self._df0 = dens_p - 2 * dens_0 + dens_m
-        super(QuadraticLocalTool, self).__init__(dict_density, n_ref)
+        super(QuadraticLocalTool, self).__init__(n_ref, n_max, global_softness)
+        self.dict_density = dict_density
 
+    @doc_inherit(BaseLocalTool)
     def density(self, n_elec):
-        r"""
-        Return quadratic electron density of :math:`N`-electron system :math:`\rho_{N}(\mathbf{r})`.
-
-        This is defined as the functional derivative of quadratic energy model w.r.t.
-        external potential at fixed number of electrons,
-
-        .. math::
-           \rho_{N}(\mathbf{r}) = \rho_{N_0}\left(\mathbf{r}\right)
-             &+ \left(\frac{\rho_{N_0 + 1}\left(\mathbf{r}\right) -
-                \rho_{N_0 - 1}\left(\mathbf{r}\right)}{2}\right) \left(N - N_0\right) \\
-             &+ \left(\frac{\rho_{N_0 - 1}\left(\mathbf{r}\right) - 2
-                \rho_{N_0}\left(\mathbf{r}\right) + \rho_{N_0 + 1}\left(\mathbf{r}\right)}{2}\right)
-                \left(N - N_0\right)^2
-
-        Parameters
-        ----------
-        n_elec : float
-            Number of electrons.
-        """
         # check n_elec argument
         check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
         # compute density
-        rho = self.density_zero.copy()
-        if n_elec != self._n0:
-            dN = n_elec - self._n0
-            rho += self._ff0 * dN + 0.5 * self._df0 * dN**2
+        rho = self.dict_density[self.n0].copy()
+        rho += self._ff0 * (n_elec - self._n0) + 0.5 * self._df0 * (n_elec - self._n0)**2
         return rho
 
-    def fukui_function(self, n_elec):
-        r"""
-        Return quadratic Fukui function of :math:`N`-electron system, :math:`f_{N}(\mathbf{r})`.
-
-        This is defined as the functional derivative of quadratic chemical potential w.r.t.
-        external potential at fixed number of electrons,
-
-        .. math::
-           f_{N}(\mathbf{r}) = \left(\frac{\rho_{N_0 + 1}\left(\mathbf{r}\right) -
-                 \rho_{N_0 - 1}\left(\mathbf{r}\right)}{2} \right) +
-                 \left[\rho_{N_0 - 1}\left(\mathbf{r}\right) - 2
-                 \rho_{N_0}\left(\mathbf{r}\right) + \rho_{N_0 + 1}\left(\mathbf{r}\right)
-                 \right] \left(N - N_0\right)
-
-        Parameters
-        ----------
-        n_elec : float
-            Number of electrons.
-        """
+    @doc_inherit(BaseLocalTool)
+    def density_derivative(self, n_elec, order=1):
         # check n_elec argument
         check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
-        # compute fukui function
-        if n_elec == self._n0:
-            return self._ff0
+        # check order
+        if not (isinstance(order, int) and order > 0):
+            raise ValueError("Argument order should be an integer greater than or equal to 1.")
+        if order == 1:
+            deriv = self._ff0 + self._df0 * (n_elec - self.n0)
+        elif order == 2:
+            deriv = self._df0
         else:
-            ff = self._ff0 + self._df0 * (n_elec - self.n0)
-            return ff
-
-    def dual_descriptor(self):
-        r"""
-        Quadratic dual descriptor of :math:`N`-electron system, :math:`\Delta f_{N}(\mathbf{r})`.
-
-        This is defined as the functional derivative of quadratic chemical hardness
-        w.r.t. external potential at fixed number of electrons,
-
-        .. math::
-           \Delta f_{N}(\mathbf{r}) = \rho_{N_0 - 1}\left(\mathbf{r}\right) - 2
-            \rho_{N_0}\left(\mathbf{r}\right) + \rho_{N_0 + 1}\left(\mathbf{r}\right)
-
-        The quadratic dual descriptor is independent of the number electrons.
-        """
-        return self._df0
-
-    def softness(self, n_elec, global_softness):
-        r"""
-        Return quadratic softness of :math:`N`-electron system, :math:`s_{N}(\mathbf{r})`.
-
-        .. math::
-           s_N\left(\mathbf{r}\right) = S \cdot f_N\left(\mathbf{r}\right)
-
-        Parameters
-        ----------
-        n_elec : float
-            Number of electrons.
-        global_softness : float
-            The value of global softness.
-        """
-        # check n_elec argument
-        check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
-        # compute softness
-        s_value = global_softness * self.fukui_function(n_elec)
-        return s_value
-
-    def hyper_softness(self, global_softness):
-        r"""
-        Quadratic hyper-softness of :math:`N`-electron system, :math:`s_N^{(2)}(\mathbf{r})`.
-
-        .. math::
-           s_N^{(2)}\left(\mathbf{r}\right) = S^2 \cdot \Delta f_N\left(\mathbf{r}\right)
-
-        The quadratic hyper-softness is independent of the number electrons.
-
-        Parameters
-        ----------
-        global_softness : float
-            The value of global softness.
-        """
-        s_value = global_softness**2 * self.dual_descriptor()
-        return s_value
+            deriv = 0.
+        return deriv

@@ -427,11 +427,12 @@ def test_local_quadratic_raises():
     d0 = np.array([1.0, 3.0, 5.0, 2.0, 7.0])
     dp = np.array([0.5, 4.5, 6.0, 1.0, 5.0])
     dm = np.array([1.0, 4.0, 3.0, 2.0, 8.0])
-    # check value of N0
+    # check value of N keys
     assert_raises(ValueError, QuadraticLocalTool, {0.45: d0, 1.0: dp, 0.0: dm})
     assert_raises(ValueError, QuadraticLocalTool, {1.0: d0, 1.5: dp, 0.5: dm})
     assert_raises(ValueError, QuadraticLocalTool, {0.45: d0, 1.0: dp, 0.0: dm})
     assert_raises(ValueError, QuadraticLocalTool, {3.0: d0, 5.0: dp, 1.0: dm})
+    assert_raises(ValueError, QuadraticLocalTool, {1.0: d0, 5.0: dp, 1.0: dm})
     # check number of items
     assert_raises(ValueError, QuadraticLocalTool, {2.0: d0, 3.0: dp})
     assert_raises(ValueError, QuadraticLocalTool, {2.0: d0, 3.0: dp, 1.0: dm, 4.0: 2 * d0})
@@ -439,6 +440,9 @@ def test_local_quadratic_raises():
     assert_raises(ValueError, QuadraticLocalTool, {2.0: d0, 3.0: dp, 1.0: dm[:-1]})
     assert_raises(ValueError, QuadraticLocalTool, {2.0: d0, 3.0: dp[:-2], 1.0: dm[:-1]})
     assert_raises(ValueError, QuadraticLocalTool, {2.0: d0[:-1], 3.0: dp, 1.0: dm[:-1]})
+    # check invalid Nmax
+    assert_raises(ValueError, QuadraticLocalTool, {2.: d0, 3.: dp, 1.: dm}, -1.23)
+    assert_raises(ValueError, QuadraticLocalTool, {2.: d0, 3.: dp, 1.: dm}, -0.91, 2.03)
 
 
 def test_local_quadratic_first_order():
@@ -449,23 +453,20 @@ def test_local_quadratic_first_order():
     # build a linear local model
     model = QuadraticLocalTool({5: d0, 6: dp, 4: dm})
     # check density
-    assert_almost_equal(model.density_zero, d0, decimal=6)
-    assert_almost_equal(model.density_plus, dp, decimal=6)
-    assert_almost_equal(model.density_minus, dm, decimal=6)
     assert_almost_equal(model.density(5.), d0, decimal=6)
     assert_almost_equal(model.density(6.), dp, decimal=6)
     assert_almost_equal(model.density(4.), dm, decimal=6)
     # check density
     expected = np.array([-0.25, 0.25, 1.5, -0.5, -1.5])
-    assert_almost_equal(model.fukui_function(5.), expected, decimal=6)
+    assert_almost_equal(model.density_derivative(5., 1), expected, decimal=6)
     expected = np.array([-0.75, 2.75, 0.5, -1.5, -2.5])
-    assert_almost_equal(model.fukui_function(6.), expected, decimal=6)
+    assert_almost_equal(model.density_derivative(6., 1), expected, decimal=6)
     expected = np.array([0.25, -2.25, 2.5, 0.5, -0.5])
-    assert_almost_equal(model.fukui_function(4.), expected, decimal=6)
+    assert_almost_equal(model.density_derivative(4., 1), expected, decimal=6)
     expected = np.array([-0.3, 0.5, 1.4, -0.6, -1.6])
-    assert_almost_equal(model.fukui_function(5.1), expected, decimal=6)
+    assert_almost_equal(model.density_derivative(5.1, 1), expected, decimal=6)
     expected = np.array([-0.2, 0.0, 1.6, -0.4, -1.4])
-    assert_almost_equal(model.fukui_function(4.9), expected, decimal=6)
+    assert_almost_equal(model.density_derivative(4.9, 1), expected, decimal=6)
 
 
 def test_local_quadratic_higher_order():
@@ -477,7 +478,7 @@ def test_local_quadratic_higher_order():
     model = QuadraticLocalTool({5: d0, 6: dp, 4: dm})
     # check dual Descriptor
     expected = np.array([-0.5, 2.5, -1.0, -1.0, -1.0])
-    assert_almost_equal(model.dual_descriptor(), expected, decimal=6)
+    assert_almost_equal(model.dual_descriptor, expected, decimal=6)
     # expected = np.array([-0.25, 0.25, 1.5, -0.5, -1.5]) / 3.5
     # assert_almost_equal(model.softness(3.5), expected, decimal=6)
     # expected = np.array([-0.25, 0.25, 1.5, -0.5, -1.5]) / 0.5

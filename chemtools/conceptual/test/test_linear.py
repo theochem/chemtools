@@ -282,6 +282,9 @@ def test_local_linear_raises():
     assert_raises(ValueError, LinearLocalTool, {0.9: d0, 1.4: dp, 0.4: dm})
     assert_raises(ValueError, LinearLocalTool, {10.: d0, 11.5: dp, 9: dm})
     assert_raises(ValueError, LinearLocalTool, {10.: d0, 12.: dp, 8: dm})
+    # check Nmax
+    assert_raises(ValueError, LinearLocalTool, {10.: d0, 11.: dp, 9: dm}, -1.5)
+    assert_raises(ValueError, LinearLocalTool, {10.: d0, 11.: dp, 9: dm}, -0.2, 1.5)
     # check array size
     assert_raises(ValueError, LinearLocalTool, {2.0: d0, 3.0: dp, 1.0: dm[:-1]})
     assert_raises(ValueError, LinearLocalTool, {2.0: d0, 3.0: dp[:-2], 1.0: dm[:-1]})
@@ -291,10 +294,11 @@ def test_local_linear_raises():
     # check invalid N
     assert_raises(ValueError, model.density, '10.0')
     assert_raises(ValueError, model.density, -1.)
-    assert_raises(ValueError, model.fukui_function, '9.5')
-    assert_raises(ValueError, model.fukui_function, -0.1)
-    assert_raises(ValueError, model.softness, '11.0', 2.)
-    assert_raises(ValueError, model.softness, -0.5, 2.)
+    assert_raises(ValueError, model.density_derivative, '9.5')
+    assert_raises(ValueError, model.density_derivative, -0.1)
+    assert_raises(ValueError, model.density_derivative, 2.0, 0.5)
+    assert_raises(ValueError, model.density_derivative, 2.0, -1)
+    assert_raises(ValueError, model.density_derivative, 2.0, 1.)
 
 
 def test_local_linear_fake_density():
@@ -306,9 +310,6 @@ def test_local_linear_fake_density():
     model = LinearLocalTool({10: d0, 11.: dp, 9: dm})
     # check density
     assert_equal(model.n0, 10.)
-    assert_almost_equal(model.density_zero, d0, decimal=6)
-    assert_almost_equal(model.density_plus, dp, decimal=6)
-    assert_almost_equal(model.density_minus, dm, decimal=6)
     assert_almost_equal(model.density(10.), d0, decimal=6)
     assert_almost_equal(model.density(11.), dp, decimal=6)
     assert_almost_equal(model.density(9.), dm, decimal=6)
@@ -330,15 +331,16 @@ def test_local_linear_fake_fukui_function():
     # check fukui function
     expected = np.array([-0.5, 1.5, 1.0, -1.0, -2.0])
     assert_almost_equal(model.ff_plus, expected, decimal=6)
-    assert_almost_equal(model.fukui_function(10.10), expected, decimal=6)
-    assert_almost_equal(model.fukui_function(10.73), expected, decimal=6)
+    assert_almost_equal(model.density_derivative(10.10, 1), expected, decimal=6)
+    assert_almost_equal(model.density_derivative(10.73, 1), expected, decimal=6)
     expected = np.array([0.0, -1.0, 2.0, 0.0, -1.0])
     assert_almost_equal(model.ff_minus, expected, decimal=6)
-    assert_almost_equal(model.fukui_function(9.40), expected, decimal=6)
-    assert_almost_equal(model.fukui_function(9.95), expected, decimal=6)
+    assert_almost_equal(model.density_derivative(9.40, 1), expected, decimal=6)
+    assert_almost_equal(model.density_derivative(9.95, 1), expected, decimal=6)
     expected = np.array([-0.25, 0.25, 1.5, -0.5, -1.5])
     assert_almost_equal(model.ff_zero, expected, decimal=6)
-    assert_almost_equal(model.fukui_function(10.), expected, decimal=6)
+    assert_almost_equal(model.fukui_function, expected, decimal=6)
+    assert_almost_equal(model.density_derivative(10., 1), expected, decimal=6)
 
 
 def test_local_linear_fake_softness():
@@ -346,14 +348,18 @@ def test_local_linear_fake_softness():
     d0 = np.array([1.0, 3.0, 5.0, 2.0, 7.0])
     dp = np.array([0.5, 4.5, 6.0, 1.0, 5.0])
     dm = np.array([1.0, 4.0, 3.0, 2.0, 8.0])
-    # build a linear local model
-    model = LinearLocalTool({10: d0, 11.: dp, 9: dm})
-    # check softness
+    # build a linear local model & check softness
+    model = LinearLocalTool({10: d0, 11.: dp, 9: dm}, global_softness=0.5)
     expected = 0.5 * np.array([-0.25, 0.25, 1.5, -0.5, -1.5])
-    assert_almost_equal(model.softness(10, 0.5), expected, decimal=6)
+    assert_almost_equal(model.softness, expected, decimal=6)
+    # check softness evaluated at other number of electrons
     expected = 1.5 * np.array([0.0, -1.0, 2.0, 0.0, -1.0])
-    assert_almost_equal(model.softness(9.34, 1.5), expected, decimal=6)
-    assert_almost_equal(model.softness(8.51, 1.5), expected, decimal=6)
+    assert_almost_equal(1.5 * model.density_derivative(9.34, 1), expected, decimal=6)
+    assert_almost_equal(1.5 * model.density_derivative(8.51, 1), expected, decimal=6)
     expected = 0.8 * np.array([-0.5, 1.5, 1.0, -1.0, -2.0])
-    assert_almost_equal(model.softness(10.42, 0.8), expected, decimal=6)
-    assert_almost_equal(model.softness(11.20, 0.8), expected, decimal=6)
+    assert_almost_equal(0.8 * model.density_derivative(10.42, 1), expected, decimal=6)
+    assert_almost_equal(0.8 * model.density_derivative(11.20, 1), expected, decimal=6)
+    # build a linear local model & check softness
+    model = LinearLocalTool({10: d0, 11.: dp, 9: dm}, global_softness=1.63)
+    expected = 1.63 * np.array([-0.25, 0.25, 1.5, -0.5, -1.5])
+    assert_almost_equal(model.softness, expected, decimal=6)

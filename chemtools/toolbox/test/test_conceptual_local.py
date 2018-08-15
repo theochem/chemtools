@@ -103,10 +103,6 @@ def check_local_quadratic_fmo_ch4_uhf_ccpvdz(filename):
     desp = LocalConceptualDFT.from_file(context.get_fn(filename), 'quadratic', points=grid.points)
     # check print statement
     assert_equal(type(desp.__repr__()), str)
-    # check shape of density
-    assert_equal(desp.density_zero.shape, grid.shape)
-    assert_equal(desp.density_plus.shape, grid.shape)
-    assert_equal(desp.density_minus.shape, grid.shape)
     # check integral of density
     assert_almost_equal(grid.integrate(desp.density(10.)), 10., decimal=4)
     assert_almost_equal(grid.integrate(desp.density(11.)), 11., decimal=4)
@@ -115,15 +111,13 @@ def check_local_quadratic_fmo_ch4_uhf_ccpvdz(filename):
     assert_almost_equal(grid.integrate(desp.density(9.78)), 9.78, decimal=4)
     assert_almost_equal(grid.integrate(desp.density(10.0)), 10.0, decimal=4)
     # Check Fukui function, dual descriptor & softness
-    assert_almost_equal(grid.integrate(desp.fukui_function(10.)), 1., decimal=4)
-    assert_almost_equal(grid.integrate(desp.fukui_function(10.5)), 1., decimal=4)
-    assert_almost_equal(grid.integrate(desp.fukui_function(9.50)), 1., decimal=4)
-    assert_almost_equal(grid.integrate(desp.dual_descriptor()), 0., decimal=4)
-    # Check local softness
-    assert_almost_equal(grid.integrate(desp.softness(10.0, 1./eta)), 1./eta, decimal=4)
-    assert_almost_equal(grid.integrate(desp.softness(10.3, 1./eta)), 1./eta, decimal=4)
-    assert_almost_equal(grid.integrate(desp.softness(9.10, 1./eta)), 1./eta, decimal=4)
-    assert_almost_equal(grid.integrate(desp.hyper_softness(eta)), 0., decimal=3)
+    assert_almost_equal(grid.integrate(desp.fukui_function), 1., decimal=4)
+    assert_almost_equal(grid.integrate(desp.dual_descriptor), 0., decimal=4)
+    # # Check local softness
+    # assert_almost_equal(grid.integrate(desp.softness(1. / eta)), 1. / eta, decimal=4)
+    # assert_almost_equal(grid.integrate(desp.softness(1. / eta)), 1. / eta, decimal=4)
+    # assert_almost_equal(grid.integrate(desp.softness(1. / eta)), 1. / eta, decimal=4)
+    # assert_almost_equal(grid.integrate(desp.hyper_softness(eta)), 0., decimal=3)
 
 
 def test_local_quadratic_fmo_ch4_uhf_ccpvdz_fchk():

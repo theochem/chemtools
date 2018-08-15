@@ -32,7 +32,7 @@ from scipy.optimize import newton
 from horton import log
 
 
-__all__ = []
+__all__ = ["BaseGlobalTool", "BaseLocalTool"]
 
 
 class BaseGlobalTool(object):
@@ -515,62 +515,159 @@ class BaseGlobalTool(object):
 class BaseLocalTool(object):
     """Base class of local conceptual DFT reactivity descriptors."""
 
-    def __init__(self, dict_density, n0):
+    def __init__(self, n0, n_max=None, global_softness=None):
         r"""
         Initialize class.
 
         Parameters
         ----------
-        density_zero : np.ndarray
-            Electron density of :math:`N_0`-electron system, i.e.
-            :math:`\rho_{N_0}\left(\mathbf{r}\right)`.
-        density_plus : np.ndarray
-            Electron density of :math:`(N_0 + 1)`-electron system, i.e.
-            :math:`\rho_{N_0 + 1}\left(\mathbf{r}\right)`.
-        density_minus : np.ndarray
-            Electron density of :math:`(N_0 - 1)`-electron system, i.e.
-            :math:`\rho_{N_0 - 1}\left(\mathbf{r}\right)`.
         n0 : float
-            Reference number of electrons, i.e. :math:`N_0`, which corresponds
-            to the integral of density_zero over all space.
+            Reference number of electrons, i.e. :math:`N_0`.
+        n_max : float, optional
+            Maximum number of electrons that system can accept, i.e. :math:`N_{\text{max}}`.
+            See :attr:`BaseGlobalTool.n_max`.
+        global_softness : float, optional
+            Global softness. See :attr:`BaseGlobalTool.softness`.
         """
-        if not all([key >= 0 for key in dict_density.keys()]):
-            raise ValueError('Number of electrons in dict_density cannot be negative!')
-        if any([np.any(dens < 0) for dens in dict_density.values()]):
-            raise ValueError('Density arrays should not contain negative values!')
-
-        self._dict_density = dict_density
-        # calculate ionization potential and electron affinity
-        if len(dict_density) != 3:
-            raise NotImplementedError('Only 3 density values are supported!')
-
-        # sorted number of electrons
-        nelectrons = sorted(dict_density.keys())
-        self._dens_m, self._dens_0, self._dens_p = [dict_density[n] for n in nelectrons]
-        self._dict_density = dict_density
+        if n0 <= 0:
+            raise ValueError("Argument n0 should be positive! Given n0={0}".format(n0))
+        if n_max is not None and n_max < 0:
+            raise ValueError("Argument n_max cannot be negative! Given n_max={0}".format(n_max))
         self._n0 = n0
+        self._n_max = n_max
+        self._global_softness = global_softness
 
     @property
     def n0(self):
-        r"""Reference number of electrons, i.e. :math:`N_0`, corresponding to density_zero."""
+        r"""Reference number of electrons, i.e. :math:`N_0`."""
         return self._n0
 
     @property
-    def density_zero(self):
-        r"""Electron density of :math:`N_0`-electron system :math:`\rho_{N_0}(\mathbf{r})`."""
-        return self._dens_0
+    def n_max(self):
+        r"""Maximum number of electrons that the system accepts, i.e. :math:`N_{\text{max}}`."""
+        return self._n_max
 
     @property
-    def density_plus(self):
-        r"""Electron density of :math:`(N_0+1)`-electron system :math:`\rho_{N_0+1}(\mathbf{r})`."""
-        return self._dens_p
+    def global_softness(self):
+        r"""Global softness."""
+        return self._global_softness
+
+    def density(self, n_elec):
+        r"""
+        Evaluate density model :math:`\rho_N(\mathbf{r})` at the :math:`N_{\text{elec}}`.
+
+        The functional derivative of energy model :math:`E(N)` w.r.t. external potential
+        at fixed number of electrons, evaluated at the given number of electrons
+        :math:`N_{\text{elec}}`, i.e.
+
+        .. math::
+           \left.\rho_N(\mathbf{r}) = {\left(\frac{\delta E(N)}{\delta v(\mathbf{r})}\right)_N}
+           \right|_{N = N_{\text{elec}}}
+
+        Parameters
+        ----------
+        n_elec: float
+            Number of electrons, :math:`N_{\text{elec}}`.
+        """
+        raise NotImplementedError
+
+    def density_derivative(self, n_elec, order=1):
+        r"""
+        Evaluate n-th derivative of density w.r.t. number of electrons at :math:`N_{\text{elec}}`.
+
+        The n-th order derivative of density model :math:`\rho_N(\mathbf{r})` w.r.t. the number
+        of electrons, at fixed external potential, evaluated at the given number of electrons
+        :math:`N_{\text{elec}}` is:
+
+        .. math::
+           \left. \left(\frac{\partial^n \rho_N(\mathbf{r})}{\partial N^n}
+                  \right)_{v(\mathbf{r})}\right|_{N = N_{\text{elec}}}
+
+        Parameters
+        ----------
+        n_elec: float
+            Number of electrons, :math:`N_{\text{elec}}`.
+        order : int, optional
+            The order of derivative denoted by :math:`n` in the formula.
+
+        Note
+        ----
+        For :math:`N_{\text{elec}} = N_0` the first, second and higher order density
+        derivatives correspond to the :attr:`fukui function <BaseLocalTool.fukui_function>`,
+        :attr:`dual descriptor <BaseLocalTool.dual_descriptor>` and
+        :attr:`hyper fukui function <BaseLocalTool.hyper_fukui_function>`, respectively.
+        """
+        raise NotImplementedError
 
     @property
-    def density_minus(self):
-        r"""Electron density of :math:`(N_0-1)`-electron system :math:`\rho_{N_0-1}(\mathbf{r})`."""
-        return self._dens_m
+    def fukui_function(self):
+        r"""
+        Fukui function of :math:`N_0`-electron system.
+
+        This is defined as the 1st derivative of density model :math:`\rho_N(\mathbf{r})` w.r.t.
+        the number of electrons, at fixed external potential, evaluated at :math:`N_0`, or the
+        functional derivative of chemical potential w.r.t. external potential, at fixed number of
+        electrons, i.e.
+
+        .. math::
+           f_{N_0}(\mathbf{r}) = {\left( \frac{\delta \mu}{\delta v(\mathbf{r})} \right)_N}
+                   = \left. \left(\frac{\partial \rho_N(\mathbf{r})}{\partial N}
+                            \right)_{v(\mathbf{r})}\right|_{N = N_0}
+
+        where :math:`\mu` is the :attr:`chemical potential <BaseGlobalTool.chemical_potential>`.
+        """
+        return self.density_derivative(self._n0, order=1)
 
     @property
-    def dict_density(self):
-        """Dictionary of number of electrons (key) and corresponding density array (value)."""
-        return self._dict_density
+    def dual_descriptor(self):
+        r"""
+        Dual descriptor of :math:`N_0`-electron system.
+
+        This is defined as the 2nd derivative of density model :math:`\rho_N(\mathbf{r})` w.r.t. the
+        number of electrons, at fixed external potential, evaluated at :math:`N_0`, or the
+        functional derivative of chemical hardness w.r.t. external potential, at fixed number of
+        electrons, i.e.
+
+        .. math::
+           \Delta f_{N_0}(\mathbf{r}) = {\left( \frac{\delta \eta}{\delta v(\mathbf{r})} \right)_N}
+                   = \left. \left(\frac{\partial^2 \rho_N(\mathbf{r})}{\partial N^2}
+                            \right)_{v(\mathbf{r})}\right|_{N = N_0}
+
+        where :math:`\eta` is the :attr:`chemical hardness <BaseGlobalTool.chemical_hardness>`.
+        """
+        return self.density_derivative(self._n0, order=2)
+
+    # def hyper_fukui_function(self, order=3):
+    #     return NotImplementedError
+
+    @property
+    def softness(self):
+        r"""
+        Chemical softness of :math:`N_0`-electron system.
+
+        .. math::
+           s_{N_0}\left(\mathbf{r}\right) = S \cdot f_{N_0}\left(\mathbf{r}\right)
+
+        where :math:`S` is the :attr:`global softness <BaseGlobalTool.global_softness>`,
+        and :math:`f_{N_0}\left(\mathbf{r}\right)` is
+        :attr:`fukui function <BaseLocalTool.fukui_function>`.
+        """
+        if self._global_softness is None or self.fukui_function is None:
+            return None
+        return self._global_softness * self.fukui_function
+
+    @property
+    def hyper_softness(self):
+        r"""
+        Chemical hyper-softness of :math:`N_0`-electron system.
+
+        .. math::
+           s_{N_0}^{(2)}\left(\mathbf{r}\right) = S^2 \cdot \Delta f_{N_0}\left(\mathbf{r}\right)
+
+        where :math:`S` is the :attr:`global softness <BaseGlobalTool.global_softness>`,
+        and :math:`\Delta f_{N_0}\left(\mathbf{r}\right)` is the
+        :attr:`dual descriptor <BaseLocalTool.dual_descriptor>`.
+        """
+        if self._global_softness is None or self.dual_descriptor is None:
+            return None
+        return self._global_softness**2 * self.dual_descriptor

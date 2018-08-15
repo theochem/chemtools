@@ -26,14 +26,12 @@ This module contains the global and local tool classes corresponding to linear e
 """
 
 
-from horton import log
-
 from chemtools.conceptual.base import BaseGlobalTool, BaseLocalTool
 from chemtools.conceptual.utils import check_dict_values, check_number_electrons
 from chemtools.utils.utils import doc_inherit
 
 
-__all__ = ['LinearGlobalTool', 'LinearLocalTool']
+__all__ = ["LinearGlobalTool", "LinearLocalTool"]
 
 
 class LinearGlobalTool(BaseGlobalTool):
@@ -164,41 +162,66 @@ class LinearLocalTool(BaseLocalTool):
     r"""
     Class of local conceptual DFT reactivity descriptors based on the linear energy model.
 
-    Considering the interpolated linear energy expression,
+    Considering the interpolated :class:`linear energy model <LinearGlobalTool>` and its
+    derivatives, the linear local tools are obtained by taking the functional derivative
+    of these expressions with respect to external potential :math:`v(\mathbf{r})` at fixed
+    number of electrons :math:`N`.
+
+    Given the electron density corresponding to energy values used for interpolating the
+    energy model, i.e., :math:`\rho_{N_0 - 1}(\mathbf{r})`, :math:`\rho_{N_0}(\mathbf{r})`
+    and :math:`\rho_{N_0 + 1}(\mathbf{r})`, the :func:`density <LinearLocalTool.density>`
+    of the :math:`N` electron system :math:`\rho_{N}(\mathbf{r})` is given by:
 
     .. math::
-       E\left(N\right) =
+       \rho_{N}(\mathbf{r}) =
         \begin{cases}
-         \left(N - N_0 + 1\right) E\left(N_0\right) - \left(N - N_0\right) E\left(N_0 - 1\right)
-            &  N \leqslant N_0 \\
-         \left(N - N_0\right) E\left(N_0 + 1\right) - \left(N - N_0 - 1\right) E\left(N_0\right)
-            &  N \geqslant N_0 \\
-        \end{cases} \\
-
-    and its derivative with respect to the number of electrons at constant external potential,
-
-    .. math::
-       \mu\left(N\right) =
-        \begin{cases}
-         \mu^- &= E\left(N_0\right) - E\left(N_0 - 1\right) = - IP &&  N < N_0 \\
-         \mu^0 &= 0.5 \left(E\left(N_0 + 1\right) - E\left(N_0 - 1\right)\right) = -0.5 (IP + EA)
-               && N = N_0 \\
-         \mu^+ &= E\left(N_0 + 1\right) - E\left(N_0\right) = - EA &&  N > N_0 \\
+         \rho_{N_0}(\mathbf{r}) + \left[\rho_{N_0}(\mathbf{r}) - \rho_{N_0 - 1}(\mathbf{r})
+                   \right] \left(N - N_0\right) & \text{ for } N \leqslant N_0 \\
+         \rho_{N_0}(\mathbf{r}) + \left[\rho_{N_0 + 1}(\mathbf{r}) - \rho_{N_0}(\mathbf{r})
+                   \right] \left(N - N_0\right) & \text{ for } N \geqslant N_0 \\
         \end{cases}
 
-    the linear local tools are obtained by taking the functional derivative of these expressions
-    with respect to external potential :math:`v(\mathbf{r})` at fixed number of electrons.
+    The :func:`density derivative <LinearLocalTool.density_derivative>` with respect to the
+    number of electrons at fixed external potential is given by:
+
+    .. math::
+      \left(\frac{\partial \rho_N(\mathbf{r})}{\partial N}\right)_{v(\mathbf{r})} =
+      \begin{cases}
+        \rho_{N_0}(\mathbf{r}) - \rho_{N_0-1}(\mathbf{r})=f^-(\mathbf{r}) & \text{ for } N < N_0 \\
+        \rho_{N_0+1}(\mathbf{r}) - \rho_{N_0}(\mathbf{r})=f^+(\mathbf{r}) & \text{ for } N > N_0 \\
+      \end{cases}
+
+    The derivative at :math:`N = N_0` doesn't exist, however, the average value of
+    :math:`f^-(\mathbf{r})` and :math:`f^+(\mathbf{r})`, denoted by :math:`f^0(\mathbf{r})`
+    is  assigned as the first derivative.
     """
 
-    @doc_inherit(BaseLocalTool)
-    def __init__(self, dict_density):
+    def __init__(self, dict_density, n_max=None, global_softness=None):
+        r"""Initialize linear density model to compute local reactivity descriptors.
+
+        Parameters
+        ----------
+        dict_density : dict
+            Dictionary of number of electrons (keys) and corresponding density array (values).
+            This model expects three energy values corresponding to three consecutive number of
+            electrons differing by one, i.e. :math:`\{(N_0 - 1): \rho_{N_0 - 1}\left(\mathbf{
+            r}\right), N_0: \rho_{N_0}\left(\mathbf{r}\right), (N_0 + 1): \rho_{N_0 + 1}\left(
+            \mathbf{r}\right)\}`. The :math:`N_0` value is considered as the reference number
+            of electrons.
+        n_max : float, optional
+            Maximum number of electrons that system can accept, i.e. :math:`N_{\text{max}}`.
+            See :attr:`base.BaseGlobalTool.n_max`.
+        global_softness : float, optional
+            Global softness. See :attr:`base.BaseGlobalTool.softness`.
+        """
         # check number of electrons & density values
         n_ref, dens_m, dens_0, dens_p = check_dict_values(dict_density)
         # compute ff+, ff- & ff0
         self._ff_plus = dens_p - dens_0
         self._ff_minus = dens_0 - dens_m
         self._ff_zero = 0.5 * (dens_p - dens_m)
-        super(LinearLocalTool, self).__init__(dict_density, n_ref)
+        super(LinearLocalTool, self).__init__(n_ref, n_max, global_softness)
+        self.dict_density = dict_density
 
     @property
     def ff_plus(self):
@@ -236,96 +259,36 @@ class LinearLocalTool(BaseLocalTool):
         """
         return self._ff_zero
 
+    @doc_inherit(BaseLocalTool)
     def density(self, n_elec):
-        r"""
-        Return linear electron density of :math:`N`-electron system, :math:`\rho_{N}(\mathbf{r})`.
-
-        This is defined as the functional derivative of linear energy model w.r.t.
-        external potential at fixed number of electrons, i.e.,
-
-        .. math::
-           \rho_{N}(\mathbf{r}) =
-            \begin{cases}
-             \rho_{N_0}(\mathbf{r}) + \left[\rho_{N_0}(\mathbf{r}) - \rho_{N_0 - 1}(\mathbf{r})
-                       \right] \left(N - N_0\right) & \text{ for } N \leqslant N_0 \\
-             \rho_{N_0}(\mathbf{r}) + \left[\rho_{N_0 + 1}(\mathbf{r}) - \rho_{N_0}(\mathbf{r})
-                       \right] \left(N - N_0\right) & \text{ for } N \geqslant N_0 \\
-            \end{cases}
-
-        Parameters
-        ----------
-        n_elec : float
-            Number of electrons.
-        """
         # check n_elec argument
         check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
         # compute density
-        rho = self.density_zero.copy()
-        if n_elec != self._n0:
-            if n_elec < self._n0:
-                rho += self._ff_minus * (n_elec - self._n0)
-            elif n_elec > self._n0:
-                rho += self._ff_plus * (n_elec - self._n0)
+        rho = self.dict_density[self._n0].copy()
+        if n_elec < self._n0:
+            rho += self._ff_minus * (n_elec - self._n0)
+        elif n_elec > self._n0:
+            rho += self._ff_plus * (n_elec - self._n0)
         return rho
 
-    def fukui_function(self, n_elec):
-        r"""
-        Return linear Fukui function of :math:`N`-electron system, :math:`f_{N}(\mathbf{r})`.
-
-        This is defined as the functional derivative of linear chemical potential w.r.t.
-        external potential at fixed number of electrons,
-
-        .. math::
-           f_{N}(\mathbf{r}) =
-             \begin{cases}
-               f^-(\mathbf{r}) &= \rho_{N_0}(\mathbf{r}) - \rho_{N_0 - 1}(\mathbf{r}) && N < N_0 \\
-               f^0\left(\mathbf{r}\right) &= 0.5 \left(\rho_{N_0 + 1}\left(\mathbf{r}\right) -
-                        \rho_{N_0 - 1}\left(\mathbf{r}\right)\right) && N = N_0 \\
-               f^+(\mathbf{r}) &= \rho_{N_0 + 1}(\mathbf{r}) - \rho_{N_0}(\mathbf{r}) && N > N_0 \\
-             \end{cases}
-
-        Parameters
-        ----------
-        n_elec : float
-            Number of electrons.
-        """
+    @doc_inherit(BaseLocalTool)
+    def density_derivative(self, n_elec, order=1):
         # check n_elec argument
         check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
-        # compute fukui function
-        if n_elec == self._n0:
-            ff = self._ff_zero
-        elif n_elec < self._n0:
-            ff = self._ff_minus
-        elif n_elec > self._n0:
-            ff = self._ff_plus
-        return ff
-
-    def softness(self, n_elec, global_softness):
-        r"""
-        Return linear softness of :math:`N`-electron system, :math:`s_N(\mathbf{r})`.
-
-        .. math::
-           s_N\left(\mathbf{r}\right) = S \cdot f_N\left(\mathbf{r}\right) =
-             \begin{cases}
-               S \cdot f^-(\mathbf{r}) & N < N_0 \\
-               S \cdot f^0\left(\mathbf{r}\right) & N = N_0 \\
-               S \cdot f^+(\mathbf{r}) &  N > N_0 \\
-             \end{cases}
-
-        Parameters
-        ----------
-        global_softness : float
-            The value of global softness.
-        n_elec : float
-            Number of electrons.
-        """
-        # check n_elec argument
-        check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
-        # compute softness
-        if n_elec == self._n0:
-            softness = global_softness * self._ff_zero
-        elif n_elec < self._n0:
-            softness = global_softness * self._ff_minus
-        elif n_elec > self._n0:
-            softness = global_softness * self._ff_plus
-        return softness
+        # check order
+        if not (isinstance(order, int) and order > 0):
+            raise ValueError("Argument order should be an integer greater than or equal to 1.")
+        # compute derivative of density w.r.t. number of electrons
+        if order == 1:
+            if n_elec < self._n0:
+                deriv = self._ff_minus
+            elif n_elec > self._n0:
+                deriv = self._ff_plus
+            else:
+                deriv = self._ff_zero
+        else:
+            if n_elec == self._n0:
+                deriv = None
+            else:
+                deriv = 0.
+        return deriv
