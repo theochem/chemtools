@@ -177,6 +177,10 @@ Commonly, the average Fukui function :math:`f^0\left(\mathbf{r}\right)` is used:
 
     s_{N}(\mathbf{r}) = S \cdot f_{N}(\mathbf{r}) =
       \begin{cases}
-        S \cdot \left[\rho_{N_0}(\mathbf{r}) - \rho_{N_0 - 1}(\mathbf{r})\right] = S \cdot f^-(\mathbf{r}) & \text{ for } N < N_0 \\
-	S \cdot \left[\rho_{N_0 + 1}(\mathbf{r}) - \rho_{N_0}(\mathbf{r})\right] = S \cdot f^+(\mathbf{r}) & \text{ for } N > N_0 \\
+        S \cdot \left[\rho_{N_0}(\mathbf{r}) - \rho_{N_0 - 1}(\mathbf{r})\right] &=
+        S \cdot f^-(\mathbf{r}) & \text{ for } N < N_0 \\
+        S \cdot \left[\rho_{N_0 + 1}(\mathbf{r}) - \rho_{N_0 - 1}(\mathbf{r})\right] \cdot 0.5 &=
+        S \cdot f^0(\mathbf{r}) & \text{ for } N = N_0 \\
+        S \cdot \left[\rho_{N_0 + 1}(\mathbf{r}) - \rho_{N_0}(\mathbf{r})\right] &=
+        S \cdot f^+(\mathbf{r}) & \text{ for } N > N_0 \\
       \end{cases}
