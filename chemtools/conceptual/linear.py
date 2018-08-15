@@ -26,7 +26,7 @@ This module contains the global and local tool classes corresponding to linear e
 """
 
 
-from chemtools.conceptual.base import BaseGlobalTool, BaseLocalTool
+from chemtools.conceptual.base import BaseGlobalTool, BaseLocalTool, BaseCondensedTool
 from chemtools.conceptual.utils import check_dict_values, check_number_electrons
 from chemtools.utils.utils import doc_inherit
 
@@ -283,6 +283,133 @@ class LinearLocalTool(BaseLocalTool):
         if not (isinstance(order, int) and order > 0):
             raise ValueError("Argument order should be an integer greater than or equal to 1.")
         # compute derivative of density w.r.t. number of electrons
+        if order == 1:
+            if n_elec < self._n0:
+                deriv = self._ff_minus
+            elif n_elec > self._n0:
+                deriv = self._ff_plus
+            else:
+                deriv = self._ff_zero
+        else:
+            if n_elec == self._n0:
+                deriv = None
+            else:
+                deriv = 0.
+        return deriv
+
+
+class LinearCondensedTool(BaseCondensedTool):
+    r"""Condensed conceptual DFT reactivity descriptors class based on the linear energy model.
+
+    Considering the interpolated linear energy expression,
+
+    .. math::
+       E\left(N\right) =
+        \begin{cases}
+         \left(N - N_0 + 1\right) E\left(N_0\right) - \left(N - N_0\right) E\left(N_0 - 1\right)
+            &  N \leqslant N_0 \\
+         \left(N - N_0\right) E\left(N_0 + 1\right) - \left(N - N_0 - 1\right) E\left(N_0\right)
+            &  N \geqslant N_0 \\
+        \end{cases} \\
+
+    and its derivative with respect to the number of electrons at constant external potential,
+
+    .. math::
+       \mu\left(N\right) =
+        \begin{cases}
+         \mu^- &= E\left(N_0\right) - E\left(N_0 - 1\right) = - IP &&  N < N_0 \\
+         \mu^0 &= 0.5 \left(E\left(N_0 + 1\right) - E\left(N_0 - 1\right)\right) = -0.5 (IP + EA)
+               && N = N_0 \\
+         \mu^+ &= E\left(N_0 + 1\right) - E\left(N_0\right) = - EA &&  N > N_0 \\
+        \end{cases}
+
+    the linear local tools are obtained by taking the functional derivative of these expressions
+    with respect to external potential :math:`v(\mathbf{r})` at fixed number of electrons.
+    """
+
+    def __init__(self, dict_population, n_max=None, global_softness=None):
+        r"""Initialize linear density model to compute local reactivity descriptors.
+
+        Parameters
+        ----------
+        dict_population : dict
+            Dictionary of number of electrons (keys) and corresponding atomic populations array
+            (values).
+            This model expects three energy values corresponding to three consecutive number of
+            electrons differing by one, i.e. :math:`\{(N_0 - 1): {N_A \left(N_0 - 1\right)},
+            N_0: {N_A \left(N_0\right)}, (N_0 + 1): {N_A \left(N_0 + 1\right)}`.
+            The :math:`N_0` value is considered as the reference number of electrons.
+        n_max : float, optional
+            Maximum number of electrons that system can accept, i.e. :math:`N_{\text{max}}`.
+            See :attr:`BaseGlobalTool.n_max`.
+        global_softness : float, optional
+            Global softness. See :attr:`BaseGlobalTool.softness`.
+        """
+        # check number of electrons & density values
+        n_ref, pop_m, pop_0, pop_p = check_dict_values(dict_population)
+        # compute atomic ff+, ff- & ff0
+        self._ff_plus = pop_p - pop_0
+        self._ff_minus = pop_0 - pop_m
+        self._ff_zero = 0.5 * (pop_p - pop_m)
+        super(LinearCondensedTool, self).__init__(n_ref, n_max, global_softness)
+        self.dict_population = dict_population
+
+    @property
+    def ff_plus(self):
+        r"""
+        Atomic Fukui Function from above, :math:`f_A^+(\mathbf{r})`.
+
+        .. math::
+           f_A^+\left(\mathbf{r}\right) = \rho_{N_0 + 1}\left(\mathbf{r}\right) -
+                                          \rho_{N_0}\left(\mathbf{r}\right)
+        """
+        return self._ff_plus
+
+    @property
+    def ff_minus(self):
+        r"""
+        Atomic Fukui Function from below, :math:`f_A^-(\mathbf{r})`.
+
+        .. math::
+           f_A^-\left(\mathbf{r}\right) = \rho_{N_0}\left(\mathbf{r}\right) -
+                                          \rho_{N_0 - 1}\left(\mathbf{r}\right)
+        """
+        return self._ff_minus
+
+    @property
+    def ff_zero(self):
+        r"""
+        Atomic Fukui Function from center, :math:`f_A^0(\mathbf{r})`.
+
+        This is defined as the average of :attr:`ff_plus` and :attr:`ff_minus`,
+
+        .. math::
+           f_A^0\left(\mathbf{r}\right) =
+           \frac{f^+\left(\mathbf{r}\right) + f^-\left(\mathbf{r}\right)}{2} =
+           \frac{\rho_{N_0 + 1}\left(\mathbf{r}\right) - \rho_{N_0 - 1}\left(\mathbf{r}\right)}{2}
+        """
+        return self._ff_zero
+
+    @doc_inherit(BaseCondensedTool)
+    def population(self, n_elec):
+        # check n_elec argument
+        check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
+        # compute atomic populations
+        pop = self.dict_population[self._n0].copy()
+        if n_elec < self._n0:
+            pop += self._ff_minus * (n_elec - self._n0)
+        elif n_elec > self._n0:
+            pop += self._ff_plus * (n_elec - self._n0)
+        return pop
+
+    @doc_inherit(BaseCondensedTool)
+    def population_derivative(self, n_elec, order=1):
+        # check n_elec argument
+        check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
+        # check order
+        if not (isinstance(order, int) and order > 0):
+            raise ValueError("Argument order should be an integer greater than or equal to 1.")
+        # compute derivative of atomic populations w.r.t. number of electrons
         if order == 1:
             if n_elec < self._n0:
                 deriv = self._ff_minus

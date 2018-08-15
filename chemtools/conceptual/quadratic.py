@@ -27,11 +27,11 @@ This module contains the global and local tool classes corresponding to quadrati
 
 
 from chemtools.utils.utils import doc_inherit
-from chemtools.conceptual.base import BaseGlobalTool, BaseLocalTool
+from chemtools.conceptual.base import BaseGlobalTool, BaseLocalTool, BaseCondensedTool
 from chemtools.conceptual.utils import check_dict_values, check_number_electrons
 
 
-__all__ = ['QuadraticGlobalTool', 'QuadraticLocalTool']
+__all__ = ["QuadraticGlobalTool", "QuadraticLocalTool", "QuadraticCondensedTool"]
 
 
 class QuadraticGlobalTool(BaseGlobalTool):
@@ -192,6 +192,64 @@ class QuadraticLocalTool(BaseLocalTool):
             raise ValueError("Argument order should be an integer greater than or equal to 1.")
         if order == 1:
             deriv = self._ff0 + self._df0 * (n_elec - self.n0)
+        elif order == 2:
+            deriv = self._df0
+        else:
+            deriv = 0.
+        return deriv
+
+
+class QuadraticCondensedTool(BaseCondensedTool):
+    r"""Condensed conceptual DFT reactivity descriptors class based on the quadratic energy model.
+
+    This class contains the atom-condensed equivalent of :class:`QuadraticLocalTool` reactivity
+    indicators.
+    """
+
+    def __init__(self, dict_population, n_max=None, global_softness=None):
+        r"""Initialize quadratic population model to compute condensed reactivity descriptors.
+
+        Parameters
+        ----------
+        dict_population : dict
+            Dictionary of number of electrons (keys) and corresponding atomic populations array
+            (values).
+            This model expects three energy values corresponding to three consecutive number of
+            electrons differing by one, i.e. :math:`\{(N_0 - 1): {N_A \left(N_0 - 1\right)},
+            N_0: {N_A \left(N_0\right)}, (N_0 + 1): {N_A \left(N_0 + 1\right)}`.
+            The :math:`N_0` value is considered as the reference number of electrons.
+        n_max : float, optional
+            Maximum number of electrons that system can accept, i.e. :math:`N_{\text{max}}`.
+            See :attr:`BaseGlobalTool.n_max`.
+        global_softness : float, optional
+            Global softness. See :attr:`BaseGlobalTool.softness`.
+        """
+        # check number of electrons & density values
+        n_ref, pop_m, pop_0, pop_p = check_dict_values(dict_population)
+        # compute condensed fukui function & dual descriptor of N0-electron system
+        self._ff0 = 0.5 * (pop_p - pop_m)
+        self._df0 = pop_p - 2 * pop_0 + pop_m
+        super(QuadraticCondensedTool, self).__init__(n_ref, n_max, global_softness)
+        self.dict_population = dict_population
+
+    @doc_inherit(BaseCondensedTool)
+    def population(self, n_elec):
+        # check n_elec argument
+        check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
+        # compute density
+        pop = self.dict_population[self.n_ref].copy()
+        pop += self._ff0 * (n_elec - self._n0) + 0.5 * self._df0 * (n_elec - self._n0)**2
+        return pop
+
+    @doc_inherit(BaseCondensedTool)
+    def population_derivative(self, n_elec, order=1):
+        # check n_elec argument
+        check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
+        # check order
+        if not (isinstance(order, int) and order > 0):
+            raise ValueError("Argument order should be an integer greater than or equal to 1.")
+        if order == 1:
+            deriv = self._ff0 + self._df0 * (n_elec - self.n_ref)
         elif order == 2:
             deriv = self._df0
         else:

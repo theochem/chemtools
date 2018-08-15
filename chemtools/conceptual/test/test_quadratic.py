@@ -20,11 +20,13 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+# pragma pylint: disable=invalid-name
 """Test chemtools.conceptual.quadratic Module."""
 
 import numpy as np
-from numpy.testing import assert_raises, assert_almost_equal
+from numpy.testing import assert_raises, assert_equal, assert_almost_equal
 from chemtools.conceptual.quadratic import QuadraticGlobalTool, QuadraticLocalTool
+from chemtools.conceptual.quadratic import QuadraticCondensedTool
 
 
 def make_symbolic_quadratic_model(a, b, c):
@@ -486,3 +488,79 @@ def test_local_quadratic_higher_order():
     # assert_almost_equal(model.hyper_softness(1.5), expected, decimal=6)
     # expected = np.array([-0.5, 2.5, -1.0, -1.0, -1.0]) / (0.25 * 0.25)
     # assert_almost_equal(model.hyper_softness(0.25), expected, decimal=6)
+
+
+def test_condensed_quadratic_raises():
+    # fake population array
+    pop_0 = np.array([-0.5, 1.0, -0.5, 0.5])
+    pop_m = np.array([1.0, -2.0, -0.9, 0.3])
+    pop_p = np.array([0.8, -3.1, -0.1, 3.6])
+    # check dict_pop
+    assert_raises(ValueError, QuadraticCondensedTool, {1.: pop_m, 2.: pop_0, 3.: pop_p, 4.: pop_p})
+    assert_raises(ValueError, QuadraticCondensedTool, {5.: pop_m, 6: pop_0, 7.5: pop_p})
+    assert_raises(ValueError, QuadraticCondensedTool, {-1.: pop_m, 0.: pop_0, 1.: pop_p})
+    assert_raises(ValueError, QuadraticCondensedTool, {0.: pop_m, 1.: pop_0, 3.: pop_p})
+    assert_raises(ValueError, QuadraticCondensedTool, {0.: pop_m, 0.5: pop_0, 1.: pop_p})
+    assert_raises(ValueError, QuadraticCondensedTool, {1.: pop_m, 2.: pop_0, 3.: pop_p[:-1]})
+    assert_raises(ValueError, QuadraticCondensedTool, {1.: pop_m[:-1], 2.: pop_0, 3.: pop_p[:-1]})
+    assert_raises(ValueError, QuadraticCondensedTool, {1.: pop_m, 2.: pop_0[:-1], 3.: pop_p[:-1]})
+    assert_raises(ValueError, QuadraticCondensedTool, {1.: pop_m[:-1], 2.: pop_0, 3.: pop_p})
+    # check N_max
+    assert_raises(ValueError, QuadraticCondensedTool, {1.: pop_m, 2.: pop_0, 3.: pop_p}, -0.5, 1.5)
+    assert_raises(ValueError, QuadraticCondensedTool, {1.: pop_m, 2.: pop_0, 3.: pop_p}, -2., 1.5)
+    # make a model
+    model = QuadraticCondensedTool({1.: pop_m, 2.: pop_0, 3.: pop_p})
+    assert_raises(ValueError, model.population, -1.5)
+    assert_raises(ValueError, model.population, "2.0")
+    assert_raises(ValueError, model.population_derivative, -0.5)
+    assert_raises(ValueError, model.population_derivative, "1.6")
+    assert_raises(ValueError, model.population_derivative, 1., order=0.5)
+    assert_raises(ValueError, model.population_derivative, 1., order=-1)
+    assert_raises(ValueError, model.population_derivative, 1., order=1.)
+
+
+def test_condensed_linear_h2o_population():
+    # ESP charges of H2O at ub3lyp/ccpvtz
+    pop_09 = np.array([4.14233893E-02, 4.79288419E-01, 4.79288192E-01])
+    pop_10 = np.array([-7.00779373E-01, 3.50389629E-01, 3.50389744E-01])
+    pop_11 = np.array([-5.81613550E-01, -2.09193820E-01, -2.09192630E-01])
+    # compute fukui function & dual descriptor
+    ff, df = 0.5 * (pop_11 - pop_09), pop_11 - 2 * pop_10 + pop_09
+    # build model
+    model = QuadraticCondensedTool({9: pop_09, 10: pop_10, 11: pop_11}, None, None)
+    # check N0, Nmax & S
+    assert_equal(model.n_ref, 10)
+    assert model.n_max is None
+    assert model.global_softness is None
+    # check population
+    assert_almost_equal(model.population(8.9), pop_10 - ff * 1.1 + 0.5 * df * 1.21, decimal=8)
+    assert_almost_equal(model.population(9.0), pop_09, decimal=8)
+    assert_almost_equal(model.population(9.7), pop_10 - ff * 0.3 + 0.5 * df * 0.09, decimal=8)
+    assert_almost_equal(model.population(10.0), pop_10, decimal=8)
+    assert_almost_equal(model.population(10.5), pop_10 + ff * 0.5 + 0.5 * df * 0.25, decimal=8)
+    assert_almost_equal(model.population(11.), pop_11, decimal=8)
+    assert_almost_equal(model.population(11.1), pop_10 + ff * 1.1 + 0.5 * df * 1.21, decimal=8)
+    # check population derivative
+    assert_almost_equal(model.population_derivative(7.1), ff - 2.9 * df, decimal=8)
+    assert_almost_equal(model.population_derivative(9.0), ff - 1.0 * df, decimal=8)
+    assert_almost_equal(model.population_derivative(9.2), ff - 0.8 * df, decimal=8)
+    assert_almost_equal(model.population_derivative(10.8), ff + 0.8 * df, decimal=8)
+    assert_almost_equal(model.population_derivative(11.), ff + 1.0 * df, decimal=8)
+    assert_almost_equal(model.population_derivative(11.7), ff + 1.7 * df, decimal=8)
+
+
+def test_condensed_linear_h2o_reactivity():
+    # ESP charges of H2O at ub3lyp/ccpvtz
+    pop_09 = np.array([4.14233893E-02, 4.79288419E-01, 4.79288192E-01])
+    pop_10 = np.array([-7.00779373E-01, 3.50389629E-01, 3.50389744E-01])
+    pop_11 = np.array([-5.81613550E-01, -2.09193820E-01, -2.09192630E-01])
+    # build model
+    model = QuadraticCondensedTool({9: pop_09, 10: pop_10, 11: pop_11}, 10., 2.3)
+    # check N0, Nmax & S
+    assert_equal(model.n_ref, 10)
+    assert_equal(model.n_max, 10)
+    assert_equal(model.global_softness, 2.3)
+    # check reactivity indicators
+    assert_almost_equal(model.fukui_function, 0.5 * (pop_11 - pop_09), decimal=8)
+    assert_almost_equal(model.dual_descriptor, pop_11 - 2 * pop_10 + pop_09, decimal=8)
+    assert_almost_equal(model.softness, 2.3 * 0.5 * (pop_11 - pop_09), decimal=8)
