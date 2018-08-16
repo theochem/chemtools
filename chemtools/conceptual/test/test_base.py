@@ -22,9 +22,9 @@
 # --
 """Test chemtools.conceptual.base Module."""
 
-import numpy as np
+
 from numpy.testing import assert_raises
-from chemtools.conceptual.base import BaseGlobalTool, BaseLocalTool
+from chemtools.conceptual.base import BaseGlobalTool, BaseLocalTool, BaseCondensedTool
 
 
 def test_global_base_raises():
@@ -41,3 +41,18 @@ def test_local_base_raises():
     assert_raises(ValueError, BaseLocalTool, -1., 2.0)
     assert_raises(ValueError, BaseLocalTool, 2., -1.5)
     assert_raises(ValueError, BaseLocalTool, 2., -3.0)
+
+
+def test_condensed_base_raises():
+    # check invalid N0 & Nmax
+    assert_raises(ValueError, BaseCondensedTool, 0., 2.0)
+    assert_raises(ValueError, BaseCondensedTool, -1., 2.0)
+    assert_raises(ValueError, BaseCondensedTool, 2., -1.5)
+    assert_raises(ValueError, BaseCondensedTool, 2., -3.0)
+    # build model & check properties/methods
+    model = BaseCondensedTool(1.0, 1.5, None)
+    assert_raises(NotImplementedError, model.population, 3.0)
+    assert_raises(NotImplementedError, model.population, 1.0)
+    assert_raises(NotImplementedError, model.population_derivative, 1.0)
+    assert_raises(NotImplementedError, model.population_derivative, 1.3, 1)
+    assert_raises(NotImplementedError, model.population_derivative, 2.4, 2)

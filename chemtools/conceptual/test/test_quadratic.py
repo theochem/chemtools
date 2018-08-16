@@ -532,6 +532,7 @@ def test_condensed_linear_h2o_population():
     assert_equal(model.n_ref, 10)
     assert model.n_max is None
     assert model.global_softness is None
+    assert model.softness is None
     # check population
     assert_almost_equal(model.population(8.9), pop_10 - ff * 1.1 + 0.5 * df * 1.21, decimal=8)
     assert_almost_equal(model.population(9.0), pop_09, decimal=8)
@@ -544,9 +545,16 @@ def test_condensed_linear_h2o_population():
     assert_almost_equal(model.population_derivative(7.1), ff - 2.9 * df, decimal=8)
     assert_almost_equal(model.population_derivative(9.0), ff - 1.0 * df, decimal=8)
     assert_almost_equal(model.population_derivative(9.2), ff - 0.8 * df, decimal=8)
-    assert_almost_equal(model.population_derivative(10.8), ff + 0.8 * df, decimal=8)
+    assert_almost_equal(model.population_derivative(10.8, 1), ff + 0.8 * df, decimal=8)
     assert_almost_equal(model.population_derivative(11.), ff + 1.0 * df, decimal=8)
     assert_almost_equal(model.population_derivative(11.7), ff + 1.7 * df, decimal=8)
+    assert_almost_equal(model.population_derivative(11.7, 1), ff + 1.7 * df, decimal=8)
+    assert_almost_equal(model.population_derivative(10, 2), df, decimal=8)
+    assert_almost_equal(model.population_derivative(9.9, 2), df, decimal=8)
+    assert_almost_equal(model.population_derivative(11.2, 2), df, decimal=8)
+    assert_almost_equal(model.population_derivative(10, 3), 0., decimal=8)
+    assert_almost_equal(model.population_derivative(10.9, 3), 0., decimal=8)
+    assert_almost_equal(model.population_derivative(12.3, 4), 0., decimal=8)
 
 
 def test_condensed_linear_h2o_reactivity():
