@@ -29,3 +29,4 @@ from chemtools.conceptual.exponential import *
 from chemtools.conceptual.rational import *
 from chemtools.conceptual.cubic import *
 from chemtools.conceptual.general import *
+from chemtools.conceptual.mixed import *
