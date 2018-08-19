@@ -21,6 +21,7 @@
 #
 # --
 # pragma pylint: disable=invalid-name
+"""Test chemtools.conceptual.mixed Module."""
 
 
 import numpy as np
@@ -36,7 +37,7 @@ def test_mixed_global_mu_gcv_h2o():
     ip, ea = e09 - e10, e10 - e11
     model = MixedGlobalTool({9: e09, 10: e10, 11: e11})
     # check mu GCV
-    expected = - np.array([ip + 3 * ea, 3 * ip + ea]) / 4.
+    expected = np.array([ip + 3 * ea, 3 * ip + ea]) / -4.
     assert_almost_equal(model.chemical_potential_gcv, expected, decimal=8)
     # check omega GCV
     expected = np.array([ip + 3 * ea, 3 * ip + ea])**2 / (32. * (ip - ea))
@@ -48,17 +49,17 @@ def test_mixed_global_mu_ma_h2o():
     e09, e10, e11 = -7.599493522312368E+01, -7.645980351270224E+01, -7.635212549312298E+01
     ip, ea = e09 - e10, e10 - e11
     model = MixedGlobalTool({9: e09, 10: e10, 11: e11})
-    expected = - np.array([ea, ip]) / 1.
+    expected = np.array([ea, ip]) / -1.
     assert_almost_equal(model.chemical_potential_ma(0.), expected, decimal=8)
-    expected = - np.array([ip + ea, ip + ea]) / 2.
+    expected = np.array([ip + ea, ip + ea]) / -2.
     assert_almost_equal(model.chemical_potential_ma(1.), expected, decimal=8)
-    expected = - np.array([1.5 * ip + ea, ip + 1.5 * ea]) / 2.5
+    expected = np.array([1.5 * ip + ea, ip + 1.5 * ea]) / -2.5
     assert_almost_equal(model.chemical_potential_ma(1.5), expected, decimal=8)
-    expected = - np.array([2.0 * ip + ea, ip + 2.0 * ea]) / 3.0
+    expected = np.array([2.0 * ip + ea, ip + 2.0 * ea]) / -3.0
     assert_almost_equal(model.chemical_potential_ma(2.), expected, decimal=8)
-    expected = - np.array([3.0 * ip + ea, ip + 3.0 * ea]) / 4.
+    expected = np.array([3.0 * ip + ea, ip + 3.0 * ea]) / -4.
     assert_almost_equal(model.chemical_potential_ma(3.0), expected, decimal=8)
-    expected = - np.array([3.61 * ip + ea, ip + 3.61 * ea]) / 4.61
+    expected = np.array([3.61 * ip + ea, ip + 3.61 * ea]) / -4.61
     assert_almost_equal(model.chemical_potential_ma(3.61), expected, decimal=8)
-    expected = - np.array([4.25 * ip + ea, ip + 4.25 * ea]) / 5.25
+    expected = np.array([4.25 * ip + ea, ip + 4.25 * ea]) / -5.25
     assert_almost_equal(model.chemical_potential_ma(4.25), expected, decimal=8)

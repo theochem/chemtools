@@ -20,6 +20,8 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+# pragma pylint: disable=invalid-name
+"""Conceptual Density Functional Theory (DFT) Reactivity Tools Based on Mixed Energy Models."""
 
 
 from chemtools.conceptual import LinearGlobalTool
@@ -32,7 +34,7 @@ class MixedGlobalTool(object):
     """Class of global conceptual DFT reactivity descriptors based on mixed energy models."""
 
     def __init__(self, dict_energy):
-        """Initialize mixed energy model to compute global reactivity descriptors.
+        r"""Initialize mixed energy model to compute global reactivity descriptors.
 
         Parameters
         ----------
