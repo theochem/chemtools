@@ -26,9 +26,21 @@
 
 import numpy as np
 
-from numpy.testing import assert_almost_equal
+from numpy.testing import assert_almost_equal, assert_raises
 
-from chemtools.conceptual.mixed import MixedGlobalTool
+from chemtools.conceptual.mixed import MixedGlobalTool, MixedLocalTool
+
+
+def test_mixed_raises():
+    # check global raises
+    assert_raises(ValueError, MixedGlobalTool, {0.0: -0.5, 0.5: -1.0, 1.0: -0.75})
+    assert_raises(ValueError, MixedGlobalTool, {0.0: -0.5, 2.0: -1.0, -1.0: -0.75})
+    # check local raises
+    dict_d = {1.0: np.array([0.1, 0.3]), 2.0: np.array([0.2, 0.5]), 3.0: np.array([0.2, 0.6])}
+    dict_e = {1.0: -0.5, 2.0: -1.0, 4.0: -0.75}
+    assert_raises(ValueError, MixedLocalTool, dict_e, dict_d)
+    dict_d = {1.0: np.array([0.1, 0.3]), 2.0: np.array([0.2, 0.5]), 4.0: np.array([0.2, 0.6])}
+    assert_raises(ValueError, MixedLocalTool, dict_e, dict_d)
 
 
 def test_mixed_global_mu_gcv_h2o():
@@ -63,3 +75,29 @@ def test_mixed_global_mu_ma_h2o():
     assert_almost_equal(model.chemical_potential_ma(3.61), expected, decimal=8)
     expected = np.array([4.25 * ip + ea, ip + 4.25 * ea]) / -5.25
     assert_almost_equal(model.chemical_potential_ma(4.25), expected, decimal=8)
+
+
+def test_mixed_local_fake():
+    # fake density & energy values
+    dict_d = {1: np.array([0, 1.2, 0.7]), 2: np.array([3.1, 0.4, 0]), 3: np.array([5.6, 0.2, 1.4])}
+    dict_e = {1: -0.5, 2: -1.0, 3: -0.75}
+    ip, ea = -0.5 - (-1.0), -1.0 - (-0.75)
+    ffp, ff0, ffm = dict_d[3] - dict_d[2], 0.5 * (dict_d[3] - dict_d[1]), dict_d[2] - dict_d[1]
+    f2 = dict_d[3] - 2 * dict_d[2] + dict_d[1]
+    # build mixed local model
+    model = MixedLocalTool(dict_e, dict_d)
+    # check softness
+    assert_almost_equal(model.softness_yp[0], ffp / (ip - ea), decimal=8)
+    assert_almost_equal(model.softness_yp[1], ff0 / (ip - ea), decimal=8)
+    assert_almost_equal(model.softness_yp[2], ffm / (ip - ea), decimal=8)
+    # check philicity CMS
+    assert_almost_equal(model.philicity_cms[0], ffp * (ip + ea)**2 / (8 * (ip - ea)), decimal=8)
+    assert_almost_equal(model.philicity_cms[1], ff0 * (ip + ea)**2 / (8 * (ip - ea)), decimal=8)
+    assert_almost_equal(model.philicity_cms[2], ffm * (ip + ea)**2 / (8 * (ip - ea)), decimal=8)
+    # check philicity MGV
+    pp = ea * ffp / (ip - ea) + 0.5 * ea**2 * f2 / (ip - ea)**2
+    assert_almost_equal(model.philicity_mgv[0], pp, decimal=8)
+    p0 = 0.5 * (ip + ea) * ff0 / (ip - ea) + 0.5**3 * (ip + ea)**2 * f2 / (ip - ea)**2
+    assert_almost_equal(model.philicity_mgv[1], p0, decimal=8)
+    pm = -ip * ffm / (ip - ea) + 0.5 * ip**2 * f2 / (ip - ea)**2
+    assert_almost_equal(model.philicity_mgv[2], pm, decimal=8)
