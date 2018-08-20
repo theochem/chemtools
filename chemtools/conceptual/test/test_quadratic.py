@@ -449,7 +449,7 @@ def test_global_quadratic_n0p_grand_potential_reactivity():
     assert_almost_equal(model.hyper_softness(4), 0.0, decimal=6)
 
 
-def test_local_quadratic_raises():
+def test_local_quadratic_raises_dict_density():
     # fake density arrays
     d0 = np.array([1.0, 3.0, 5.0, 2.0, 7.0])
     dp = np.array([0.5, 4.5, 6.0, 1.0, 5.0])
@@ -466,6 +466,20 @@ def test_local_quadratic_raises():
     assert_raises(ValueError, QuadraticLocalTool, {2.0: d0, 3.0: dp, 1.0: dm[:-1]})
     assert_raises(ValueError, QuadraticLocalTool, {2.0: d0, 3.0: dp[:-2], 1.0: dm[:-1]})
     assert_raises(ValueError, QuadraticLocalTool, {2.0: d0[:-1], 3.0: dp, 1.0: dm[:-1]})
+    # check keys type
+    assert_raises(ValueError, QuadraticLocalTool, {1.0: dm, 2.0: 0.5, 3.0: dp})
+    assert_raises(ValueError, QuadraticLocalTool, {1.0: dm, 2.0: 0.5, 3.0: -0.1})
+    dp_list = [0.5, 4.5, 6.0, 1.0, 5.0]
+    dm_tuple = (1.0, 4.0, 3.0, 2.0, 8.0)
+    assert_raises(ValueError, QuadraticLocalTool, {1.0: dm, 2.0: d0, 3.0: dp_list})
+    assert_raises(ValueError, QuadraticLocalTool, {1.0: dm_tuple, 2.0: d0, 3.0: dp})
+
+
+def test_local_quadratic_raises_n_value():
+    # fake density arrays
+    d0 = np.array([1.0, 3.0, 5.0, 2.0, 7.0])
+    dp = np.array([0.5, 4.5, 6.0, 1.0, 5.0])
+    dm = np.array([1.0, 4.0, 3.0, 2.0, 8.0])
     # check invalid Nmax
     assert_raises(ValueError, QuadraticLocalTool, {2.: d0, 3.: dp, 1.: dm}, -1.23)
     assert_raises(ValueError, QuadraticLocalTool, {2.: d0, 3.: dp, 1.: dm}, -0.91, 2.03)
