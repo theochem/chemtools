@@ -1,7 +1,10 @@
 ChemTools
 =========
-<a href='https://travis-ci.com/QuantumElephant/chemtools'><img src='https://travis-ci.com/QuantumElephant/chemtools.svg?token=wtCKs521Yw1urAV4F5DM&branch=master'></a>
-<a href='https://docs.python.org/2.7/'><img src='https://img.shields.io/badge/python-2.7-blue.svg'></a>
+
+[![Python](https://img.shields.io/badge/python-2.7-blue.svg)](https://docs.python.org/2.7/)
+[![Codecov](https://img.shields.io/codecov/c/github/codecov/example-python.svg)](https://codecov.io/gh/QuantumElephant/chemtools)
+[![Build Status](https://travis-ci.com/QuantumElephant/chemtools.svg?token=hHqyYYLAfG3c9d5PuqS7&branch=master)](https://travis-ci.com/QuantumElephant/chemtools)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/QuantumElephant/chemtools/blob/master/LICENSE)
 
 
 About
