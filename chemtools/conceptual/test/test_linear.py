@@ -322,14 +322,14 @@ def test_local_linear_fake_density():
     assert_almost_equal(model.density(9.61), 0.39 * dm + 0.61 * d0, decimal=6)
 
 
-def test_local_linear_fake_fukui_function():
+def test_local_linear_fake_density_derivative():
     # fake density arrays
     d0 = np.array([1.0, 3.0, 5.0, 2.0, 7.0])
     dp = np.array([0.5, 4.5, 6.0, 1.0, 5.0])
     dm = np.array([1.0, 4.0, 3.0, 2.0, 8.0])
     # build a linear local model
     model = LinearLocalTool({10: d0, 11.: dp, 9: dm})
-    # check fukui function
+    # check first order derivatives
     expected = np.array([-0.5, 1.5, 1.0, -1.0, -2.0])
     assert_almost_equal(model.ff_plus, expected, decimal=6)
     assert_almost_equal(model.density_derivative(10.10, 1), expected, decimal=6)
@@ -342,6 +342,16 @@ def test_local_linear_fake_fukui_function():
     assert_almost_equal(model.ff_zero, expected, decimal=6)
     assert_almost_equal(model.fukui_function, expected, decimal=6)
     assert_almost_equal(model.density_derivative(10., 1), expected, decimal=6)
+    # check higher order derivatives
+    assert model.density_derivative(10, 2) is None
+    assert model.density_derivative(10., 2) is None
+    assert model.density_derivative(10, 3) is None
+    assert model.density_derivative(10, 4) is None
+    assert_almost_equal(model.density_derivative(9., 2), 0., decimal=6)
+    assert_almost_equal(model.density_derivative(10.1, 2), 0., decimal=6)
+    assert_almost_equal(model.density_derivative(11., 2), 0., decimal=6)
+    assert_almost_equal(model.density_derivative(10.5, 3), 0., decimal=6)
+    assert_almost_equal(model.density_derivative(9.86, 4), 0., decimal=6)
 
 
 def test_local_linear_fake_softness():

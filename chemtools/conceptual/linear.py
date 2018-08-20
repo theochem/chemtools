@@ -135,10 +135,8 @@ class LinearGlobalTool(BaseGlobalTool):
         # evaluate energy
         if n_elec <= self._n0:
             value = self._params[0] + n_elec * self._params[1]
-        elif n_elec > self._n0:
-            value = self._params[2] + n_elec * self._params[3]
         else:
-            raise ValueError("Argument n_elec should be a positive real number!")
+            value = self._params[2] + n_elec * self._params[3]
         return value
 
     @doc_inherit(BaseGlobalTool)
@@ -155,10 +153,8 @@ class LinearGlobalTool(BaseGlobalTool):
             deriv = 0.0
         elif n_elec < self._n0:
             deriv = self._params[1]
-        elif n_elec > self._n0:
-            deriv = self._params[3]
         else:
-            raise ValueError("Argument n_elec should be a positive real number!")
+            deriv = self._params[3]
         return deriv
 
 
