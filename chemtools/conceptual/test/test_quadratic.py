@@ -444,50 +444,98 @@ def test_local_quadratic_raises():
     # check invalid Nmax
     assert_raises(ValueError, QuadraticLocalTool, {2.: d0, 3.: dp, 1.: dm}, -1.23)
     assert_raises(ValueError, QuadraticLocalTool, {2.: d0, 3.: dp, 1.: dm}, -0.91, 2.03)
+    # build a linear local model
+    model = QuadraticLocalTool({10: d0, 11.: dp, 9: dm})
+    model.density_derivative(2.0, 0.5)
+    # check invalid N
+    assert_raises(ValueError, model.density, '10.0')
+    assert_raises(ValueError, model.density, -1.)
+    assert_raises(ValueError, model.density_derivative, '9.5')
+    assert_raises(ValueError, model.density_derivative, -0.1)
+    assert_raises(ValueError, model.density_derivative, 2.0, 0.5)
+    assert_raises(ValueError, model.density_derivative, 2.0, -1)
+    assert_raises(ValueError, model.density_derivative, 2.0, 1.)
 
 
-def test_local_quadratic_first_order():
+def test_local_quadratic_fake_density():
     # fake density arrays
     d0 = np.array([1.0, 3.0, 5.0, 2.0, 7.0])
     dp = np.array([0.5, 4.5, 6.0, 1.0, 5.0])
     dm = np.array([1.0, 4.0, 3.0, 2.0, 8.0])
+    ff, df = 0.5 * (dp - dm), dp - 2. * d0 + dm
     # build a linear local model
     model = QuadraticLocalTool({5: d0, 6: dp, 4: dm})
-    # check density
+    # check density at interpolation points
     assert_almost_equal(model.density(5.), d0, decimal=6)
     assert_almost_equal(model.density(6.), dp, decimal=6)
     assert_almost_equal(model.density(4.), dm, decimal=6)
-    # check density
-    expected = np.array([-0.25, 0.25, 1.5, -0.5, -1.5])
-    assert_almost_equal(model.density_derivative(5., 1), expected, decimal=6)
-    expected = np.array([-0.75, 2.75, 0.5, -1.5, -2.5])
-    assert_almost_equal(model.density_derivative(6., 1), expected, decimal=6)
-    expected = np.array([0.25, -2.25, 2.5, 0.5, -0.5])
-    assert_almost_equal(model.density_derivative(4., 1), expected, decimal=6)
-    expected = np.array([-0.3, 0.5, 1.4, -0.6, -1.6])
-    assert_almost_equal(model.density_derivative(5.1, 1), expected, decimal=6)
-    expected = np.array([-0.2, 0.0, 1.6, -0.4, -1.4])
-    assert_almost_equal(model.density_derivative(4.9, 1), expected, decimal=6)
+    # check density for N >= 5.0
+    assert_almost_equal(model.density(5.1), d0 + 0.1 * ff + 0.5 * 0.01 * df, decimal=6)
+    assert_almost_equal(model.density(5.5), d0 + 0.5 * ff + 0.5 * 0.25 * df, decimal=6)
+    assert_almost_equal(model.density(6.0), d0 + 1.0 * ff + 0.5 * 1.0 * df, decimal=6)
+    assert_almost_equal(model.density(6.2), d0 + 1.2 * ff + 0.5 * 1.44 * df, decimal=6)
+    assert_almost_equal(model.density(7.0), d0 + 2.0 * ff + 0.5 * 4.0 * df, decimal=6)
+    # check density for N =< 5.0
+    assert_almost_equal(model.density(4.95), d0 - 0.05 * ff + 0.5 * 0.0025 * df, decimal=6)
+    assert_almost_equal(model.density(4.5), d0 - 0.5 * ff + 0.5 * 0.25 * df, decimal=6)
+    assert_almost_equal(model.density(4.), d0 - 1.0 * ff + 0.5 * 1.0 * df, decimal=6)
+    assert_almost_equal(model.density(3.8), d0 - 1.2 * ff + 0.5 * 1.44 * df, decimal=6)
+    assert_almost_equal(model.density(3.0), d0 - 2.0 * ff + 0.5 * 4.0 * df, decimal=6)
 
 
-def test_local_quadratic_higher_order():
+def test_local_quadratic_fake_density_derivative():
     # fake density arrays
     d0 = np.array([1.0, 3.0, 5.0, 2.0, 7.0])
     dp = np.array([0.5, 4.5, 6.0, 1.0, 5.0])
     dm = np.array([1.0, 4.0, 3.0, 2.0, 8.0])
-    # build quadratic local model
+    ff, df = 0.5 * (dp - dm), dp - 2. * d0 + dm
+    # build a linear local model
     model = QuadraticLocalTool({5: d0, 6: dp, 4: dm})
-    # check dual Descriptor
-    expected = np.array([-0.5, 2.5, -1.0, -1.0, -1.0])
-    assert_almost_equal(model.dual_descriptor, expected, decimal=6)
-    # expected = np.array([-0.25, 0.25, 1.5, -0.5, -1.5]) / 3.5
-    # assert_almost_equal(model.softness(3.5), expected, decimal=6)
-    # expected = np.array([-0.25, 0.25, 1.5, -0.5, -1.5]) / 0.5
-    # assert_almost_equal(model.softness(0.5), expected, decimal=6)
-    # expected = np.array([-0.5, 2.5, -1.0, -1.0, -1.0]) / (1.5 * 1.5)
-    # assert_almost_equal(model.hyper_softness(1.5), expected, decimal=6)
-    # expected = np.array([-0.5, 2.5, -1.0, -1.0, -1.0]) / (0.25 * 0.25)
-    # assert_almost_equal(model.hyper_softness(0.25), expected, decimal=6)
+    # check 1st order derivatives
+    assert_almost_equal(model.density_derivative(3.1, 1), ff - 1.9 * df, decimal=6)
+    assert_almost_equal(model.density_derivative(4., 1), ff - 1.0 * df, decimal=6)
+    assert_almost_equal(model.density_derivative(4.01, 1), ff - 0.99 * df, decimal=6)
+    assert_almost_equal(model.density_derivative(4.9, 1), ff - 0.1 * df, decimal=6)
+    assert_almost_equal(model.density_derivative(5., 1), ff, decimal=6)
+    assert_almost_equal(model.density_derivative(5.1, 1), ff + 0.1 * df, decimal=6)
+    assert_almost_equal(model.density_derivative(5.65, 1), ff + 0.65 * df, decimal=6)
+    assert_almost_equal(model.density_derivative(6., 1), ff + 1.0 * df, decimal=6)
+    assert_almost_equal(model.density_derivative(7.3, 1), ff + 2.3 * df, decimal=6)
+    # check 2nd order derivatives
+    assert_almost_equal(model.density_derivative(2.01, 2), df, decimal=6)
+    assert_almost_equal(model.density_derivative(4.0, 2), df, decimal=6)
+    assert_almost_equal(model.density_derivative(4.86, 2), df, decimal=6)
+    assert_almost_equal(model.density_derivative(5., 2), df, decimal=6)
+    assert_almost_equal(model.density_derivative(5.91, 2), df, decimal=6)
+    assert_almost_equal(model.density_derivative(6., 2), df, decimal=6)
+    assert_almost_equal(model.density_derivative(8.91, 2), df, decimal=6)
+    # higher order derivatives
+    assert_almost_equal(model.density_derivative(4., 3), 0., decimal=6)
+    assert_almost_equal(model.density_derivative(4.71, 3), 0., decimal=6)
+    assert_almost_equal(model.density_derivative(5., 3), 0., decimal=6)
+    assert_almost_equal(model.density_derivative(5., 4), 0., decimal=6)
+    assert_almost_equal(model.density_derivative(5., 5), 0., decimal=6)
+    assert_almost_equal(model.density_derivative(6., 5), 0., decimal=6)
+
+
+def test_local_quadratic_fake_reactivity():
+    # fake density arrays
+    d0 = np.array([1.0, 3.0, 5.0, 2.0, 7.0])
+    dp = np.array([0.5, 4.5, 6.0, 1.0, 5.0])
+    dm = np.array([1.0, 4.0, 3.0, 2.0, 8.0])
+    ff, df = 0.5 * (dp - dm), dp - 2. * d0 + dm
+    # build quadratic local model with S=None
+    model = QuadraticLocalTool({5: d0, 6: dp, 4: dm}, global_softness=None)
+    # check dual descriptor, (hyper-)softness
+    assert_almost_equal(model.dual_descriptor, df, decimal=8)
+    assert model.softness is None
+    assert model.hyper_softness is None
+    # build quadratic local model with S=1.76
+    model = QuadraticLocalTool({5: d0, 6: dp, 4: dm}, global_softness=1.76)
+    # check dual descriptor, (hyper-)softness
+    assert_almost_equal(model.dual_descriptor, df, decimal=8)
+    assert_almost_equal(model.softness, 1.76 * ff, decimal=8)
+    assert_almost_equal(model.hyper_softness, 1.76 * 1.76 * df, decimal=8)
 
 
 def test_condensed_quadratic_raises():
