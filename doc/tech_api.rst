@@ -57,12 +57,14 @@ Conceptual Module
   * :class:`Rational Global Tool <conceptual.rational.RationalGlobalTool>`
   * :class:`Cubic Global Tool <conceptual.cubic.CubicGlobalTool>`
   * :class:`General Global Tool <conceptual.general.GeneralGlobalTool>`
+  * :class:`Mixed Global Tool <conceptual.mixed.MixedGlobalTool>`
 
 * Local Conceptual DFT Tools
 
   * :class:`Base Local Tool <conceptual.base.BaseLocalTool>`
   * :class:`Linear Local Tool <conceptual.linear.LinearLocalTool>`
   * :class:`Quadratic Local Tool <conceptual.quadratic.QuadraticLocalTool>`
+  * :class:`Mixed Local Tool <conceptual.mixed.MixedLocalTool>`
 
 * Condensed Conceptual DFT Tools
 
@@ -113,9 +115,11 @@ Utility Module
       conceptual.rational.RationalGlobalTool
       conceptual.cubic.CubicGlobalTool
       conceptual.general.GeneralGlobalTool
+      conceptual.mixed.MixedGlobalTool
       conceptual.base.BaseLocalTool
       conceptual.linear.LinearLocalTool
       conceptual.quadratic.QuadraticLocalTool
+      conceptual.mixed.MixedLocalTool
       denstools.densitybased.DensityLocalTool
       orbtools.orbitalbased.OrbitalLocalTool
       utils.utils.doc_inherit
