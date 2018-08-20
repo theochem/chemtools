@@ -20,6 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+# pragma pylint: disable=invalid-name
 """Test chemtools.analysis.orbitalbased."""
 
 
@@ -30,6 +31,13 @@ from numpy.testing import assert_raises, assert_array_almost_equal, assert_allcl
 from horton import IOData
 from chemtools.toolbox.molecule import make_molecule
 from chemtools import context, CubeGen, OrbitalAnalysis
+
+
+def test_toolbox_orbitalbased_raises():
+    # check file name
+    assert_raises(ValueError, OrbitalAnalysis.from_file, "gibberish", np.array([0.0, 1.0]))
+    filename = context.get_fn('test/h2o_dimer_pbe_sto3g.wf')
+    assert_raises(ValueError, OrbitalAnalysis.from_file, filename, np.array([0.0, 1.0]))
 
 
 def test_orbital_analysis_from_file_ch4_uhf_ccpvdz():
@@ -143,9 +151,6 @@ def test_orbital_analysis_from_file_ch4_uhf_ccpvdz():
     assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
 
-    # assert the ValueError for using multiple files:
-    assert_raises(ValueError, OrbitalAnalysis.from_file, [file_path, file_path], cube.points)
-
 
 def test_orbital_analysis_from_file_ch4_rhf_ccpvdz():
     file_path = context.get_fn('test/ch4_rhf_ccpvdz.fchk')
@@ -257,9 +262,6 @@ def test_orbital_analysis_from_file_ch4_rhf_ccpvdz():
     test = orbtool.orbitals_exp(np.array([8, 9]))
     assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
-
-    # assert the ValueError for using multiple files:
-    assert_raises(ValueError, OrbitalAnalysis.from_file, [file_path, file_path], cube.points)
 
 
 def test_orbital_analysis_from_molecule_ch4_uhf_ccpvdz():

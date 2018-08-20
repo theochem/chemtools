@@ -109,12 +109,8 @@ class NCI(object):
             Name of the package that will be used to create the Molecule instance
             The wrapper for this package must exist in ChemTools
         """
-        # case of one file not given as a list
-        if isinstance(filename, (str, unicode)):
-            return cls.from_molecule(make_molecule(filename, package_name=package_name), cube)
-        # case of list of file(s)
-        for _ in filename:
-            raise ValueError('Multiple files are not supported')
+        molecule = make_molecule(filename, package_name=package_name)
+        return cls.from_molecule(molecule, cube)
 
     @classmethod
     def from_molecule(cls, molecule, cube=None):

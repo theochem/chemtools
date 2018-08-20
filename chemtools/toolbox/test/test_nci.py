@@ -48,6 +48,12 @@ def tmpdir(name):
         shutil.rmtree(dn)
 
 
+def test_toolbox_nci_raises():
+    # check file name
+    assert_raises(ValueError, NCI.from_file, "gibberish")
+    assert_raises(ValueError, NCI.from_file, context.get_fn('test/h2o_dimer_pbe_sto3g.wf'))
+
+
 def test_analyze_nci_h2o_dimer_wfn():
     file_path = context.get_fn('test/h2o_dimer_pbe_sto3g.wfn')
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
@@ -159,7 +165,6 @@ def test_analyze_nci_assert_errors():
     assert_raises(ValueError, NCI, np.array([0.]), rdg, cube)
     assert_raises(ValueError, NCI, dens, np.array([0.]), cube)
     assert_raises(ValueError, NCI, dens, rdg, cube, hessian=np.array([0.]))
-    assert_raises(ValueError, NCI.from_file, [file_path, file_path])
     assert_raises(ValueError, NCI.from_file, file_path, cube=1)
 
     desp = NCI(dens, rdg, cube)
