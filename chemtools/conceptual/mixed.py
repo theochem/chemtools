@@ -56,15 +56,15 @@ class MixedGlobalTool(object):
          Equation [11] of J. Phys. Chem. A (2007) 111, 1966-1970:
 
          .. math::
-            \mu^+_{\text{GCV}} = -\frac{I + 3A}{4}
+            \mu^+_{\text{GCV}} = -\frac{I + 3A}{4} \\
             \mu^-_{\text{GCV}} = -\frac{3I + A}{4}
 
         Returns
         -------
         mu_p : float
-            Chemical potential from above, :math:`\mu^+_{\text{GCV}}`
+            Chemical potential from above, :math:`\mu^+_{\text{GCV}}`.
         mu_m : float
-            Chemical potential from below, :math:`\mu^-_{\text{GCV}}`
+            Chemical potential from below, :math:`\mu^-_{\text{GCV}}`.
         """
         mu_p = - (self.ip + 3 * self.ea) / 4.
         mu_m = - (3 * self.ip + self.ea) / 4.
@@ -77,8 +77,8 @@ class MixedGlobalTool(object):
          Equation [10] & [9] of J. Phys. Chem. A (2007) 111, 1966-1970:
 
          .. math::
-            \omega^+_{\text{GCV}} = -\frac{(I + 3A)^2}{32(I - A)}
-            \omega^-_{\text{GCV}} = -\frac{(3I + A)^2}{32(I - A)} \\
+            \omega^+_{\text{GCV}} = -\frac{(I + 3A)^2}{32(I - A)} \\
+            \omega^-_{\text{GCV}} = -\frac{(3I + A)^2}{32(I - A)}
 
         Returns
         -------
@@ -98,7 +98,7 @@ class MixedGlobalTool(object):
 
         .. math::
            \mu_{\text{acid}}(\alpha) &= -\frac{\alpha I + A}{1 + \alpha} \\
-           \mu_{\text{base}}(\alpha) &= -\frac{I + \alpha A}{1 + \alpha} \\
+           \mu_{\text{base}}(\alpha) &= -\frac{I + \alpha A}{1 + \alpha}
 
         Note: For :math:`\alpha = 3`, this equals to the :attr:`chemical_potential_gcv`.
 
