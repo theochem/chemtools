@@ -1,0 +1,6 @@
+[run]
+source=chemtools
+
+[report]
+exclude_lines =
+    raise NotImplementedError
