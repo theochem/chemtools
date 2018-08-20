@@ -62,6 +62,31 @@ def test_global_quadratic_raises():
     assert_raises(ValueError, model.energy_derivative, 3, 1.1)
 
 
+def test_global_quadratic_raises_grand_potential():
+    # build model
+    model = QuadraticGlobalTool({5.0: 5.0, 6.0: 10.0, 4.0: 8.0})
+    # check grand potential derivative
+    assert_raises(ValueError, model.grand_potential_derivative, -0.5, 2)
+    assert_raises(ValueError, model.grand_potential_derivative, -1, 3)
+    assert_raises(ValueError, model.grand_potential_derivative, 4.0, 0)
+    assert_raises(ValueError, model.grand_potential_derivative, 5.0, 1.)
+    assert_raises(ValueError, model.grand_potential_derivative, 6.0, 1.2)
+    # check grand potential mu derivative
+    assert_raises(ValueError, model.grand_potential_mu_derivative, -0.5, -2)
+    assert_raises(ValueError, model.grand_potential_mu_derivative, -1, -0.5)
+    assert_raises(ValueError, model.grand_potential_mu_derivative, 4.0, 0)
+    assert_raises(ValueError, model.grand_potential_mu_derivative, 5.0, 1.)
+    assert_raises(ValueError, model.grand_potential_mu_derivative, 6.0, 1.2)
+    # check mu values corresponding to N=-1.5, -1.0, -0.5, -0.1, -0.01, -0.001
+    model = QuadraticGlobalTool({15: -159.0, 16: -153.0, 14: -163.0})
+    assert_raises(ValueError, model.convert_mu_to_n, -28.0)
+    assert_raises(ValueError, model.convert_mu_to_n, -27.0)
+    assert_raises(ValueError, model.convert_mu_to_n, -26.0)
+    assert_raises(ValueError, model.convert_mu_to_n, -25.2)
+    assert_raises(ValueError, model.convert_mu_to_n, -25.02)
+    assert_raises(ValueError, model.convert_mu_to_n, -25.0002)
+
+
 def test_global_quadratic_nnp_energy():
     # E(N) = -9.0 + (-25.0)*N + N^2, N0=15
     energy, deriv, _ = make_symbolic_quadratic_model(1.0, -25.0, -9.0)
@@ -446,7 +471,6 @@ def test_local_quadratic_raises():
     assert_raises(ValueError, QuadraticLocalTool, {2.: d0, 3.: dp, 1.: dm}, -0.91, 2.03)
     # build a linear local model
     model = QuadraticLocalTool({10: d0, 11.: dp, 9: dm})
-    model.density_derivative(2.0, 0.5)
     # check invalid N
     assert_raises(ValueError, model.density, '10.0')
     assert_raises(ValueError, model.density, -1.)

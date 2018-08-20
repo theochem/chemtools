@@ -34,6 +34,8 @@ def test_global_base_raises():
     # check invalid Nmax
     assert_raises(ValueError, BaseGlobalTool, 8.0, -1.0)
     assert_raises(ValueError, BaseGlobalTool, 8.0, -0.1)
+    # check energy & energy_derivative methods
+    assert_raises(NotImplementedError, BaseGlobalTool, 5.0, 5.2)
 
 
 def test_local_base_raises():
@@ -41,6 +43,17 @@ def test_local_base_raises():
     assert_raises(ValueError, BaseLocalTool, -1., 2.0)
     assert_raises(ValueError, BaseLocalTool, 2., -1.5)
     assert_raises(ValueError, BaseLocalTool, 2., -3.0)
+    # check density & density derivative
+    model = BaseLocalTool(2., 2.3, 1.45)
+    assert_raises(NotImplementedError, model.density, 1.67)
+    assert_raises(NotImplementedError, model.density, 2.0)
+    assert_raises(NotImplementedError, model.density, 2.89)
+    assert_raises(NotImplementedError, model.density_derivative, 1.95, 2)
+    assert_raises(NotImplementedError, model.density_derivative, 2.0, 1)
+    assert_raises(NotImplementedError, model.density_derivative, 2.85, 2.1)
+    # check hyper softness
+    model = BaseLocalTool(2.0, 2.34, None)
+    assert model.hyper_softness is None
 
 
 def test_condensed_base_raises():
@@ -56,3 +69,6 @@ def test_condensed_base_raises():
     assert_raises(NotImplementedError, model.population_derivative, 1.0)
     assert_raises(NotImplementedError, model.population_derivative, 1.3, 1)
     assert_raises(NotImplementedError, model.population_derivative, 2.4, 2)
+    # check hyper softness
+    model = BaseCondensedTool(1.0, 1.23, None)
+    assert model.hyper_softness is None

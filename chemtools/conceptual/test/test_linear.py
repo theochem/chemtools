@@ -374,6 +374,10 @@ def test_local_linear_fake_softness():
     model = LinearLocalTool({10: d0, 11.: dp, 9: dm}, global_softness=1.63)
     expected = 1.63 * np.array([-0.25, 0.25, 1.5, -0.5, -1.5])
     assert_almost_equal(model.softness, expected, decimal=6)
+    # check hyper softness
+    assert model.hyper_softness is None
+    model = LinearLocalTool({10: d0, 11.: dp, 9: dm}, n_max=10., global_softness=1.63)
+    assert model.hyper_softness is None
 
 
 def test_condensed_linear_raises():
