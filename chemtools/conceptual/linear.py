@@ -31,7 +31,7 @@ from chemtools.conceptual.utils import check_dict_values, check_number_electrons
 from chemtools.utils.utils import doc_inherit
 
 
-__all__ = ["LinearGlobalTool", "LinearLocalTool"]
+__all__ = ["LinearGlobalTool", "LinearLocalTool", "LinearCondensedTool"]
 
 
 class LinearGlobalTool(BaseGlobalTool):
