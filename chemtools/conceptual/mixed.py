@@ -24,11 +24,11 @@
 """Conceptual Density Functional Theory (DFT) Reactivity Tools Based on Mixed Energy Models."""
 
 
-from chemtools.conceptual import LinearGlobalTool, LinearLocalTool
-from chemtools.conceptual import QuadraticGlobalTool, QuadraticLocalTool
+from chemtools.conceptual import LinearGlobalTool, LinearLocalTool, LinearCondensedTool
+from chemtools.conceptual import QuadraticGlobalTool, QuadraticLocalTool, QuadraticCondensedTool
 
 
-__all__ = ["MixedGlobalTool", "MixedLocalTool"]
+__all__ = ["MixedGlobalTool", "MixedLocalTool", "MixedCondensedTool"]
 
 
 class MixedGlobalTool(object):
@@ -255,3 +255,162 @@ class MixedLocalTool(object):
         omega_0 = self.quad_g.electrophilicity * self.lin_l.ff_zero
         omega_m = self.quad_g.electrophilicity * self.lin_l.ff_minus
         return omega_p, omega_0, omega_m
+
+
+class MixedCondensedTool(object):
+    """Class of condensed conceptual DFT reactivity descriptors based on mixed energy models."""
+
+    def __init__(self, dict_energy, dict_population):
+        r"""Initialize to compute mixed condensed reactivity descriptors.
+
+        Parameters
+        ----------
+        dict_energy : dict
+            Dictionary of number of electrons (keys) and corresponding energy (values).
+            This model expects three energy values corresponding to three consecutive number of
+            electrons differing by one, i.e. :math:`\{(N_0 - 1): E(N_0 - 1), N_0: E(N_0),
+            (N_0 + 1): E(N_0 + 1)\}`. The :math:`N_0` value is considered as the reference number
+            of electrons.
+        dict_population : dict
+            Dictionary of number of electrons (keys) and corresponding atomic population array
+            (values). This model expects three atomic populations corresponding to three consecutive
+            number of electrons differing by one, i.e. :math:`\{(N_0 - 1): \{p^{(N_0 - 1)}_A\},
+            N_0: \{p^{(N_0)}_A\}, N_0 + 1: \{p^{(N_0 + 1)}_A\}\}`.
+            The :math:`N_0` value is considered as the reference number of electrons.
+        """
+        # check matching number of electrons
+        if sorted(dict_energy.keys()) != sorted(dict_population.keys()):
+            nums_e, nums_d = sorted(dict_energy.keys()), sorted(dict_population.keys())
+            raise ValueError("The number of electrons (keys) in dict_energy and dict_population "
+                             "arguments should match! {0} != {1}".format(nums_e, nums_d))
+        # make quadratic global and condensed classes
+        self.quad_g = QuadraticGlobalTool(dict_energy)
+        n_max, softness = self.quad_g.n_max, self.quad_g.softness
+        self.quad_c = QuadraticCondensedTool(dict_population, n_max, softness)
+        # make linear global and condensed classes
+        self.lin_g = LinearGlobalTool(dict_energy)
+        n_max, softness = self.lin_g.n_max, self.lin_g.softness
+        self.lin_c = LinearCondensedTool(dict_population, n_max, softness)
+
+    @property
+    def softness_yp(self):
+        r"""Condensed softness of Yang and Parr.
+
+        Atom-condensed implementation of local :attr:`MixedLocalTool.softness_yp`:
+
+        .. math::
+           s^+_A &= S \text{ } f^+_A \\
+           s^0_A &= S \text{ } f^0_A \\
+           s^-_A &= S \text{ } f^-_A
+
+        where :math:`f^{+,0,-}_A` is condensed Fukui function from the linear energy model,
+        and :math:`S={}^1/_{\eta}` is global chemical softness (inverse of global chemical
+        hardness) from the quadratic energy model.
+
+        Returns
+        -------
+        softness_p : ndarray
+            Condensed softness from above measuring nucleophilic attack,
+            :math:`\{s^+_A\}_{A=1}^{N_{\text{atoms}}}`.
+        softness_0 : ndarray
+            Condensed softness (centered) measuring radical attack,
+            :math:`\{s^0_A\}_{A=1}^{N_{\text{atoms}}}`.
+        softness_m : ndarray
+            Condensed softness from below measuring electrophilic attack,
+            :math:`\{s^-_A\}_{A=1}^{N_{\text{atoms}}}`.
+        """
+        softness_p = self.lin_c.ff_plus / self.quad_g.chemical_hardness
+        softness_0 = self.lin_c.ff_zero / self.quad_g.chemical_hardness
+        softness_m = self.lin_c.ff_minus / self.quad_g.chemical_hardness
+        return softness_p, softness_0, softness_m
+
+    @property
+    def philicity_mgvgc(self):
+        r"""Condensed philicity measure of Morell, Gazquez, Vela, Guegana & Chermette.
+
+        Atom-condensed implementation of local :attr:`MixedLocalTool.philicity_mgvgc`:
+
+        .. math::
+           \omega^+_A &= -\left(\frac{\mu^+}{\eta}\right) f^+_A +
+                            \frac{1}{2} \left(\frac{\mu^+}{\eta}\right)^2 f^{(2)}_A \\
+           \omega^0_A &= -\left(\frac{\mu^0}{\eta}\right) f^0_A +
+                            \frac{1}{2} \left(\frac{\mu^0}{\eta}\right)^2 f^{(2)}_A \\
+           \omega^-_A &= +\left(\frac{\mu^-}{\eta}\right) f^-_A +
+                            \frac{1}{2} \left(\frac{\mu^-}{\eta}\right)^2 f^{(2)}_A
+
+        where :math:`\mu^{+,0,-}` is global chemical potential from the linear energy model,
+        :math:`\eta` is global chemical hardness from the quadratic energy model,
+        :math:`f^{+,0,-}_A` is condensed Fukui function from the linear energy model, and
+        :math:`f^{(2)}_A` is condensed dual descriptor from the quadratic energy model.
+
+        Returns
+        -------
+        omega_p : ndarray
+            Local philicity index from above measuring nucleophilic attack,
+            :math:`\{\omega^+_A\}_{A=1}^{N_{\text{atoms}}}`.
+        omega_0 : ndarray
+            Local philicity index (centered) measuring radical attack,
+            :math:`\{\omega^0_A\}_{A=1}^{N_{\text{atoms}}}`.
+        omega_m : ndarray
+            Local philicity index from below measuring electrophilic attack,
+            :math:`\{\omega^-_A\}_{A=1}^{N_{\text{atoms}}}`.
+        """
+        coeff_p = -1. * self.lin_g.mu_plus / self.quad_g.eta
+        omega_p = coeff_p * self.lin_c.ff_plus + 0.5 * coeff_p**2 * self.quad_c.dual_descriptor
+        coeff_0 = -1. * self.lin_g.mu_zero / self.quad_g.eta
+        omega_0 = coeff_0 * self.lin_c.ff_zero + 0.5 * coeff_0**2 * self.quad_c.dual_descriptor
+        coeff_m = self.lin_g.mu_minus / self.quad_g.eta
+        omega_m = coeff_m * self.lin_c.ff_minus + 0.5 * coeff_m**2 * self.quad_c.dual_descriptor
+        return omega_p, omega_0, omega_m
+
+    @property
+    def philicity_cms(self):
+        r"""Condensed philicity index of Chattaraj, Maiti & Sarkar.
+
+        Atom-condensed implementation of local :attr:`MixedLocalTool.philicity_cms`:
+
+        .. math::
+           \omega^+_A &= \omega \text{ } f^+_A \\
+           \omega^0_A &= \omega \text{ } f^0_A \\
+           \omega^-_A &= \omega \text{ } f^-_A
+
+        where :math:`f^{+,0,-}_A` is condensed Fukui function from linear energy model, and
+        :math:`\omega` is global electrophilicity from quadratic energy model.
+
+        Returns
+        -------
+        omega_p : ndarray
+            Condensed philicity index from above measuring nucleophilic attack,
+            :math:`\{\omega^+_A\}_{A=1}^{N_{\text{atoms}}}`.
+        omega_0 : ndarray
+            Condensed philicity index (centered) measuring radical attack,
+            :math:`\{\omega^0_A\}_{A=1}^{N_{\text{atoms}}}`.
+        omega_m : ndarray
+            Condensed philicity index from below measuring electrophilic attack,
+            :math:`\{\omega^-_A\}_{A=1}^{N_{\text{atoms}}}`.
+        """
+        omega_p = self.quad_g.electrophilicity * self.lin_c.ff_plus
+        omega_0 = self.quad_g.electrophilicity * self.lin_c.ff_zero
+        omega_m = self.quad_g.electrophilicity * self.lin_c.ff_minus
+        return omega_p, omega_0, omega_m
+
+    @property
+    def philicity_rkgp(self):
+        r"""Relative electrophilicity & nucleophilicity of Roy, Krishnamurti, Geerlings & Pal.
+
+        Based on J. Phys. Chem. A (1998), 102, 3746–3755:
+
+        .. math::
+           \epsilon_{\text{electrophilicity}, A} &= \frac{s^+_A}{s^-_A} = \frac{f^+_A}{f^-_A} \\
+           \epsilon_{\text{nucleophilicity}, A} &= \frac{s^-_A}{s^+_A} = \frac{f^-_A}{f^+_A} \\
+
+        Returns
+        -------
+        epsilon_e : ndarray
+            Condensed relative electrophilicity, :math:`\epsilon_{\text{electrophilicity},A}`.
+        epsilon_n : ndarray
+            Condensed relative nucleophilicity, :math:`\epsilon_{\text{nucleophilicity},A}`.
+        """
+        epsilon_e = self.lin_c.ff_plus / self.lin_c.ff_minus
+        epsilon_n = self.lin_c.ff_minus / self.lin_c.ff_plus
+        return epsilon_e, epsilon_n

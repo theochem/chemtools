@@ -68,6 +68,8 @@ Conceptual Module
 
 * Condensed Conceptual DFT Tools
 
+  * :class:`Mixed Condensed Tool <conceptual.mixed.MixedCondensedTool>`
+
 
 Density-Based Module
 ====================
@@ -120,6 +122,7 @@ Utility Module
       conceptual.linear.LinearLocalTool
       conceptual.quadratic.QuadraticLocalTool
       conceptual.mixed.MixedLocalTool
+      conceptual.mixed.MixedCondensedTool
       denstools.densitybased.DensityLocalTool
       orbtools.orbitalbased.OrbitalLocalTool
       utils.utils.doc_inherit
