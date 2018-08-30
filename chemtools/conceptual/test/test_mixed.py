@@ -96,8 +96,8 @@ def test_mixed_local_fake():
     assert_almost_equal(model.philicity_cms[2], ffm * (ip + ea)**2 / (8 * (ip - ea)), decimal=8)
     # check philicity MGV
     pp = ea * ffp / (ip - ea) + 0.5 * ea**2 * f2 / (ip - ea)**2
-    assert_almost_equal(model.philicity_mgv[0], pp, decimal=8)
+    assert_almost_equal(model.philicity_mgvgc[0], pp, decimal=8)
     p0 = 0.5 * (ip + ea) * ff0 / (ip - ea) + 0.5**3 * (ip + ea)**2 * f2 / (ip - ea)**2
-    assert_almost_equal(model.philicity_mgv[1], p0, decimal=8)
+    assert_almost_equal(model.philicity_mgvgc[1], p0, decimal=8)
     pm = -ip * ffm / (ip - ea) + 0.5 * ip**2 * f2 / (ip - ea)**2
-    assert_almost_equal(model.philicity_mgv[2], pm, decimal=8)
+    assert_almost_equal(model.philicity_mgvgc[2], pm, decimal=8)

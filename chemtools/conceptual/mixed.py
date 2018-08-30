@@ -187,7 +187,7 @@ class MixedLocalTool(object):
         return softness_p, softness_0, softness_m
 
     @property
-    def philicity_mgv(self):
+    def philicity_mgvgc(self):
         r"""Local philicity measure of Morell, Gazquez, Vela, Guegana & Chermette.
 
         Equation [46], [15] & [47] of Phys. Chem. Chem. Phys. (2014) 16, 26832-26842:
