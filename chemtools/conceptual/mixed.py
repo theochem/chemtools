@@ -412,6 +412,7 @@ class MixedCondensedTool(object):
         epsilon_n : ndarray
             Condensed relative nucleophilicity, :math:`\epsilon_{\text{nucleophilicity},A}`.
         """
-        epsilon_e = self.lin_c.ff_plus / self.lin_c.ff_minus
-        epsilon_n = self.lin_c.ff_minus / self.lin_c.ff_plus
+        softness_plus, _, softness_minus = self.softness_yp
+        epsilon_e = softness_plus / softness_minus
+        epsilon_n = softness_minus / softness_plus
         return epsilon_e, epsilon_n

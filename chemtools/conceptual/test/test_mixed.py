@@ -136,3 +136,6 @@ def test_mixed_condensed_eap_h2o():
     assert_almost_equal(model.philicity_mgvgc[1], p0, decimal=8)
     pm = -ip * ffm / (ip - ea) + 0.5 * ip**2 * f2 / (ip - ea)**2
     assert_almost_equal(model.philicity_mgvgc[2], pm, decimal=8)
+    # check philicity RKGP
+    assert_almost_equal(model.philicity_rkgp[0], ffp / ffm, decimal=8)
+    assert_almost_equal(model.philicity_rkgp[1], ffm / ffp, decimal=8)
