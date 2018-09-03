@@ -403,7 +403,7 @@ class MixedCondensedTool(object):
 
         .. math::
            \epsilon_{\text{electrophilicity}, A} &= \frac{s^+_A}{s^-_A} = \frac{f^+_A}{f^-_A} \\
-           \epsilon_{\text{nucleophilicity}, A} &= \frac{s^-_A}{s^+_A} = \frac{f^-_A}{f^+_A} \\
+           \epsilon_{\text{nucleophilicity}, A} &= \frac{s^-_A}{s^+_A} = \frac{f^-_A}{f^+_A}
 
         Returns
         -------
