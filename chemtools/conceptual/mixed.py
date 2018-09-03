@@ -165,12 +165,13 @@ class MixedLocalTool(object):
         Equation [18] of Proc. Natl. Acad. Sci. USA (1985) 82, 6723-6726:
 
         .. math::
-           s^+(\mathbf{r}) &= \frac{f^+(\mathbf{r})}{\eta} \\
-           s^0(\mathbf{r}) &= \frac{f^0(\mathbf{r})}{\eta} \\
-           s^-(\mathbf{r}) &= \frac{f^-(\mathbf{r})}{\eta}
+           s^+(\mathbf{r}) &= S f^+(\mathbf{r}) \\
+           s^0(\mathbf{r}) &= S f^0(\mathbf{r}) \\
+           s^-(\mathbf{r}) &= S f^-(\mathbf{r})
 
-        where :math:`f^{+,0,-}(\mathbf{r})` is Fukui function from the linear density model,
-        and :math:`\eta` is global chemical hardness from the quadratic energy model.
+        where :math:`f^{+,0,-}(\mathbf{r})` is Fukui function from the linear energy model,
+        and :math:`S={}^1/_{\eta}` is global chemical softness (inverse of global chemical
+        hardness) from the quadratic energy model.
 
         Returns
         -------
@@ -193,11 +194,11 @@ class MixedLocalTool(object):
         Equation [46], [15] & [47] of Phys. Chem. Chem. Phys. (2014) 16, 26832-26842:
 
         .. math::
-           \omega^+(\mathbf{r}) &= -\frac{\mu^+}{\eta} f^+(\mathbf{r}) +
+           \omega^+(\mathbf{r}) &= -(\frac{\mu^+}{\eta}) f^+(\mathbf{r}) +
                             \frac{1}{2} \left(\frac{\mu^+}{\eta}\right)^2 f^{(2)}(\mathbf{r}) \\
-           \omega^0(\mathbf{r}) &= -\frac{\mu^0}{\eta} f^0(\mathbf{r}) +
+           \omega^0(\mathbf{r}) &= -(\frac{\mu^0}{\eta}) f^0(\mathbf{r}) +
                             \frac{1}{2} \left(\frac{\mu^0}{\eta}\right)^2 f^{(2)}(\mathbf{r}) \\
-           \omega^-(\mathbf{r}) &= +\frac{\mu^-}{\eta} f^-(\mathbf{r}) +
+           \omega^-(\mathbf{r}) &= +(\frac{\mu^-}{\eta}) f^-(\mathbf{r}) +
                             \frac{1}{2} \left(\frac{\mu^-}{\eta}\right)^2 f^{(2)}(\mathbf{r})
 
         where :math:`\mu^{+,0,-}` is global chemical potential from the linear energy model,
@@ -237,7 +238,7 @@ class MixedLocalTool(object):
            \omega^-(\mathbf{r}) &= \omega \text{ } f^-(\mathbf{r})
 
         where :math:`\omega` is global electrophilicity from quadratic energy model, and
-        :math:`f^{+,0,-}(\mathbf{r})` is Fukui function from linear density model.
+        :math:`f^{+,0,-}(\mathbf{r})` is Fukui function from linear energy model.
 
         Returns
         -------
