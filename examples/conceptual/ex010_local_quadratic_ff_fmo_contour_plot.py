@@ -36,7 +36,7 @@ tool = LocalConceptualDFT.from_file(file_path, model='quadratic', points=xyz)
 
 # 3. Evaluate quadratic Fukui function on the grid points.
 
-ff_quad = tool.fukui_function().reshape(xv.shape)[:, :, 0]
+ff_quad = tool.fukui_function.reshape(xv.shape)[:, :, 0]
 
 # 4. Plot 2D-contour plots of quadratic Fukui function.
 
