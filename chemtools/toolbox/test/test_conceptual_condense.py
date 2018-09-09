@@ -123,38 +123,6 @@ def test_condense_mbis_linear_fmr_ch4_fchk():
     assert_almost_equal(np.sum(model.density_derivative(16.5, 1)), 1.0, decimal=2)
 
 
-def test_condense_mbis_linear_ch4_fchk():
-    file_path = context.get_fn("test/ch4_uhf_ccpvdz.fchk")
-    # make molecular grid
-    mol = IOData.from_file(file_path)
-    grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
-                        agspec="insane", random_rotate=False, mode="keep")
-    # build global conceptual DFT tool
-    model = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "mbis", grid=grid)
-    # check print statement
-    assert_equal(type(model.__repr__()), str)
-    # computed with horton separately
-    expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
-    assert_almost_equal(model.density(10.), expected, decimal=4)
-    # check condensed density
-    assert_almost_equal(np.sum(model.density(11.)), 11., decimal=2)
-    assert_almost_equal(np.sum(model.density(10.)), 10., decimal=2)
-    assert_almost_equal(np.sum(model.density(9.0)), 9.0, decimal=2)
-    # check condensed Fukui function
-    assert_almost_equal(np.sum(model.ff_plus), 1., decimal=2)
-    assert_almost_equal(np.sum(model.ff_zero), 1., decimal=2)
-    assert_almost_equal(np.sum(model.ff_minus), 1.0, decimal=2)
-    # check condensed density with arbitrary number of electrons
-    assert_almost_equal(np.sum(model.density(15.5)), 15.5, decimal=2)
-    assert_almost_equal(np.sum(model.density(16.0)), 16.0, decimal=2)
-    assert_almost_equal(np.sum(model.density(16.5)), 16.5, decimal=2)
-    # check condensed fukui function with arbitrary number of electrons
-    assert_almost_equal(np.sum(model.fukui_function), 1.0, decimal=2)
-    assert_almost_equal(np.sum(model.density_derivative(15.5, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(model.density_derivative(16.0, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(model.density_derivative(16.5, 1)), 1.0, decimal=2)
-
-
 def test_condense_h_linear_fd_rmf_ch2o_fchk():
     file_path = [context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk"),
                  context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk"),
