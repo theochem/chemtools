@@ -68,27 +68,27 @@ def test_condense_mbis_quadratic_ch4_fchk():
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec="insane",
                         random_rotate=False, mode="keep")
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file([file_path], "quadratic", grid=grid, scheme="mbis")
+    model = CondensedConceptualDFT.from_file([file_path], "quadratic", grid=grid, scheme="mbis")
     # check print statement
-    assert_equal(type(desp.__repr__()), str)
+    assert_equal(type(model.__repr__()), str)
     # computed with horton separately
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
-    assert_almost_equal(desp.density(10.), expected, decimal=4)
+    assert_almost_equal(model.density(10.), expected, decimal=4)
     # check condensed density
-    assert_almost_equal(np.sum(desp.density(11.)), 11., decimal=2)
-    assert_almost_equal(np.sum(desp.density(10.)), 10., decimal=2)
-    assert_almost_equal(np.sum(desp.density(9.0)), 9.0, decimal=2)
+    assert_almost_equal(np.sum(model.density(11.)), 11., decimal=2)
+    assert_almost_equal(np.sum(model.density(10.)), 10., decimal=2)
+    assert_almost_equal(np.sum(model.density(9.0)), 9.0, decimal=2)
     # check condensed density with arbitrary number of electrons
-    assert_almost_equal(np.sum(desp.density(15.5)), 15.5, decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.0)), 16.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.5)), 16.5, decimal=2)
+    assert_almost_equal(np.sum(model.density(15.5)), 15.5, decimal=2)
+    assert_almost_equal(np.sum(model.density(16.0)), 16.0, decimal=2)
+    assert_almost_equal(np.sum(model.density(16.5)), 16.5, decimal=2)
     # check condensed fukui function with arbitrary number of electrons
-    assert_almost_equal(np.sum(desp.fukui_function), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(15.5, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(16.0, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(16.5, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.fukui_function), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(15.5, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(16.0, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(16.5, 1)), 1.0, decimal=2)
     # check condensed dual descriptor
-    assert_almost_equal(np.sum(desp.dual_descriptor), 0.0, decimal=2)
+    assert_almost_equal(np.sum(model.dual_descriptor), 0.0, decimal=2)
 
 
 def test_condense_mbis_linear_fmr_ch4_fchk():
@@ -98,29 +98,29 @@ def test_condense_mbis_linear_fmr_ch4_fchk():
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "mbis", grid=grid)
+    model = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "mbis", grid=grid)
     # check print statement
-    assert_equal(type(desp.__repr__()), str)
+    assert_equal(type(model.__repr__()), str)
     # computed with horton separately
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
-    assert_almost_equal(desp.density(10.), expected, decimal=4)
+    assert_almost_equal(model.density(10.), expected, decimal=4)
     # check condensed density
-    assert_almost_equal(np.sum(desp.density(11.)), 11., decimal=2)
-    assert_almost_equal(np.sum(desp.density(10.)), 10., decimal=2)
-    assert_almost_equal(np.sum(desp.density(9.0)), 9.0, decimal=2)
+    assert_almost_equal(np.sum(model.density(11.)), 11., decimal=2)
+    assert_almost_equal(np.sum(model.density(10.)), 10., decimal=2)
+    assert_almost_equal(np.sum(model.density(9.0)), 9.0, decimal=2)
     # check condensed Fukui function
-    assert_almost_equal(np.sum(desp.ff_plus), 1., decimal=2)
-    assert_almost_equal(np.sum(desp.ff_zero), 1., decimal=2)
-    assert_almost_equal(np.sum(desp.ff_minus), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.ff_plus), 1., decimal=2)
+    assert_almost_equal(np.sum(model.ff_zero), 1., decimal=2)
+    assert_almost_equal(np.sum(model.ff_minus), 1.0, decimal=2)
     # check condensed density with arbitrary number of electrons
-    assert_almost_equal(np.sum(desp.density(15.5)), 15.5, decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.0)), 16.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.5)), 16.5, decimal=2)
+    assert_almost_equal(np.sum(model.density(15.5)), 15.5, decimal=2)
+    assert_almost_equal(np.sum(model.density(16.0)), 16.0, decimal=2)
+    assert_almost_equal(np.sum(model.density(16.5)), 16.5, decimal=2)
     # check condensed fukui function with arbitrary number of electrons
-    assert_almost_equal(np.sum(desp.fukui_function), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(15.5, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(16.0, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(16.5, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.fukui_function), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(15.5, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(16.0, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(16.5, 1)), 1.0, decimal=2)
 
 
 def test_condense_mbis_linear_ch4_fchk():
@@ -130,29 +130,29 @@ def test_condense_mbis_linear_ch4_fchk():
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "mbis", grid=grid)
+    model = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "mbis", grid=grid)
     # check print statement
-    assert_equal(type(desp.__repr__()), str)
+    assert_equal(type(model.__repr__()), str)
     # computed with horton separately
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
-    assert_almost_equal(desp.density(10.), expected, decimal=4)
+    assert_almost_equal(model.density(10.), expected, decimal=4)
     # check condensed density
-    assert_almost_equal(np.sum(desp.density(11.)), 11., decimal=2)
-    assert_almost_equal(np.sum(desp.density(10.)), 10., decimal=2)
-    assert_almost_equal(np.sum(desp.density(9.0)), 9.0, decimal=2)
+    assert_almost_equal(np.sum(model.density(11.)), 11., decimal=2)
+    assert_almost_equal(np.sum(model.density(10.)), 10., decimal=2)
+    assert_almost_equal(np.sum(model.density(9.0)), 9.0, decimal=2)
     # check condensed Fukui function
-    assert_almost_equal(np.sum(desp.ff_plus), 1., decimal=2)
-    assert_almost_equal(np.sum(desp.ff_zero), 1., decimal=2)
-    assert_almost_equal(np.sum(desp.ff_minus), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.ff_plus), 1., decimal=2)
+    assert_almost_equal(np.sum(model.ff_zero), 1., decimal=2)
+    assert_almost_equal(np.sum(model.ff_minus), 1.0, decimal=2)
     # check condensed density with arbitrary number of electrons
-    assert_almost_equal(np.sum(desp.density(15.5)), 15.5, decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.0)), 16.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.5)), 16.5, decimal=2)
+    assert_almost_equal(np.sum(model.density(15.5)), 15.5, decimal=2)
+    assert_almost_equal(np.sum(model.density(16.0)), 16.0, decimal=2)
+    assert_almost_equal(np.sum(model.density(16.5)), 16.5, decimal=2)
     # check condensed fukui function with arbitrary number of electrons
-    assert_almost_equal(np.sum(desp.fukui_function), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(15.5, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(16.0, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(16.5, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.fukui_function), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(15.5, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(16.0, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(16.5, 1)), 1.0, decimal=2)
 
 
 def test_condense_h_linear_fd_rmf_ch2o_fchk():
@@ -164,35 +164,35 @@ def test_condense_h_linear_fd_rmf_ch2o_fchk():
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, model="linear", grid=grid,
+    model = CondensedConceptualDFT.from_file(file_path, model="linear", grid=grid,
                                             scheme="h", approach="RMF")
     expectedm = np.array([7.98237872, 5.47698573, 0.77030456, 0.77031781])
     expected0 = np.array([8.46718639, 5.67524299, 0.92860658, 0.92866436])
     expectedp = np.array([8.76534627, 6.18498153, 1.02517556, 1.02513059])
     # check charges
-    assert_almost_equal(desp.density(17.), expectedp, decimal=2)
-    assert_almost_equal(desp.density(16.), expected0, decimal=2)
-    assert_almost_equal(desp.density(15.), expectedm, decimal=2)
+    assert_almost_equal(model.density(17.), expectedp, decimal=2)
+    assert_almost_equal(model.density(16.), expected0, decimal=2)
+    assert_almost_equal(model.density(15.), expectedm, decimal=2)
     # check condensed density
-    assert_almost_equal(np.sum(desp.density(17.)), 17., decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.)), 16., decimal=2)
-    assert_almost_equal(np.sum(desp.density(15.)), 15., decimal=2)
+    assert_almost_equal(np.sum(model.density(17.)), 17., decimal=2)
+    assert_almost_equal(np.sum(model.density(16.)), 16., decimal=2)
+    assert_almost_equal(np.sum(model.density(15.)), 15., decimal=2)
     # check condensed Fukui function
-    assert_almost_equal(desp.ff_plus, expectedp - expected0, decimal=2)
-    assert_almost_equal(desp.ff_zero, 0.5 * (expectedp - expectedm), decimal=2)
-    assert_almost_equal(desp.ff_minus, expected0 - expectedm, decimal=2)
-    assert_almost_equal(np.sum(desp.ff_plus), 1., decimal=2)
-    assert_almost_equal(np.sum(desp.ff_zero), 1., decimal=2)
-    assert_almost_equal(np.sum(desp.ff_minus), 1., decimal=2)
+    assert_almost_equal(model.ff_plus, expectedp - expected0, decimal=2)
+    assert_almost_equal(model.ff_zero, 0.5 * (expectedp - expectedm), decimal=2)
+    assert_almost_equal(model.ff_minus, expected0 - expectedm, decimal=2)
+    assert_almost_equal(np.sum(model.ff_plus), 1., decimal=2)
+    assert_almost_equal(np.sum(model.ff_zero), 1., decimal=2)
+    assert_almost_equal(np.sum(model.ff_minus), 1., decimal=2)
     # check condensed density with arbitrary number of electrons
-    assert_almost_equal(np.sum(desp.density(15.5)), 15.5, decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.0)), 16.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.5)), 16.5, decimal=2)
+    assert_almost_equal(np.sum(model.density(15.5)), 15.5, decimal=2)
+    assert_almost_equal(np.sum(model.density(16.0)), 16.0, decimal=2)
+    assert_almost_equal(np.sum(model.density(16.5)), 16.5, decimal=2)
     # check condensed fukui function with arbitrary number of electrons
-    assert_almost_equal(np.sum(desp.fukui_function), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(15.5, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(16.0, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(16.5, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.fukui_function), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(15.5, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(16.0, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(16.5, 1)), 1.0, decimal=2)
 
 
 def test_condense_h_linear_fd_fmr_ch20_fchk():
@@ -204,35 +204,35 @@ def test_condense_h_linear_fd_fmr_ch20_fchk():
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, model="linear", grid=grid,
+    model = CondensedConceptualDFT.from_file(file_path, model="linear", grid=grid,
                                             scheme="h", approach="FMR")
     expectedm = np.array([7.98237872, 5.47698573, 0.77030456, 0.77031781])
     expected0 = np.array([8.46718639, 5.67524299, 0.92860658, 0.92866436])
     expectedp = np.array([8.76534627, 6.18498153, 1.02517556, 1.02513059])
     # check charges
-    assert_almost_equal(desp.density(17.), expectedp, decimal=2)
-    assert_almost_equal(desp.density(16.), expected0, decimal=2)
-    assert_almost_equal(desp.density(15.), expectedm, decimal=2)
+    assert_almost_equal(model.density(17.), expectedp, decimal=2)
+    assert_almost_equal(model.density(16.), expected0, decimal=2)
+    assert_almost_equal(model.density(15.), expectedm, decimal=2)
     # check condensed density
-    assert_almost_equal(np.sum(desp.density(17.)), 17., decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.)), 16., decimal=2)
-    assert_almost_equal(np.sum(desp.density(15.)), 15., decimal=2)
+    assert_almost_equal(np.sum(model.density(17.)), 17., decimal=2)
+    assert_almost_equal(np.sum(model.density(16.)), 16., decimal=2)
+    assert_almost_equal(np.sum(model.density(15.)), 15., decimal=2)
     # check condensed Fukui function
-    assert_almost_equal(desp.ff_plus, expectedp - expected0, decimal=2)
-    assert_almost_equal(desp.ff_zero, 0.5 * (expectedp - expectedm), decimal=2)
-    assert_almost_equal(desp.ff_minus, expected0 - expectedm, decimal=2)
-    assert_almost_equal(np.sum(desp.ff_plus), 1., decimal=2)
-    assert_almost_equal(np.sum(desp.ff_zero), 1., decimal=2)
-    assert_almost_equal(np.sum(desp.ff_minus), 1., decimal=2)
+    assert_almost_equal(model.ff_plus, expectedp - expected0, decimal=2)
+    assert_almost_equal(model.ff_zero, 0.5 * (expectedp - expectedm), decimal=2)
+    assert_almost_equal(model.ff_minus, expected0 - expectedm, decimal=2)
+    assert_almost_equal(np.sum(model.ff_plus), 1., decimal=2)
+    assert_almost_equal(np.sum(model.ff_zero), 1., decimal=2)
+    assert_almost_equal(np.sum(model.ff_minus), 1., decimal=2)
     # check condensed density with arbitrary number of electrons
-    assert_almost_equal(np.sum(desp.density(15.5)), 15.5, decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.0)), 16.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.5)), 16.5, decimal=2)
+    assert_almost_equal(np.sum(model.density(15.5)), 15.5, decimal=2)
+    assert_almost_equal(np.sum(model.density(16.0)), 16.0, decimal=2)
+    assert_almost_equal(np.sum(model.density(16.5)), 16.5, decimal=2)
     # check condensed fukui function with arbitrary number of electrons
-    assert_almost_equal(np.sum(desp.fukui_function), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(15.5, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(16.0, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(16.5, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.fukui_function), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(15.5, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(16.0, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(16.5, 1)), 1.0, decimal=2)
 
 
 def test_condense_mbis_linear_fd_rmf_ch2o_fchk():
@@ -244,35 +244,35 @@ def test_condense_mbis_linear_fd_rmf_ch2o_fchk():
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, model="linear", grid=grid, scheme="mbis",
+    model = CondensedConceptualDFT.from_file(file_path, model="linear", grid=grid, scheme="mbis",
                                             approach="RMF")
     expectedm = np.array([7.8580338, 5.70425809, 0.71885554, 0.71884404])
     expected0 = np.array([8.41149, 5.66445074, 0.96204946, 0.96202722])
     expectedp = np.array([8.13881352, 6.81770852, 1.28123219, 0.76225513])
     # check charges
-    assert_almost_equal(desp.density(17.), expectedp, decimal=2)
-    assert_almost_equal(desp.density(16.), expected0, decimal=2)
-    assert_almost_equal(desp.density(15.), expectedm, decimal=2)
+    assert_almost_equal(model.density(17.), expectedp, decimal=2)
+    assert_almost_equal(model.density(16.), expected0, decimal=2)
+    assert_almost_equal(model.density(15.), expectedm, decimal=2)
     # check condensed density
-    assert_almost_equal(np.sum(desp.density(17.)), 17., decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.)), 16., decimal=2)
-    assert_almost_equal(np.sum(desp.density(15.)), 15., decimal=2)
+    assert_almost_equal(np.sum(model.density(17.)), 17., decimal=2)
+    assert_almost_equal(np.sum(model.density(16.)), 16., decimal=2)
+    assert_almost_equal(np.sum(model.density(15.)), 15., decimal=2)
     # check condensed Fukui function
-    assert_almost_equal(desp.ff_plus, expectedp - expected0, decimal=2)
-    assert_almost_equal(desp.ff_zero, 0.5 * (expectedp - expectedm), decimal=2)
-    assert_almost_equal(desp.ff_minus, expected0 - expectedm, decimal=2)
-    assert_almost_equal(np.sum(desp.ff_plus), 1., decimal=2)
-    assert_almost_equal(np.sum(desp.ff_zero), 1., decimal=2)
-    assert_almost_equal(np.sum(desp.ff_minus), 1., decimal=2)
+    assert_almost_equal(model.ff_plus, expectedp - expected0, decimal=2)
+    assert_almost_equal(model.ff_zero, 0.5 * (expectedp - expectedm), decimal=2)
+    assert_almost_equal(model.ff_minus, expected0 - expectedm, decimal=2)
+    assert_almost_equal(np.sum(model.ff_plus), 1., decimal=2)
+    assert_almost_equal(np.sum(model.ff_zero), 1., decimal=2)
+    assert_almost_equal(np.sum(model.ff_minus), 1., decimal=2)
     # check condensed density with arbitrary number of electrons
-    assert_almost_equal(np.sum(desp.density(15.5)), 15.5, decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.0)), 16.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.5)), 16.5, decimal=2)
+    assert_almost_equal(np.sum(model.density(15.5)), 15.5, decimal=2)
+    assert_almost_equal(np.sum(model.density(16.0)), 16.0, decimal=2)
+    assert_almost_equal(np.sum(model.density(16.5)), 16.5, decimal=2)
     # check condensed fukui function with arbitrary number of electrons
-    assert_almost_equal(np.sum(desp.fukui_function), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(15.5, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(16.0, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(16.5, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.fukui_function), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(15.5, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(16.0, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(16.5, 1)), 1.0, decimal=2)
 
 
 def test_condense_mbis_linear_fd_fmr_ch4_fchk():
@@ -284,27 +284,27 @@ def test_condense_mbis_linear_fd_fmr_ch4_fchk():
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, model="linear", grid=grid, scheme="mbis",
+    model = CondensedConceptualDFT.from_file(file_path, model="linear", grid=grid, scheme="mbis",
                                             approach="FMR")
     expected0 = np.array([8.41149, 5.66445074, 0.96204946, 0.96202722])
-    assert_almost_equal(desp.density(16.), expected0, decimal=2)
+    assert_almost_equal(model.density(16.), expected0, decimal=2)
     # check condensed density
-    assert_almost_equal(np.sum(desp.density(17.)), 17., decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.)), 16., decimal=2)
-    assert_almost_equal(np.sum(desp.density(15.)), 15., decimal=2)
+    assert_almost_equal(np.sum(model.density(17.)), 17., decimal=2)
+    assert_almost_equal(np.sum(model.density(16.)), 16., decimal=2)
+    assert_almost_equal(np.sum(model.density(15.)), 15., decimal=2)
     # check condensed Fukui function
-    assert_almost_equal(np.sum(desp.ff_plus), 1., decimal=2)
-    assert_almost_equal(np.sum(desp.ff_zero), 1., decimal=2)
-    assert_almost_equal(np.sum(desp.ff_minus), 1., decimal=2)
+    assert_almost_equal(np.sum(model.ff_plus), 1., decimal=2)
+    assert_almost_equal(np.sum(model.ff_zero), 1., decimal=2)
+    assert_almost_equal(np.sum(model.ff_minus), 1., decimal=2)
     # check condensed density with arbitrary number of electrons
-    assert_almost_equal(np.sum(desp.density(15.5)), 15.5, decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.0)), 16.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.5)), 16.5, decimal=2)
+    assert_almost_equal(np.sum(model.density(15.5)), 15.5, decimal=2)
+    assert_almost_equal(np.sum(model.density(16.0)), 16.0, decimal=2)
+    assert_almost_equal(np.sum(model.density(16.5)), 16.5, decimal=2)
     # check condensed fukui function with arbitrary number of electrons
-    assert_almost_equal(np.sum(desp.fukui_function), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(15.5, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(16.0, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(16.5, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.fukui_function), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(15.5, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(16.0, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(16.5, 1)), 1.0, decimal=2)
 
 
 def test_condense_h_quadratic_fd_ch4_fchk():
@@ -316,29 +316,29 @@ def test_condense_h_quadratic_fd_ch4_fchk():
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, "quadratic", "RMF", "h", grid=grid)
+    model = CondensedConceptualDFT.from_file(file_path, "quadratic", "RMF", "h", grid=grid)
     # computed with horton separately
     expectedm = np.array([7.98237872, 5.47698573, 0.77030456, 0.77031781])
     expected0 = np.array([8.46718639, 5.67524299, 0.92860658, 0.92866436])
     expectedp = np.array([8.76534627, 6.18498153, 1.02517556, 1.02513059])
-    assert_almost_equal(desp.density(17.), expectedp, decimal=2)
-    assert_almost_equal(desp.density(16.), expected0, decimal=2)
-    assert_almost_equal(desp.density(15.), expectedm, decimal=2)
+    assert_almost_equal(model.density(17.), expectedp, decimal=2)
+    assert_almost_equal(model.density(16.), expected0, decimal=2)
+    assert_almost_equal(model.density(15.), expectedm, decimal=2)
     # check condensed density
-    assert_almost_equal(np.sum(desp.density(17.)), 17., decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.)), 16., decimal=2)
-    assert_almost_equal(np.sum(desp.density(15.)), 15., decimal=2)
+    assert_almost_equal(np.sum(model.density(17.)), 17., decimal=2)
+    assert_almost_equal(np.sum(model.density(16.)), 16., decimal=2)
+    assert_almost_equal(np.sum(model.density(15.)), 15., decimal=2)
     # check condensed density with arbitrary number of electrons
-    assert_almost_equal(np.sum(desp.density(15.5)), 15.5, decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.0)), 16.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.5)), 16.5, decimal=2)
+    assert_almost_equal(np.sum(model.density(15.5)), 15.5, decimal=2)
+    assert_almost_equal(np.sum(model.density(16.0)), 16.0, decimal=2)
+    assert_almost_equal(np.sum(model.density(16.5)), 16.5, decimal=2)
     # check condensed fukui function with arbitrary number of electrons
-    assert_almost_equal(np.sum(desp.fukui_function), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(15.5, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(16.0, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(16.5, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.fukui_function), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(15.5, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(16.0, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(16.5, 1)), 1.0, decimal=2)
     # check condensed dual descriptor
-    assert_almost_equal(np.sum(desp.dual_descriptor), 0.0, decimal=2)
+    assert_almost_equal(np.sum(model.dual_descriptor), 0.0, decimal=2)
 
 
 def test_condense_h_linear_ch4_fchk():
@@ -348,24 +348,24 @@ def test_condense_h_linear_ch4_fchk():
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "h", grid=grid)
+    model = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "h", grid=grid)
     # computed with horton separately
     expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
-    assert_almost_equal(desp.density(10.), expected, decimal=4)
+    assert_almost_equal(model.density(10.), expected, decimal=4)
     # check condensed density
-    assert_almost_equal(np.sum(desp.density(11.)), 11., decimal=2)
-    assert_almost_equal(np.sum(desp.density(10.)), 10., decimal=2)
-    assert_almost_equal(np.sum(desp.density(9.0)), 9.0, decimal=2)
+    assert_almost_equal(np.sum(model.density(11.)), 11., decimal=2)
+    assert_almost_equal(np.sum(model.density(10.)), 10., decimal=2)
+    assert_almost_equal(np.sum(model.density(9.0)), 9.0, decimal=2)
     # check condensed Fukui function
-    assert_almost_equal(np.sum(desp.ff_plus), 1., decimal=2)
-    assert_almost_equal(np.sum(desp.ff_zero), 1., decimal=2)
-    assert_almost_equal(np.sum(desp.ff_minus), 1., decimal=2)
+    assert_almost_equal(np.sum(model.ff_plus), 1., decimal=2)
+    assert_almost_equal(np.sum(model.ff_zero), 1., decimal=2)
+    assert_almost_equal(np.sum(model.ff_minus), 1., decimal=2)
     # check condensed density with arbitrary number of electrons
-    assert_almost_equal(np.sum(desp.density(15.5)), 15.5, decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.0)), 16.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density(16.5)), 16.5, decimal=2)
+    assert_almost_equal(np.sum(model.density(15.5)), 15.5, decimal=2)
+    assert_almost_equal(np.sum(model.density(16.0)), 16.0, decimal=2)
+    assert_almost_equal(np.sum(model.density(16.5)), 16.5, decimal=2)
     # check condensed fukui function with arbitrary number of electrons
-    assert_almost_equal(np.sum(desp.fukui_function), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(15.5, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(16.0, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(desp.density_derivative(16.5, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.fukui_function), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(15.5, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(16.0, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.density_derivative(16.5, 1)), 1.0, decimal=2)
