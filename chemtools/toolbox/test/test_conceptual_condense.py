@@ -31,6 +31,7 @@ from numpy.testing import assert_raises, assert_equal, assert_almost_equal
 from horton import IOData, BeckeMolGrid
 from chemtools import context
 from chemtools.toolbox.conceptual import CondensedConceptualDFT
+from chemtools.toolbox.molecule import make_molecule
 
 
 def test_condensed_conceptual_raises():
@@ -97,7 +98,7 @@ def test_condense_fmr_linear_h_ch4_fchk():
     model = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "h")
     check_condense_fmo(model, "linear", expected, 10)
     # check using filename as a string & passing grid
-    mol = IOData.from_file(filename)
+    mol = make_molecule(filename)
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec="insane",
                         random_rotate=False, mode="keep")
     model = CondensedConceptualDFT.from_file(filename, "linear", "FMR", "h", grid)
@@ -115,7 +116,7 @@ def test_condense_fmr_linear_h_ch4_wfn():
     model = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "h")
     check_condense_fmo(model, "linear", expected, 10)
     # check using filename as a list & passing grid
-    mol = IOData.from_file(filename)
+    mol = make_molecule(filename)
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec="insane",
                         random_rotate=False, mode="keep")
     model = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "h", grid)
