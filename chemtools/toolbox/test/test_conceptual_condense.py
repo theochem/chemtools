@@ -35,21 +35,21 @@ from chemtools.toolbox.conceptual import CondensedConceptualDFT
 
 def test_condensed_conceptual_raises():
     # file for FMO
-    fname = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
+    fname = context.get_fn("test/ch4_uhf_ccpvdz.fchk")
     # files for FD
-    fnames = [context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'),
-              context.get_fn('examples/ch2o_q+1_ub3lyp_augccpvtz.fchk'),
-              context.get_fn('examples/ch2o_q-1_ub3lyp_augccpvtz.fchk')]
+    fnames = [context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk"),
+              context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk"),
+              context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk")]
     # check invalid scheme
-    assert_raises(ValueError, CondensedConceptualDFT.from_file, fname, 'quadratic', scheme='gib')
-    assert_raises(ValueError, CondensedConceptualDFT.from_file, fnames, 'linear', scheme='err')
+    assert_raises(ValueError, CondensedConceptualDFT.from_file, fname, "quadratic", scheme="gib")
+    assert_raises(ValueError, CondensedConceptualDFT.from_file, fnames, "linear", scheme="err")
     # check invalid grid type
-    assert_raises(ValueError, CondensedConceptualDFT.from_file, fname, 'quadratic', grid='str')
-    assert_raises(ValueError, CondensedConceptualDFT.from_file, fnames, 'linear', grid='gibb')
+    assert_raises(ValueError, CondensedConceptualDFT.from_file, fname, "quadratic", grid="str")
+    assert_raises(ValueError, CondensedConceptualDFT.from_file, fnames, "linear", grid="gibb")
     # check invalid grid coordinates
     grid = BeckeMolGrid(np.array([[0., 0., 0.]]), np.array([1]))
-    assert_raises(ValueError, CondensedConceptualDFT.from_file, fname, 'quadratic', grid=grid)
-    assert_raises(ValueError, CondensedConceptualDFT.from_file, fnames, 'quadratic', grid=grid)
+    assert_raises(ValueError, CondensedConceptualDFT.from_file, fname, "quadratic", grid=grid)
+    assert_raises(ValueError, CondensedConceptualDFT.from_file, fnames, "quadratic", grid=grid)
     # check invalid grid atomic numbers
     coord = np.array([[-3.77945227E-05,  3.77945227E-05, -1.88972613E-05],
                       [ 1.04290206E+00,  1.50497789E+00,  9.34507367E-01],
@@ -57,18 +57,18 @@ def test_condensed_conceptual_raises():
                       [-1.46467003E+00, -7.02997019E-01,  1.25954026E+00],
                       [-8.64474117E-01,  7.29131931E-01, -1.71670281E+00]])
     grid = BeckeMolGrid(coord, np.array([7, 1, 1, 1, 1]))
-    assert_raises(ValueError, CondensedConceptualDFT.from_file, fname, 'quadratic', grid=grid)
-    assert_raises(ValueError, CondensedConceptualDFT.from_file, fnames, 'quadratic', grid=grid)
+    assert_raises(ValueError, CondensedConceptualDFT.from_file, fname, "quadratic", grid=grid)
+    assert_raises(ValueError, CondensedConceptualDFT.from_file, fnames, "quadratic", grid=grid)
 
 
 def test_condense_mbis_quadratic_ch4_fchk():
-    file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
+    file_path = context.get_fn("test/ch4_uhf_ccpvdz.fchk")
     # make molecular grid
     mol = IOData.from_file(file_path)
-    grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec='insane',
-                        random_rotate=False, mode='keep')
+    grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec="insane",
+                        random_rotate=False, mode="keep")
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file([file_path], 'quadratic', grid=grid, scheme='mbis')
+    desp = CondensedConceptualDFT.from_file([file_path], "quadratic", grid=grid, scheme="mbis")
     # check print statement
     assert_equal(type(desp.__repr__()), str)
     # computed with horton separately
@@ -92,13 +92,13 @@ def test_condense_mbis_quadratic_ch4_fchk():
 
 
 def test_condense_mbis_linear_fmr_ch4_fchk():
-    file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
+    file_path = context.get_fn("test/ch4_uhf_ccpvdz.fchk")
     # make molecular grid
     mol = IOData.from_file(file_path)
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
-                        agspec='insane', random_rotate=False, mode='keep')
+                        agspec="insane", random_rotate=False, mode="keep")
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, 'linear', 'FMR', 'mbis', grid=grid)
+    desp = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "mbis", grid=grid)
     # check print statement
     assert_equal(type(desp.__repr__()), str)
     # computed with horton separately
@@ -124,13 +124,13 @@ def test_condense_mbis_linear_fmr_ch4_fchk():
 
 
 def test_condense_mbis_linear_ch4_fchk():
-    file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
+    file_path = context.get_fn("test/ch4_uhf_ccpvdz.fchk")
     # make molecular grid
     mol = IOData.from_file(file_path)
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
-                        agspec='insane', random_rotate=False, mode='keep')
+                        agspec="insane", random_rotate=False, mode="keep")
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, 'linear', 'FMR', 'mbis', grid=grid)
+    desp = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "mbis", grid=grid)
     # check print statement
     assert_equal(type(desp.__repr__()), str)
     # computed with horton separately
@@ -156,16 +156,16 @@ def test_condense_mbis_linear_ch4_fchk():
 
 
 def test_condense_h_linear_fd_rmf_ch2o_fchk():
-    file_path = [context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'),
-                 context.get_fn('examples/ch2o_q+1_ub3lyp_augccpvtz.fchk'),
-                 context.get_fn('examples/ch2o_q-1_ub3lyp_augccpvtz.fchk')]
+    file_path = [context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk"),
+                 context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk"),
+                 context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk")]
     # make molecular grid
     mol = IOData.from_file(file_path[0])
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
-                        agspec='insane', random_rotate=False, mode='keep')
+                        agspec="insane", random_rotate=False, mode="keep")
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, model='linear', grid=grid,
-                                            scheme='h', approach='RMF')
+    desp = CondensedConceptualDFT.from_file(file_path, model="linear", grid=grid,
+                                            scheme="h", approach="RMF")
     expectedm = np.array([7.98237872, 5.47698573, 0.77030456, 0.77031781])
     expected0 = np.array([8.46718639, 5.67524299, 0.92860658, 0.92866436])
     expectedp = np.array([8.76534627, 6.18498153, 1.02517556, 1.02513059])
@@ -196,16 +196,16 @@ def test_condense_h_linear_fd_rmf_ch2o_fchk():
 
 
 def test_condense_h_linear_fd_fmr_ch20_fchk():
-    file_path = [context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'),
-                 context.get_fn('examples/ch2o_q+1_ub3lyp_augccpvtz.fchk'),
-                 context.get_fn('examples/ch2o_q-1_ub3lyp_augccpvtz.fchk')]
+    file_path = [context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk"),
+                 context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk"),
+                 context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk")]
     # make molecular grid
     mol = IOData.from_file(file_path[0])
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
-                        agspec='insane', random_rotate=False, mode='keep')
+                        agspec="insane", random_rotate=False, mode="keep")
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, model='linear', grid=grid,
-                                            scheme='h', approach='FMR')
+    desp = CondensedConceptualDFT.from_file(file_path, model="linear", grid=grid,
+                                            scheme="h", approach="FMR")
     expectedm = np.array([7.98237872, 5.47698573, 0.77030456, 0.77031781])
     expected0 = np.array([8.46718639, 5.67524299, 0.92860658, 0.92866436])
     expectedp = np.array([8.76534627, 6.18498153, 1.02517556, 1.02513059])
@@ -236,16 +236,16 @@ def test_condense_h_linear_fd_fmr_ch20_fchk():
 
 
 def test_condense_mbis_linear_fd_rmf_ch2o_fchk():
-    file_path = [context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'),
-                 context.get_fn('examples/ch2o_q+1_ub3lyp_augccpvtz.fchk'),
-                 context.get_fn('examples/ch2o_q-1_ub3lyp_augccpvtz.fchk')]
+    file_path = [context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk"),
+                 context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk"),
+                 context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk")]
     # make molecular grid
     mol = IOData.from_file(file_path[0])
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
-                        agspec='insane', random_rotate=False, mode='keep')
+                        agspec="insane", random_rotate=False, mode="keep")
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, model='linear', grid=grid, scheme='mbis',
-                                            approach='RMF')
+    desp = CondensedConceptualDFT.from_file(file_path, model="linear", grid=grid, scheme="mbis",
+                                            approach="RMF")
     expectedm = np.array([7.8580338, 5.70425809, 0.71885554, 0.71884404])
     expected0 = np.array([8.41149, 5.66445074, 0.96204946, 0.96202722])
     expectedp = np.array([8.13881352, 6.81770852, 1.28123219, 0.76225513])
@@ -276,16 +276,16 @@ def test_condense_mbis_linear_fd_rmf_ch2o_fchk():
 
 
 def test_condense_mbis_linear_fd_fmr_ch4_fchk():
-    file_path = [context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'),
-                 context.get_fn('examples/ch2o_q+1_ub3lyp_augccpvtz.fchk'),
-                 context.get_fn('examples/ch2o_q-1_ub3lyp_augccpvtz.fchk')]
+    file_path = [context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk"),
+                 context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk"),
+                 context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk")]
     # make molecular grid
     mol = IOData.from_file(file_path[0])
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
-                        agspec='insane', random_rotate=False, mode='keep')
+                        agspec="insane", random_rotate=False, mode="keep")
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, model='linear', grid=grid, scheme='mbis',
-                                            approach='FMR')
+    desp = CondensedConceptualDFT.from_file(file_path, model="linear", grid=grid, scheme="mbis",
+                                            approach="FMR")
     expected0 = np.array([8.41149, 5.66445074, 0.96204946, 0.96202722])
     assert_almost_equal(desp.density(16.), expected0, decimal=2)
     # check condensed density
@@ -308,15 +308,15 @@ def test_condense_mbis_linear_fd_fmr_ch4_fchk():
 
 
 def test_condense_h_quadratic_fd_ch4_fchk():
-    file_path = [context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'),
-                 context.get_fn('examples/ch2o_q+1_ub3lyp_augccpvtz.fchk'),
-                 context.get_fn('examples/ch2o_q-1_ub3lyp_augccpvtz.fchk')]
+    file_path = [context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk"),
+                 context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk"),
+                 context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk")]
     # make molecular grid
     mol = IOData.from_file(file_path[0])
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
-                        agspec='insane', random_rotate=False, mode='keep')
+                        agspec="insane", random_rotate=False, mode="keep")
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, 'quadratic', 'RMF', 'h', grid=grid)
+    desp = CondensedConceptualDFT.from_file(file_path, "quadratic", "RMF", "h", grid=grid)
     # computed with horton separately
     expectedm = np.array([7.98237872, 5.47698573, 0.77030456, 0.77031781])
     expected0 = np.array([8.46718639, 5.67524299, 0.92860658, 0.92866436])
@@ -342,13 +342,13 @@ def test_condense_h_quadratic_fd_ch4_fchk():
 
 
 def test_condense_h_linear_ch4_fchk():
-    file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
+    file_path = context.get_fn("test/ch4_uhf_ccpvdz.fchk")
     # make molecular grid
     mol = IOData.from_file(file_path)
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
-                        agspec='insane', random_rotate=False, mode='keep')
+                        agspec="insane", random_rotate=False, mode="keep")
     # build global conceptual DFT tool
-    desp = CondensedConceptualDFT.from_file(file_path, 'linear', 'FMR', 'h', grid=grid)
+    desp = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "h", grid=grid)
     # computed with horton separately
     expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
     assert_almost_equal(desp.density(10.), expected, decimal=4)
