@@ -382,7 +382,7 @@ class BaseConceptualDFT(object):
             number = BaseConceptualDFT._get_matching_attr(molecule, "numbers", 1.e-8)
             pseudo = BaseConceptualDFT._get_matching_attr(molecule, "pseudo_numbers", 1.e-8)
             coords = BaseConceptualDFT._get_matching_attr(molecule, "coordinates", 1.e-4)
-            grid = BeckeMolGrid(coords, number, pseudo, agspec="fine", random_rotate=False,
+            grid = BeckeMolGrid(coords, number, pseudo, agspec="insane", random_rotate=False,
                                 mode="keep")
         return grid
 
