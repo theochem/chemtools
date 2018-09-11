@@ -585,7 +585,7 @@ class LocalConceptualDFT(BaseConceptualDFT):
             log.blank()
 
     @classmethod
-    def from_file(cls, file_name, model, points=None):
+    def from_file(cls, file_name, model, points):
         r"""
         Initialize class from calculation output file(s).
 
@@ -597,15 +597,15 @@ class LocalConceptualDFT(BaseConceptualDFT):
         model : str
             Energy model used to calculate local reactivity descriptors.
             Available models are "linear" and "quadratic".
-        points : np.array, optional
-            Points on which the local properties are evaluated. If `None`, a default BeckeMolGrid
-            is generated to get the points.
+        points : np.array
+            Coordinates of points on which the local properties are evaluated given as a 2D
+            array with 3 columns.
         """
         molecules = cls.load_file(file_name)
         return cls.from_molecule(molecules, model, points)
 
     @classmethod
-    def from_molecule(cls, molecule, model, points=None):
+    def from_molecule(cls, molecule, model, points):
         r"""
         Initialize class from `BaseMolecule` object(s).
 
@@ -616,19 +616,18 @@ class LocalConceptualDFT(BaseConceptualDFT):
         model : str
             Energy model used to calculate local reactivity descriptors.
             Available models are "linear" and "quadratic".
-        points : np.array, optional
-            Points on which the local properties are evaluated. If `None`, a default BeckeMolGrid
-            is generated to get the points.
+        points : np.array
+            Coordinates of points on which the local properties are evaluated given as a 2D
+            array with 3 columns.
         """
         # check molecule
         molecule = check_arg_molecule(molecule)
-        if points is None:
-            # make molecular grid which also checks for matching atomic numbers & coordinates
-            grid = cls._get_molecular_grid(molecule, grid=None)
-            points, numbers, coords = grid.points, grid.numbers, grid.centers
-        else:
-            numbers = cls._get_matching_attr(molecule, "numbers", 1.e-8)
-            coords = cls._get_matching_attr(molecule, "coordinates", 1.e-4)
+        # if points is None:
+        #     # make molecular grid which also checks for matching atomic numbers & coordinates
+        #     grid = cls._get_molecular_grid(molecule, grid=None)
+        #     points, numbers, coords = grid.points, grid.numbers, grid.centers
+        numbers = cls._get_matching_attr(molecule, "numbers", 1.e-8)
+        coords = cls._get_matching_attr(molecule, "coordinates", 1.e-4)
         dict_dens = cls.get_dict_density(molecule, points)
         return cls(dict_dens, model, coords, numbers)
 
