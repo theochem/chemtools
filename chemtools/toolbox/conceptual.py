@@ -35,6 +35,7 @@ from horton.scripts.wpart import wpart_schemes
 
 from chemtools.utils.molecule import BaseMolecule
 from chemtools.toolbox.molecule import make_molecule
+from chemtools.toolbox.utils import check_arg_molecule
 from chemtools.conceptual.linear import LinearGlobalTool, LinearLocalTool
 from chemtools.conceptual.quadratic import QuadraticGlobalTool, QuadraticLocalTool
 from chemtools.conceptual.exponential import ExponentialGlobalTool
@@ -503,6 +504,8 @@ class GlobalConceptualDFT(BaseConceptualDFT):
         model : str
             Energy model used to calculate global reactivity descriptors.
         """
+        # check molecule
+        molecule = check_arg_molecule(molecule)
         # get atomic number and atomic coordinates
         number = cls._get_matching_attr(molecule, "numbers", 1.e-8)
         coords = cls._get_matching_attr(molecule, "coordinates", 1.e-4)

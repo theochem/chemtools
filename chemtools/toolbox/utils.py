@@ -20,10 +20,31 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""The Toolbox Module."""
+"""Utility Functions of Toolbox Module."""
 
 
-from chemtools.toolbox.utils import *
-from chemtools.toolbox.conceptual import *
-from chemtools.toolbox.nci import *
-from chemtools.toolbox.orbitalbased import *
+from chemtools.utils.molecule import BaseMolecule
+
+
+__all__ = ["check_arg_molecule"]
+
+
+def check_arg_molecule(molecule):
+    """Return molecule argument after checking.
+
+    Parameters
+    ----------
+    molecule : BaseMolecule or Sequence of BaseMolecule
+        Instance of BaseMolecule class, or sequence of BaseMolecule class instances.
+
+    Returns
+    -------
+    molecule : BaseMolecule or Sequence of BaseMolecule
+        Instance of BaseMolecule or Sequence of BaseMolecule with more than one instance.
+    """
+    if isinstance(molecule, BaseMolecule):
+        return molecule
+    if hasattr(molecule, "__iter__") and len(molecule) == 1:
+        # sequence of just one molecule
+        return molecule[0]
+    return molecule
