@@ -28,9 +28,20 @@ import numpy as np
 
 from numpy.testing import assert_raises, assert_equal, assert_almost_equal
 
-from horton import IOData, BeckeMolGrid
+from horton import BeckeMolGrid
 from chemtools import context
+from chemtools.toolbox.molecule import make_molecule
 from chemtools.toolbox.conceptual import LocalConceptualDFT
+
+
+def get_data_ch4():
+    coord = np.array([[-3.77945227e-05,  3.77945227e-05, -1.88972613e-05],
+                      [ 1.04290206,  1.50497789,  0.934507367],
+                      [ 1.28607202, -1.53098052, -0.477307027],
+                      [-1.46467003, -0.702997019,  1.25954026],
+                      [-0.864474117, 0.729131931, -1.71670281]])
+    nums = np.array([6, 1, 1, 1, 1])
+    return coord, nums
 
 
 def test_local_conceptual_raises():
@@ -39,90 +50,172 @@ def test_local_conceptual_raises():
     assert_raises(ValueError, LocalConceptualDFT, values)
     # check in valid model
     values = {1.0: np.array([0.0, 0.5]), 2.0: np.array([1.0, 1.2]), 3.0: np.array([2.0, 2.2])}
-    assert_raises(ValueError, LocalConceptualDFT, values, 'rational')
+    assert_raises(ValueError, LocalConceptualDFT, values, "rational")
+    assert_raises(ValueError, LocalConceptualDFT, values, "Rational")
     # check in valid points
-    fname = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
-    assert_raises(ValueError, LocalConceptualDFT.from_file, fname, 'linear', np.array([0., 0., 0.]))
-    assert_raises(ValueError, LocalConceptualDFT.from_file, fname, 'linear', np.array([[0., 0.]]))
+    fn = context.get_fn("test/ch4_uhf_ccpvdz.fchk")
+    assert_raises(ValueError, LocalConceptualDFT.from_file, fn, "linear", np.array([0., 0., 0.]))
+    assert_raises(ValueError, LocalConceptualDFT.from_file, fn, "linear", np.array([[0., 0.]]))
+    assert_raises(ValueError, LocalConceptualDFT.from_file, fn, "quadratic", np.array([[0., 0.]]))
     # check molecule file inconsistency
     points = np.array([[0., 0., 0.]])
-    fnames = [context.get_fn('test/ch4_uhf_ccpvdz.fchk'), context.get_fn('test/o2_uhf.fchk')]
-    assert_raises(ValueError, LocalConceptualDFT.from_file, fnames, 'linear', points)
-    fname = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
-    assert_raises(ValueError, LocalConceptualDFT.from_file, [fname, fname], 'linear', points)
-    # check invalid grid
-    fnames = [context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'),
-              context.get_fn('examples/ch2o_q+1_ub3lyp_augccpvtz.fchk'),
-              context.get_fn('examples/ch2o_q-1_ub3lyp_augccpvtz.fchk')]
+    fns = [context.get_fn("test/ch4_uhf_ccpvdz.fchk"), context.get_fn("test/o2_uhf.fchk")]
+    assert_raises(ValueError, LocalConceptualDFT.from_file, fns, "linear", points)
+    assert_raises(ValueError, LocalConceptualDFT.from_file, fns, "quadratic", points)
+    fn = context.get_fn("test/ch4_uhf_ccpvdz.fchk")
+    assert_raises(ValueError, LocalConceptualDFT.from_file, [fn, fn], "linear", points)
+    assert_raises(ValueError, LocalConceptualDFT.from_file, [fn, fn], "quadratic", points)
+    # check invalid files
+    fns = [context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk"),
+           context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk"),
+           context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk")]
+    assert_raises(ValueError, LocalConceptualDFT.from_file, fns, "linear", points)
+    assert_raises(ValueError, LocalConceptualDFT.from_file, fns, "quadratic", points)
 
 
-def check_local_linear_fmo_ch4_uhf_ccpvdz(filename):
-    """Check expected linear local indicators for ch4_uhf_ccpvdz within FMO approach."""
-    # Check softness & hyper-softness
-    # make molecular grid
-    mol = IOData.from_file(context.get_fn(filename))
-    grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
-                        agspec='exp:5e-4:2e1:175:434', random_rotate=False, mode='keep')
+def check_local_reactivity(model, energy_model, grid, n0, eta):
+    """Check expected linear local reactivity descriptors."""
     # build local conceptual DFT tool
-    desp = LocalConceptualDFT.from_file(context.get_fn(filename), 'linear', points=grid.points)
+
     # check print statement
-    assert_equal(type(desp.__repr__()), str)
+    assert_equal(type(model.__repr__()), str)
     # check integral of density
-    assert_almost_equal(grid.integrate(desp.density(10.)), 10., decimal=4)
-    assert_almost_equal(grid.integrate(desp.density(11.)), 11., decimal=4)
-    assert_almost_equal(grid.integrate(desp.density(9.)), 9., decimal=4)
-    # check shape of Fukui functions & dual descriptor
-    assert_equal(desp.ff_zero.shape, grid.shape)
-    assert_equal(desp.ff_plus.shape, grid.shape)
-    assert_equal(desp.ff_minus.shape, grid.shape)
-    # check Fukui functions & dual descriptor
-    assert_almost_equal(grid.integrate(desp.ff_plus), 1., decimal=4)
-    assert_almost_equal(grid.integrate(desp.ff_minus), 1., decimal=4)
-    assert_almost_equal(grid.integrate(desp.ff_zero), 1., decimal=4)
-    # check dual descriptor
-
-
-def test_local_linear_fmo_ch4_uhf_ccpvdz_fchk():
-    check_local_linear_fmo_ch4_uhf_ccpvdz('test/ch4_uhf_ccpvdz.fchk')
-
-
-def test_local_linear_fmo_ch4_uhf_ccpvdz_wfn():
-    check_local_linear_fmo_ch4_uhf_ccpvdz('test/ch4_uhf_ccpvdz.wfn')
-
-
-def check_local_quadratic_fmo_ch4_uhf_ccpvdz(filename):
-    """Check expected quadratic local indicators for ch4_uhf_ccpvdz within FMO approach."""
-    # ip = -E(homo) & ea = E(lumo)
-    # ip, ea = -(-5.43101269E-01), -1.93295185E-01
-    # eta = ip - ea
-    # make molecular grid
-    mol = IOData.from_file(context.get_fn(filename))
-    grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
-                        agspec='exp:5e-4:2e1:175:434', random_rotate=False, mode='keep')
-    # build global conceptual DFT tool
-    desp = LocalConceptualDFT.from_file(context.get_fn(filename), 'quadratic', points=grid.points)
-    # check print statement
-    assert_equal(type(desp.__repr__()), str)
-    # check integral of density
-    assert_almost_equal(grid.integrate(desp.density(10.)), 10., decimal=4)
-    assert_almost_equal(grid.integrate(desp.density(11.)), 11., decimal=4)
-    assert_almost_equal(grid.integrate(desp.density(9.)), 9., decimal=4)
-    assert_almost_equal(grid.integrate(desp.density(10.62)), 10.62, decimal=4)
-    assert_almost_equal(grid.integrate(desp.density(9.78)), 9.78, decimal=4)
-    assert_almost_equal(grid.integrate(desp.density(10.0)), 10.0, decimal=4)
+    assert_almost_equal(grid.integrate(model.density(n0 - 1)), n0 - 1, decimal=4)
+    assert_almost_equal(grid.integrate(model.density(n0)), n0, decimal=4)
+    assert_almost_equal(grid.integrate(model.density(n0 + 1)), n0 + 1, decimal=4)
+    assert_almost_equal(grid.integrate(model.density(0.75 * n0)), 0.75 * n0, decimal=4)
+    assert_almost_equal(grid.integrate(model.density(1.25 * n0)), 1.25 * n0, decimal=4)
     # Check Fukui function, dual descriptor & softness
-    assert_almost_equal(grid.integrate(desp.fukui_function), 1., decimal=4)
-    assert_almost_equal(grid.integrate(desp.dual_descriptor), 0., decimal=4)
-    # # Check local softness
-    # assert_almost_equal(grid.integrate(desp.softness(1. / eta)), 1. / eta, decimal=4)
-    # assert_almost_equal(grid.integrate(desp.softness(1. / eta)), 1. / eta, decimal=4)
-    # assert_almost_equal(grid.integrate(desp.softness(1. / eta)), 1. / eta, decimal=4)
-    # assert_almost_equal(grid.integrate(desp.hyper_softness(eta)), 0., decimal=3)
+    assert_almost_equal(grid.integrate(model.fukui_function), 1., decimal=4)
+    assert_almost_equal(grid.integrate(model.density_derivative(n0, 1)), 1., decimal=4)
+    assert_almost_equal(grid.integrate(model.density_derivative(n0 - 1, 1)), 1., decimal=4)
+    assert_almost_equal(grid.integrate(model.density_derivative(n0 + 1, 1)), 1., decimal=4)
+    assert_almost_equal(grid.integrate(model.density_derivative(1.5 * n0, 1)), 1., decimal=4)
+    assert_almost_equal(grid.integrate(model.density_derivative(0.8 * n0, 1)), 1., decimal=4)
+    if energy_model == "linear":
+        # check shape of Fukui functions & dual descriptor
+        assert_equal(model.ff_zero.shape, grid.shape)
+        assert_equal(model.ff_plus.shape, grid.shape)
+        assert_equal(model.ff_minus.shape, grid.shape)
+        # check Fukui functions & dual descriptor
+        assert_almost_equal(grid.integrate(model.ff_plus), 1., decimal=4)
+        assert_almost_equal(grid.integrate(model.ff_minus), 1., decimal=4)
+        assert_almost_equal(grid.integrate(model.ff_zero), 1., decimal=4)
+    if energy_model == "quadratic":
+        assert_almost_equal(grid.integrate(model.dual_descriptor), 0., decimal=4)
+        # assert_almost_equal(grid.integrate(model.softness(1./eta)), 1./eta, decimal=4)
+        # assert_almost_equal(grid.integrate(model.softness(1./eta, 10.3)), 1./eta, decimal=4)
+        # assert_almost_equal(grid.integrate(model.softness(1./eta, 9.1)), 1./eta, decimal=4)
+        # assert_almost_equal(grid.integrate(model.hyper_softness(eta)), 0., decimal=3)
 
 
-def test_local_quadratic_fmo_ch4_uhf_ccpvdz_fchk():
-    check_local_quadratic_fmo_ch4_uhf_ccpvdz('test/ch4_uhf_ccpvdz.fchk')
+def test_local_linear_from_file_fmo_ch4_uhf_ccpvdz_fchk():
+    # atomic coordinates and numbers of CH4
+    coord, nums = get_data_ch4()
+    file_path = context.get_fn("test/ch4_uhf_ccpvdz.fchk")
+    grid = BeckeMolGrid(coord, nums, nums, agspec="fine", random_rotate=False, mode="keep")
+    # check from_file passing a grid
+    model = LocalConceptualDFT.from_file(file_path, "linear", grid.points)
+    check_local_reactivity(model, "linear", grid, 10, None)
+    # check from_file given as a list passing a grid
+    model = LocalConceptualDFT.from_file([file_path], "linear", grid.points)
+    check_local_reactivity(model, "linear", grid, 10, None)
 
 
-def test_local_quadratic_fmo_ch4_uhf_ccpvdz_wfn():
-    check_local_quadratic_fmo_ch4_uhf_ccpvdz('test/ch4_uhf_ccpvdz.wfn')
+def test_local_linear_from_molecule_fmo_ch4_uhf_ccpvdz_fchk():
+    # atomic coordinates and numbers of CH4
+    coord, nums = get_data_ch4()
+    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    grid = BeckeMolGrid(coord, nums, nums, agspec="fine", random_rotate=False, mode="keep")
+    # check from_molecule passing a grid
+    model = LocalConceptualDFT.from_molecule(molecule, "linear", grid.points)
+    check_local_reactivity(model, "linear", grid, 10, None)
+    # check from_molecule given as a list passing a grid
+    model = LocalConceptualDFT.from_molecule([molecule], "linear", grid.points)
+    check_local_reactivity(model, "linear", grid, 10, None)
+
+
+def test_local_linear_from_file_fmo_ch4_uhf_ccpvdz_wfn():
+    # atomic coordinates and numbers of CH4
+    coord, nums = get_data_ch4()
+    file_path = context.get_fn("test/ch4_uhf_ccpvdz.wfn")
+    grid = BeckeMolGrid(coord, nums, nums, agspec="fine", random_rotate=False, mode="keep")
+    # check from_file passing a grid
+    model = LocalConceptualDFT.from_file(file_path, "linear", grid.points)
+    check_local_reactivity(model, "linear", grid, 10, None)
+    # check from_file given as a list passing a grid
+    model = LocalConceptualDFT.from_file([file_path], "linear", grid.points)
+    check_local_reactivity(model, "linear", grid, 10, None)
+
+
+def test_local_linear_from_molecule_fmo_ch4_uhf_ccpvdz_wfn():
+    # atomic coordinates and numbers of CH4
+    coord, nums = get_data_ch4()
+    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
+    grid = BeckeMolGrid(coord, nums, nums, agspec="fine", random_rotate=False, mode="keep")
+    # check from_molecule passing a grid
+    model = LocalConceptualDFT.from_molecule(molecule, "linear", grid.points)
+    check_local_reactivity(model, "linear", grid, 10, None)
+    # check from_molecule given as a list passing a grid
+    model = LocalConceptualDFT.from_molecule([molecule], "linear", grid.points)
+    check_local_reactivity(model, "linear", grid, 10, None)
+
+
+def test_local_quadratic_from_file_fmo_ch4_uhf_ccpvdz_fchk():
+    # atomic coordinates and numbers of CH4
+    coord, nums = get_data_ch4()
+    # ip = -E(homo) & ea = E(lumo) & eta = ip - ea
+    eta = -(-5.43101269E-01) - (-1.93295185E-01)
+    file_path = context.get_fn("test/ch4_uhf_ccpvdz.fchk")
+    grid = BeckeMolGrid(coord, nums, nums, agspec="fine", random_rotate=False, mode="keep")
+    # check from_file passing grid
+    model = LocalConceptualDFT.from_file(file_path, "quadratic", grid.points)
+    check_local_reactivity(model, "quadratic", grid, 10, eta)
+    # check from_file given as a list passing grid
+    model = LocalConceptualDFT.from_file([file_path], "quadratic", grid.points)
+    check_local_reactivity(model, "quadratic", grid, 10, eta)
+
+
+def test_local_quadratic_from_molecule_fmo_ch4_uhf_ccpvdz_fchk():
+    # atomic coordinates and numbers of CH4
+    coord, nums = get_data_ch4()
+    # ip = -E(homo) & ea = E(lumo) & eta = ip - ea
+    eta = -(-5.43101269E-01) - (-1.93295185E-01)
+    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    grid = BeckeMolGrid(coord, nums, nums, agspec="fine", random_rotate=False, mode="keep")
+    # check from_molecule passing grid
+    model = LocalConceptualDFT.from_molecule(molecule, "quadratic", grid.points)
+    check_local_reactivity(model, "quadratic", grid, 10, eta)
+    # check from_molecule given as a list passing grid
+    model = LocalConceptualDFT.from_molecule([molecule], "quadratic", grid.points)
+    check_local_reactivity(model, "quadratic", grid, 10, eta)
+
+
+def test_local_quadratic_from_file_fmo_ch4_uhf_ccpvdz_wfn():
+    # atomic coordinates and numbers of CH4
+    coord, nums = get_data_ch4()
+    # ip = -E(homo) & ea = E(lumo) & eta = ip - ea
+    eta = -(-5.43101269E-01) - (-1.93295185E-01)
+    file_path = context.get_fn("test/ch4_uhf_ccpvdz.wfn")
+    grid = BeckeMolGrid(coord, nums, nums, agspec="fine", random_rotate=False, mode="keep")
+    # check from_file passing grid
+    model = LocalConceptualDFT.from_file(file_path, "quadratic", grid.points)
+    check_local_reactivity(model, "quadratic", grid, 10, eta)
+    # check from_file given as a list passing grid
+    model = LocalConceptualDFT.from_file([file_path], "quadratic", grid.points)
+    check_local_reactivity(model, "quadratic", grid, 10, eta)
+
+
+def test_local_quadratic_from_molecule_fmo_ch4_uhf_ccpvdz_wfn():
+    # atomic coordinates and numbers of CH4
+    coord, nums = get_data_ch4()
+    # ip = -E(homo) & ea = E(lumo) & eta = ip - ea
+    eta = -(-5.43101269E-01) - (-1.93295185E-01)
+    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
+    grid = BeckeMolGrid(coord, nums, nums, agspec="fine", random_rotate=False, mode="keep")
+    # check from_molecule passing grid
+    model = LocalConceptualDFT.from_molecule(molecule, "quadratic", grid.points)
+    check_local_reactivity(model, "quadratic", grid, 10, eta)
+    # check from_molecule given as a list passing grid
+    model = LocalConceptualDFT.from_molecule([molecule], "quadratic", grid.points)
+    check_local_reactivity(model, "quadratic", grid, 10, eta)

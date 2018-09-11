@@ -620,6 +620,8 @@ class LocalConceptualDFT(BaseConceptualDFT):
             Points on which the local properties are evaluated. If `None`, a default BeckeMolGrid
             is generated to get the points.
         """
+        # check molecule
+        molecule = check_arg_molecule(molecule)
         if points is None:
             # make molecular grid which also checks for matching atomic numbers & coordinates
             grid = cls._get_molecular_grid(molecule, grid=None)
