@@ -87,7 +87,7 @@ def check_condense_fmo(model, energy_model, population, n0):
         assert_almost_equal(np.sum(model.dual_descriptor), 0.0, decimal=3)
 
 
-def test_condense_fmr_linear_h_ch4_fchk():
+def test_condense_linear_from_file_fmr_h_ch4_fchk():
     # expected populations of CH4 computed with HORTON
     filename = context.get_fn("test/ch4_uhf_ccpvdz.fchk")
     expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
@@ -103,9 +103,32 @@ def test_condense_fmr_linear_h_ch4_fchk():
                         random_rotate=False, mode="keep")
     model = CondensedConceptualDFT.from_file(filename, "linear", "FMR", "h", grid)
     check_condense_fmo(model, "linear", expected, 10)
+    # check using filename as a list & passing grid
+    model = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "h", grid)
+    check_condense_fmo(model, "linear", expected, 10)
 
 
-def test_condense_fmr_linear_h_ch4_wfn():
+def test_condense_linear_from_molecule_fmr_h_ch4_fchk():
+    # expected populations of CH4 computed with HORTON
+    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
+    # check from_molecule
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "h")
+    check_condense_fmo(model, "linear", expected, 10)
+    # check from_molecule given as a list
+    model = CondensedConceptualDFT.from_molecule([molecule], "linear", "FMR", "h")
+    check_condense_fmo(model, "linear", expected, 10)
+    # check from_molecule & passing grid
+    grid = BeckeMolGrid(molecule.coordinates, molecule.numbers, molecule.pseudo_numbers,
+                        agspec="insane", random_rotate=False, mode="keep")
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "h", grid)
+    check_condense_fmo(model, "linear", expected, 10)
+    # check from_molecule given as a list & passing grid
+    model = CondensedConceptualDFT.from_molecule([molecule], "linear", "FMR", "h", grid)
+    check_condense_fmo(model, "linear", expected, 10)
+
+
+def test_condense_linear_from_file_fmr_h_ch4_wfn():
     # expected populations of CH4 computed with HORTON
     filename = context.get_fn("test/ch4_uhf_ccpvdz.wfn")
     expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
@@ -115,15 +138,38 @@ def test_condense_fmr_linear_h_ch4_wfn():
     # check using filename given as a list
     model = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "h")
     check_condense_fmo(model, "linear", expected, 10)
-    # check using filename as a list & passing grid
+    # check using filename as a string & passing grid
     mol = make_molecule(filename)
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec="insane",
                         random_rotate=False, mode="keep")
+    model = CondensedConceptualDFT.from_file(filename, "linear", "FMR", "h", grid)
+    check_condense_fmo(model, "linear", expected, 10)
+    # check using filename as a list & passing grid
     model = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "h", grid)
     check_condense_fmo(model, "linear", expected, 10)
 
 
-def test_condense_fmr_linear_mbis_ch4_fchk():
+def test_condense_linear_from_molecule_fmr_h_ch4_wfn():
+    # expected populations of CH4 computed with HORTON
+    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
+    expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
+    # check from_molecule
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "h")
+    check_condense_fmo(model, "linear", expected, 10)
+    # check from_molecule given as a list
+    model = CondensedConceptualDFT.from_molecule([molecule], "linear", "FMR", "h")
+    check_condense_fmo(model, "linear", expected, 10)
+    # check from_molecule & passing grid
+    grid = BeckeMolGrid(molecule.coordinates, molecule.numbers, molecule.pseudo_numbers,
+                        agspec="insane", random_rotate=False, mode="keep")
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "h", grid)
+    check_condense_fmo(model, "linear", expected, 10)
+    # check from_molecule given as a list & passing grid
+    model = CondensedConceptualDFT.from_molecule([molecule], "linear", "FMR", "h", grid)
+    check_condense_fmo(model, "linear", expected, 10)
+
+
+def test_condense_linear_from_file_fmr_mbis_ch4_fchk():
     # expected populations of CH4 computed with HORTON
     filename = context.get_fn("test/ch4_uhf_ccpvdz.fchk")
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
@@ -133,9 +179,38 @@ def test_condense_fmr_linear_mbis_ch4_fchk():
     # check using filename given as a list
     model = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "mbis")
     check_condense_fmo(model, "linear", expected, 10)
+    # check using filename as a string & passing grid
+    mol = make_molecule(filename)
+    grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec="insane",
+                        random_rotate=False, mode="keep")
+    model = CondensedConceptualDFT.from_file(filename, "linear", "FMR", "mbis", grid)
+    check_condense_fmo(model, "linear", expected, 10)
+    # check using filename as a list & passing grid
+    model = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "mbis", grid)
+    check_condense_fmo(model, "linear", expected, 10)
 
 
-def test_condense_fmr_linear_mbis_ch4_wfn():
+def test_condense_linear_from_molecule_fmr_mbis_ch4_fchk():
+    # expected populations of CH4 computed with HORTON
+    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
+    # check from_molecule
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "mbis")
+    check_condense_fmo(model, "linear", expected, 10)
+    # check from_molecule given as a list
+    model = CondensedConceptualDFT.from_molecule([molecule], "linear", "FMR", "mbis")
+    check_condense_fmo(model, "linear", expected, 10)
+    # check from_molecule & passing grid
+    grid = BeckeMolGrid(molecule.coordinates, molecule.numbers, molecule.pseudo_numbers,
+                        agspec="insane", random_rotate=False, mode="keep")
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "mbis", grid)
+    check_condense_fmo(model, "linear", expected, 10)
+    # check from_molecule given as a list & passing grid
+    model = CondensedConceptualDFT.from_molecule([molecule], "linear", "FMR", "mbis", grid)
+    check_condense_fmo(model, "linear", expected, 10)
+
+
+def test_condense_linear_from_file_fmr_mbis_ch4_wfn():
     # expected populations of CH4 computed with HORTON
     filename = context.get_fn("test/ch4_uhf_ccpvdz.wfn")
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
@@ -147,7 +222,27 @@ def test_condense_fmr_linear_mbis_ch4_wfn():
     check_condense_fmo(model, "linear", expected, 10)
 
 
-def test_condense_fmr_quadratic_mbis_ch4_fchk():
+def test_condense_linear_from_molecule_fmr_mbis_ch4_wfn():
+    # expected populations of CH4 computed with HORTON
+    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
+    expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
+    # check from_molecule
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "mbis")
+    check_condense_fmo(model, "linear", expected, 10)
+    # check from_molecule given as a list
+    model = CondensedConceptualDFT.from_molecule([molecule], "linear", "FMR", "mbis")
+    check_condense_fmo(model, "linear", expected, 10)
+    # check from_molecule & passing grid
+    grid = BeckeMolGrid(molecule.coordinates, molecule.numbers, molecule.pseudo_numbers,
+                        agspec="insane", random_rotate=False, mode="keep")
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "mbis", grid)
+    check_condense_fmo(model, "linear", expected, 10)
+    # check from_molecule given as a list & passing grid
+    model = CondensedConceptualDFT.from_molecule([molecule], "linear", "FMR", "mbis", grid)
+    check_condense_fmo(model, "linear", expected, 10)
+
+
+def test_condense_quadratic_from_file_fmr_mbis_ch4_fchk():
     # expected populations of CH4 computed with HORTON
     filename = context.get_fn("test/ch4_uhf_ccpvdz.fchk")
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
@@ -157,9 +252,38 @@ def test_condense_fmr_quadratic_mbis_ch4_fchk():
     # check using filename given as a list
     model = CondensedConceptualDFT.from_file([filename], "quadratic", "FMR", "mbis")
     check_condense_fmo(model, "quadratic", expected, 10)
+    # check using filename as a string & passing grid
+    mol = make_molecule(filename)
+    grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec="insane",
+                        random_rotate=False, mode="keep")
+    model = CondensedConceptualDFT.from_file(filename, "quadratic", "FMR", "mbis", grid)
+    check_condense_fmo(model, "quadratic", expected, 10)
+    # check using filename given as a list
+    model = CondensedConceptualDFT.from_file([filename], "quadratic", "FMR", "mbis", grid)
+    check_condense_fmo(model, "quadratic", expected, 10)
 
 
-def test_condense_fmr_quadratic_mbis_ch4_wfn():
+def test_condense_quadratic_from_molecule_fmr_mbis_ch4_fchk():
+    # expected populations of CH4 computed with HORTON
+    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
+    # check from_molecule
+    model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "FMR", "mbis")
+    check_condense_fmo(model, "quadratic", expected, 10)
+    # check from_molecule given as a list
+    model = CondensedConceptualDFT.from_molecule([molecule], "quadratic", "FMR", "mbis")
+    check_condense_fmo(model, "quadratic", expected, 10)
+    # check from_molecule & passing grid
+    grid = BeckeMolGrid(molecule.coordinates, molecule.numbers, molecule.pseudo_numbers,
+                        agspec="insane", random_rotate=False, mode="keep")
+    model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "FMR", "mbis", grid)
+    check_condense_fmo(model, "quadratic", expected, 10)
+    # check from_molecule given as a list & passing grid
+    model = CondensedConceptualDFT.from_molecule([molecule], "quadratic", "FMR", "mbis", grid)
+    check_condense_fmo(model, "quadratic", expected, 10)
+
+
+def test_condense_quadratic_from_file_fmr_mbis_ch4_wfn():
     # expected populations of CH4 computed with HORTON
     filename = context.get_fn("test/ch4_uhf_ccpvdz.wfn")
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
@@ -168,6 +292,18 @@ def test_condense_fmr_quadratic_mbis_ch4_wfn():
     check_condense_fmo(model, "quadratic", expected, 10)
     # check using filename given as a list
     model = CondensedConceptualDFT.from_file([filename], "quadratic", "FMR", "mbis")
+    check_condense_fmo(model, "quadratic", expected, 10)
+
+
+def test_condense_quadratic_from_molecule_fmr_mbis_ch4_wfn():
+    # expected populations of CH4 computed with HORTON
+    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
+    expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
+    # check from_molecule given as a string
+    model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "FMR", "mbis")
+    check_condense_fmo(model, "quadratic", expected, 10)
+    # check from_molecule given as a list
+    model = CondensedConceptualDFT.from_molecule([molecule], "quadratic", "FMR", "mbis")
     check_condense_fmo(model, "quadratic", expected, 10)
 
 

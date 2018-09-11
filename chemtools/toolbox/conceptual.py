@@ -742,6 +742,9 @@ class CondensedConceptualDFT(BaseConceptualDFT):
             Pro-atom database used for partitioning. Only "h" and "hi" requires that.
         kwargs :
         """
+        # check molecule
+        molecule = check_arg_molecule(molecule)
+        # get atomic number & coordinates
         numbers = cls._get_matching_attr(molecule, "numbers", 1.e-8)
         coords = cls._get_matching_attr(molecule, "coordinates", 1.e-4)
         # check and get partitioning object
