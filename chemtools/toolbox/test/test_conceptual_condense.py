@@ -80,19 +80,20 @@ def check_condensed_reactivity(model, energy_model, pop_0, pop_p, pop_m, n0):
     assert_almost_equal(np.sum(model.population(1.15 * n0)), 1.15 * n0, decimal=2)
     # check condensed fukui function with arbitrary number of electrons
     assert_almost_equal(np.sum(model.fukui_function), 1.0, decimal=2)
-    assert_almost_equal(np.sum(model.population_derivative(0.85, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(model.population_derivative(1.20, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.population_derivative(n0, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.population_derivative(0.85 * n0, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.population_derivative(1.20 * n0, 1)), 1.0, decimal=2)
     if energy_model == "linear":
         if pop_m is not None and pop_p is not None:
             assert_almost_equal(model.ff_plus, pop_p - pop_0, decimal=3)
             assert_almost_equal(model.ff_zero, 0.5 * (pop_p - pop_m), decimal=3)
             assert_almost_equal(model.ff_minus, pop_0 - pop_m, decimal=3)
         assert_almost_equal(np.sum(model.ff_plus), 1., decimal=2)
-        assert_almost_equal(np.sum(model.ff_zero), 1., decimal=3)
-        assert_almost_equal(np.sum(model.ff_minus), 1.0, decimal=3)
+        assert_almost_equal(np.sum(model.ff_zero), 1., decimal=2)
+        assert_almost_equal(np.sum(model.ff_minus), 1.0, decimal=2)
     if energy_model == "quadratic":
         # check condensed dual descriptor
-        assert_almost_equal(np.sum(model.dual_descriptor), 0.0, decimal=3)
+        assert_almost_equal(np.sum(model.dual_descriptor), 0.0, decimal=2)
 
 
 def test_condense_linear_from_file_fmr_h_ch4_fchk():
