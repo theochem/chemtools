@@ -36,8 +36,9 @@ from horton.scripts.wpart import wpart_schemes
 from chemtools.utils.molecule import BaseMolecule
 from chemtools.toolbox.molecule import make_molecule
 from chemtools.toolbox.utils import check_arg_molecule
-from chemtools.conceptual.linear import LinearGlobalTool, LinearLocalTool
+from chemtools.conceptual.linear import LinearGlobalTool, LinearLocalTool, LinearCondensedTool
 from chemtools.conceptual.quadratic import QuadraticGlobalTool, QuadraticLocalTool
+from chemtools.conceptual.quadratic import QuadraticCondensedTool
 from chemtools.conceptual.exponential import ExponentialGlobalTool
 from chemtools.conceptual.rational import RationalGlobalTool
 from chemtools.conceptual.general import GeneralGlobalTool
@@ -663,7 +664,7 @@ class CondensedConceptualDFT(BaseConceptualDFT):
 
         """
         # available models for local tools
-        dict_models = {"linear": LinearLocalTool, "quadratic": QuadraticLocalTool}
+        dict_models = {"linear": LinearCondensedTool, "quadratic": QuadraticCondensedTool}
         super(CondensedConceptualDFT, self).__init__(dict_population, dict_models, model,
                                                      coordinates, numbers)
 
@@ -674,7 +675,7 @@ class CondensedConceptualDFT(BaseConceptualDFT):
         # get sorted list of public attributes
         attrs = [atr for atr in avs if not callable(getattr(self, atr)) and not atr.startswith("_")]
         attrs.sort()
-        attrs.remove("n0")
+        attrs.remove("n_ref")
         # get sorted list of public methods
         methods = [atr for atr in avs if callable(getattr(self, atr)) and not atr.startswith("_")]
         content = "Available attributes in {0} global model:\n{1}\n".format(self._model, "-" * 50)
@@ -687,9 +688,9 @@ class CondensedConceptualDFT(BaseConceptualDFT):
         """Print an initial informative message."""
         if log.do_medium:
             log("Initialize: Condensed Class")
-            # log("Initialize: %s" % self.__class__)
+            log("Initialize: %s" % self.__class__)
             log.deflist([("Energy Model", self._model),
-                         ("Reference #Electrons", self._tool.n0)])
+                         ("Reference #Electrons", self._tool.n_ref)])
             log.blank()
 
     @classmethod

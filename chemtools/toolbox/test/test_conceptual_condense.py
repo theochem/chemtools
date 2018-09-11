@@ -66,22 +66,22 @@ def check_condense(model, energy_model, pop_0, pop_p, pop_m, n0):
     # check print statement
     assert_equal(type(model.__repr__()), str)
     # check expected charges
-    assert_almost_equal(model.density(n0), pop_0, decimal=3)
+    assert_almost_equal(model.population(n0), pop_0, decimal=3)
     if pop_m is not None:
-        assert_almost_equal(model.density(n0 - 1), pop_m, decimal=3)
+        assert_almost_equal(model.population(n0 - 1), pop_m, decimal=3)
     if pop_p is not None:
-        assert_almost_equal(model.density(n0 + 1), pop_p, decimal=3)
+        assert_almost_equal(model.population(n0 + 1), pop_p, decimal=3)
     # check condensed density
-    assert_almost_equal(np.sum(model.density(n0 + 1)), n0 + 1, decimal=2)
-    assert_almost_equal(np.sum(model.density(n0)), n0, decimal=3)
-    assert_almost_equal(np.sum(model.density(n0 - 1)), n0 - 1, decimal=3)
+    assert_almost_equal(np.sum(model.population(n0 + 1)), n0 + 1, decimal=2)
+    assert_almost_equal(np.sum(model.population(n0)), n0, decimal=3)
+    assert_almost_equal(np.sum(model.population(n0 - 1)), n0 - 1, decimal=3)
     # check condensed density with arbitrary number of electrons
-    assert_almost_equal(np.sum(model.density(0.90 * n0)), 0.90 * n0, decimal=2)
-    assert_almost_equal(np.sum(model.density(1.15 * n0)), 1.15 * n0, decimal=2)
+    assert_almost_equal(np.sum(model.population(0.90 * n0)), 0.90 * n0, decimal=2)
+    assert_almost_equal(np.sum(model.population(1.15 * n0)), 1.15 * n0, decimal=2)
     # check condensed fukui function with arbitrary number of electrons
     assert_almost_equal(np.sum(model.fukui_function), 1.0, decimal=2)
-    assert_almost_equal(np.sum(model.density_derivative(0.85, 1)), 1.0, decimal=2)
-    assert_almost_equal(np.sum(model.density_derivative(1.20, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.population_derivative(0.85, 1)), 1.0, decimal=2)
+    assert_almost_equal(np.sum(model.population_derivative(1.20, 1)), 1.0, decimal=2)
     if energy_model == "linear":
         if pop_m is not None and pop_p is not None:
             assert_almost_equal(model.ff_plus, pop_p - pop_0, decimal=3)
