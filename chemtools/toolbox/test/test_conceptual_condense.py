@@ -323,13 +323,32 @@ def test_condense_linear_from_file_fd_rmf_h_ch2o_fchk():
     file_path = [context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk"),
                  context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk"),
                  context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk")]
-    # make molecular grid
+    # check from_file
+    model = CondensedConceptualDFT.from_file(file_path, "linear", "RMF", "h")
+    check_condense(model, "linear", expected_0, expected_p, expected_m, 16)
+    # check from_file passing a grid
     mol = make_molecule(file_path[0])
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
-    # build global conceptual DFT tool
-    model = CondensedConceptualDFT.from_file(file_path, model="linear", grid=grid,
-                                             scheme="h", approach="RMF")
+    model = CondensedConceptualDFT.from_file(file_path, "linear", "RMF", "h", grid)
+    check_condense(model, "linear", expected_0, expected_p, expected_m, 16)
+
+
+def test_condense_linear_from_molecule_fd_rmf_h_ch2o_fchk():
+    # expected populations of CH2O computed with HORTON
+    expected_m = np.array([7.98237872, 5.47698573, 0.77030456, 0.77031781])
+    expected_0 = np.array([8.46718639, 5.67524299, 0.92860658, 0.92866436])
+    expected_p = np.array([8.76534627, 6.18498153, 1.02517556, 1.02513059])
+    molecule = [make_molecule(context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk")),
+                make_molecule(context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk")),
+                make_molecule(context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk"))]
+    # check from_molecule
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "RMF", "h")
+    check_condense(model, "linear", expected_0, expected_p, expected_m, 16)
+    # check from_molecule passing as a grid
+    grid = BeckeMolGrid(molecule[0].coordinates, molecule[0].numbers, molecule[0].pseudo_numbers,
+                        agspec="insane", random_rotate=False, mode="keep")
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "RMF", "h", grid)
     check_condense(model, "linear", expected_0, expected_p, expected_m, 16)
 
 
@@ -341,13 +360,32 @@ def test_condense_linear_from_file_fd_fmr_h_ch2o_fchk():
     file_path = [context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk"),
                  context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk"),
                  context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk")]
-    # make molecular grid
+    # check from_file
+    model = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "h")
+    check_condense(model, "linear", expected_0, expected_p, expected_m, 16)
+    # check from_file passing as a grid
     mol = make_molecule(file_path[0])
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
-    # build global conceptual DFT tool
-    model = CondensedConceptualDFT.from_file(file_path, model="linear", grid=grid,
-                                             scheme="h", approach="FMR")
+    model = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "h", grid)
+    check_condense(model, "linear", expected_0, expected_p, expected_m, 16)
+
+
+def test_condense_linear_from_molecule_fd_fmr_h_ch2o_fchk():
+    # expected populations of CH2O computed with HORTON
+    expected_m = np.array([7.98237872, 5.47698573, 0.77030456, 0.77031781])
+    expected_0 = np.array([8.46718639, 5.67524299, 0.92860658, 0.92866436])
+    expected_p = np.array([8.76534627, 6.18498153, 1.02517556, 1.02513059])
+    molecule = [make_molecule(context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk")),
+                make_molecule(context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk")),
+                make_molecule(context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk"))]
+    # check from_file
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "h")
+    check_condense(model, "linear", expected_0, expected_p, expected_m, 16)
+    # check from_file passing as a grid
+    grid = BeckeMolGrid(molecule[0].coordinates, molecule[0].numbers, molecule[0].pseudo_numbers,
+                        agspec="insane", random_rotate=False, mode="keep")
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "h", grid)
     check_condense(model, "linear", expected_0, expected_p, expected_m, 16)
 
 
@@ -359,13 +397,14 @@ def test_condense_linear_from_file_fd_rmf_mbis_ch2o_fchk():
     file_path = [context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk"),
                  context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk"),
                  context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk")]
-    # make molecular grid
+    # check from_file
+    model = CondensedConceptualDFT.from_file(file_path, "linear", "RMF", "mbis")
+    check_condense(model, "linear", expected_0, expected_p, expected_m, 16)
+    # check from_file passing grid
     mol = make_molecule(file_path[0])
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
-    # build global conceptual DFT tool
-    model = CondensedConceptualDFT.from_file(file_path, model="linear", grid=grid,
-                                             scheme="mbis", approach="RMF")
+    model = CondensedConceptualDFT.from_file(file_path, "linear", "RMF", "mbis", grid)
     check_condense(model, "linear", expected_0, expected_p, expected_m, 16)
 
 
@@ -375,13 +414,30 @@ def test_condense_linear_from_file_fd_fmr_mbis_ch2o_fchk():
     file_path = [context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk"),
                  context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk"),
                  context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk")]
-    # make molecular grid
+    # check from_file
+    model = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "mbis")
+    check_condense(model, "linear", expected_0, None, None, 16)
+    # check from_file passing grid
     mol = make_molecule(file_path[0])
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
-    # build global conceptual DFT tool
-    model = CondensedConceptualDFT.from_file(file_path, model="linear", grid=grid,
-                                             scheme="mbis", approach="FMR")
+    model = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "mbis", grid)
+    check_condense(model, "linear", expected_0, None, None, 16)
+
+
+def test_condense_linear_from_molecule_fd_fmr_mbis_ch2o_fchk():
+    # expected populations of CH2O computed with HORTON
+    expected_0 = np.array([8.41149, 5.66445074, 0.96204946, 0.96202722])
+    molecule = [make_molecule(context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk")),
+                make_molecule(context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk")),
+                make_molecule(context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk"))]
+    # check from_molecule
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "mbis")
+    check_condense(model, "linear", expected_0, None, None, 16)
+    # check from_molecule passing grid
+    grid = BeckeMolGrid(molecule[0].coordinates, molecule[0].numbers, molecule[0].pseudo_numbers,
+                        agspec="insane", random_rotate=False, mode="keep")
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "mbis", grid)
     check_condense(model, "linear", expected_0, None, None, 16)
 
 
@@ -393,10 +449,30 @@ def test_condense_quadratic_from_file_fd_rmf_h_ch2o_fchk():
     file_path = [context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk"),
                  context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk"),
                  context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk")]
-    # make molecular grid
+    # check from_file
+    model = CondensedConceptualDFT.from_file(file_path, "quadratic", "RMF", "h")
+    check_condense(model, "quadratic", expected_0, expected_p, expected_m, 16)
+    # check from_file passing grid
     mol = make_molecule(file_path[0])
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
-    # build global conceptual DFT tool
-    model = CondensedConceptualDFT.from_file(file_path, "quadratic", "RMF", "h", grid=grid)
+    model = CondensedConceptualDFT.from_file(file_path, "quadratic", "RMF", "h", grid)
+    check_condense(model, "quadratic", expected_0, expected_p, expected_m, 16)
+
+
+def test_condense_quadratic_from_molecule_fd_rmf_h_ch2o_fchk():
+    # expected populations of CH2O computed with HORTON
+    expected_m = np.array([7.98237872, 5.47698573, 0.77030456, 0.77031781])
+    expected_0 = np.array([8.46718639, 5.67524299, 0.92860658, 0.92866436])
+    expected_p = np.array([8.76534627, 6.18498153, 1.02517556, 1.02513059])
+    molecule = [make_molecule(context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk")),
+                make_molecule(context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk")),
+                make_molecule(context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk"))]
+    # check from_file
+    model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "RMF", "h")
+    check_condense(model, "quadratic", expected_0, expected_p, expected_m, 16)
+    # check from_file passing grid
+    grid = BeckeMolGrid(molecule[0].coordinates, molecule[0].numbers, molecule[0].pseudo_numbers,
+                        agspec="insane", random_rotate=False, mode="keep")
+    model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "RMF", "h", grid)
     check_condense(model, "quadratic", expected_0, expected_p, expected_m, 16)
