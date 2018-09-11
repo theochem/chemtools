@@ -35,6 +35,7 @@ from chemtools.toolbox.conceptual import LocalConceptualDFT
 
 
 def get_data_ch4():
+    """Get atomic coordinates and number of CH4 at UHF/cc-pVDZ."""
     coord = np.array([[-3.77945227e-05,  3.77945227e-05, -1.88972613e-05],
                       [ 1.04290206,  1.50497789,  0.934507367],
                       [ 1.28607202, -1.53098052, -0.477307027],
@@ -73,8 +74,8 @@ def test_local_conceptual_raises():
     assert_raises(ValueError, LocalConceptualDFT.from_file, fns, "quadratic", points)
 
 
-def check_local_reactivity(model, energy_model, grid, n0, eta):
-    """Check expected linear local reactivity descriptors."""
+def check_local_reactivity(model, energy_model, grid, n0):
+    """Check expected local reactivity descriptors."""
     # build local conceptual DFT tool
 
     # check print statement
@@ -116,10 +117,10 @@ def test_local_linear_from_file_fmo_ch4_uhf_ccpvdz_fchk():
     grid = BeckeMolGrid(coord, nums, nums, agspec="insane", random_rotate=False, mode="keep")
     # check from_file passing a grid
     model = LocalConceptualDFT.from_file(file_path, "linear", grid.points)
-    check_local_reactivity(model, "linear", grid, 10, None)
+    check_local_reactivity(model, "linear", grid, 10)
     # check from_file given as a list passing a grid
     model = LocalConceptualDFT.from_file([file_path], "linear", grid.points)
-    check_local_reactivity(model, "linear", grid, 10, None)
+    check_local_reactivity(model, "linear", grid, 10)
 
 
 def test_local_linear_from_molecule_fmo_ch4_uhf_ccpvdz_fchk():
@@ -129,10 +130,10 @@ def test_local_linear_from_molecule_fmo_ch4_uhf_ccpvdz_fchk():
     grid = BeckeMolGrid(coord, nums, nums, agspec="insane", random_rotate=False, mode="keep")
     # check from_molecule passing a grid
     model = LocalConceptualDFT.from_molecule(molecule, "linear", grid.points)
-    check_local_reactivity(model, "linear", grid, 10, None)
+    check_local_reactivity(model, "linear", grid, 10)
     # check from_molecule given as a list passing a grid
     model = LocalConceptualDFT.from_molecule([molecule], "linear", grid.points)
-    check_local_reactivity(model, "linear", grid, 10, None)
+    check_local_reactivity(model, "linear", grid, 10)
 
 
 def test_local_linear_from_file_fmo_ch4_uhf_ccpvdz_wfn():
@@ -142,10 +143,10 @@ def test_local_linear_from_file_fmo_ch4_uhf_ccpvdz_wfn():
     grid = BeckeMolGrid(coord, nums, nums, agspec="insane", random_rotate=False, mode="keep")
     # check from_file passing a grid
     model = LocalConceptualDFT.from_file(file_path, "linear", grid.points)
-    check_local_reactivity(model, "linear", grid, 10, None)
+    check_local_reactivity(model, "linear", grid, 10)
     # check from_file given as a list passing a grid
     model = LocalConceptualDFT.from_file([file_path], "linear", grid.points)
-    check_local_reactivity(model, "linear", grid, 10, None)
+    check_local_reactivity(model, "linear", grid, 10)
 
 
 def test_local_linear_from_molecule_fmo_ch4_uhf_ccpvdz_wfn():
@@ -155,67 +156,67 @@ def test_local_linear_from_molecule_fmo_ch4_uhf_ccpvdz_wfn():
     grid = BeckeMolGrid(coord, nums, nums, agspec="insane", random_rotate=False, mode="keep")
     # check from_molecule passing a grid
     model = LocalConceptualDFT.from_molecule(molecule, "linear", grid.points)
-    check_local_reactivity(model, "linear", grid, 10, None)
+    check_local_reactivity(model, "linear", grid, 10)
     # check from_molecule given as a list passing a grid
     model = LocalConceptualDFT.from_molecule([molecule], "linear", grid.points)
-    check_local_reactivity(model, "linear", grid, 10, None)
+    check_local_reactivity(model, "linear", grid, 10)
 
 
 def test_local_quadratic_from_file_fmo_ch4_uhf_ccpvdz_fchk():
     # atomic coordinates and numbers of CH4
     coord, nums = get_data_ch4()
     # ip = -E(homo) & ea = E(lumo) & eta = ip - ea
-    eta = -(-5.43101269E-01) - (-1.93295185E-01)
+    # eta = -(-5.43101269E-01) - (-1.93295185E-01)
     file_path = context.get_fn("test/ch4_uhf_ccpvdz.fchk")
     grid = BeckeMolGrid(coord, nums, nums, agspec="insane", random_rotate=False, mode="keep")
     # check from_file passing grid
     model = LocalConceptualDFT.from_file(file_path, "quadratic", grid.points)
-    check_local_reactivity(model, "quadratic", grid, 10, eta)
+    check_local_reactivity(model, "quadratic", grid, 10)
     # check from_file given as a list passing grid
     model = LocalConceptualDFT.from_file([file_path], "quadratic", grid.points)
-    check_local_reactivity(model, "quadratic", grid, 10, eta)
+    check_local_reactivity(model, "quadratic", grid, 10)
 
 
 def test_local_quadratic_from_molecule_fmo_ch4_uhf_ccpvdz_fchk():
     # atomic coordinates and numbers of CH4
     coord, nums = get_data_ch4()
     # ip = -E(homo) & ea = E(lumo) & eta = ip - ea
-    eta = -(-5.43101269E-01) - (-1.93295185E-01)
+    # eta = -(-5.43101269E-01) - (-1.93295185E-01)
     molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
     grid = BeckeMolGrid(coord, nums, nums, agspec="insane", random_rotate=False, mode="keep")
     # check from_molecule passing grid
     model = LocalConceptualDFT.from_molecule(molecule, "quadratic", grid.points)
-    check_local_reactivity(model, "quadratic", grid, 10, eta)
+    check_local_reactivity(model, "quadratic", grid, 10)
     # check from_molecule given as a list passing grid
     model = LocalConceptualDFT.from_molecule([molecule], "quadratic", grid.points)
-    check_local_reactivity(model, "quadratic", grid, 10, eta)
+    check_local_reactivity(model, "quadratic", grid, 10)
 
 
 def test_local_quadratic_from_file_fmo_ch4_uhf_ccpvdz_wfn():
     # atomic coordinates and numbers of CH4
     coord, nums = get_data_ch4()
     # ip = -E(homo) & ea = E(lumo) & eta = ip - ea
-    eta = -(-5.43101269E-01) - (-1.93295185E-01)
+    # eta = -(-5.43101269E-01) - (-1.93295185E-01)
     file_path = context.get_fn("test/ch4_uhf_ccpvdz.wfn")
     grid = BeckeMolGrid(coord, nums, nums, agspec="insane", random_rotate=False, mode="keep")
     # check from_file passing grid
     model = LocalConceptualDFT.from_file(file_path, "quadratic", grid.points)
-    check_local_reactivity(model, "quadratic", grid, 10, eta)
+    check_local_reactivity(model, "quadratic", grid, 10)
     # check from_file given as a list passing grid
     model = LocalConceptualDFT.from_file([file_path], "quadratic", grid.points)
-    check_local_reactivity(model, "quadratic", grid, 10, eta)
+    check_local_reactivity(model, "quadratic", grid, 10)
 
 
 def test_local_quadratic_from_molecule_fmo_ch4_uhf_ccpvdz_wfn():
     # atomic coordinates and numbers of CH4
     coord, nums = get_data_ch4()
     # ip = -E(homo) & ea = E(lumo) & eta = ip - ea
-    eta = -(-5.43101269E-01) - (-1.93295185E-01)
+    # eta = -(-5.43101269E-01) - (-1.93295185E-01)
     molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
     grid = BeckeMolGrid(coord, nums, nums, agspec="insane", random_rotate=False, mode="keep")
     # check from_molecule passing grid
     model = LocalConceptualDFT.from_molecule(molecule, "quadratic", grid.points)
-    check_local_reactivity(model, "quadratic", grid, 10, eta)
+    check_local_reactivity(model, "quadratic", grid, 10)
     # check from_molecule given as a list passing grid
     model = LocalConceptualDFT.from_molecule([molecule], "quadratic", grid.points)
-    check_local_reactivity(model, "quadratic", grid, 10, eta)
+    check_local_reactivity(model, "quadratic", grid, 10)

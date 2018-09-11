@@ -63,6 +63,7 @@ def test_condensed_conceptual_raises():
 
 
 def check_condensed_reactivity(model, energy_model, pop_0, pop_p, pop_m, n0):
+    """Check expected condensed reactivity descriptors."""
     # check print statement
     assert_equal(type(model.__repr__()), str)
     # check expected charges
