@@ -27,7 +27,6 @@ from chemtools.wrappers import *
 from chemtools.toolbox import *
 from chemtools.conceptual import *
 from chemtools.denstools import *
-from chemtools.orbtools import *
 from chemtools.utils import *
 
 
