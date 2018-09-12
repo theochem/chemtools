@@ -28,7 +28,7 @@ import numpy as np
 from horton import BeckeMolGrid, ProAtomDB
 from horton.scripts.wpart import wpart_schemes
 
-from chemtools.utils.wrappers import Molecule
+from chemtools.wrappers.molecule import Molecule
 
 
 __all__ = ["check_arg_molecule", "get_homo_lumo_data", "get_dict_energy", "get_dict_density",

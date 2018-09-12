@@ -30,7 +30,7 @@ from numpy.testing import assert_raises, assert_equal, assert_almost_equal
 
 from horton import BeckeMolGrid
 from chemtools import context
-from chemtools.utils.wrappers import Molecule
+from chemtools.wrappers.molecule import Molecule
 from chemtools.toolbox.conceptual import LocalConceptualDFT
 
 

@@ -35,7 +35,7 @@ from horton import IOData
 from chemtools import context
 from chemtools.utils import CubeGen
 from chemtools.toolbox.nci import NCI
-from chemtools.utils.wrappers import Molecule
+from chemtools.wrappers.molecule import Molecule
 
 
 @contextmanager

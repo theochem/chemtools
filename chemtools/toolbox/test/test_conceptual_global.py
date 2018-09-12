@@ -30,7 +30,7 @@ from numpy.testing import assert_raises, assert_almost_equal
 
 from chemtools import context
 from chemtools.toolbox.conceptual import GlobalConceptualDFT
-from chemtools.utils.wrappers import Molecule
+from chemtools.wrappers.molecule import Molecule
 
 
 def test_global_conceptual_raises():

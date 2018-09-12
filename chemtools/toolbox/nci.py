@@ -29,7 +29,7 @@ computes the Non-Covalent Interactions.
 import numpy as np
 import matplotlib
 matplotlib.use('agg')
-from chemtools.utils.wrappers import Molecule
+from chemtools.wrappers.molecule import Molecule
 from chemtools.denstools.densitybased import DensityLocalTool
 from chemtools.utils.cube import CubeGen
 from chemtools.utils.output import print_vmd_script_nci

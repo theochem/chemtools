@@ -26,7 +26,7 @@ This modules contains wrappers which take outputs of quantum chemistry software 
 compute various descriptive tools based on the density and orbital information.
 """
 
-from chemtools.utils.wrappers import Molecule
+from chemtools.wrappers.molecule import Molecule
 from chemtools.orbtools.orbitalbased import OrbitalLocalTool
 
 __all__ = ['OrbitalAnalysis']

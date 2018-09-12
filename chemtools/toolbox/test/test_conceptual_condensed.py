@@ -31,7 +31,7 @@ from numpy.testing import assert_raises, assert_equal, assert_almost_equal
 from horton import BeckeMolGrid
 from chemtools import context
 from chemtools.toolbox.conceptual import CondensedConceptualDFT
-from chemtools.utils.wrappers import Molecule
+from chemtools.wrappers.molecule import Molecule
 
 
 def test_condensed_conceptual_raises():

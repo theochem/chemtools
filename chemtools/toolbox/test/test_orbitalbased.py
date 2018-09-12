@@ -29,7 +29,7 @@ import numpy as np
 from numpy.testing import assert_raises, assert_array_almost_equal, assert_allclose
 
 from horton import IOData
-from chemtools.utils.wrappers import Molecule
+from chemtools.wrappers.molecule import Molecule
 from chemtools import context, CubeGen, OrbitalAnalysis
 
 

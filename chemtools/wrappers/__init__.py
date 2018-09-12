@@ -20,9 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""The Utility Module."""
+"""The Wrappers Module."""
 
 
-from chemtools.utils.cube import *
-from chemtools.utils.utils import *
-from chemtools.utils.output import *
+from chemtools.wrappers.molecule import *
