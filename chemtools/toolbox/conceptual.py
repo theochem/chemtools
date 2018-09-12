@@ -28,7 +28,7 @@ compute various conceptual density functional theory (DFT) descriptive tools.
 """
 
 
-from horton import log
+from horton import log, BeckeMolGrid
 
 from chemtools.utils.molecule import BaseMolecule
 from chemtools.toolbox.molecule import make_molecule
@@ -480,6 +480,9 @@ class CondensedConceptualDFT(BaseConceptualDFT):
             Pro-atom database used for partitioning. Only "h" and "hi" requires that.
         kwargs :
         """
+        # check type of grid
+        if grid is not None and not isinstance(grid, BeckeMolGrid):
+            raise ValueError("Currently, only 'BeckeMolGrid' is supported for condensing!")
         # check molecule
         molecule = check_arg_molecule(molecule)
         # get atomic number & coordinates

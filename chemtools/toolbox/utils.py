@@ -25,8 +25,8 @@
 
 import numpy as np
 
-from horton.scripts.wpart import wpart_schemes
 from horton import BeckeMolGrid, ProAtomDB
+from horton.scripts.wpart import wpart_schemes
 
 from chemtools.utils.molecule import BaseMolecule
 
@@ -86,6 +86,10 @@ def get_matching_attr(molecule, attr, accuracy=1.e-6):
     ----------
     molecule : BaseMolecule or Sequence of BaseMolecule
         Instance of BaseMolecule class, or sequence of BaseMolecule class instances.
+    attr : str
+        The name ot attribute.
+    accuracy : float, optional
+        The accuracy for matching the attribute between different molecules.
     """
     if isinstance(molecule, BaseMolecule):
         # get attribute for single molecule
@@ -98,8 +102,7 @@ def get_matching_attr(molecule, attr, accuracy=1.e-6):
                 continue
             item = getattr(mol, attr)
             if item.shape != ref.shape or not np.max(abs(ref - item)) < accuracy:
-                raise ValueError(
-                    "Molecule 1 & {0} have different {1}!".format(index + 1, attr))
+                raise ValueError("Molecule 0 & {0} have different {1}!".format(index, attr))
     else:
         raise ValueError("Argument molecule not recognized!")
     return ref
@@ -115,28 +118,25 @@ def get_molecular_grid(molecule, grid=None):
     grid : BeckeMolGrid, optional
         Instance or BeckeMolGrid. If `None`, a default `BeckeMolGrid` is returned.
     """
-    # check type of grid
-    if grid is not None and not isinstance(grid, BeckeMolGrid):
-        raise ValueError("Currently, only 'BeckeMolGrid' is supported for condensing!")
     # check grid or make grid
     if grid is not None and isinstance(molecule, BaseMolecule):
-        # check coordinates and atomic numbers of grid and molecule match
-        if not np.all(abs(grid.centers - molecule.coordinates) < 1.e-4):
-            raise ValueError("Coordinates of grid and molecule do not match!")
-        if not np.all(abs(grid.numbers - molecule.numbers) < 1.e-4):
+        # check atomic numbers & coordinates of grid and molecule match
+        ref, numbers = grid.numbers, molecule.numbers
+        if ref.shape != numbers.shape or not np.max(abs(ref - numbers)) < 1.e-6:
             raise ValueError("Atomic numbers of grid and molecule do not match!")
+        ref, coord = grid.centers, molecule.coordinates
+        if ref.shape != coord.shape or not np.max(abs(ref - coord)) < 1.e-4:
+            raise ValueError("Coordinates of grid and molecule do not match!")
     elif grid is not None and all([isinstance(mol, BaseMolecule) for mol in molecule]):
         for index, mol in enumerate(molecule):
             # check atomic numbers of grid and molecules match
             ref, numbers = grid.numbers, mol.numbers
             if ref.shape != numbers.shape or not np.max(abs(ref - numbers)) < 1.e-6:
-                raise ValueError("Atomic numbers of grid and molecule {0} "
-                                 "do not match!".format(index + 1))
+                raise ValueError("Atomic number of grid & molecule {0} do not match!".format(index))
             # check coordinates of grid and molecules match
             ref, coord = grid.centers, mol.coordinates
             if ref.shape != coord.shape or not np.max(abs(ref - coord)) < 1.e-4:
-                raise ValueError("Coordinates of grid and molecule {0} "
-                                 "do not match!".format(index + 1))
+                raise ValueError("Coordinates of grid & molecule {0} do not match!".format(index))
     else:
         # make default grid
         number = get_matching_attr(molecule, "numbers", 1.e-8)
@@ -148,7 +148,18 @@ def get_molecular_grid(molecule, grid=None):
 
 
 def get_part_specifications(scheme, proatomdb, numbers, kwargs):
-    """
+    """Return partitioning specifications.
+
+    Parameters
+    ----------
+    scheme : str
+        Partitioning scheme.
+    proatomdb :
+        Instance of ProAtomDB.
+    numbers : ndarray
+        Atomic numbers.
+    kwargs : dict
+        Key-word arguments for paritioning scheme.
     """
     # get partitioning class
     if scheme.lower() not in wpart_schemes:
@@ -294,24 +305,23 @@ def get_dict_population(molecule, approach, grid, wpart, kwargs):
                              "is possible! Given approach={0}".format(approach.upper()))
         same_coordinates = False
 
+    # find reference molecule
+    if isinstance(molecule, BaseMolecule):
+        mol0 = molecule
+    elif np.all([isinstance(mol, BaseMolecule) for mol in molecule]):
+        if len(molecule) != 3:
+            raise ValueError("Condensing within FD approach, currently works for "
+                             "only 3 molecules! Given {0} molecules.".format(len(molecule)))
+        # reference molecule is the middle molecule (for 3 molecules)
+        dict_mols = {sum(mol.nelectrons): mol for mol in molecule}
+        mol0 = dict_mols.pop(sorted(dict_mols.keys())[1])
+    else:
+        raise ValueError("Argument molecule not recognized!")
+
     # check or generate molecular grid
     grid = get_molecular_grid(molecule, grid)
     # compute dictionary of number of electron and density
     dict_dens = get_dict_density(molecule, grid.points)
-
-    # find reference molecule
-    if isinstance(molecule, BaseMolecule):
-        mol0 = molecule
-    elif len(molecule) == 1 and isinstance(molecule[0], BaseMolecule):
-        mol0 = molecule[0]
-    elif np.all([isinstance(mol, BaseMolecule) for mol in molecule]):
-        if len(molecule) != 3:
-            raise ValueError("Conceptual DFT within FD approach, currently works for "
-                             "only 3 molecules! Given {0} molecules.".format(len(molecule)))
-
-        # reference molecule is the middle molecule (for 3 molecules)
-        dict_mols = {sum(mol.nelectrons): mol for mol in molecule}
-        mol0 = dict_mols.pop(sorted(dict_mols.keys())[1])
 
     # compute population of reference molecule
     part0 = wpart(mol0.coordinates, mol0.numbers, mol0.pseudo_numbers, grid,
@@ -323,9 +333,7 @@ def get_dict_population(molecule, approach, grid, wpart, kwargs):
 
     # compute and record populations given grid in a dictionary
     for nelec, dens in dict_dens.iteritems():
-        # make sure there is no repetition
-        if nelec in dict_pops.keys():
-            raise ValueError("")
+
         if approach.lower() == "fmr":
             # fragment of molecular response
             pops = condense_to_atoms(dens, part0)
@@ -341,8 +349,7 @@ def get_dict_population(molecule, approach, grid, wpart, kwargs):
             parts.do_all()
             pops = parts["populations"]
         else:
-            raise ValueError("Partitioning approach {0} is not recognized!".format(approach))
+            raise ValueError("Condensing approach {0} is not recognized!".format(approach))
         # Store number of electron and populations in a dictionary
         dict_pops[nelec] = pops
-
     return dict_pops
