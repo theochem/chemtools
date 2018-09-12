@@ -26,7 +26,7 @@ from numpy.testing import assert_raises
 import numpy as np
 from horton import IOData, BeckeMolGrid
 from chemtools.denstools.densitybased import DensityLocalTool
-from chemtools.toolbox.orbitalbased import OrbitalAnalysis
+from chemtools.toolbox.orbitalbased import OrbitalLocalTool
 from chemtools.utils.utils import context
 from chemtools.utils.cube import CubeGen
 
@@ -97,7 +97,7 @@ def test_density_local_tool_electrostatic_potential():
     sh = np.array([3, 3, 3])
     cube = CubeGen(mol.numbers, mol.pseudo_numbers, mol.coordinates, ori, ax, sh)
 
-    orb = OrbitalAnalysis.from_file(file_path, grid.points)
+    orb = OrbitalLocalTool.from_file(file_path, grid.points)
 
     # build a density local model
     model = DensityLocalTool(orb.density, orb.gradient)

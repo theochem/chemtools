@@ -28,7 +28,7 @@ from horton import IOData
 from chemtools.wrappers.molecule import Molecule
 from chemtools import context
 from chemtools.utils import CubeGen
-from chemtools.orbtools.orbitalbased import OrbitalLocalTool
+from chemtools.toolbox.orbitalbased import OrbitalLocalTool
 
 
 def test_orbital_tool_ch4_uhf_ccpvdz():

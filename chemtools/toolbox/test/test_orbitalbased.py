@@ -28,15 +28,17 @@ import numpy as np
 
 from numpy.testing import assert_raises, assert_array_almost_equal, assert_allclose
 
+from chemtools.utils.utils import context
+from chemtools.utils.cube import CubeGen
 from chemtools.wrappers.molecule import Molecule
-from chemtools import context, CubeGen, OrbitalAnalysis
+from chemtools.toolbox.orbitalbased import OrbitalLocalTool
 
 
 def test_toolbox_orbitalbased_raises():
     # check file name
-    assert_raises(ValueError, OrbitalAnalysis.from_file, "gibberish", np.array([0.0, 1.0]))
+    assert_raises(ValueError, OrbitalLocalTool.from_file, "gibberish", np.array([0.0, 1.0]))
     filename = context.get_fn('test/h2o_dimer_pbe_sto3g.wf')
-    assert_raises(ValueError, OrbitalAnalysis.from_file, filename, np.array([0.0, 1.0]))
+    assert_raises(ValueError, OrbitalLocalTool.from_file, filename, np.array([0.0, 1.0]))
 
 
 def test_orbital_analysis_from_file_ch4_uhf_ccpvdz():
@@ -52,7 +54,7 @@ def test_orbital_analysis_from_file_ch4_uhf_ccpvdz():
     cube = CubeGen(mol.numbers, mol.pseudo_numbers, mol.coordinates, ori, ax, sh)
 
     # initialize OrbitalLocalTool:
-    orbtool = OrbitalAnalysis.from_file(file_path, cube.points)
+    orbtool = OrbitalLocalTool.from_file(file_path, cube.points)
 
     # density results obtained from Fortran code:
     result = [0.00003304, 0.00053319, 0.00019292, 0.00111552, 0.00679461,
@@ -164,7 +166,7 @@ def test_orbital_analysis_from_file_ch4_rhf_ccpvdz():
     cube = CubeGen(mol.numbers, mol.pseudo_numbers, mol.coordinates, ori, ax, sh)
 
     # initialize OrbitalLocalTool:
-    orbtool = OrbitalAnalysis.from_file(file_path, cube.points)
+    orbtool = OrbitalLocalTool.from_file(file_path, cube.points)
 
     # density results obtained from Fortran code:
     result = [0.00003304, 0.00053319, 0.00019292, 0.00111552, 0.00679461,
@@ -278,8 +280,8 @@ def test_orbital_analysis_from_molecule_ch4_uhf_ccpvdz():
     cube = CubeGen(mol.numbers, mol.pseudo_numbers, mol.coordinates, ori, ax, sh)
 
     # initialize OrbitalLocalTool:
-    orbtool = OrbitalAnalysis.from_molecule(Molecule(mol), cube.points)
-    rorbtool = OrbitalAnalysis.from_molecule(Molecule(rmol), cube.points)
+    orbtool = OrbitalLocalTool(Molecule(mol), cube.points)
+    rorbtool = OrbitalLocalTool(Molecule(rmol), cube.points)
 
     # density results obtained from Fortran code:
     result = [0.00003304, 0.00053319, 0.00019292, 0.00111552, 0.00679461,
