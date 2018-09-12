@@ -199,6 +199,11 @@ class CubeGen(object):
         return self._coordinates
 
     @property
+    def centers(self):
+        """Cartesian coordinates of the atoms in the molecule."""
+        return self._coordinates
+
+    @property
     def origin(self):
         """Cartesian coordinate of the cubic grid origin."""
         return self._origin
