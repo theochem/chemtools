@@ -32,8 +32,7 @@ from chemtools.utils.molecule import BaseMolecule
 
 
 __all__ = ["check_arg_molecule", "get_homo_lumo_data", "get_dict_energy", "get_dict_density",
-           "get_dict_population", "get_matching_attr", "get_molecular_grid",
-           "get_part_specifications"]
+           "get_dict_population", "get_matching_attr", "get_molecular_grid"]
 
 
 def check_arg_molecule(molecule):
@@ -147,34 +146,6 @@ def get_molecular_grid(molecule, grid=None):
     return grid
 
 
-def get_part_specifications(scheme, proatomdb, numbers, kwargs):
-    """Return partitioning specifications.
-
-    Parameters
-    ----------
-    scheme : str
-        Partitioning scheme.
-    proatomdb :
-        Instance of ProAtomDB.
-    numbers : ndarray
-        Atomic numbers.
-    kwargs : dict
-        Key-word arguments for paritioning scheme.
-    """
-    # get partitioning class
-    if scheme.lower() not in wpart_schemes:
-        raise ValueError("Partitioning scheme={0} not supported! "
-                         "Select from: {1}".format(scheme, wpart_schemes.keys()))
-    wpart = wpart_schemes[scheme]
-    # make proatom database
-    # kwargs = {}
-    if scheme.lower() not in ["mbis", "b"]:
-        if proatomdb is None:
-            proatomdb = ProAtomDB.from_refatoms(numbers)
-        kwargs["proatomdb"] = proatomdb
-    return wpart, kwargs
-
-
 def condense_to_atoms(local_property, part):
     r"""
     Return condensed values of the local descriptor partitioned and integrated over atoms.
@@ -280,7 +251,7 @@ def get_dict_density(molecule, points):
     return densities
 
 
-def get_dict_population(molecule, approach, grid, wpart, kwargs):
+def get_dict_population(molecule, approach, scheme, **kwargs):
     r"""Return dictionary of number of electrons and corresponding atomic charges values.
 
     Parameters
@@ -290,11 +261,15 @@ def get_dict_population(molecule, approach, grid, wpart, kwargs):
     approach : str, optional
         Choose between "FMR" (fragment of molecular response) or "RMF"
         (response of molecular fragment).
-    grid: BeckeMolGrid, optional
-        Molecular grid used for partitioning.
-    wpart :
-    kwargs :
+    scheme : str
+        Partitioning scheme.
+    kwargs : optional
     """
+    # check partitioning
+    if scheme.lower() not in wpart_schemes:
+        raise ValueError("Partitioning scheme={0} not supported! "
+                         "Select from: {1}".format(scheme, wpart_schemes.keys()))
+
     # check whether molecules have the same coordinates
     try:
         get_matching_attr(molecule, "coordinates", 1.e-4)
@@ -318,8 +293,15 @@ def get_dict_population(molecule, approach, grid, wpart, kwargs):
     else:
         raise ValueError("Argument molecule not recognized!")
 
+    wpart = wpart_schemes[scheme]
+    # make proatom database
+    if scheme.lower() not in ["mbis", "b"]:
+        if "proatomdb" not in kwargs.keys():
+            proatomdb = ProAtomDB.from_refatoms(mol0.numbers)
+        kwargs["proatomdb"] = proatomdb
+
     # check or generate molecular grid
-    grid = get_molecular_grid(molecule, grid)
+    grid = get_molecular_grid(molecule, kwargs.pop("grid", None))
     # compute dictionary of number of electron and density
     dict_dens = get_dict_density(molecule, grid.points)
 

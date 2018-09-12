@@ -32,7 +32,6 @@ from horton import log, BeckeMolGrid
 
 from chemtools.utils.molecule import BaseMolecule
 from chemtools.toolbox.molecule import make_molecule
-from chemtools.toolbox.utils import get_part_specifications
 from chemtools.toolbox.utils import check_arg_molecule, get_matching_attr
 from chemtools.toolbox.utils import get_dict_energy, get_dict_density, get_dict_population
 from chemtools.conceptual.linear import LinearGlobalTool, LinearLocalTool, LinearCondensedTool
@@ -431,7 +430,7 @@ class CondensedConceptualDFT(BaseConceptualDFT):
             log.blank()
 
     @classmethod
-    def from_file(cls, file_name, model, approach="FMR", scheme="h", grid=None, proatomdb=None):
+    def from_file(cls, file_name, model, approach="FMR", scheme="h", **kwargs):
         r"""
         Initialize class from calculation output file(s).
 
@@ -448,17 +447,14 @@ class CondensedConceptualDFT(BaseConceptualDFT):
             (response of molecular fragment).
         scheme : str, optional
             Partitioning scheme. Options: "h", "hi", "mbis".
-        grid : BeckeMolGrid, optional
-            Molecular grid used for partitioning.
-        proatomdb: ProAtomDB
-            Pro-atom database used for partitioning. Only "h" and "hi" requires that.
+        kwargs : dict, optional
+            Extra keyword arguments required for partitioning, like 'grid' and 'proatomdb'.
         """
         molecules = cls.load_file(file_name)
-        return cls.from_molecule(molecules, model, approach, scheme, grid, proatomdb)
+        return cls.from_molecule(molecules, model, approach, scheme, **kwargs)
 
     @classmethod
-    def from_molecule(cls, molecule, model, approach="FMR", scheme="h", grid=None,
-                      proatomdb=None, **kwargs):
+    def from_molecule(cls, molecule, model, approach="FMR", scheme="h", **kwargs):
         r"""
         Initialize class from `BaseMolecule` object(s).
 
@@ -474,22 +470,17 @@ class CondensedConceptualDFT(BaseConceptualDFT):
             (response of molecular fragment).
         scheme : str, optional
             Partitioning scheme. Options: "h", "hi", "mbis".
-        grid: BeckeMolGrid, optional
-            Molecular grid used for partitioning.
-        proatomdb : ProAtomDB
-            Pro-atom database used for partitioning. Only "h" and "hi" requires that.
-        kwargs :
+        kwargs : dict, optional
+            Extra keyword arguments required for partitioning, like 'grid' and 'proatomdb'.
         """
-        # check type of grid
-        if grid is not None and not isinstance(grid, BeckeMolGrid):
-            raise ValueError("Currently, only 'BeckeMolGrid' is supported for condensing!")
         # check molecule
         molecule = check_arg_molecule(molecule)
+        # check type of grid
+        if "grid" in kwargs.keys() and not isinstance(kwargs["grid"], BeckeMolGrid):
+            raise ValueError("Currently, only 'BeckeMolGrid' is supported for condensing!")
         # get atomic number & coordinates
         numbers = get_matching_attr(molecule, "numbers", 1.e-8)
         coords = get_matching_attr(molecule, "coordinates", 1.e-4)
-        # check and get partitioning object
-        wpart, kwargs = get_part_specifications(scheme, proatomdb, numbers, kwargs)
         # get dictionary of populations
-        dict_pops = get_dict_population(molecule, approach, grid, wpart, kwargs)
+        dict_pops = get_dict_population(molecule, approach, scheme, **kwargs)
         return cls(dict_pops, model, coords, numbers)

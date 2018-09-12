@@ -111,10 +111,10 @@ def test_condense_linear_from_file_fmr_h_ch4_fchk():
     mol = make_molecule(filename)
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec="insane",
                         random_rotate=False, mode="keep")
-    model = CondensedConceptualDFT.from_file(filename, "linear", "FMR", "h", grid)
+    model = CondensedConceptualDFT.from_file(filename, "linear", "FMR", "h", grid=grid)
     check_condensed_reactivity(model, "linear", expected, None, None, 10)
     # check using filename as a list & passing grid
-    model = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "h", grid)
+    model = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "h", grid=grid)
     check_condensed_reactivity(model, "linear", expected, None, None, 10)
 
 
@@ -131,10 +131,10 @@ def test_condense_linear_from_molecule_fmr_h_ch4_fchk():
     # check from_molecule & passing grid
     grid = BeckeMolGrid(molecule.coordinates, molecule.numbers, molecule.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
-    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "h", grid)
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "h", grid=grid)
     check_condensed_reactivity(model, "linear", expected, None, None, 10)
     # check from_molecule given as a list & passing grid
-    model = CondensedConceptualDFT.from_molecule([molecule], "linear", "FMR", "h", grid)
+    model = CondensedConceptualDFT.from_molecule([molecule], "linear", "FMR", "h", grid=grid)
     check_condensed_reactivity(model, "linear", expected, None, None, 10)
 
 
@@ -152,10 +152,10 @@ def test_condense_linear_from_file_fmr_h_ch4_wfn():
     mol = make_molecule(filename)
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec="insane",
                         random_rotate=False, mode="keep")
-    model = CondensedConceptualDFT.from_file(filename, "linear", "FMR", "h", grid)
+    model = CondensedConceptualDFT.from_file(filename, "linear", "FMR", "h", grid=grid)
     check_condensed_reactivity(model, "linear", expected, None, None, 10)
     # check using filename as a list & passing grid
-    model = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "h", grid)
+    model = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "h", grid=grid)
     check_condensed_reactivity(model, "linear", expected, None, None, 10)
 
 
@@ -172,10 +172,10 @@ def test_condense_linear_from_molecule_fmr_h_ch4_wfn():
     # check from_molecule & passing grid
     grid = BeckeMolGrid(molecule.coordinates, molecule.numbers, molecule.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
-    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "h", grid)
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "h", grid=grid)
     check_condensed_reactivity(model, "linear", expected, None, None, 10)
     # check from_molecule given as a list & passing grid
-    model = CondensedConceptualDFT.from_molecule([molecule], "linear", "FMR", "h", grid)
+    model = CondensedConceptualDFT.from_molecule([molecule], "linear", "FMR", "h", grid=grid)
     check_condensed_reactivity(model, "linear", expected, None, None, 10)
 
 
@@ -193,10 +193,10 @@ def test_condense_linear_from_file_fmr_mbis_ch4_fchk():
     mol = make_molecule(filename)
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec="insane",
                         random_rotate=False, mode="keep")
-    model = CondensedConceptualDFT.from_file(filename, "linear", "FMR", "mbis", grid)
+    model = CondensedConceptualDFT.from_file(filename, "linear", "FMR", "mbis", grid=grid)
     check_condensed_reactivity(model, "linear", expected, None, None, 10)
     # check using filename as a list & passing grid
-    model = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "mbis", grid)
+    model = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "mbis", grid=grid)
     check_condensed_reactivity(model, "linear", expected, None, None, 10)
 
 
@@ -213,10 +213,10 @@ def test_condense_linear_from_molecule_fmr_mbis_ch4_fchk():
     # check from_molecule & passing grid
     grid = BeckeMolGrid(molecule.coordinates, molecule.numbers, molecule.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
-    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "mbis", grid)
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "mbis", grid=grid)
     check_condensed_reactivity(model, "linear", expected, None, None, 10)
     # check from_molecule given as a list & passing grid
-    model = CondensedConceptualDFT.from_molecule([molecule], "linear", "FMR", "mbis", grid)
+    model = CondensedConceptualDFT.from_molecule([molecule], "linear", "FMR", "mbis", grid=grid)
     check_condensed_reactivity(model, "linear", expected, None, None, 10)
 
 
@@ -245,10 +245,10 @@ def test_condense_linear_from_molecule_fmr_mbis_ch4_wfn():
     # check from_molecule & passing grid
     grid = BeckeMolGrid(molecule.coordinates, molecule.numbers, molecule.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
-    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "mbis", grid)
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "mbis", grid=grid)
     check_condensed_reactivity(model, "linear", expected, None, None, 10)
     # check from_molecule given as a list & passing grid
-    model = CondensedConceptualDFT.from_molecule([molecule], "linear", "FMR", "mbis", grid)
+    model = CondensedConceptualDFT.from_molecule([molecule], "linear", "FMR", "mbis", grid=grid)
     check_condensed_reactivity(model, "linear", expected, None, None, 10)
 
 
@@ -266,10 +266,10 @@ def test_condense_quadratic_from_file_fmr_mbis_ch4_fchk():
     mol = make_molecule(filename)
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec="insane",
                         random_rotate=False, mode="keep")
-    model = CondensedConceptualDFT.from_file(filename, "quadratic", "FMR", "mbis", grid)
+    model = CondensedConceptualDFT.from_file(filename, "quadratic", "FMR", "mbis", grid=grid)
     check_condensed_reactivity(model, "quadratic", expected, None, None, 10)
     # check using filename given as a list
-    model = CondensedConceptualDFT.from_file([filename], "quadratic", "FMR", "mbis", grid)
+    model = CondensedConceptualDFT.from_file([filename], "quadratic", "FMR", "mbis", grid=grid)
     check_condensed_reactivity(model, "quadratic", expected, None, None, 10)
 
 
@@ -286,10 +286,10 @@ def test_condense_quadratic_from_molecule_fmr_mbis_ch4_fchk():
     # check from_molecule & passing grid
     grid = BeckeMolGrid(molecule.coordinates, molecule.numbers, molecule.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
-    model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "FMR", "mbis", grid)
+    model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "FMR", "mbis", grid=grid)
     check_condensed_reactivity(model, "quadratic", expected, None, None, 10)
     # check from_molecule given as a list & passing grid
-    model = CondensedConceptualDFT.from_molecule([molecule], "quadratic", "FMR", "mbis", grid)
+    model = CondensedConceptualDFT.from_molecule([molecule], "quadratic", "FMR", "mbis", grid=grid)
     check_condensed_reactivity(model, "quadratic", expected, None, None, 10)
 
 
@@ -332,7 +332,7 @@ def test_condense_linear_from_file_fd_rmf_h_ch2o_fchk():
     mol = make_molecule(file_path[0])
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
-    model = CondensedConceptualDFT.from_file(file_path, "linear", "RMF", "h", grid)
+    model = CondensedConceptualDFT.from_file(file_path, "linear", "RMF", "h", grid=grid)
     check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 16)
 
 
@@ -350,7 +350,7 @@ def test_condense_linear_from_molecule_fd_rmf_h_ch2o_fchk():
     # check from_molecule passing as a grid
     grid = BeckeMolGrid(molecule[0].coordinates, molecule[0].numbers, molecule[0].pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
-    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "RMF", "h", grid)
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "RMF", "h", grid=grid)
     check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 16)
 
 
@@ -369,7 +369,7 @@ def test_condense_linear_from_file_fd_fmr_h_ch2o_fchk():
     mol = make_molecule(file_path[0])
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
-    model = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "h", grid)
+    model = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "h", grid=grid)
     check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 16)
 
 
@@ -387,7 +387,7 @@ def test_condense_linear_from_molecule_fd_fmr_h_ch2o_fchk():
     # check from_file passing as a grid
     grid = BeckeMolGrid(molecule[0].coordinates, molecule[0].numbers, molecule[0].pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
-    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "h", grid)
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "h", grid=grid)
     check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 16)
 
 
@@ -406,7 +406,7 @@ def test_condense_linear_from_file_fd_rmf_mbis_ch2o_fchk():
     mol = make_molecule(file_path[0])
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
-    model = CondensedConceptualDFT.from_file(file_path, "linear", "RMF", "mbis", grid)
+    model = CondensedConceptualDFT.from_file(file_path, "linear", "RMF", "mbis", grid=grid)
     check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 16)
 
 
@@ -423,7 +423,7 @@ def test_condense_linear_from_file_fd_fmr_mbis_ch2o_fchk():
     mol = make_molecule(file_path[0])
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
-    model = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "mbis", grid)
+    model = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "mbis", grid=grid)
     check_condensed_reactivity(model, "linear", expected_0, None, None, 16)
 
 
@@ -439,7 +439,7 @@ def test_condense_linear_from_molecule_fd_fmr_mbis_ch2o_fchk():
     # check from_molecule passing grid
     grid = BeckeMolGrid(molecule[0].coordinates, molecule[0].numbers, molecule[0].pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
-    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "mbis", grid)
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "mbis", grid=grid)
     check_condensed_reactivity(model, "linear", expected_0, None, None, 16)
 
 
@@ -458,7 +458,7 @@ def test_condense_quadratic_from_file_fd_rmf_h_ch2o_fchk():
     mol = make_molecule(file_path[0])
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
-    model = CondensedConceptualDFT.from_file(file_path, "quadratic", "RMF", "h", grid)
+    model = CondensedConceptualDFT.from_file(file_path, "quadratic", "RMF", "h", grid=grid)
     check_condensed_reactivity(model, "quadratic", expected_0, expected_p, expected_m, 16)
 
 
@@ -476,5 +476,5 @@ def test_condense_quadratic_from_molecule_fd_rmf_h_ch2o_fchk():
     # check from_file passing grid
     grid = BeckeMolGrid(molecule[0].coordinates, molecule[0].numbers, molecule[0].pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
-    model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "RMF", "h", grid)
+    model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "RMF", "h", grid=grid)
     check_condensed_reactivity(model, "quadratic", expected_0, expected_p, expected_m, 16)

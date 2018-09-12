@@ -29,7 +29,7 @@ from numpy.testing import assert_raises
 
 from chemtools import context, CubeGen
 from chemtools.toolbox.molecule import make_molecule
-from chemtools.toolbox.utils import get_matching_attr, get_molecular_grid, get_part_specifications
+from chemtools.toolbox.utils import get_matching_attr, get_molecular_grid
 from chemtools.toolbox.utils import get_dict_energy, get_dict_density, get_dict_population
 
 
@@ -74,11 +74,6 @@ def test_get_molecular_grid_raises():
     assert_raises(ValueError, get_molecular_grid, molecule, grid)
 
 
-def test_get_part_specifications_raises():
-    # check scheme
-    assert_raises(ValueError, get_part_specifications, "gibberish", None, None, None)
-
-
 def test_get_dict_energy_raises():
     # check molecule
     filename = [context.get_fn("test/ch4_uhf_ccpvdz.fchk"),
@@ -114,8 +109,8 @@ def test_get_dict_density_raises():
 
 def test_get_dict_population_raises():
     # check molecule
-    assert_raises(ValueError, get_dict_population, "gibberish", "RMF", None, None, None)
+    assert_raises(ValueError, get_dict_population, "gibberish", "RMF", "hi")
     # check number of molecules
     molecule = [make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")),
                 make_molecule(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"))]
-    assert_raises(ValueError, get_dict_population, molecule, None, None, None, None)
+    assert_raises(ValueError, get_dict_population, molecule, "RMF", "esp")
