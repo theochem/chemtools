@@ -27,7 +27,6 @@ This modules contains wrappers which take outputs of quantum chemistry software 
 compute various conceptual density functional theory (DFT) descriptive tools.
 """
 
-import numpy as np
 
 from horton import log
 
