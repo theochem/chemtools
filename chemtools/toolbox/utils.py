@@ -265,13 +265,31 @@ def get_dict_population(molecule, approach, scheme, **kwargs):
         Partitioning scheme.
     kwargs : optional
     """
-    # check partitioning
-    if scheme.lower() not in wpart_schemes:
-        raise ValueError("Partitioning scheme={0} not supported! "
-                         "Select from: {1}".format(scheme, wpart_schemes.keys()))
+    # check approach
+    if approach.lower() not in ["rmf", "fmr"]:
+        raise ValueError("Argument approach={0} is not valid.".format(approach))
 
-    # check whether molecules have the same coordinates
+    # case of populations available in molecule
+    if scheme.lower() not in wpart_schemes:
+        # check approach & molecule instances
+        if approach.lower() != "rmf":
+            raise ValueError("Condensing with scheme={0} is only possible in combination with "
+                             "approach='RMF'! Given approach={1}".format(scheme, approach))
+        if (not hasattr(type(molecule), "__iter__") or len(molecule) != 3 or not
+                np.all([isinstance(mol, BaseMolecule) for mol in molecule])):
+            raise ValueError("Condensing with scheme={0} needs 3 molecules!".format(scheme))
+        # get populations
+        pops = [getattr(mol, scheme + "_charges") for mol in molecule]
+        if np.any([isinstance(pop, type(None)) for pop in pops]):
+            raise ValueError("Condensing scheme={0} is not possible, because attribute {1}_charges "
+                             "of molecule instances is 'None'.".format(scheme, scheme.lower()))
+        # make dictionary of populations
+        dict_pops = dict([(sum(m.nelectrons), m.numbers - pop) for m, pop in zip(molecule, pops)])
+        return dict_pops
+
+    # case of condensing the density using denspart
     try:
+        # check whether molecules have the same coordinates
         get_matching_attr(molecule, "coordinates", 1.e-4)
         same_coordinates = True
     except ValueError:
@@ -293,6 +311,7 @@ def get_dict_population(molecule, approach, scheme, **kwargs):
     else:
         raise ValueError("Argument molecule not recognized!")
 
+    # check and generate partitioning class & proatomdb
     wpart = wpart_schemes[scheme]
     # make proatom database
     if scheme.lower() not in ["mbis", "b"]:

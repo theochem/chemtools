@@ -60,6 +60,10 @@ def test_condensed_conceptual_raises():
     grid = BeckeMolGrid(coord, np.array([7, 1, 1, 1, 1]))
     assert_raises(ValueError, CondensedConceptualDFT.from_file, fname, "quadratic", grid=grid)
     assert_raises(ValueError, CondensedConceptualDFT.from_file, fnames, "quadratic", grid=grid)
+    # check number of molecules
+    assert_raises(ValueError, CondensedConceptualDFT.from_file, fname, "linear", "RMF", "esp")
+    # check approach
+    assert_raises(ValueError, CondensedConceptualDFT.from_file, fnames, "linear", "FMR", "esp")
 
 
 def check_condensed_reactivity(model, energy_model, pop_0, pop_p, pop_m, n0):
@@ -315,6 +319,102 @@ def test_condense_quadratic_from_molecule_fmr_mbis_ch4_wfn():
     # check from_molecule given as a list
     model = CondensedConceptualDFT.from_molecule([molecule], "quadratic", "FMR", "mbis")
     check_condensed_reactivity(model, "quadratic", expected, None, None, 10)
+
+
+def test_condense_from_file_fd_rmf_esp_h2o_fchk():
+    # expected populations of H2O from fchk file
+    expected_m = np.array([8, 1, 1]) - np.array([ 4.14233893E-02, 4.79288419E-01, 4.79288192E-01])
+    expected_0 = np.array([8, 1, 1]) - np.array([-7.00779373E-01, 3.50389629E-01, 3.50389744E-01])
+    expected_p = np.array([8, 1, 1]) - np.array([-5.81613550E-01,-2.09193820E-01,-2.09192630E-01])
+    filename = [context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"),
+                context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk"),
+                context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk")]
+    # check from_file linear
+    model = CondensedConceptualDFT.from_file(filename, "linear", "RMF", "esp")
+    check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 10)
+    # check from_file quadratic
+    model = CondensedConceptualDFT.from_file(filename, "quadratic", "RMF", "esp")
+    check_condensed_reactivity(model, "quadratic", expected_0, expected_p, expected_m, 10)
+
+
+def test_condense_from_molecule_fd_rmf_esp_h2o_fchk():
+    # expected populations of H2O from fchk file
+    expected_m = np.array([8, 1, 1]) - np.array([ 4.14233893E-02, 4.79288419E-01, 4.79288192E-01])
+    expected_0 = np.array([8, 1, 1]) - np.array([-7.00779373E-01, 3.50389629E-01, 3.50389744E-01])
+    expected_p = np.array([8, 1, 1]) - np.array([-5.81613550E-01,-2.09193820E-01,-2.09192630E-01])
+    molecule = [make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")),
+                make_molecule(context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk")),
+                make_molecule(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"))]
+    # check from_molecule linear
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "RMF", "esp")
+    check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 10)
+    # check from_molecule quadratic
+    model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "RMF", "esp")
+    check_condensed_reactivity(model, "quadratic", expected_0, expected_p, expected_m, 10)
+
+
+def test_condense_from_file_fd_rmf_npa_h2o_fchk():
+    # expected populations of H2O from fchk file
+    expected_m = np.array([8, 1, 1]) - np.array([-3.64452391E-02, 5.18222784E-01, 5.18222455E-01])
+    expected_0 = np.array([8, 1, 1]) - np.array([-9.00876494E-01, 4.50438267E-01, 4.50438227E-01])
+    expected_p = np.array([8, 1, 1]) - np.array([-1.11332869E+00, 5.66635486E-02, 5.66651430E-02])
+    filename = [context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"),
+                context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk"),
+                context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk")]
+    # check from_file linear
+    model = CondensedConceptualDFT.from_file(filename, "linear", "RMF", "npa")
+    check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 10)
+    # check from_file quadratic
+    model = CondensedConceptualDFT.from_file(filename, "quadratic", "RMF", "npa")
+    check_condensed_reactivity(model, "quadratic", expected_0, expected_p, expected_m, 10)
+
+
+def test_condense_from_molecule_fd_rmf_npa_h2o_fchk():
+    # expected populations of H2O from fchk file
+    expected_m = np.array([8, 1, 1]) - np.array([-3.64452391E-02, 5.18222784E-01, 5.18222455E-01])
+    expected_0 = np.array([8, 1, 1]) - np.array([-9.00876494E-01, 4.50438267E-01, 4.50438227E-01])
+    expected_p = np.array([8, 1, 1]) - np.array([-1.11332869E+00, 5.66635486E-02, 5.66651430E-02])
+    molecule = [make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")),
+                make_molecule(context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk")),
+                make_molecule(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"))]
+    # check from_molecule linear
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "RMF", "npa")
+    check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 10)
+    # check from_molecule quadratic
+    model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "RMF", "npa")
+    check_condensed_reactivity(model, "quadratic", expected_0, expected_p, expected_m, 10)
+
+
+def test_condense_from_file_fd_rmf_mulliken_h2o_fchk():
+    # expected populations of H2O from fchk file
+    expected_m = np.array([8, 1, 1]) - np.array([ 3.49417097E-01, 3.25291762E-01, 3.25291141E-01])
+    expected_0 = np.array([8, 1, 1]) - np.array([-4.32227787E-01, 2.16114060E-01, 2.16113727E-01])
+    expected_p = np.array([8, 1, 1]) - np.array([-2.64833827E-01,-3.67583325E-01,-3.67582849E-01])
+    filename = [context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"),
+                context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk"),
+                context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk")]
+    # check from_file linear
+    model = CondensedConceptualDFT.from_file(filename, "linear", "RMF", "mulliken")
+    check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 10)
+    # check from_file quadratic
+    model = CondensedConceptualDFT.from_file(filename, "quadratic", "RMF", "mulliken")
+    check_condensed_reactivity(model, "quadratic", expected_0, expected_p, expected_m, 10)
+
+
+def test_condense_from_molecule_fd_rmf_mulliken_h2o_fchk():
+    # expected populations of H2O from fchk file
+    expected_m = np.array([8, 1, 1]) - np.array([ 3.49417097E-01, 3.25291762E-01, 3.25291141E-01])
+    expected_0 = np.array([8, 1, 1]) - np.array([-4.32227787E-01, 2.16114060E-01, 2.16113727E-01])
+    expected_p = np.array([8, 1, 1]) - np.array([-2.64833827E-01,-3.67583325E-01,-3.67582849E-01])
+    molecule = [make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")),
+                make_molecule(context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk")),
+                make_molecule(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"))]
+    # check from_molecule linear
+    model = CondensedConceptualDFT.from_molecule(molecule, "linear", "RMF", "mulliken")
+    check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 10)
+    # check from_molecule quadratic
+    model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "RMF", "mulliken")
+    check_condensed_reactivity(model, "quadratic", expected_0, expected_p, expected_m, 10)
 
 
 def test_condense_linear_from_file_fd_rmf_h_ch2o_fchk():

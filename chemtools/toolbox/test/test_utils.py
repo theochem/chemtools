@@ -114,3 +114,13 @@ def test_get_dict_population_raises():
     molecule = [make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")),
                 make_molecule(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"))]
     assert_raises(ValueError, get_dict_population, molecule, "RMF", "esp")
+    # check condensing approach
+    molecule = make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"))
+    assert_raises(ValueError, get_dict_population, molecule, "fm", "h")
+    assert_raises(ValueError, get_dict_population, molecule, "rm", "hi")
+    assert_raises(ValueError, get_dict_population, molecule, "gibberish", "esp")
+    # check scheme
+    molecule = [make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")),
+                make_molecule(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk")),
+                make_molecule(context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk"))]
+    assert_raises(ValueError, get_dict_population, molecule, "rmf", "gibberish")
