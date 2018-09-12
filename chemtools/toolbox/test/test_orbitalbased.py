@@ -28,7 +28,6 @@ import numpy as np
 
 from numpy.testing import assert_raises, assert_array_almost_equal, assert_allclose
 
-from horton import IOData
 from chemtools.wrappers.molecule import Molecule
 from chemtools import context, CubeGen, OrbitalAnalysis
 
@@ -42,7 +41,7 @@ def test_toolbox_orbitalbased_raises():
 
 def test_orbital_analysis_from_file_ch4_uhf_ccpvdz():
     file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
-    mol = IOData.from_file(file_path)
+    mol = Molecule.from_file(file_path)
 
     # creating cube file:
     ori = np.array([-3.000000, -3.000000, -3.000000])
@@ -154,7 +153,7 @@ def test_orbital_analysis_from_file_ch4_uhf_ccpvdz():
 
 def test_orbital_analysis_from_file_ch4_rhf_ccpvdz():
     file_path = context.get_fn('test/ch4_rhf_ccpvdz.fchk')
-    mol = IOData.from_file(file_path)
+    mol = Molecule.from_file(file_path)
 
     # creating cube file:
     ori = np.array([-3.000000, -3.000000, -3.000000])
@@ -266,9 +265,9 @@ def test_orbital_analysis_from_file_ch4_rhf_ccpvdz():
 
 def test_orbital_analysis_from_molecule_ch4_uhf_ccpvdz():
     file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
-    mol = IOData.from_file(file_path)
-    rmol = IOData.from_file(file_path)
-    del rmol.exp_beta
+    mol = Molecule.from_file(file_path)
+    rmol = Molecule.from_file(file_path)
+    del rmol._exp_beta
 
     # creating cube file:
     ori = np.array([-3.000000, -3.000000, -3.000000])
