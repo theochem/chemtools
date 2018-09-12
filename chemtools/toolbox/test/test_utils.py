@@ -28,7 +28,7 @@ import numpy as np
 from numpy.testing import assert_raises
 
 from chemtools import context, CubeGen
-from chemtools.toolbox.molecule import make_molecule
+from chemtools.utils.wrappers import HortonMolecule
 from chemtools.toolbox.utils import get_matching_attr, get_molecular_grid
 from chemtools.toolbox.utils import get_dict_energy, get_dict_density, get_dict_population
 
@@ -40,37 +40,37 @@ def test_get_matching_attr_raises():
     assert_raises(ValueError, get_matching_attr, filename, "numbers")
     assert_raises(ValueError, get_matching_attr, filename, "coordinates")
     # check matching attribute
-    molecule = [make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk")),
-                make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"))]
+    molecule = [HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk")),
+                HortonMolecule.from_file(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"))]
     assert_raises(ValueError, get_matching_attr, molecule, "numbers")
     assert_raises(ValueError, get_matching_attr, molecule, "coordinates")
 
 
 def test_get_molecular_grid_raises():
     # check atomic numbers shape
-    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
     grid = CubeGen.from_file(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"))
     assert_raises(ValueError, get_molecular_grid, molecule, grid)
     assert_raises(ValueError, get_molecular_grid, [molecule], grid)
     assert_raises(ValueError, get_molecular_grid, [molecule, molecule], grid)
-    molecule = [make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk")),
-                make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"))]
+    molecule = [HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk")),
+                HortonMolecule.from_file(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"))]
     assert_raises(ValueError, get_molecular_grid, molecule, grid)
     # check atomic numbers (to be added)
 
     # check atomic coordinate
-    molecule = make_molecule(context.get_fn("test/water_b3lyp_sto3g.fchk"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/water_b3lyp_sto3g.fchk"))
     grid = CubeGen.from_file(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"))
     assert_raises(ValueError, get_molecular_grid, molecule, grid)
     assert_raises(ValueError, get_molecular_grid, molecule, grid)
     assert_raises(ValueError, get_molecular_grid, [molecule], grid)
     assert_raises(ValueError, get_molecular_grid, [molecule, molecule], grid)
-    molecule = [make_molecule(context.get_fn("test/water_b3lyp_sto3g.fchk")),
-                make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"))]
+    molecule = [HortonMolecule.from_file(context.get_fn("test/water_b3lyp_sto3g.fchk")),
+                HortonMolecule.from_file(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"))]
     assert_raises(ValueError, get_molecular_grid, molecule, grid)
-    molecule = [make_molecule(context.get_fn("test/water_b3lyp_sto3g.fchk")),
-                make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")),
-                make_molecule(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"))]
+    molecule = [HortonMolecule.from_file(context.get_fn("test/water_b3lyp_sto3g.fchk")),
+                HortonMolecule.from_file(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")),
+                HortonMolecule.from_file(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"))]
     assert_raises(ValueError, get_molecular_grid, molecule, grid)
 
 
@@ -82,12 +82,12 @@ def test_get_dict_energy_raises():
     assert_raises(ValueError, get_dict_energy, context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
     assert_raises(ValueError, get_dict_energy, "gibberish")
     # check repeated molecules
-    molecule = [make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk")),
-                make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))]
+    molecule = [HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk")),
+                HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))]
     assert_raises(ValueError, get_dict_energy, molecule)
     # check molecules with the same number of molecules
-    molecule = [make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk")),
-                make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"))]
+    molecule = [HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk")),
+                HortonMolecule.from_file(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"))]
     assert_raises(ValueError, get_dict_energy, molecule)
 
 
@@ -98,12 +98,12 @@ def test_get_dict_density_raises():
     assert_raises(ValueError, get_dict_density, filename, np.array([[0., 0., 0.]]))
     assert_raises(ValueError, get_dict_density, "gibberish", np.array([[0., 0., 0.]]))
     # check repeated molecules
-    molecule = [make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk")),
-                make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))]
+    molecule = [HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk")),
+                HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))]
     assert_raises(ValueError, get_dict_density, molecule, np.array([[0., 0., 0.]]))
     # check molecules with the same number of molecules
-    molecule = [make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk")),
-                make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"))]
+    molecule = [HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk")),
+                HortonMolecule.from_file(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"))]
     assert_raises(ValueError, get_dict_density, molecule, np.array([[0., 0., 0.]]))
 
 
@@ -111,16 +111,16 @@ def test_get_dict_population_raises():
     # check molecule
     assert_raises(ValueError, get_dict_population, "gibberish", "RMF", "hi")
     # check number of molecules
-    molecule = [make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")),
-                make_molecule(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"))]
+    molecule = [HortonMolecule.from_file(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")),
+                HortonMolecule.from_file(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"))]
     assert_raises(ValueError, get_dict_population, molecule, "RMF", "esp")
     # check condensing approach
-    molecule = make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"))
     assert_raises(ValueError, get_dict_population, molecule, "fm", "h")
     assert_raises(ValueError, get_dict_population, molecule, "rm", "hi")
     assert_raises(ValueError, get_dict_population, molecule, "gibberish", "esp")
     # check scheme
-    molecule = [make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")),
-                make_molecule(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk")),
-                make_molecule(context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk"))]
+    molecule = [HortonMolecule.from_file(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")),
+                HortonMolecule.from_file(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk")),
+                HortonMolecule.from_file(context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk"))]
     assert_raises(ValueError, get_dict_population, molecule, "rmf", "gibberish")

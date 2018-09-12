@@ -35,7 +35,7 @@ from horton import IOData
 from chemtools import context
 from chemtools.utils import CubeGen
 from chemtools.toolbox.nci import NCI
-from chemtools.toolbox.molecule import make_molecule
+from chemtools.utils.wrappers import HortonMolecule
 
 
 @contextmanager
@@ -102,7 +102,7 @@ def test_analyze_nci_h2o_dimer_wfn():
 
 def test_analyze_nci_h2o_dimer_fchk():
     file_path = context.get_fn('test/h2o_dimer_pbe_sto3g.fchk')
-    mol = make_molecule(file_path)
+    mol = HortonMolecule.from_file(file_path)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     dens_cube1_path = context.get_fn('test/h2o_dimer_pbe_sto3g-dens.cube')
     cube = CubeGen.from_cube(dens_cube1_path)
@@ -149,7 +149,7 @@ def test_analyze_nci_h2o_dimer_fchk():
 
 def test_analyze_nci_assert_errors():
     file_path = context.get_fn('test/h2o_dimer_pbe_sto3g.fchk')
-    mol = make_molecule(file_path)
+    mol = HortonMolecule.from_file(file_path)
     cube = CubeGen.from_file(file_path, spacing=2., threshold=0.0)
 
     dens = np.array([2.10160232e-04, 1.11307672e-05, 3.01244062e-04, 2.31768360e-05,

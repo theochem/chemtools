@@ -30,7 +30,7 @@ from numpy.testing import assert_raises, assert_equal, assert_almost_equal
 
 from horton import BeckeMolGrid
 from chemtools import context
-from chemtools.toolbox.molecule import make_molecule
+from chemtools.utils.wrappers import HortonMolecule
 from chemtools.toolbox.conceptual import LocalConceptualDFT
 
 
@@ -126,7 +126,7 @@ def test_local_linear_from_file_fmo_ch4_uhf_ccpvdz_fchk():
 def test_local_linear_from_molecule_fmo_ch4_uhf_ccpvdz_fchk():
     # atomic coordinates and numbers of CH4
     coord, nums = get_data_ch4()
-    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
     grid = BeckeMolGrid(coord, nums, nums, agspec="insane", random_rotate=False, mode="keep")
     # check from_molecule passing a grid
     model = LocalConceptualDFT.from_molecule(molecule, "linear", grid.points)
@@ -152,7 +152,7 @@ def test_local_linear_from_file_fmo_ch4_uhf_ccpvdz_wfn():
 def test_local_linear_from_molecule_fmo_ch4_uhf_ccpvdz_wfn():
     # atomic coordinates and numbers of CH4
     coord, nums = get_data_ch4()
-    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
     grid = BeckeMolGrid(coord, nums, nums, agspec="insane", random_rotate=False, mode="keep")
     # check from_molecule passing a grid
     model = LocalConceptualDFT.from_molecule(molecule, "linear", grid.points)
@@ -182,7 +182,7 @@ def test_local_quadratic_from_molecule_fmo_ch4_uhf_ccpvdz_fchk():
     coord, nums = get_data_ch4()
     # ip = -E(homo) & ea = E(lumo) & eta = ip - ea
     # eta = -(-5.43101269E-01) - (-1.93295185E-01)
-    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
     grid = BeckeMolGrid(coord, nums, nums, agspec="insane", random_rotate=False, mode="keep")
     # check from_molecule passing grid
     model = LocalConceptualDFT.from_molecule(molecule, "quadratic", grid.points)
@@ -212,7 +212,7 @@ def test_local_quadratic_from_molecule_fmo_ch4_uhf_ccpvdz_wfn():
     coord, nums = get_data_ch4()
     # ip = -E(homo) & ea = E(lumo) & eta = ip - ea
     # eta = -(-5.43101269E-01) - (-1.93295185E-01)
-    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
     grid = BeckeMolGrid(coord, nums, nums, agspec="insane", random_rotate=False, mode="keep")
     # check from_molecule passing grid
     model = LocalConceptualDFT.from_molecule(molecule, "quadratic", grid.points)

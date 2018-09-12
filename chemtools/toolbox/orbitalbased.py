@@ -26,7 +26,7 @@ This modules contains wrappers which take outputs of quantum chemistry software 
 compute various descriptive tools based on the density and orbital information.
 """
 
-from chemtools.toolbox.molecule import make_molecule
+from chemtools.utils.wrappers import HortonMolecule
 from chemtools.orbtools.orbitalbased import OrbitalLocalTool
 
 __all__ = ['OrbitalAnalysis']
@@ -39,7 +39,7 @@ class OrbitalAnalysis(OrbitalLocalTool):
         super(OrbitalAnalysis, self).__init__(molecule, points)
 
     @classmethod
-    def from_file(cls, filename, points, package_name=None):
+    def from_file(cls, filename, points):
         """
         Initialize class from file.
 
@@ -49,11 +49,8 @@ class OrbitalAnalysis(OrbitalLocalTool):
             Path to molecule's files.
         points : np.ndarray
             Gridpoints used to calculate the properties.
-        package_name : str, default=None
-            Name of the package that will be used to create the Molecule instance
-            The wrapper for this package must exist in ChemTools
         """
-        molecule = make_molecule(filename, package_name=package_name)
+        molecule = HortonMolecule.from_file(filename)
         return cls.from_molecule(molecule, points)
 
     @classmethod

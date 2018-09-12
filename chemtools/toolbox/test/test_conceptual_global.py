@@ -30,7 +30,7 @@ from numpy.testing import assert_raises, assert_almost_equal
 
 from chemtools import context
 from chemtools.toolbox.conceptual import GlobalConceptualDFT
-from chemtools.toolbox.molecule import make_molecule
+from chemtools.utils.wrappers import HortonMolecule
 
 
 def test_global_conceptual_raises():
@@ -134,7 +134,7 @@ def test_global_linear_from_file_fmo_ch4_fchk():
 def test_global_linear_from_molecule_fmo_ch4_fchk():
     # FMO: ip = -E(HOMO) & ea = -E(LUMO)
     ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
-    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
     # check from_molecule
     model = GlobalConceptualDFT.from_molecule(molecule, "linear")
     check_global_reactivity_linear(model, ip, ea, energy, 10)
@@ -158,7 +158,7 @@ def test_global_linear_from_file_fmo_ch4_wfn():
 def test_global_linear_from_molecule_fmo_ch4_wfn():
     # FMO: ip = -E(HOMO) & ea = -E(LUMO)
     ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
-    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
     # check from_molecule
     model = GlobalConceptualDFT.from_molecule(molecule, "linear")
     check_global_reactivity_linear(model, ip, ea, energy, 10)
@@ -182,7 +182,7 @@ def test_global_linear_from_file_fmo_h2o_fchk():
 def test_global_linear_from_molecule_fmo_h2o_fchk():
     # FMO: ip = -E(HOMO) & ea = -E(LUMO)
     ip, ea, energy = -(-3.09871604E-01), -2.48704636E-02, -7.645980351270224E+01
-    molecule = make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"))
     # check from_molecule
     model = GlobalConceptualDFT.from_molecule(molecule, "linear")
     check_global_reactivity_linear(model, ip, ea, energy, 10)
@@ -206,7 +206,7 @@ def test_global_linear_from_file_fmo_h2o_cation_fchk():
 def test_global_linear_from_molecule_fmo_h2o_cation_fchk():
     # FMO: ip = -E(HOMO) & ea = -E(LUMO)
     ip, ea, energy = -(-8.47044131E-01), -(-6.19391831E-01), -7.599493522312368E+01
-    molecule = make_molecule(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"))
     # check from_molecule
     model = GlobalConceptualDFT.from_molecule(molecule, "linear")
     check_global_reactivity_linear(model, ip, ea, energy, 9)
@@ -230,7 +230,7 @@ def test_global_linear_from_file_fmo_h2o_anion_fchk():
 def test_global_linear_from_molecule_fmo_h2o_anion_fchk():
     # FMO: ip = -E(HOMO) & ea = -E(LUMO)
     ip, ea, energy = -1.93118022E-01, -2.69116912E-01, -7.635212549312298E+01
-    molecule = make_molecule(context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk"))
     # check from_molecule
     model = GlobalConceptualDFT.from_molecule(molecule, "linear")
     check_global_reactivity_linear(model, ip, ea, energy, 11)
@@ -250,7 +250,7 @@ def test_global_linear_fd_h2o_fchk():
     model = GlobalConceptualDFT.from_file(filename, "linear")
     check_global_reactivity_linear(model, ip, ea, energy, 10)
     # check from_molecule
-    molecule = [make_molecule(item) for item in filename]
+    molecule = [HortonMolecule.from_file(item) for item in filename]
     model = GlobalConceptualDFT.from_molecule(molecule, "linear")
     check_global_reactivity_linear(model, ip, ea, energy, 10)
     # rearrange input files
@@ -261,7 +261,7 @@ def test_global_linear_fd_h2o_fchk():
     model = GlobalConceptualDFT.from_file(filename, "linear")
     check_global_reactivity_linear(model, ip, ea, energy, 10)
     # check from_molecule
-    molecule = [make_molecule(item) for item in filename]
+    molecule = [HortonMolecule.from_file(item) for item in filename]
     model = GlobalConceptualDFT.from_molecule(molecule, "linear")
     check_global_reactivity_linear(model, ip, ea, energy, 10)
     # rearrange input files
@@ -272,7 +272,7 @@ def test_global_linear_fd_h2o_fchk():
     model = GlobalConceptualDFT.from_file(filename, "linear")
     check_global_reactivity_linear(model, ip, ea, energy, 10)
     # check from_molecule
-    molecule = [make_molecule(item) for item in filename]
+    molecule = [HortonMolecule.from_file(item) for item in filename]
     model = GlobalConceptualDFT.from_molecule(molecule, "linear")
     check_global_reactivity_linear(model, ip, ea, energy, 10)
 
@@ -338,7 +338,7 @@ def test_global_quadratic_from_file_fmo_ch4_fchk():
 def test_global_quadratic_from_molecule_fmo_ch4_fchk():
     # FMO: ip = -E(HOMO) & ea = -E(LUMO)
     ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
-    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
     # check from_molecule
     model = GlobalConceptualDFT.from_molecule(molecule, "quadratic")
     check_global_reactivity_quadratic(model, ip, ea, energy, 10)
@@ -362,7 +362,7 @@ def test_global_quadratic_from_file_fmo_ch4_wfn():
 def test_global_quadratic_from_molecule_fmo_ch4_wfn():
     # FMO: ip = -E(HOMO) & ea = -E(LUMO)
     ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
-    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
     # check from_molecule
     model = GlobalConceptualDFT.from_molecule(molecule, "quadratic")
     check_global_reactivity_quadratic(model, ip, ea, energy, 10)
@@ -386,7 +386,7 @@ def test_global_quadratic_from_file_fmo_h2o_fchk():
 def test_global_quadratic_from_molecule_fmo_h2o_fchk():
     # FMO: ip = -E(HOMO) & ea = -E(LUMO)
     ip, ea, energy = -(-3.09871604E-01), -2.48704636E-02, -7.645980351270224E+01
-    molecule = make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk"))
     # check from_file
     model = GlobalConceptualDFT.from_molecule(molecule, "quadratic")
     check_global_reactivity_quadratic(model, ip, ea, energy, 10)
@@ -410,7 +410,7 @@ def test_global_quadratic_from_file_fmo_h2o_cation_fchk():
 def test_global_quadratic_from_molecule_fmo_h2o_cation_fchk():
     # FMO: ip = -E(HOMO) & ea = -E(LUMO)
     ip, ea, energy = -(-8.47044131E-01), -(-6.19391831E-01), -7.599493522312368E+01
-    molecule = make_molecule(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"))
     # check quadratic global conceptual DFT model from a filename given as string
     model = GlobalConceptualDFT.from_molecule(molecule, "quadratic")
     check_global_reactivity_quadratic(model, ip, ea, energy, 9)
@@ -434,7 +434,7 @@ def test_global_quadratic_from_file_fmo_h2o_anion_fchk():
 def test_global_quadratic_from_molecule_fmo_h2o_anion_fchk():
     # FMO: ip = -E(HOMO) & ea = -E(LUMO)
     ip, ea, energy = -1.93118022E-01, -2.69116912E-01, -7.635212549312298E+01
-    molecule = make_molecule(context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk"))
     # check quadratic global conceptual DFT model from a filename given as string
     model = GlobalConceptualDFT.from_molecule(molecule, "quadratic")
     check_global_reactivity_quadratic(model, ip, ea, energy, 11)
@@ -454,7 +454,7 @@ def test_global_quadratic_fd_h2o_fchk():
     model = GlobalConceptualDFT.from_file(filename, "quadratic")
     check_global_reactivity_quadratic(model, ip, ea, energy, 10)
     # check from_molecule
-    molecule = [make_molecule(item) for item in filename]
+    molecule = [HortonMolecule.from_file(item) for item in filename]
     model = GlobalConceptualDFT.from_molecule(molecule, "quadratic")
     check_global_reactivity_quadratic(model, ip, ea, energy, 10)
     # rearrange input files
@@ -465,7 +465,7 @@ def test_global_quadratic_fd_h2o_fchk():
     model = GlobalConceptualDFT.from_file(filename, "quadratic")
     check_global_reactivity_quadratic(model, ip, ea, energy, 10)
     # check from_molecule
-    molecule = [make_molecule(item) for item in filename]
+    molecule = [HortonMolecule.from_file(item) for item in filename]
     model = GlobalConceptualDFT.from_molecule(molecule, "quadratic")
     check_global_reactivity_quadratic(model, ip, ea, energy, 10)
     # rearrange input files
@@ -476,7 +476,7 @@ def test_global_quadratic_fd_h2o_fchk():
     model = GlobalConceptualDFT.from_file(filename, "quadratic")
     check_global_reactivity_quadratic(model, ip, ea, energy, 10)
     # check from_molecule
-    molecule = [make_molecule(item) for item in filename]
+    molecule = [HortonMolecule.from_file(item) for item in filename]
     model = GlobalConceptualDFT.from_molecule(molecule, "quadratic")
     check_global_reactivity_quadratic(model, ip, ea, energy, 10)
 

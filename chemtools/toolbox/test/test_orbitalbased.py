@@ -29,7 +29,7 @@ import numpy as np
 from numpy.testing import assert_raises, assert_array_almost_equal, assert_allclose
 
 from horton import IOData
-from chemtools.toolbox.molecule import make_molecule
+from chemtools.utils.wrappers import HortonMolecule
 from chemtools import context, CubeGen, OrbitalAnalysis
 
 
@@ -279,8 +279,8 @@ def test_orbital_analysis_from_molecule_ch4_uhf_ccpvdz():
     cube = CubeGen(mol.numbers, mol.pseudo_numbers, mol.coordinates, ori, ax, sh)
 
     # initialize OrbitalLocalTool:
-    orbtool = OrbitalAnalysis.from_molecule(make_molecule(mol), cube.points)
-    rorbtool = OrbitalAnalysis.from_molecule(make_molecule(rmol), cube.points)
+    orbtool = OrbitalAnalysis.from_molecule(HortonMolecule(mol), cube.points)
+    rorbtool = OrbitalAnalysis.from_molecule(HortonMolecule(rmol), cube.points)
 
     # density results obtained from Fortran code:
     result = [0.00003304, 0.00053319, 0.00019292, 0.00111552, 0.00679461,

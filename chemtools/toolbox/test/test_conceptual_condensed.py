@@ -31,7 +31,7 @@ from numpy.testing import assert_raises, assert_equal, assert_almost_equal
 from horton import BeckeMolGrid
 from chemtools import context
 from chemtools.toolbox.conceptual import CondensedConceptualDFT
-from chemtools.toolbox.molecule import make_molecule
+from chemtools.utils.wrappers import HortonMolecule
 
 
 def test_condensed_conceptual_raises():
@@ -112,7 +112,7 @@ def test_condense_linear_from_file_fmr_h_ch4_fchk():
     model = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "h")
     check_condensed_reactivity(model, "linear", expected, None, None, 10)
     # check using filename as a string & passing grid
-    mol = make_molecule(filename)
+    mol = HortonMolecule.from_file(filename)
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec="insane",
                         random_rotate=False, mode="keep")
     model = CondensedConceptualDFT.from_file(filename, "linear", "FMR", "h", grid=grid)
@@ -124,7 +124,7 @@ def test_condense_linear_from_file_fmr_h_ch4_fchk():
 
 def test_condense_linear_from_molecule_fmr_h_ch4_fchk():
     # expected populations of CH4 computed with HORTON
-    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
     expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
     # check from_molecule
     model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "h")
@@ -153,7 +153,7 @@ def test_condense_linear_from_file_fmr_h_ch4_wfn():
     model = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "h")
     check_condensed_reactivity(model, "linear", expected, None, None, 10)
     # check using filename as a string & passing grid
-    mol = make_molecule(filename)
+    mol = HortonMolecule.from_file(filename)
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec="insane",
                         random_rotate=False, mode="keep")
     model = CondensedConceptualDFT.from_file(filename, "linear", "FMR", "h", grid=grid)
@@ -165,7 +165,7 @@ def test_condense_linear_from_file_fmr_h_ch4_wfn():
 
 def test_condense_linear_from_molecule_fmr_h_ch4_wfn():
     # expected populations of CH4 computed with HORTON
-    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
     expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
     # check from_molecule
     model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "h")
@@ -194,7 +194,7 @@ def test_condense_linear_from_file_fmr_mbis_ch4_fchk():
     model = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "mbis")
     check_condensed_reactivity(model, "linear", expected, None, None, 10)
     # check using filename as a string & passing grid
-    mol = make_molecule(filename)
+    mol = HortonMolecule.from_file(filename)
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec="insane",
                         random_rotate=False, mode="keep")
     model = CondensedConceptualDFT.from_file(filename, "linear", "FMR", "mbis", grid=grid)
@@ -206,7 +206,7 @@ def test_condense_linear_from_file_fmr_mbis_ch4_fchk():
 
 def test_condense_linear_from_molecule_fmr_mbis_ch4_fchk():
     # expected populations of CH4 computed with HORTON
-    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
     # check from_molecule
     model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "mbis")
@@ -238,7 +238,7 @@ def test_condense_linear_from_file_fmr_mbis_ch4_wfn():
 
 def test_condense_linear_from_molecule_fmr_mbis_ch4_wfn():
     # expected populations of CH4 computed with HORTON
-    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
     # check from_molecule
     model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "mbis")
@@ -267,7 +267,7 @@ def test_condense_quadratic_from_file_fmr_mbis_ch4_fchk():
     model = CondensedConceptualDFT.from_file([filename], "quadratic", "FMR", "mbis")
     check_condensed_reactivity(model, "quadratic", expected, None, None, 10)
     # check using filename as a string & passing grid
-    mol = make_molecule(filename)
+    mol = HortonMolecule.from_file(filename)
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec="insane",
                         random_rotate=False, mode="keep")
     model = CondensedConceptualDFT.from_file(filename, "quadratic", "FMR", "mbis", grid=grid)
@@ -279,7 +279,7 @@ def test_condense_quadratic_from_file_fmr_mbis_ch4_fchk():
 
 def test_condense_quadratic_from_molecule_fmr_mbis_ch4_fchk():
     # expected populations of CH4 computed with HORTON
-    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
     # check from_molecule
     model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "FMR", "mbis")
@@ -311,7 +311,7 @@ def test_condense_quadratic_from_file_fmr_mbis_ch4_wfn():
 
 def test_condense_quadratic_from_molecule_fmr_mbis_ch4_wfn():
     # expected populations of CH4 computed with HORTON
-    molecule = make_molecule(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
+    molecule = HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
     # check from_molecule given as a string
     model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "FMR", "mbis")
@@ -342,9 +342,9 @@ def test_condense_from_molecule_fd_rmf_esp_h2o_fchk():
     expected_m = np.array([8, 1, 1]) - np.array([ 4.14233893E-02, 4.79288419E-01, 4.79288192E-01])
     expected_0 = np.array([8, 1, 1]) - np.array([-7.00779373E-01, 3.50389629E-01, 3.50389744E-01])
     expected_p = np.array([8, 1, 1]) - np.array([-5.81613550E-01,-2.09193820E-01,-2.09192630E-01])
-    molecule = [make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")),
-                make_molecule(context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk")),
-                make_molecule(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"))]
+    molecule = [HortonMolecule.from_file(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")),
+                HortonMolecule.from_file(context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk")),
+                HortonMolecule.from_file(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"))]
     # check from_molecule linear
     model = CondensedConceptualDFT.from_molecule(molecule, "linear", "RMF", "esp")
     check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 10)
@@ -374,9 +374,9 @@ def test_condense_from_molecule_fd_rmf_npa_h2o_fchk():
     expected_m = np.array([8, 1, 1]) - np.array([-3.64452391E-02, 5.18222784E-01, 5.18222455E-01])
     expected_0 = np.array([8, 1, 1]) - np.array([-9.00876494E-01, 4.50438267E-01, 4.50438227E-01])
     expected_p = np.array([8, 1, 1]) - np.array([-1.11332869E+00, 5.66635486E-02, 5.66651430E-02])
-    molecule = [make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")),
-                make_molecule(context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk")),
-                make_molecule(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"))]
+    molecule = [HortonMolecule.from_file(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")),
+                HortonMolecule.from_file(context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk")),
+                HortonMolecule.from_file(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"))]
     # check from_molecule linear
     model = CondensedConceptualDFT.from_molecule(molecule, "linear", "RMF", "npa")
     check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 10)
@@ -406,9 +406,9 @@ def test_condense_from_molecule_fd_rmf_mulliken_h2o_fchk():
     expected_m = np.array([8, 1, 1]) - np.array([ 3.49417097E-01, 3.25291762E-01, 3.25291141E-01])
     expected_0 = np.array([8, 1, 1]) - np.array([-4.32227787E-01, 2.16114060E-01, 2.16113727E-01])
     expected_p = np.array([8, 1, 1]) - np.array([-2.64833827E-01,-3.67583325E-01,-3.67582849E-01])
-    molecule = [make_molecule(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")),
-                make_molecule(context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk")),
-                make_molecule(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"))]
+    molecule = [HortonMolecule.from_file(context.get_fn("test/h2o_q+0_ub3lyp_ccpvtz.fchk")),
+                HortonMolecule.from_file(context.get_fn("test/h2o_q-1_ub3lyp_ccpvtz.fchk")),
+                HortonMolecule.from_file(context.get_fn("test/h2o_q+1_ub3lyp_ccpvtz.fchk"))]
     # check from_molecule linear
     model = CondensedConceptualDFT.from_molecule(molecule, "linear", "RMF", "mulliken")
     check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 10)
@@ -429,7 +429,7 @@ def test_condense_linear_from_file_fd_rmf_h_ch2o_fchk():
     model = CondensedConceptualDFT.from_file(file_path, "linear", "RMF", "h")
     check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 16)
     # check from_file passing a grid
-    mol = make_molecule(file_path[0])
+    mol = HortonMolecule.from_file(file_path[0])
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
     model = CondensedConceptualDFT.from_file(file_path, "linear", "RMF", "h", grid=grid)
@@ -441,9 +441,9 @@ def test_condense_linear_from_molecule_fd_rmf_h_ch2o_fchk():
     expected_m = np.array([7.98237872, 5.47698573, 0.77030456, 0.77031781])
     expected_0 = np.array([8.46718639, 5.67524299, 0.92860658, 0.92866436])
     expected_p = np.array([8.76534627, 6.18498153, 1.02517556, 1.02513059])
-    molecule = [make_molecule(context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk")),
-                make_molecule(context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk")),
-                make_molecule(context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk"))]
+    molecule = [HortonMolecule.from_file(context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk")),
+                HortonMolecule.from_file(context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk")),
+                HortonMolecule.from_file(context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk"))]
     # check from_molecule
     model = CondensedConceptualDFT.from_molecule(molecule, "linear", "RMF", "h")
     check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 16)
@@ -466,7 +466,7 @@ def test_condense_linear_from_file_fd_fmr_h_ch2o_fchk():
     model = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "h")
     check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 16)
     # check from_file passing as a grid
-    mol = make_molecule(file_path[0])
+    mol = HortonMolecule.from_file(file_path[0])
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
     model = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "h", grid=grid)
@@ -478,9 +478,9 @@ def test_condense_linear_from_molecule_fd_fmr_h_ch2o_fchk():
     expected_m = np.array([7.98237872, 5.47698573, 0.77030456, 0.77031781])
     expected_0 = np.array([8.46718639, 5.67524299, 0.92860658, 0.92866436])
     expected_p = np.array([8.76534627, 6.18498153, 1.02517556, 1.02513059])
-    molecule = [make_molecule(context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk")),
-                make_molecule(context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk")),
-                make_molecule(context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk"))]
+    molecule = [HortonMolecule.from_file(context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk")),
+                HortonMolecule.from_file(context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk")),
+                HortonMolecule.from_file(context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk"))]
     # check from_file
     model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "h")
     check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 16)
@@ -503,7 +503,7 @@ def test_condense_linear_from_file_fd_rmf_mbis_ch2o_fchk():
     model = CondensedConceptualDFT.from_file(file_path, "linear", "RMF", "mbis")
     check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 16)
     # check from_file passing grid
-    mol = make_molecule(file_path[0])
+    mol = HortonMolecule.from_file(file_path[0])
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
     model = CondensedConceptualDFT.from_file(file_path, "linear", "RMF", "mbis", grid=grid)
@@ -520,7 +520,7 @@ def test_condense_linear_from_file_fd_fmr_mbis_ch2o_fchk():
     model = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "mbis")
     check_condensed_reactivity(model, "linear", expected_0, None, None, 16)
     # check from_file passing grid
-    mol = make_molecule(file_path[0])
+    mol = HortonMolecule.from_file(file_path[0])
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
     model = CondensedConceptualDFT.from_file(file_path, "linear", "FMR", "mbis", grid=grid)
@@ -530,9 +530,9 @@ def test_condense_linear_from_file_fd_fmr_mbis_ch2o_fchk():
 def test_condense_linear_from_molecule_fd_fmr_mbis_ch2o_fchk():
     # expected populations of CH2O computed with HORTON
     expected_0 = np.array([8.41149, 5.66445074, 0.96204946, 0.96202722])
-    molecule = [make_molecule(context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk")),
-                make_molecule(context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk")),
-                make_molecule(context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk"))]
+    molecule = [HortonMolecule.from_file(context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk")),
+                HortonMolecule.from_file(context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk")),
+                HortonMolecule.from_file(context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk"))]
     # check from_molecule
     model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "mbis")
     check_condensed_reactivity(model, "linear", expected_0, None, None, 16)
@@ -555,7 +555,7 @@ def test_condense_quadratic_from_file_fd_rmf_h_ch2o_fchk():
     model = CondensedConceptualDFT.from_file(file_path, "quadratic", "RMF", "h")
     check_condensed_reactivity(model, "quadratic", expected_0, expected_p, expected_m, 16)
     # check from_file passing grid
-    mol = make_molecule(file_path[0])
+    mol = HortonMolecule.from_file(file_path[0])
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec="insane", random_rotate=False, mode="keep")
     model = CondensedConceptualDFT.from_file(file_path, "quadratic", "RMF", "h", grid=grid)
@@ -567,9 +567,9 @@ def test_condense_quadratic_from_molecule_fd_rmf_h_ch2o_fchk():
     expected_m = np.array([7.98237872, 5.47698573, 0.77030456, 0.77031781])
     expected_0 = np.array([8.46718639, 5.67524299, 0.92860658, 0.92866436])
     expected_p = np.array([8.76534627, 6.18498153, 1.02517556, 1.02513059])
-    molecule = [make_molecule(context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk")),
-                make_molecule(context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk")),
-                make_molecule(context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk"))]
+    molecule = [HortonMolecule.from_file(context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk")),
+                HortonMolecule.from_file(context.get_fn("examples/ch2o_q+1_ub3lyp_augccpvtz.fchk")),
+                HortonMolecule.from_file(context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk"))]
     # check from_file
     model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "RMF", "h")
     check_condensed_reactivity(model, "quadratic", expected_0, expected_p, expected_m, 16)
