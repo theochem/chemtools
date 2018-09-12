@@ -25,7 +25,7 @@
 from numpy.testing import assert_raises
 import numpy as np
 from horton import IOData
-from chemtools.utils.wrappers import HortonMolecule
+from chemtools.utils.wrappers import Molecule
 from chemtools import context
 from chemtools.utils import CubeGen
 from chemtools.orbtools.orbitalbased import OrbitalLocalTool
@@ -33,7 +33,7 @@ from chemtools.orbtools.orbitalbased import OrbitalLocalTool
 
 def test_orbital_tool_ch4_uhf_ccpvdz():
     file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
-    mol = HortonMolecule.from_file(file_path)
+    mol = Molecule.from_file(file_path)
 
     # creating cube file:
     ori = np.array([-3.000000, -3.000000, -3.000000])
@@ -175,7 +175,7 @@ def test_orbital_tool_ch4_uhf_ccpvdz():
 
 def test_orbital_tool_h2o_b3lyp_sto3g():
     file_path = context.get_fn('test/water_b3lyp_sto3g.fchk')
-    mol = HortonMolecule.from_file(file_path)
+    mol = Molecule.from_file(file_path)
 
     # creating cube file:
     ori = np.array([-3.000000, -3.000000, -3.000000])
@@ -210,7 +210,7 @@ def test_orbital_tool_h2o_b3lyp_sto3g():
 def test_orbital_tool_elf_h2o_dimer():
     file_path = context.get_fn('test/h2o_dimer_pbe_sto3g.fchk')
     # load fchk
-    mol = HortonMolecule.from_file(file_path)
+    mol = Molecule.from_file(file_path)
     # Check against elf created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     elf_cube_path = context.get_fn('test/h2o_dimer_pbe_sto3g-elf.cube')
     elf = IOData.from_file(elf_cube_path)
@@ -226,7 +226,7 @@ def test_orbital_tool_elf_h2o_dimer():
 
 def test_localip_ch4_uhf_ccpvdz_alpha():
     file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
-    mol = HortonMolecule.from_file(file_path)
+    mol = Molecule.from_file(file_path)
 
     # creating cube file:
     ori = np.array([-3.000000, -3.000000, -3.000000])
@@ -259,7 +259,7 @@ def test_localip_ch4_uhf_ccpvdz_alpha():
 def test_localip_ch4_uhf_ccpvdz_both():
     file_path = context.get_fn('test/ch4_uhf_ccpvdz.fchk')
     # load fchk
-    mol = HortonMolecule.from_file(file_path)
+    mol = Molecule.from_file(file_path)
 
     # creating cube file:
     ori = np.array([-3.000000, -3.000000, -3.000000])

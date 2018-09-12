@@ -24,12 +24,12 @@
 
 import numpy as np
 from horton import IOData, DenseLinalgFactory
-from chemtools.utils.molecule import BaseMolecule
-
-__all__ = ['HortonMolecule']
 
 
-class HortonMolecule(BaseMolecule):
+__all__ = ["Molecule"]
+
+
+class Molecule(object):
     """Molecule class from HORTON package."""
 
     def __init__(self, iodata):
@@ -42,8 +42,23 @@ class HortonMolecule(BaseMolecule):
            An instance of horton.IOData object.
         """
         self._iodata = iodata
-        # initialize base class
-        super(HortonMolecule, self).__init__(self._iodata.coordinates, self._iodata.numbers)
+
+        numbers = self._iodata.numbers
+        coordinates = self._iodata.coordinates
+
+        if not (isinstance(coordinates, np.ndarray) and coordinates.ndim == 2):
+            raise TypeError("Argument coordinates should be a 2d-array.")
+        if not (isinstance(numbers, np.ndarray) and numbers.ndim == 1):
+            raise TypeError("Argument numbers should be a 1d-array.")
+        if coordinates.shape[0] != numbers.size:
+            raise TypeError("Arguments coordinates and numbers should represent the same number "
+                            "of atoms! {0} != {1}".format(coordinates.shape[0], numbers.size))
+        if coordinates.shape[1] != 3:
+            raise TypeError("Argument coordinates should be a 2d-array with 3 columns.")
+
+        self._coordinates = coordinates
+        self._numbers = numbers
+
         # assign alpha orbital expression
         self._exp_alpha = self._iodata.exp_alpha
         # assign beta orbital expression
@@ -77,6 +92,16 @@ class HortonMolecule(BaseMolecule):
         """
         value = getattr(self._iodata, attr, None)
         return value
+
+    @property
+    def coordinates(self):
+        """Cartesian coordinates of atomic centers."""
+        return self._coordinates
+
+    @property
+    def numbers(self):
+        """Aomic number of atomic centers."""
+        return self._numbers
 
     @property
     def nbasis(self):

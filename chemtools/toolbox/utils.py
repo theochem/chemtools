@@ -28,7 +28,7 @@ import numpy as np
 from horton import BeckeMolGrid, ProAtomDB
 from horton.scripts.wpart import wpart_schemes
 
-from chemtools.utils.molecule import BaseMolecule
+from chemtools.utils.wrappers import Molecule
 
 
 __all__ = ["check_arg_molecule", "get_homo_lumo_data", "get_dict_energy", "get_dict_density",
@@ -40,15 +40,15 @@ def check_arg_molecule(molecule):
 
     Parameters
     ----------
-    molecule : BaseMolecule or Sequence of BaseMolecule
-        Instance of BaseMolecule class, or sequence of BaseMolecule class instances.
+    molecule : Molecule or Sequence of Molecule
+        Instance of Molecule class, or sequence of Molecule class instances.
 
     Returns
     -------
-    molecule : BaseMolecule or Sequence of BaseMolecule
-        Instance of BaseMolecule or Sequence of BaseMolecule with more than one instance.
+    molecule : Molecule or Sequence of Molecule
+        Instance of Molecule or Sequence of Molecule with more than one instance.
     """
-    if isinstance(molecule, BaseMolecule):
+    if isinstance(molecule, Molecule):
         return molecule
     if hasattr(molecule, "__iter__") and len(molecule) == 1:
         # sequence of just one molecule
@@ -61,8 +61,8 @@ def get_homo_lumo_data(molecule):
 
     Parameters
     ----------
-    molecule : BaseMolecule
-        Instance of BaseMolecule class.
+    molecule : Molecule
+        Instance of Molecule class.
     """
     # get homo & lumo energy and spin
     homo_energy = molecule.homo_energy[0]
@@ -83,17 +83,17 @@ def get_matching_attr(molecule, attr, accuracy=1.e-6):
 
     Parameters
     ----------
-    molecule : BaseMolecule or Sequence of BaseMolecule
-        Instance of BaseMolecule class, or sequence of BaseMolecule class instances.
+    molecule : Molecule or Sequence of Molecule
+        Instance of Molecule class, or sequence of Molecule class instances.
     attr : str
         The name ot attribute.
     accuracy : float, optional
         The accuracy for matching the attribute between different molecules.
     """
-    if isinstance(molecule, BaseMolecule):
+    if isinstance(molecule, Molecule):
         # get attribute for single molecule
         ref = getattr(molecule, attr)
-    elif np.all([isinstance(mol, BaseMolecule) for mol in molecule]):
+    elif np.all([isinstance(mol, Molecule) for mol in molecule]):
         # check whether attr matches between molecules
         for index, mol in enumerate(molecule):
             if index == 0:
@@ -112,13 +112,13 @@ def get_molecular_grid(molecule, grid=None):
 
     Parameters
     ----------
-    molecule : BaseMolecule or Sequence of BaseMolecule
-        Instance of BaseMolecule class, or sequence of BaseMolecule class instances.
+    molecule : Molecule or Sequence of Molecule
+        Instance of Molecule class, or sequence of Molecule class instances.
     grid : BeckeMolGrid, optional
         Instance or BeckeMolGrid. If `None`, a default `BeckeMolGrid` is returned.
     """
     # check grid or make grid
-    if grid is not None and isinstance(molecule, BaseMolecule):
+    if grid is not None and isinstance(molecule, Molecule):
         # check atomic numbers & coordinates of grid and molecule match
         ref, numbers = grid.numbers, molecule.numbers
         if ref.shape != numbers.shape or not np.max(abs(ref - numbers)) < 1.e-6:
@@ -126,7 +126,7 @@ def get_molecular_grid(molecule, grid=None):
         ref, coord = grid.centers, molecule.coordinates
         if ref.shape != coord.shape or not np.max(abs(ref - coord)) < 1.e-4:
             raise ValueError("Coordinates of grid and molecule do not match!")
-    elif grid is not None and all([isinstance(mol, BaseMolecule) for mol in molecule]):
+    elif grid is not None and all([isinstance(mol, Molecule) for mol in molecule]):
         for index, mol in enumerate(molecule):
             # check atomic numbers of grid and molecules match
             ref, numbers = grid.numbers, mol.numbers
@@ -179,12 +179,12 @@ def get_dict_energy(molecule):
 
     Parameters
     ----------
-    molecule : BaseMolecule or Sequence of BaseMolecule
-        Instance of BaseMolecule class, or sequence of BaseMolecule class instances.
+    molecule : Molecule or Sequence of Molecule
+        Instance of Molecule class, or sequence of Molecule class instances.
         In the case of one molecule, the Frontier Orbital Molecule (FMO) approach is used
         to get the energy values of :math:`E(N + 1)` and :math:`E(N - 1)`.
     """
-    if isinstance(molecule, BaseMolecule):
+    if isinstance(molecule, Molecule):
         # get homo/lumo energy
         homo_e, lumo_e, _, _ = get_homo_lumo_data(molecule)
         nelec = sum(molecule.nelectrons)
@@ -192,7 +192,7 @@ def get_dict_energy(molecule):
         energies = {nelec: molecule.energy,
                     nelec + 1: molecule.energy + lumo_e,
                     nelec - 1: molecule.energy - homo_e}
-    elif np.all([isinstance(mol, BaseMolecule) for mol in molecule]):
+    elif np.all([isinstance(mol, Molecule) for mol in molecule]):
         # store number of electron and energy in a dictionary
         energies = {}
         for mol in molecule:
@@ -212,8 +212,8 @@ def get_dict_density(molecule, points):
 
     Parameters
     ----------
-    molecule : BaseMolecule or Sequence of BaseMolecule
-        Instance of BaseMolecule class, or sequence of BaseMolecule class instances.
+    molecule : Molecule or Sequence of Molecule
+        Instance of Molecule class, or sequence of Molecule class instances.
         In the case of one molecule, the Frontier Orbital Molecule (FMO) approach is used
         to get the density of :math:`\rho_{N + 1}(\mathbf{r})` and
         :math:`\rho_{N - 1}(\mathbf{r})`.
@@ -221,7 +221,7 @@ def get_dict_density(molecule, points):
        The 2D array containing the cartesian coordinates of points on which density is
        evaluated. It has a shape (n, 3) where n is the number of points.
     """
-    if isinstance(molecule, BaseMolecule):
+    if isinstance(molecule, Molecule):
         # get homo/lumo energy and spin
         _, _, homo_s, lumo_s = get_homo_lumo_data(molecule)
         # compute homo & lumo density
@@ -236,7 +236,7 @@ def get_dict_density(molecule, points):
         densities = {nelec: dens,
                      nelec + 1: dens + lumo_dens,
                      nelec - 1: dens - homo_dens}
-    elif np.all([isinstance(mol, BaseMolecule) for mol in molecule]):
+    elif np.all([isinstance(mol, Molecule) for mol in molecule]):
         # compute and record densities on given points in a dictionary
         densities = {}
         for mol in molecule:
@@ -256,8 +256,8 @@ def get_dict_population(molecule, approach, scheme, **kwargs):
 
     Parameters
     ----------
-    molecule : BaseMolecule or Sequence of BaseMolecule
-        Instance of BaseMolecule class, or sequence of BaseMolecule class instances.
+    molecule : Molecule or Sequence of Molecule
+        Instance of Molecule class, or sequence of Molecule class instances.
     approach : str, optional
         Choose between "FMR" (fragment of molecular response) or "RMF"
         (response of molecular fragment).
@@ -276,7 +276,7 @@ def get_dict_population(molecule, approach, scheme, **kwargs):
             raise ValueError("Condensing with scheme={0} is only possible in combination with "
                              "approach='RMF'! Given approach={1}".format(scheme, approach))
         if (not hasattr(type(molecule), "__iter__") or len(molecule) != 3 or not
-                np.all([isinstance(mol, BaseMolecule) for mol in molecule])):
+                np.all([isinstance(mol, Molecule) for mol in molecule])):
             raise ValueError("Condensing with scheme={0} needs 3 molecules!".format(scheme))
         # get populations
         pops = [getattr(mol, scheme + "_charges") for mol in molecule]
@@ -299,9 +299,9 @@ def get_dict_population(molecule, approach, scheme, **kwargs):
         same_coordinates = False
 
     # find reference molecule
-    if isinstance(molecule, BaseMolecule):
+    if isinstance(molecule, Molecule):
         mol0 = molecule
-    elif np.all([isinstance(mol, BaseMolecule) for mol in molecule]):
+    elif np.all([isinstance(mol, Molecule) for mol in molecule]):
         if len(molecule) != 3:
             raise ValueError("Condensing within FD approach, currently works for "
                              "only 3 molecules! Given {0} molecules.".format(len(molecule)))

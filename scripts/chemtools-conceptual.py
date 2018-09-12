@@ -34,7 +34,7 @@ from __future__ import print_function
 import sys
 import argparse
 
-from chemtools import HortonMolecule
+from chemtools import Molecule
 from chemtools import __version__, CubeGen, print_vmd_script_isosurface
 from chemtools import GlobalConceptualDFT, LocalConceptualDFT
 
@@ -112,7 +112,7 @@ def main_conceptual_global(args):
 def main_conceptual_local(args):
     """Build LocalConceptualDFT class and dump a cube file of local descriptor."""
     # load the first molecule
-    mol = HortonMolecule.from_file(args.file_wfn[0])
+    mol = Molecule.from_file(args.file_wfn[0])
 
     # make cubic grid
     if args.cube.endswith('.cube'):

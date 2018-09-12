@@ -30,8 +30,8 @@ compute various conceptual density functional theory (DFT) descriptive tools.
 
 from horton import log, BeckeMolGrid
 
-from chemtools.utils.molecule import BaseMolecule
-from chemtools.utils.wrappers import HortonMolecule
+from chemtools.utils.wrappers import Molecule
+from chemtools.utils.wrappers import Molecule
 from chemtools.toolbox.utils import check_arg_molecule, get_matching_attr
 from chemtools.toolbox.utils import get_dict_energy, get_dict_density, get_dict_population
 from chemtools.conceptual.linear import LinearGlobalTool, LinearLocalTool, LinearCondensedTool
@@ -121,7 +121,7 @@ class BaseConceptualDFT(object):
 
     @staticmethod
     def load_file(file_names):
-        """Return `BaseMolecule` instances corresponding to file_names.
+        """Return `Molecule` instances corresponding to file_names.
 
         Parameters
         ----------
@@ -131,13 +131,13 @@ class BaseConceptualDFT(object):
         """
         if isinstance(file_names, (str, unicode)):
             # case of one file not given as a list
-            molecule = HortonMolecule.from_file(file_names)
+            molecule = Molecule.from_file(file_names)
         elif len(file_names) == 1 and isinstance(file_names[0], (str, unicode)):
             # case of one file given as a list
-            molecule = HortonMolecule.from_file(file_names[0])
+            molecule = Molecule.from_file(file_names[0])
         else:
             # case of multiple files
-            molecule = [HortonMolecule.from_file(filename) for filename in file_names]
+            molecule = [Molecule.from_file(filename) for filename in file_names]
         return molecule
 
 
@@ -231,12 +231,12 @@ class GlobalConceptualDFT(BaseConceptualDFT):
     @classmethod
     def from_molecule(cls, molecule, model):
         r"""
-        Initialize class from `BaseMolecule` object(s).
+        Initialize class from `Molecule` object(s).
 
         Parameters
         ----------
-        molecule : BaseMolecule or Sequence of BaseMolecule
-            Instance of BaseMolecule class, or sequence of BaseMolecule class instances.
+        molecule : Molecule or Sequence of Molecule
+            Instance of Molecule class, or sequence of Molecule class instances.
         model : str
             Energy model used to calculate global reactivity descriptors.
         """
@@ -342,12 +342,12 @@ class LocalConceptualDFT(BaseConceptualDFT):
     @classmethod
     def from_molecule(cls, molecule, model, points):
         r"""
-        Initialize class from `BaseMolecule` object(s).
+        Initialize class from `Molecule` object(s).
 
         Parameters
         ----------
-        molecule : BaseMolecule or Sequence of BaseMolecule
-            Instance of BaseMolecule class, or sequence of BaseMolecule class instances.
+        molecule : Molecule or Sequence of Molecule
+            Instance of Molecule class, or sequence of Molecule class instances.
         model : str
             Energy model used to calculate local reactivity descriptors.
             Available models are "linear" and "quadratic".
@@ -456,12 +456,12 @@ class CondensedConceptualDFT(BaseConceptualDFT):
     @classmethod
     def from_molecule(cls, molecule, model, approach="FMR", scheme="h", **kwargs):
         r"""
-        Initialize class from `BaseMolecule` object(s).
+        Initialize class from `Molecule` object(s).
 
         Parameters
         ----------
-        molecule : BaseMolecule or Sequence of BaseMolecule
-            Instance of BaseMolecule class, or sequence of BaseMolecule class instances.
+        molecule : Molecule or Sequence of Molecule
+            Instance of Molecule class, or sequence of Molecule class instances.
         model : str
             Energy model used to calculate condensed reactivity descriptors.
             Available models are "linear" and "quadratic".

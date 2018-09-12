@@ -29,7 +29,7 @@ computes the Non-Covalent Interactions.
 import numpy as np
 import matplotlib
 matplotlib.use('agg')
-from chemtools.utils.wrappers import HortonMolecule
+from chemtools.utils.wrappers import Molecule
 from chemtools.denstools.densitybased import DensityLocalTool
 from chemtools.utils.cube import CubeGen
 from chemtools.utils.output import print_vmd_script_nci
@@ -106,7 +106,7 @@ class NCI(object):
             Cubic grid used for calculating and visualizing the NCI.
             If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
         """
-        molecule = HortonMolecule.from_file(filename)
+        molecule = Molecule.from_file(filename)
         return cls.from_molecule(molecule, cube)
 
     @classmethod

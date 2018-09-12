@@ -31,7 +31,7 @@ This script allows the user to use ChemTools from a command line.
 
 import argparse
 
-from chemtools import HortonMolecule, CubeGen, NCI, __version__
+from chemtools import Molecule, CubeGen, NCI, __version__
 
 
 def parse_args_nci():
@@ -118,7 +118,7 @@ def main_nci():
     args = parse_args_nci()
 
     # load molecule
-    mol = HortonMolecule.from_file(args.file_wfn)
+    mol = Molecule.from_file(args.file_wfn)
 
     # make cubic grid
     if args.cube.endswith('.cube'):
