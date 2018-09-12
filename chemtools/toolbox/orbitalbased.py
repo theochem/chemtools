@@ -51,7 +51,7 @@ class OrbitalLocalTool(DensityLocalTool):
         self._molecule = molecule
         self._points = points
 
-        # Compute density & gradient on grid
+        # compute density & gradient on grid
         dens = self._molecule.compute_density(self._points)
         grad = self._molecule.compute_gradient(self._points)
         super(OrbitalLocalTool, self).__init__(dens, grad, hessian=None)
@@ -76,8 +76,6 @@ class OrbitalLocalTool(DensityLocalTool):
         r"""
         Positive definite kinetic energy density.
 
-        Positive definite kinetic energy density defined as,
-
         .. math::
            \tau \left(\mathbf{r}\right) =
            \sum_i^N n_i \frac{1}{2} \rvert \nabla \phi_i \left(\mathbf{r}\right) \lvert^2
@@ -87,9 +85,7 @@ class OrbitalLocalTool(DensityLocalTool):
     @property
     def elf(self):
         r"""
-        Electron Localization Function.
-
-        The Electron Localization Function introduced by Becke and Edgecombe,
+        Electron Localization Function introduced by Becke and Edgecombe.
 
         .. math::
            ELF (\mathbf{r}) =
@@ -117,11 +113,9 @@ class OrbitalLocalTool(DensityLocalTool):
         elf = 1.0 / (1.0 + (elfd / tf)**2.0)
         return elf
 
-    def mep(self, coordinates, pseudo_numbers):
+    def mep(self):
         r"""
         Molecular Electrostatic Potential.
-
-        Molecular Electrostatic Potential defined as,
 
         .. math::
            V \left(\mathbf{r}\right) = \sum_A \frac{Z_A}{\rvert \mathbf{R}_A - \mathbf{r} \lvert} -
@@ -149,19 +143,19 @@ class OrbitalLocalTool(DensityLocalTool):
     @property
     def local_ip(self):
         r"""
-        Local Ionization Potential defined as,
+        Local Ionization Potential.
 
         .. math::
            IP \left(\mathbf{r}\right) = \frac{\sum_{i \in \mathrm{MOs}} n_i \epsilon_i
            \phi_i(\mathbf{r}) \phi_i^*(\mathbf{r})}{\rho(\mathbf{r})}
         """
-        iorbs = np.arange(1, self._molecule.nbasis+1)
+        iorbs = np.arange(1, self._molecule.nbasis + 1)
 
         orbitals_alpha = self.orbitals_exp(iorbs, spin='alpha')**2
         orbitals_beta = self.orbitals_exp(iorbs, spin='beta')**2
-        result = np.dot(self._molecule.orbital_occupation[0]*self._molecule.orbital_energy[0],
+        result = np.dot(self._molecule.orbital_occupation[0] * self._molecule.orbital_energy[0],
                         orbitals_alpha.T)
-        result += np.dot(self._molecule.orbital_occupation[1]*self._molecule.orbital_energy[1],
+        result += np.dot(self._molecule.orbital_occupation[1] * self._molecule.orbital_energy[1],
                          orbitals_beta.T)
         result /= self.density
         return result
@@ -218,7 +212,7 @@ class OrbitalLocalTool(DensityLocalTool):
         Parameters
         ----------
         temperature : float
-            The temperatire at which to evaluate the spin chemical potential (in Kelvin).
+            The temperature at which to evaluate the spin chemical potential (in Kelvin).
         spin_chemical_potential : np.array, shape=(2,), default=None
             The spin chemical potential, when not provided it is calculated.
 
@@ -240,12 +234,9 @@ class OrbitalLocalTool(DensityLocalTool):
         orbitals_beta = self.orbitals_exp(iorbs, spin='beta')**2
 
         for i in range(0, nbf):
-            denom = (1. + np.exp(bt * (self._molecule.orbital_energy[0][i]
-                                       - spin_chemical_potential[0])))
-            tempdens[:] += orbitals_alpha[:, i] / denom
-
-            denom = (1. + np.exp(bt * (self._molecule.orbital_energy[1][i]
-                                       - spin_chemical_potential[1])))
-            tempdens[:] += orbitals_beta[:, i] / denom
+            denom = np.exp(bt * (self._molecule.orbital_energy[0][i] - spin_chemical_potential[0]))
+            tempdens[:] += orbitals_alpha[:, i] / (1. + denom)
+            denom = np.exp(bt * (self._molecule.orbital_energy[1][i] - spin_chemical_potential[1]))
+            tempdens[:] += orbitals_beta[:, i] / (1. + denom)
 
         return tempdens
