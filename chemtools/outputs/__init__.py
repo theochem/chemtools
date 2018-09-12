@@ -20,8 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""The Utility Module."""
+"""Outputs Module."""
 
 
-from chemtools.utils.cube import *
-from chemtools.utils.utils import *
+from chemtools.outputs.output import *

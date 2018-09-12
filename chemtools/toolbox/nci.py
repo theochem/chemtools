@@ -32,7 +32,7 @@ matplotlib.use('agg')
 from chemtools.wrappers.molecule import Molecule
 from chemtools.denstools.densitybased import DensityLocalTool
 from chemtools.utils.cube import CubeGen
-from chemtools.utils.output import print_vmd_script_nci
+from chemtools.outputs.output import print_vmd_script_nci
 from matplotlib import rcParams
 import matplotlib.pyplot as plt
 

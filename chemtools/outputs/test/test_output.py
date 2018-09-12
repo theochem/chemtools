@@ -27,7 +27,7 @@ import tempfile
 from contextlib import contextmanager
 from numpy.testing import assert_raises
 import numpy as np
-from chemtools.utils import output
+from chemtools.outputs import output
 
 
 @contextmanager
