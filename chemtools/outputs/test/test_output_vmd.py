@@ -156,39 +156,29 @@ def test_vmd_script_vector_field():
     centers = np.array([[1, 2, 3]])
     unit_vecs = np.array([[1, 0, 0]])
     weights = np.array([1])
-    assert_raises(ValueError, output_vmd._vmd_script_vector_field, centers, unit_vecs, np.array([1, 2]))
-    assert_raises(ValueError, output_vmd._vmd_script_vector_field, centers, np.array([[1, 2, 3]]),
-                  weights)
+    # check output_vmd._vmd_script_vector_field
+    method = output_vmd._vmd_script_vector_field
+    assert_raises(ValueError, method, centers, unit_vecs, np.array([1, 2]))
+    assert_raises(ValueError, method, centers, np.array([[1, 2, 3]]), weights)
 
-    assert_raises(TypeError, output_vmd._vmd_script_vector_field, np.array([1, 2, 3]),
-                  unit_vecs, weights)
-    assert_raises(TypeError, output_vmd._vmd_script_vector_field, np.array([[1, 2, 3, 4]]),
-                  unit_vecs, weights)
-    assert_raises(TypeError, output_vmd._vmd_script_vector_field, [[1, 2, 3]],
-                  unit_vecs, weights)
+    assert_raises(TypeError, method, np.array([1, 2, 3]), unit_vecs, weights)
+    assert_raises(TypeError, method, np.array([[1, 2, 3, 4]]), unit_vecs, weights)
+    assert_raises(TypeError, method, [[1, 2, 3]], unit_vecs, weights)
 
-    assert_raises(TypeError, output_vmd._vmd_script_vector_field, centers, np.array([1, 2, 3]), weights)
-    assert_raises(TypeError, output_vmd._vmd_script_vector_field, centers, np.array([[1, 2, 3, 4]]),
-                  weights)
-    assert_raises(TypeError, output_vmd._vmd_script_vector_field, centers, [[1, 2, 3]],
-                  weights)
+    assert_raises(TypeError, method, centers, np.array([1, 2, 3]), weights)
+    assert_raises(TypeError, method, centers, np.array([[1, 2, 3, 4]]), weights)
+    assert_raises(TypeError, method, centers, [[1, 2, 3]], weights)
 
-    assert_raises(TypeError, output_vmd._vmd_script_vector_field, centers, unit_vecs, np.array([[1]]))
-    assert_raises(TypeError, output_vmd._vmd_script_vector_field, centers, unit_vecs, [1])
+    assert_raises(TypeError, method, centers, unit_vecs, np.array([[1]]))
+    assert_raises(TypeError, method, centers, unit_vecs, [1])
 
-    assert_raises(TypeError, output_vmd._vmd_script_vector_field, centers, unit_vecs, weights,
-                  has_shadow=None)
-    assert_raises(TypeError, output_vmd._vmd_script_vector_field, centers, unit_vecs, weights,
-                  has_shadow=0)
-    assert_raises(TypeError, output_vmd._vmd_script_vector_field, centers, unit_vecs, weights,
-                  material='lksjdf')
-    assert_raises(TypeError, output_vmd._vmd_script_vector_field, centers, unit_vecs, weights,
-                  material=None)
-    assert_raises(TypeError, output_vmd._vmd_script_vector_field, centers, unit_vecs, weights,
-                  color=-1)
-    assert_raises(TypeError, output_vmd._vmd_script_vector_field, centers, unit_vecs, weights,
-                  color=1057)
-    assert output_vmd._vmd_script_vector_field(centers, unit_vecs, weights) == \
+    assert_raises(TypeError, method, centers, unit_vecs, weights, has_shadow=None)
+    assert_raises(TypeError, method, centers, unit_vecs, weights, has_shadow=0)
+    assert_raises(TypeError, method, centers, unit_vecs, weights, material='lksjdf')
+    assert_raises(TypeError, method, centers, unit_vecs, weights, material=None)
+    assert_raises(TypeError, method, centers, unit_vecs, weights, color=-1)
+    assert_raises(TypeError, method, centers, unit_vecs, weights, color=1057)
+    assert method(centers, unit_vecs, weights) == \
         ('# Add function for vector field\n'
          'proc vmd_draw_arrow {mol center unit_dir cyl_radius cone_radius length} {\n'
          'set start [vecsub $center [vecscale [vecscale 0.5 $length] $unit_dir]]\n'
@@ -203,7 +193,7 @@ def test_vmd_script_vector_field():
          'draw color 0\n'
          'draw arrow {1 2 3} {1 0 0} 0.08 0.15 0.7\n'
          '#\n')
-    assert output_vmd._vmd_script_vector_field(centers, unit_vecs, weights, has_shadow=False) == \
+    assert method(centers, unit_vecs, weights, has_shadow=False) == \
         ('# Add function for vector field\n'
          'proc vmd_draw_arrow {mol center unit_dir cyl_radius cone_radius length} {\n'
          'set start [vecsub $center [vecscale [vecscale 0.5 $length] $unit_dir]]\n'
@@ -218,7 +208,7 @@ def test_vmd_script_vector_field():
          'draw color 0\n'
          'draw arrow {1 2 3} {1 0 0} 0.08 0.15 0.7\n'
          '#\n')
-    assert output_vmd._vmd_script_vector_field(centers, unit_vecs, np.array([1e-2])) == \
+    assert method(centers, unit_vecs, np.array([1e-2])) == \
         ('# Add function for vector field\n'
          'proc vmd_draw_arrow {mol center unit_dir cyl_radius cone_radius length} {\n'
          'set start [vecsub $center [vecscale [vecscale 0.5 $length] $unit_dir]]\n'
