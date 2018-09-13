@@ -196,7 +196,7 @@ def test_orbital_tool_h2o_b3lyp_sto3g():
                          -0.00894206,  0.04330806,  0.03441681,   -0.00203017,  0.02272626,
                           0.03730846,  0.01463959])
 
-    test = orbtool.mep(mol.coordinates, mol.pseudo_numbers)
+    test = orbtool.electrostatic_potential
 
     np.testing.assert_array_almost_equal(test, expected, decimal=6)
 

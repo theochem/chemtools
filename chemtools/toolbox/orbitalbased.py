@@ -113,7 +113,8 @@ class OrbitalLocalTool(DensityLocalTool):
         elf = 1.0 / (1.0 + (elfd / tf)**2.0)
         return elf
 
-    def mep(self):
+    @property
+    def electrostatic_potential(self):
         r"""
         Molecular Electrostatic Potential.
 
