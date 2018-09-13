@@ -20,6 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+# pragma pylint: disable=wrong-import-position
 """Module for Non-Covalent Interactions (NCI) analysis of Quantum Chemistry Output Files.
 
 This modules contains wrappers which take outputs of quantum chemistry software and
