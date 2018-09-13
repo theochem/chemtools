@@ -116,8 +116,8 @@ def test_density_local_tool_electrostatic_potential():
     np.testing.assert_almost_equal(test, expected, decimal=1)
 
     # check ValueError
-    assert_raises(ValueError, model.compute_electrostatic_potential, np.array([0.]), mol.coordinates,
-                  grid.weights, grid.points, cube.points)
+    assert_raises(ValueError, model.compute_electrostatic_potential, np.array([0.]),
+                  mol.coordinates, grid.weights, grid.points, cube.points)
     assert_raises(ValueError, model.compute_electrostatic_potential, mol.numbers, np.array([0.]),
                   grid.weights, grid.points, cube.points)
     assert_raises(ValueError, model.compute_electrostatic_potential, mol.numbers, mol.coordinates,
