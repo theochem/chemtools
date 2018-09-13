@@ -110,21 +110,21 @@ def test_density_local_tool_electrostatic_potential():
                          -0.00894206,  0.04330806,  0.03441681,   -0.00203017,  0.02272626,
                           0.03730846,  0.01463959])
 
-    test = model.electrostatic_potential(mol.numbers, mol.coordinates, grid.weights,
-                                   grid.points, cube.points)
+    test = model.compute_electrostatic_potential(mol.numbers, mol.coordinates, grid.weights,
+                                                 grid.points, cube.points)
 
     np.testing.assert_almost_equal(test, expected, decimal=1)
 
     # check ValueError
-    assert_raises(ValueError, model.electrostatic_potential, np.array([0.]), mol.coordinates,
+    assert_raises(ValueError, model.compute_electrostatic_potential, np.array([0.]), mol.coordinates,
                   grid.weights, grid.points, cube.points)
-    assert_raises(ValueError, model.electrostatic_potential, mol.numbers, np.array([0.]),
-              grid.weights, grid.points, cube.points)
-    assert_raises(ValueError, model.electrostatic_potential, mol.numbers, mol.coordinates,
-              np.array([0.]), grid.points, cube.points)
-    assert_raises(ValueError, model.electrostatic_potential, mol.numbers, mol.coordinates,
-              grid.weights, np.array([0.]), cube.points)
-    assert_raises(ValueError, model.electrostatic_potential, mol.numbers, mol.coordinates,
+    assert_raises(ValueError, model.compute_electrostatic_potential, mol.numbers, np.array([0.]),
+                  grid.weights, grid.points, cube.points)
+    assert_raises(ValueError, model.compute_electrostatic_potential, mol.numbers, mol.coordinates,
+                  np.array([0.]), grid.points, cube.points)
+    assert_raises(ValueError, model.compute_electrostatic_potential, mol.numbers, mol.coordinates,
+                  grid.weights, np.array([0.]), cube.points)
+    assert_raises(ValueError, model.compute_electrostatic_potential, mol.numbers, mol.coordinates,
                   grid.weights, grid.points, np.array([0.]))
-    assert_raises(ValueError, model.electrostatic_potential, mol.numbers, mol.coordinates,
-              grid.weights, grid.points, np.array([[0.]]))
+    assert_raises(ValueError, model.compute_electrostatic_potential, mol.numbers, mol.coordinates,
+                  grid.weights, grid.points, np.array([[0.]]))

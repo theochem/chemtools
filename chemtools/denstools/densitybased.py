@@ -178,7 +178,7 @@ class DensityLocalTool(object):
         kinetic = prefactor * self._density**(5.0 / 3.0)
         return kinetic
 
-    def electrostatic_potential(self, numbers, coordinates, int_weights, int_points, points):
+    def compute_electrostatic_potential(self, numbers, coordinates, weights, int_points, points):
         r"""Electrostatic potential.
 
         Electrostatic potential defined as,
@@ -194,7 +194,7 @@ class DensityLocalTool(object):
             The atomic numbers of the system
         coordinates : np.ndarray
             The coordinates of the (nuclear) charges of the system
-        int_weights : np.ndarray
+        weights : np.ndarray
             The integration weights.
             This should have the same dimension as the density used to initialize the class.
         int_points : np.ndarray
@@ -206,12 +206,12 @@ class DensityLocalTool(object):
         if len(coordinates) != len(numbers):
             raise ValueError('Argument numbers & coordinates should have the same length. ' +
                              '{0}!={1}'.format(len(coordinates), len(numbers)))
-        if len(int_weights) != len(self._density):
+        if len(weights) != len(self._density):
             raise ValueError('Argument int_weights & density should have the same shape. ' +
-                             '{0}!={1}'.format(int_weights.shape, self._density.shape))
+                             '{0}!={1}'.format(weights.shape, self._density.shape))
         if len(int_points) != len(self._density):
             raise ValueError('Argument int_points & density should have the same shape. ' +
-                             '{0}!={1}'.format(int_weights.shape, self._density.shape))
+                             '{0}!={1}'.format(weights.shape, self._density.shape))
         if not(isinstance(points, np.ndarray) and len(points.shape) == 2 and points.shape[1] == 3):
             raise ValueError('Argument points should be a numpy array with shape of (n, 3)')
 
@@ -229,7 +229,6 @@ class DensityLocalTool(object):
             deltas = point - int_points
             distance = np.linalg.norm(deltas, axis=1)
             # avoid computing esp, if points are very close
-            esp[n] -= np.sum(self._density[distance > 1e-6] * int_weights
-                             / distance[distance > 1e-6])
+            esp[n] -= np.sum(self._density[distance > 1e-6] * weights / distance[distance > 1e-6])
 
         return esp
