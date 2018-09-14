@@ -227,20 +227,16 @@ class OrbitalLocalTool(DensityLocalTool):
             Temperature-dependent density evaluated on the grid points.
         """
         kb = 3.1668144e-6  # Boltzman constant in Hartree/Kelvin
-        bt = np.divide(1.0, (kb * temperature))
-        nbf = self._molecule.nbasis
-        tempdens = np.zeros(self._points.shape[0])
-        iorbs = np.arange(1, nbf + 1)
-
-        spin_chemical_potential = self.compute_spin_chemical_potential(temperature)
-
-        orbitals_alpha = self.compute_orbital_expression(iorbs, spin="alpha")**2
-        orbitals_beta = self.compute_orbital_expression(iorbs, spin="beta")**2
-
-        for i in range(0, nbf):
-            denom = np.exp(bt * (self._molecule.orbital_energy[0][i] - spin_chemical_potential[0]))
-            tempdens[:] += orbitals_alpha[:, i] / (1. + denom)
-            denom = np.exp(bt * (self._molecule.orbital_energy[1][i] - spin_chemical_potential[1]))
-            tempdens[:] += orbitals_beta[:, i] / (1. + denom)
-
-        return tempdens
+        bt = 1.0 / (kb * temperature)
+        # compute spin chemical potential & energies of alpha and beta orbitals
+        spin_mu_a, spin_mu_b = self.compute_spin_chemical_potential(temperature)
+        energy_a, energy_b = self._molecule.orbital_energy
+        # compute density of each alpha and beta orbital on grid points
+        index = np.arange(1, self._molecule.nbasis + 1)
+        dens_a = self.compute_orbital_expression(index, spin="alpha")**2
+        dens_b = self.compute_orbital_expression(index, spin="beta")**2
+        # compute temperature-dependent density of alpha and beta orbitals
+        dens_a /= (1. + np.exp(bt * (energy_a - spin_mu_a)))
+        dens_b /= (1. + np.exp(bt * (energy_b - spin_mu_b)))
+        # sum temperature-dependent density of all alpha and beta orbitals
+        return np.sum(dens_a + dens_b, axis=1)
