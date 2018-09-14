@@ -162,11 +162,9 @@ def test_orbital_tool_ch4_uhf_ccpvdz():
               0.00037579, 0.00542211, 0.00046599, 0.00003973, 0.00113522, 0.00028249]
 
     # check density array
-    test = orbtool.compute_temperature_dependent_density(25000.0)
-    np.testing.assert_array_almost_equal(test, result, decimal=6)
-    # check density array only using spin_chemical_potential
-    test = orbtool.compute_temperature_dependent_density(25000.0)
-    np.testing.assert_array_almost_equal(test, result, decimal=6)
+    dens_temp_a, dens_temp_b = orbtool.compute_temperature_dependent_density(25000.0)
+    np.testing.assert_array_almost_equal(2 * dens_temp_a, result, decimal=6)
+    np.testing.assert_array_almost_equal(2 * dens_temp_b, result, decimal=6)
 
     # check KeyError
     assert_raises(KeyError, orbtool.compute_orbital_expression, np.array([9]), spin='error')

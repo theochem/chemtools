@@ -231,8 +231,10 @@ class OrbitalLocalTool(DensityLocalTool):
 
         Returns
         -------
-        dens_temp : np.array
-            Temperature-dependent density evaluated on the grid points.
+        dens_a : np.array
+            Temperature-dependent density of alpha electrons evaluated on the grid points.
+        dens_b : np.array
+            Temperature-dependent density of beta electrons evaluated on the grid points.
         """
         bt = 1.0 / (self._kb * temperature)
         # compute spin chemical potential & energies of alpha and beta orbitals
@@ -246,4 +248,4 @@ class OrbitalLocalTool(DensityLocalTool):
         dens_a /= (1. + np.exp(bt * (energy_a - spin_mu_a)))
         dens_b /= (1. + np.exp(bt * (energy_b - spin_mu_b)))
         # sum temperature-dependent density of all alpha and beta orbitals
-        return np.sum(dens_a + dens_b, axis=1)
+        return np.sum(dens_a, axis=1), np.sum(dens_b, axis=1)
