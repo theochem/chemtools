@@ -39,6 +39,10 @@ def test_toolbox_orbitalbased_raises():
     assert_raises(ValueError, OrbitalLocalTool.from_file, "gibberish", np.array([0.0, 1.0]))
     filename = context.get_fn('test/h2o_dimer_pbe_sto3g.wf')
     assert_raises(ValueError, OrbitalLocalTool.from_file, filename, np.array([0.0, 1.0]))
+    filename = context.get_fn('test/h2o_dimer_pbe_sto3g.wfn')
+    assert_raises(ValueError, OrbitalLocalTool.from_file, filename, np.array([0.0, 1.0]))
+    assert_raises(ValueError, OrbitalLocalTool.from_file, filename, np.array([0.0, 1.0, 0.0]))
+    assert_raises(ValueError, OrbitalLocalTool.from_file, filename, np.array([[0, 1], [1, 0.]]))
 
 
 def test_orbital_analysis_from_file_ch4_uhf_ccpvdz():
