@@ -202,6 +202,20 @@ class OrbitalLocalTool(DensityLocalTool):
     def compute_temperature_dependent_density(self, temperature):
         r"""Compute temperature-dependent density of alpha and beta electrons on the grid.
 
+        The temperature-dependent :math:`\sigma`-density at temperature :math:`T` is defined as,
+
+        .. math::
+            \rho_{\sigma, T} \left(\mathbf{r}\right) = \sum_{i = 1}^{N_{\text{basis}}}
+            \left( \frac{1}{1 + e^{\frac{(\epsilon_{i\sigma} - \mu_{\sigma, T})}{k_{\text{B}} T}}}
+            \right) |\phi_i (\mathbf{r})|^2
+
+        where the :math:`\sigma \in \{ \alpha, \beta\}` denotes the electron spin, the
+        :math:`\epsilon_{i \sigma}` specifies the energy of :math:`i^{\text{th}}`
+        :math:`\sigma`-molecular orbital, the :math:`\mu_{\sigma, T}` represents the temperature-
+        dependent spin chemical potential of :math:`\sigma`-electrons, and the
+        :math:`\phi_{i\sigma}(\mathbf{r})` denotes the :math:`i^{\text{th}}` :math:`\sigma`-
+        molecular orbital. The :math:`k_{\text{B}}` is the Boltzmann constant.
+
         Parameters
         ----------
         temperature : float
