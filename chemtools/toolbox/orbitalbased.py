@@ -194,19 +194,16 @@ class OrbitalLocalTool(DensityLocalTool):
             Beta spin chemical potential.
         """
         kb = 3.1668144e-6  # Boltzman constant in Hartree/Kelvin
-        bt = np.divide(1.0, (kb * temperature))
-
-        e_alpha = np.array(self._molecule.orbital_energy[0], dtype=np.float128, copy=True)
-        e_beta = np.array(self._molecule.orbital_energy[1], dtype=np.float128, copy=True)
-        n_alpha = np.sum(self._molecule.orbital_occupation[0])
-        n_beta = np.sum(self._molecule.orbital_occupation[1])
-
-        spin_pot_a = bisect(lambda x: (np.sum(1. / (1. + np.exp(bt * (e_alpha - x)))) - n_alpha),
-                            e_alpha[0], e_alpha[-1], maxiter=maxiter)
-
-        spin_pot_b = bisect(lambda x: (np.sum(1. / (1. + np.exp(bt * (e_beta - x)))) - n_beta),
-                            e_beta[0], e_beta[-1], maxiter=maxiter)
-
+        bt = 1.0 / (kb * temperature)
+        # get number and energy of alpha and beta electrons
+        n_a, n_b = self._molecule.nelectrons
+        energy_a, energy_b = self._molecule.orbital_energy
+        # find spin chemical potential of alpha electrons
+        spin_pot_a = bisect(lambda x: np.sum(1. / (1. + np.exp(bt * (energy_a - x)))) - n_a,
+                            energy_a[0], energy_a[-1], maxiter=maxiter, xtol=tolerance)
+        # find spin chemical potential of beta electrons
+        spin_pot_b = bisect(lambda x: (np.sum(1. / (1. + np.exp(bt * (energy_b - x)))) - n_b),
+                            energy_b[0], energy_b[-1], maxiter=maxiter, xtol=tolerance)
         return spin_pot_a, spin_pot_b
 
     def compute_temperature_dependent_density(self, temperature):
