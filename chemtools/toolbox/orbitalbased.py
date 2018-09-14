@@ -155,26 +155,36 @@ class OrbitalLocalTool(DensityLocalTool):
         index = np.copy(np.asarray(index))
         return self._molecule.compute_molecular_orbital(self._points, spin, index=index)
 
-    def compute_spin_chemical_potential(self, temperature, maxiter=500):
-        r"""Compute alpha and beta spin chemical potentials at the given temperature.
+    def compute_spin_chemical_potential(self, temperature, maxiter=500, tolerance=1.e-12):
+        r"""Compute temperature-dependent spin of alpha and beta electrons. on the grid.
 
-        The spin chemical potential, :math:`\mu_{\sigma}`, is obtained by solving the following
-        one-dimensional nonlinear equations:
+        Spin chemical potential, :math:`\mu_{\sigma, T}`, at temperature :math:`T` is found by
+        solving the following one-dimensional nonlinear equation:
 
         .. math::
-           N_{\sigma} = \sum_{i = 1}^{N_{basis}} \frac{1}
-           {1 + e^{\beta(\epsilon_{i \sigma} - \mu_{sigma})}}
+            N_{\sigma} = \sum_{i = 1}^{N_{\text{basis}}} \left( \frac{1}
+            {1 + e^{\frac{(\epsilon_{i \sigma} - \mu_{\sigma, T})}{k_{\text{B}} T}}} \right)
 
-        where :math:`\beta = \frac{1}{k_B T}` is the so-called thermodynamic beta,
-        :math:`\epsilon_{i \sigma}` is the molecular orbital energy of orbital :math:`i \sigma` and
-        :math:`N_{\sigma}` is the number of electrons with spin :math:`\sigma = \{ \alpha, \beta\}`.
+        where the :math:`\sigma \in \{ \alpha, \beta\}` denotes the electron spin, the
+        :math:`N_{\sigma}` is the number of :math:`\sigma`-spin electrons, the
+        :math:`\epsilon_{i \sigma}` specifies the energy of :math:`i^{\text{th}}`
+        :math:`\sigma`-molecular orbital, and the :math:`\mu_{\sigma, T}` represents the chemical
+        potential of :math:`\sigma`-electrons at temperature :math:`T`.
+        The :math:`k_{\text{B}}` is the Boltzmann constant.
+
+        This equation is solved using ``scipy.optimize.bisect`` routine for finding root of a
+        function within :math:`[a, b]` interval. The first and last :math:`\sigma`-molecular
+        orbital energies have been used as bracketing interval to find :math:`\mu_{\sigma, T}`
+        at the given temperature :math:`T`.
 
         Parameters
         ----------
         temperature : float
             Temperature at which to evaluate the spin chemical potential (in Kelvin).
         maxiter : int, optional
-            Maximum number of iterations used in solving the equation with scipy.optimize.bisect.
+            Maximum number of iterations of ``scipy.optimize.bisect`` routine.
+        tolerance : float, optional
+            Convergence tolerance of ``scipy.optimize.bisect`` routine.
 
         Returns
         -------
