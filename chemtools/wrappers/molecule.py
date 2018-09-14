@@ -43,21 +43,18 @@ class Molecule(object):
         """
         self._iodata = iodata
 
-        numbers = self._iodata.numbers
-        coordinates = self._iodata.coordinates
+        # if not (isinstance(coordinates, np.ndarray) and coordinates.ndim == 2):
+        #     raise TypeError("Argument coordinates should be a 2d-array.")
+        # if not (isinstance(numbers, np.ndarray) and numbers.ndim == 1):
+        #     raise TypeError("Argument numbers should be a 1d-array.")
+        # if coordinates.shape[0] != numbers.size:
+        #     raise TypeError("Arguments coordinates and numbers should represent the same number "
+        #                     "of atoms! {0} != {1}".format(coordinates.shape[0], numbers.size))
+        # if coordinates.shape[1] != 3:
+        #     raise TypeError("Argument coordinates should be a 2d-array with 3 columns.")
 
-        if not (isinstance(coordinates, np.ndarray) and coordinates.ndim == 2):
-            raise TypeError("Argument coordinates should be a 2d-array.")
-        if not (isinstance(numbers, np.ndarray) and numbers.ndim == 1):
-            raise TypeError("Argument numbers should be a 1d-array.")
-        if coordinates.shape[0] != numbers.size:
-            raise TypeError("Arguments coordinates and numbers should represent the same number "
-                            "of atoms! {0} != {1}".format(coordinates.shape[0], numbers.size))
-        if coordinates.shape[1] != 3:
-            raise TypeError("Argument coordinates should be a 2d-array with 3 columns.")
-
-        self._coordinates = coordinates
-        self._numbers = numbers
+        self._coordinates = self._iodata.coordinates
+        self._numbers = self._iodata.numbers
 
         # assign alpha orbital expression
         self._exp_alpha = self._iodata.exp_alpha
