@@ -140,7 +140,7 @@ class OrbitalLocalTool(DensityLocalTool):
             the spin of the orbitals to be calculated.
         """
         iorbs = np.copy(np.asarray(iorbs))
-        return self._molecule.compute_molecular_orbital(self._points, spin, orbital_index=iorbs)
+        return self._molecule.compute_molecular_orbital(self._points, spin, index=iorbs)
 
     @property
     def local_ip(self):

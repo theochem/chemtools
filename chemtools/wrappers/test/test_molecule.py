@@ -36,16 +36,16 @@ def check_horton_molecule_raises(mol):
     # example point array
     points = np.array([[0., 0., 0.], [1., 1., 1.]])
     # check invalid orbital spin argument
-    assert_raises(ValueError, mol.compute_density_matrix_array, 'alphabeta')
-    assert_raises(ValueError, mol.compute_density, points, spin='alph')
-    assert_raises(ValueError, mol.compute_gradient, points, spin='ba')
-    assert_raises(ValueError, mol.compute_hessian, points, spin='betaalpha')
-    assert_raises(ValueError, mol.compute_kinetic_energy_density, points, spin='balpha')
+    assert_raises(ValueError, mol.compute_density_matrix, "alphabeta")
+    assert_raises(ValueError, mol.compute_density, points, spin="alph")
+    assert_raises(ValueError, mol.compute_gradient, points, spin="ba")
+    assert_raises(ValueError, mol.compute_hessian, points, spin="betaalpha")
+    assert_raises(ValueError, mol.compute_kinetic_energy_density, points, spin="balpha")
     # check invalid points argument
-    assert_raises(ValueError, mol.compute_molecular_orbital, [0.1, 0.5, 0.7], 'a')
-    assert_raises(ValueError, mol.compute_molecular_orbital, np.array([0.1, 0.5, 0.7]), 'b')
-    assert_raises(ValueError, mol.compute_molecular_orbital, np.array([[0.4, 0.2]]), 'a')
-    assert_raises(ValueError, mol.compute_molecular_orbital, np.array([[5, 10, 15]]), 'b')
+    assert_raises(ValueError, mol.compute_molecular_orbital, [0.1, 0.5, 0.7], "a")
+    assert_raises(ValueError, mol.compute_molecular_orbital, np.array([0.1, 0.5, 0.7]), "b")
+    assert_raises(ValueError, mol.compute_molecular_orbital, np.array([[0.4, 0.2]]), "a")
+    assert_raises(ValueError, mol.compute_molecular_orbital, np.array([[5, 10, 15]]), "b")
     assert_raises(ValueError, mol.compute_density, [0., 0., 0.])
     assert_raises(ValueError, mol.compute_density, np.array([0., 0., 0.]))
     assert_raises(ValueError, mol.compute_density, np.array([[0., 0.]]))
@@ -70,28 +70,28 @@ def check_horton_molecule_raises(mol):
     assert_raises(ValueError, mol.compute_esp, points, charges=np.array([6., 1., 1.]))
     assert_raises(ValueError, mol.compute_esp, points, charges=[6., 1., 1., 1., 1.])
     # check invalid output argument
-    assert_raises(ValueError, mol.compute_molecular_orbital, points, 'a', 3, np.zeros((2,)))
-    assert_raises(ValueError, mol.compute_molecular_orbital, points, 'b', 3, np.zeros((2, 2)))
-    assert_raises(ValueError, mol.compute_molecular_orbital, points, 'a', [0], np.zeros((2,)))
-    assert_raises(ValueError, mol.compute_molecular_orbital, points, 'b', [0, 1], np.zeros((2, 1)))
-    assert_raises(ValueError, mol.compute_molecular_orbital, points, 'a', None, np.zeros((2,)))
-    assert_raises(ValueError, mol.compute_molecular_orbital, points, 'b', None, np.zeros((2, 1)))
-    assert_raises(ValueError, mol.compute_density, points, spin='a', output=np.zeros(3))
-    assert_raises(ValueError, mol.compute_density, points, spin='b', output=np.zeros((2, 3)))
-    assert_raises(ValueError, mol.compute_gradient, points, spin='a', output=np.zeros(2))
-    assert_raises(ValueError, mol.compute_gradient, points, spin='b', output=np.zeros((2, 2)))
-    assert_raises(ValueError, mol.compute_hessian, points, spin='ab', output=np.zeros(2))
-    assert_raises(ValueError, mol.compute_hessian, points, spin='ab', output=np.zeros((2, 3)))
-    assert_raises(ValueError, mol.compute_esp, points, spin='ab', output=np.zeros(3))
-    assert_raises(ValueError, mol.compute_esp, points, spin='b', output=np.zeros((2, 4)))
-    assert_raises(ValueError, mol.compute_kinetic_energy_density, points, 'a', None, np.zeros(3))
+    assert_raises(ValueError, mol.compute_molecular_orbital, points, "a", 3, np.zeros((2,)))
+    assert_raises(ValueError, mol.compute_molecular_orbital, points, "b", 3, np.zeros((2, 2)))
+    assert_raises(ValueError, mol.compute_molecular_orbital, points, "a", [0], np.zeros((2,)))
+    assert_raises(ValueError, mol.compute_molecular_orbital, points, "b", [0, 1], np.zeros((2, 1)))
+    assert_raises(ValueError, mol.compute_molecular_orbital, points, "a", None, np.zeros((2,)))
+    assert_raises(ValueError, mol.compute_molecular_orbital, points, "b", None, np.zeros((2, 1)))
+    assert_raises(ValueError, mol.compute_density, points, spin="a", output=np.zeros(3))
+    assert_raises(ValueError, mol.compute_density, points, spin="b", output=np.zeros((2, 3)))
+    assert_raises(ValueError, mol.compute_gradient, points, spin="a", output=np.zeros(2))
+    assert_raises(ValueError, mol.compute_gradient, points, spin="b", output=np.zeros((2, 2)))
+    assert_raises(ValueError, mol.compute_hessian, points, spin="ab", output=np.zeros(2))
+    assert_raises(ValueError, mol.compute_hessian, points, spin="ab", output=np.zeros((2, 3)))
+    assert_raises(ValueError, mol.compute_esp, points, spin="ab", output=np.zeros(3))
+    assert_raises(ValueError, mol.compute_esp, points, spin="b", output=np.zeros((2, 4)))
+    assert_raises(ValueError, mol.compute_kinetic_energy_density, points, "a", None, np.zeros(3))
     # check not implemented erros
-    assert_raises(NotImplementedError, mol.compute_gradient, points, 'ab', [0, 1], None)
-    assert_raises(NotImplementedError, mol.compute_gradient, points, 'a', [5, 7], None)
-    assert_raises(NotImplementedError, mol.compute_gradient, points, 'b', [20], None)
-    assert_raises(NotImplementedError, mol.compute_hessian, points, 'ab', [32, 33], None)
-    assert_raises(NotImplementedError, mol.compute_esp, points, 'a', [33], None)
-    assert_raises(NotImplementedError, mol.compute_kinetic_energy_density, points, 'a', [30])
+    assert_raises(NotImplementedError, mol.compute_gradient, points, "ab", [0, 1], None)
+    assert_raises(NotImplementedError, mol.compute_gradient, points, "a", [5, 7], None)
+    assert_raises(NotImplementedError, mol.compute_gradient, points, "b", [20], None)
+    assert_raises(NotImplementedError, mol.compute_hessian, points, "ab", [32, 33], None)
+    assert_raises(NotImplementedError, mol.compute_esp, points, "a", [33], None)
+    assert_raises(NotImplementedError, mol.compute_kinetic_energy_density, points, "a", [30])
 
 
 def test_horton_molecule_check_raises_fchk_ch4_uhf_ccpvdz():
@@ -143,7 +143,7 @@ def test_horton_molecule_basics_fchk_ch4_uhf_ccpvdz():
 
 
 # def test_horton_molecule_basics_wfn_ch4_uhf_ccpvdz():
-#     molecule = HortonMolecule.from_file(context.get_fn('test/ch4_uhf_ccpvdz.wfn'))
+#     molecule = HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
 #     check_horton_molecule_basics(molecule)
 
 
@@ -174,7 +174,7 @@ def test_horton_molecule_orbitals_fchk_ch4_uhf():
     assert_almost_equal(mol.orbital_coefficient[1][-1, -1], 1.02960200, decimal=6)
     assert_almost_equal(mol.orbital_coefficient[0][-1, -1], 1.02960200, decimal=6)
     # check overlap matrix
-    overlap = mol.compute_overlap()
+    overlap = mol.compute_orbital_overlap()
     assert_equal(overlap.shape, (34, 34))
     assert_almost_equal(np.diag(overlap), np.ones(34), decimal=6)
     assert_almost_equal(overlap, overlap.T, decimal=6)
@@ -201,7 +201,7 @@ def test_horton_molecule_density_matrix_fchk_ch4_uhf():
     # column 29, rows 30-34
     expected_29 = np.array([-0.00442, -0.00106, -0.00003, 0.00029, -0.00047])
     # check alpha density matrix
-    dm_array_a = mol.compute_density_matrix_array(spin='a')
+    dm_array_a = mol.compute_density_matrix(spin="a")
     assert_almost_equal(np.diag(dm_array_a), expected_diag, decimal=5)
     assert_almost_equal(dm_array_a, dm_array_a.T, decimal=5)
     assert_almost_equal(dm_array_a[0, 1:3], np.array([-0.04982, -0.05262]), decimal=5)
@@ -210,7 +210,7 @@ def test_horton_molecule_density_matrix_fchk_ch4_uhf():
     assert_almost_equal(dm_array_a[18, 19:], expected_19, decimal=5)
     assert_almost_equal(dm_array_a[28, 29:], expected_29, decimal=5)
     # check beta density matrix
-    dm_array_b = mol.compute_density_matrix_array(spin='b')
+    dm_array_b = mol.compute_density_matrix(spin="b")
     assert_almost_equal(np.diag(dm_array_b), expected_diag, decimal=5)
     assert_almost_equal(dm_array_b, dm_array_b.T, decimal=5)
     assert_almost_equal(dm_array_b[0, 1:3], np.array([-0.04982, -0.05262]), decimal=5)
@@ -219,7 +219,7 @@ def test_horton_molecule_density_matrix_fchk_ch4_uhf():
     assert_almost_equal(dm_array_b[18, 19:], expected_19, decimal=5)
     assert_almost_equal(dm_array_b[28, 29:], expected_29, decimal=5)
     # check total density matrix
-    dm_array_ab = mol.compute_density_matrix_array(spin='ab')
+    dm_array_ab = mol.compute_density_matrix(spin="ab")
     assert_almost_equal(np.diag(dm_array_ab), 2 * expected_diag, decimal=5)
     assert_almost_equal(dm_array_ab, dm_array_ab.T, decimal=5)
     assert_almost_equal(dm_array_ab[0, 1:3], 2*np.array([-0.04982, -0.05262]), decimal=5)
@@ -264,23 +264,23 @@ def test_horton_molecule_grid_esp_fchk_ch4_uhf():
 
 
 def check_horton_molecule_against_gaussian_ch4_uhf_ccpvdz(mol):
-    """Check local properties of HortonWaveFunction class against Gaussian09_C.01's cubegen."""
-    # get expected data computed by Gaussian09_C.01's cubegen
+    """Check local properties of HortonWaveFunction class against Gaussian09_C.01"s cubegen."""
+    # get expected data computed by Gaussian09_C.01"s cubegen
     points, dens, grad, laplacian, hessian_xx, esp = load_data_gaussian_cubegen_ch4_uhf_ccpvdz()
     # check density, gradient, esp & hessian
-    assert_almost_equal(mol.compute_density(points, 'ab'), dens, decimal=5)
-    assert_almost_equal(mol.compute_density(points, 'a'), dens/2, decimal=5)
-    assert_almost_equal(mol.compute_density(points, 'b'), dens/2, decimal=5)
-    assert_almost_equal(mol.compute_gradient(points, 'ab'), grad, decimal=5)
-    assert_almost_equal(mol.compute_esp(points, 'ab'), esp, decimal=5)
-    hess = mol.compute_hessian(points, 'ab')
+    assert_almost_equal(mol.compute_density(points, "ab"), dens, decimal=5)
+    assert_almost_equal(mol.compute_density(points, "a"), dens/2, decimal=5)
+    assert_almost_equal(mol.compute_density(points, "b"), dens/2, decimal=5)
+    assert_almost_equal(mol.compute_gradient(points, "ab"), grad, decimal=5)
+    assert_almost_equal(mol.compute_esp(points, "ab"), esp, decimal=5)
+    hess = mol.compute_hessian(points, "ab")
     assert_almost_equal(hess[:, 0] + hess[:, 3] + hess[:, 5], laplacian, decimal=5)
     assert_almost_equal(hess[:, 0], hessian_xx, decimal=5)
     # density computed by summing squared mo expressions
-    assert_almost_equal(mol.compute_density(points, 'ab', range(1, 6)), dens, decimal=5)
-    assert_almost_equal(mol.compute_density(points, 'a', range(1, 6)), dens/2, decimal=5)
-    assert_almost_equal(mol.compute_density(points, 'alpha', range(1, 6), None), dens/2, decimal=5)
-    assert_almost_equal(mol.compute_density(points, 'beta', range(1, 6), None), dens/2, decimal=5)
+    assert_almost_equal(mol.compute_density(points, "ab", range(1, 6)), dens, decimal=5)
+    assert_almost_equal(mol.compute_density(points, "a", range(1, 6)), dens/2, decimal=5)
+    assert_almost_equal(mol.compute_density(points, "alpha", range(1, 6), None), dens/2, decimal=5)
+    assert_almost_equal(mol.compute_density(points, "beta", range(1, 6), None), dens/2, decimal=5)
 
 
 def test_horton_molecule_grid_gaussian_fchk_ch4_uhf_ccpvdz():
@@ -306,29 +306,29 @@ def check_horton_molecule_against_fortran_ch4_uhf_ccpvdz(mol):
     # get expected data computed by Fortran code
     points, exp8, exp9, dens, grad, ke, _, _ = load_data_fortran_ch4_uhf_ccpvdz()
     # check density & gradient
-    assert_almost_equal(mol.compute_density(points, 'ab', None), dens, decimal=6)
-    assert_almost_equal(mol.compute_gradient(points, 'ab', None), grad, decimal=6)
+    assert_almost_equal(mol.compute_density(points, "ab", None), dens, decimal=6)
+    assert_almost_equal(mol.compute_gradient(points, "ab", None), grad, decimal=6)
     # check alpha & beta density
-    assert_almost_equal(mol.compute_density(points, 'a', None), dens/2, decimal=6)
-    assert_almost_equal(mol.compute_density(points, 'b', None), dens/2, decimal=6)
+    assert_almost_equal(mol.compute_density(points, "a", None), dens/2, decimal=6)
+    assert_almost_equal(mol.compute_density(points, "b", None), dens/2, decimal=6)
     # check density computed by summing squared mo expressions
-    assert_almost_equal(mol.compute_density(points, 'ab', range(1, 6)), dens, decimal=6)
-    assert_almost_equal(mol.compute_density(points, 'a', range(1, 6)), dens/2, decimal=6)
-    assert_almost_equal(mol.compute_density(points, 'alpha', range(1, 6)), dens/2, decimal=6)
-    assert_almost_equal(mol.compute_density(points, 'b', range(1, 6)), dens/2, decimal=6)
-    assert_almost_equal(mol.compute_density(points, 'beta', range(1, 6)), dens/2, decimal=6)
+    assert_almost_equal(mol.compute_density(points, "ab", range(1, 6)), dens, decimal=6)
+    assert_almost_equal(mol.compute_density(points, "a", range(1, 6)), dens/2, decimal=6)
+    assert_almost_equal(mol.compute_density(points, "alpha", range(1, 6)), dens/2, decimal=6)
+    assert_almost_equal(mol.compute_density(points, "b", range(1, 6)), dens/2, decimal=6)
+    assert_almost_equal(mol.compute_density(points, "beta", range(1, 6)), dens/2, decimal=6)
     # check mo expression of 8th orbital
-    assert_almost_equal(mol.compute_molecular_orbital(points, 'a', 8), exp8, decimal=6)
-    assert_almost_equal(mol.compute_molecular_orbital(points, 'alpha', 8), exp8, decimal=6)
-    assert_almost_equal(mol.compute_molecular_orbital(points, 'b', 8), exp8, decimal=6)
-    assert_almost_equal(mol.compute_molecular_orbital(points, 'beta', 8), exp8, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, "a", 8), exp8, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, "alpha", 8), exp8, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, "b", 8), exp8, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, "beta", 8), exp8, decimal=6)
     # check mo expression of 9th orbital
-    assert_almost_equal(mol.compute_molecular_orbital(points, 'a', 9), exp9, decimal=6)
-    assert_almost_equal(mol.compute_molecular_orbital(points, 'alpha', 9), exp9, decimal=6)
-    assert_almost_equal(mol.compute_molecular_orbital(points, 'b', 9), exp9, decimal=6)
-    assert_almost_equal(mol.compute_molecular_orbital(points, 'beta', 9), exp9, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, "a", 9), exp9, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, "alpha", 9), exp9, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, "b", 9), exp9, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, "beta", 9), exp9, decimal=6)
     # check positive definite ke
-    assert_almost_equal(mol.compute_kinetic_energy_density(points, 'ab'), ke, decimal=6)
+    assert_almost_equal(mol.compute_kinetic_energy_density(points, "ab"), ke, decimal=6)
 
 
 def test_horton_molecule_grid_fortran_fchk_ch4_uhf_ccpvdz():
@@ -345,7 +345,7 @@ def test_horton_molecule_grid_fortran_fchk_ch4_rhf_ccpvdz():
 
 # def test_horton_molecule_fortran_wfn_ch4_uhf_ccpvdz():
 #     # make an instance of molecule
-#     molecule = HortonMolecule.from_file(context.get_fn('test/ch4_uhf_ccpvdz.wfn'))
+#     molecule = HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
 #     check_horton_molecule_against_fortran_ch4_uhf_ccpvdz(molecule)
 
 
