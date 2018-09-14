@@ -53,6 +53,8 @@ class OrbitalLocalTool(DensityLocalTool):
 
         self._molecule = molecule
         self._points = points
+        # boltzmann constant in hartree/kelvin
+        self._kb = 3.1668144e-6
         # compute density, gradient & hessian on grid
         dens = self._molecule.compute_density(self._points)
         grad = self._molecule.compute_gradient(self._points)
@@ -193,8 +195,7 @@ class OrbitalLocalTool(DensityLocalTool):
         spin_mu_b : float
             Beta spin chemical potential.
         """
-        kb = 3.1668144e-6  # Boltzman constant in Hartree/Kelvin
-        bt = 1.0 / (kb * temperature)
+        bt = 1.0 / (self._kb * temperature)
         # get number and energy of alpha and beta electrons
         n_a, n_b = self._molecule.nelectrons
         energy_a, energy_b = self._molecule.orbital_energy
@@ -233,8 +234,7 @@ class OrbitalLocalTool(DensityLocalTool):
         dens_temp : np.array
             Temperature-dependent density evaluated on the grid points.
         """
-        kb = 3.1668144e-6  # Boltzman constant in Hartree/Kelvin
-        bt = 1.0 / (kb * temperature)
+        bt = 1.0 / (self._kb * temperature)
         # compute spin chemical potential & energies of alpha and beta orbitals
         spin_mu_a, spin_mu_b = self.compute_spin_chemical_potential(temperature)
         energy_a, energy_b = self._molecule.orbital_energy
