@@ -125,22 +125,24 @@ class OrbitalLocalTool(DensityLocalTool):
 
     @property
     def local_ionization_potential(self):
-        r"""Local Ionization Potential.
+        r"""Local Ionization Potential of alpha and beta electrons.
 
         .. math::
            IP \left(\mathbf{r}\right) = \frac{\sum_{i \in \mathrm{MOs}} n_i \epsilon_i
            \phi_i(\mathbf{r}) \phi_i^*(\mathbf{r})}{\rho(\mathbf{r})}
         """
-        iorbs = np.arange(1, self._molecule.nbasis + 1)
+        # compute occupation & energy of alpha and beta orbitals
+        occ_a, occ_b = self._molecule.orbital_occupation
+        energy_a, energy_b = self._molecule.orbital_energy
 
-        orbitals_alpha = self.compute_orbital_expression(iorbs, spin="alpha") ** 2
-        orbitals_beta = self.compute_orbital_expression(iorbs, spin="beta") ** 2
-        result = np.dot(self._molecule.orbital_occupation[0] * self._molecule.orbital_energy[0],
-                        orbitals_alpha.T)
-        result += np.dot(self._molecule.orbital_occupation[1] * self._molecule.orbital_energy[1],
-                         orbitals_beta.T)
-        result /= self.density
-        return result
+        # compute density of each alpha and beta orbital on grid points
+        index = np.arange(1, self._molecule.nbasis + 1)
+        ip_a = self.compute_orbital_expression(index, spin="alpha")**2
+        ip_b = self.compute_orbital_expression(index, spin="beta")**2
+        # compute local ionization potential of alpha and beta orbitals
+        ip_a = np.dot(occ_a * energy_a, ip_a.T) / self.density
+        ip_b = np.dot(occ_b * energy_b, ip_b.T) / self.density
+        return ip_a, ip_b
 
     def compute_orbital_expression(self, index, spin="alpha"):
         r"""Compute molecular orbital expression of the specified orbitals on the grid.
