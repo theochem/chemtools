@@ -251,3 +251,64 @@ class OrbitalLocalTool(DensityLocalTool):
         dens_b /= (1. + np.exp(bt * (energy_b - spin_mu_b)))
         # sum temperature-dependent density of all alpha and beta orbitals
         return np.sum(dens_a, axis=1), np.sum(dens_b, axis=1)
+
+    def temperature_dep_local_density(self, temperature, spin='total', spin_chemical_potential=None)
+        r"""
+        Temperature-Dependent Local Density of States.
+
+        .. math::
+           g_{\beta,\mu,\sigma}(\mathbf{r}) =
+            \sum_{i = 1}^{N_{basis}} \frac{-\beta e^{\beta(\epsilon_{i \sigma} - \mu_{\sigma})}}
+           {\left(1 + e^{\beta(\epsilon_{i \sigma} - \mu_{\sigma})}\right)^2}
+           \lvert \phi_{i \, \sigma} (\mathbf{r}) \rvert^2
+
+        where :math:`\beta = \frac{1}{k_B T}`, is the thermodynamic beta,
+        :math:`\mu_{\sigma}` the spin-chemical potential,
+        :math:`\epsilon_{i \sigma}` the molecular orbital energies and
+        :math:`\sigma = \{ \alpha, \beta\}`
+
+        Parameters
+        ----------
+        temperature : float
+            The temperatire at which to evaluate the spin chemical potential (in Kelvin).
+        spin: string
+            The choice of spin to compute: 'alpha', 'beta', 'total'
+        spin_chemical_potential : np.array, shape=(2,), default=None
+            The spin chemical potential, when not provided it is calculated.
+
+        Returns
+        -------
+        np.array
+            The Temperature-Dependent Local Density of States at the gridpoints.
+        """
+        kb = 3.1668144e-6  # Boltzman constant in Hartree/Kelvin
+        bt = np.divide(1.0, (kb * temperature))
+        nbasis = self._molecule.nbasis
+        templocaldens = np.zeros(self._points.shape[0])
+        iorbs = np.arange(1, nbasis + 1)
+
+        if spin_chemical_potential is None:
+            spin_chemical_potential = self.spin_chemical_potential(temperature)
+
+        if spin == 'total':
+            orbitals = [self.orbitals_exp(iorbs, tmp_spin)**2 for tmp_spin in ['alpha', 'beta']]
+            for s in [0,1]:
+                for i in range(nbasis):
+                    exponential = np.exp(bt * (self._molecule.orbital_energy[s][i]
+                                               - spin_chemical_potential[s]))
+                    denom = (1. + exponential)**2
+                    templocaldens[:] += - bt * orbitals[s][:, i] / denom
+
+        elif spin == 'alpha' or spin == 'beta':
+            spin_dic = {'alpha' : 0, 'beta' : 1}
+            s = spin_dic(spin)
+            orbitals = self.orbitals_exp(iorbs, spin)**2
+            for i in range(nbasis):
+                exponential = np.exp(bt * (self._molecule.orbital_energy[s][i]
+                                           - spin_chemical_potential[s]))
+                denom = (1. + exponential)**2
+                templocaldens[:] += - bt * exponential * orbitals[s][:, i] / denom
+        else:
+            raise ValueError("Spin should be one of these options: 'alpha', 'beta', 'total'")
+
+        return templocaldens
