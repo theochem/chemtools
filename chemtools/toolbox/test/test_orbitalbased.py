@@ -134,21 +134,21 @@ def test_orbital_analysis_from_file_ch4_uhf_ccpvdz():
                     0.00009801, -0.00910972, -0.01612369,  0.00810636,  0.00485805,
                    -0.02029558, -0.00936400]
     # check homo expansion
-    test = orbtool.orbitals_exp(8)
+    test = orbtool.compute_orbital_expression(8)
     assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     # check lumo expansion
-    test = orbtool.orbitals_exp(9)
+    test = orbtool.compute_orbital_expression(9)
     assert_array_almost_equal(test[:, 0], lumo_result, decimal=6)
     # check homo & lumo expansion with list of orbital indices
-    test = orbtool.orbitals_exp([8, 9])
+    test = orbtool.compute_orbital_expression([8, 9])
     assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     # check homo & lumo expansion with tuple of orbital indices
-    test = orbtool.orbitals_exp((8, 9))
+    test = orbtool.compute_orbital_expression((8, 9))
     assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     # check homo & lumo expansion with array of orbital indices
-    test = orbtool.orbitals_exp(np.array([8, 9]))
+    test = orbtool.compute_orbital_expression(np.array([8, 9]))
     assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
 
@@ -246,21 +246,21 @@ def test_orbital_analysis_from_file_ch4_rhf_ccpvdz():
                     0.00009801, -0.00910972, -0.01612369,  0.00810636,  0.00485805,
                    -0.02029558, -0.00936400]
     # check homo expansion
-    test = orbtool.orbitals_exp(8)
+    test = orbtool.compute_orbital_expression(8)
     assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     # check lumo expansion
-    test = orbtool.orbitals_exp(9)
+    test = orbtool.compute_orbital_expression(9)
     assert_array_almost_equal(test[:, 0], lumo_result, decimal=6)
     # check homo & lumo expansion with list of orbital indices
-    test = orbtool.orbitals_exp([8, 9])
+    test = orbtool.compute_orbital_expression([8, 9])
     assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     # check homo & lumo expansion with tuple of orbital indices
-    test = orbtool.orbitals_exp((8, 9))
+    test = orbtool.compute_orbital_expression((8, 9))
     assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     # check homo & lumo expansion with array of orbital indices
-    test = orbtool.orbitals_exp(np.array([8, 9]))
+    test = orbtool.compute_orbital_expression(np.array([8, 9]))
     assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
 
@@ -371,33 +371,33 @@ def test_orbital_analysis_from_molecule_ch4_uhf_ccpvdz():
                     0.00009801, -0.00910972, -0.01612369,  0.00810636,  0.00485805,
                    -0.02029558, -0.00936400]
     # check homo expansion
-    test = orbtool.orbitals_exp(8)
+    test = orbtool.compute_orbital_expression(8)
     assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
-    test = rorbtool.orbitals_exp(8)
+    test = rorbtool.compute_orbital_expression(8)
     assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     # check lumo expansion
-    test = orbtool.orbitals_exp(9)
+    test = orbtool.compute_orbital_expression(9)
     assert_array_almost_equal(test[:, 0], lumo_result, decimal=6)
-    test = rorbtool.orbitals_exp(9)
+    test = rorbtool.compute_orbital_expression(9)
     assert_array_almost_equal(test[:, 0], lumo_result, decimal=6)
     # check homo & lumo expansion with list of orbital indices
-    test = orbtool.orbitals_exp([8, 9])
+    test = orbtool.compute_orbital_expression([8, 9])
     assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
-    test = rorbtool.orbitals_exp([8, 9])
+    test = rorbtool.compute_orbital_expression([8, 9])
     assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     # check homo & lumo expansion with tuple of orbital indices
-    test = orbtool.orbitals_exp((8, 9))
+    test = orbtool.compute_orbital_expression((8, 9))
     assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
-    test = rorbtool.orbitals_exp((8, 9))
+    test = rorbtool.compute_orbital_expression((8, 9))
     assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     # check homo & lumo expansion with array of orbital indices
-    test = orbtool.orbitals_exp(np.array([8, 9]))
+    test = orbtool.compute_orbital_expression(np.array([8, 9]))
     assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
-    test = rorbtool.orbitals_exp(np.array([8, 9]))
+    test = rorbtool.compute_orbital_expression(np.array([8, 9]))
     assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)

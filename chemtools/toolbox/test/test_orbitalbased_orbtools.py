@@ -124,34 +124,34 @@ def test_orbital_tool_ch4_uhf_ccpvdz():
                    -0.01779872, -0.03181989, -0.03822247, -0.03474619, -0.01563934,
                    -0.04577599, -0.03352035]
     # check homo expansion
-    test = orbtool.orbitals_exp(5)
+    test = orbtool.compute_orbital_expression(5)
     np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     # check homo expansion (beta should equal alpha)
-    test = orbtool.orbitals_exp(np.array([5]), spin='beta')
+    test = orbtool.compute_orbital_expression(np.array([5]), spin='beta')
     np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     # check lumo expansion
-    test = orbtool.orbitals_exp(6)
+    test = orbtool.compute_orbital_expression(6)
     np.testing.assert_array_almost_equal(test[:, 0], lumo_result, decimal=6)
     # check lumo expansion (beta should equal alpha)
-    test = orbtool.orbitals_exp(np.array([6]), spin='beta')
+    test = orbtool.compute_orbital_expression(np.array([6]), spin='beta')
     np.testing.assert_array_almost_equal(test[:, 0], lumo_result, decimal=6)
     # check homo & lumo expansion with list of orbital indices
-    test = orbtool.orbitals_exp([5, 6])
+    test = orbtool.compute_orbital_expression([5, 6])
     np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     # check homo & lumo expansion with tuple of orbital indices
-    test = orbtool.orbitals_exp((5, 6))
+    test = orbtool.compute_orbital_expression((5, 6))
     np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
     # check homo & lumo expansion with array of orbital indices
-    test = orbtool.orbitals_exp(np.array([5, 6]))
+    test = orbtool.compute_orbital_expression(np.array([5, 6]))
     np.testing.assert_array_almost_equal(test[:, 0], homo_result, decimal=6)
     np.testing.assert_array_almost_equal(test[:, 1], lumo_result, decimal=6)
 
     # check spin chemical potential
     # spin chemical potential result obtained from manually ecaluating the formula:
     result = [-0.1606881912, -0.1606881912]
-    test = orbtool.spin_chemical_potential(25000.0)
+    test = orbtool.compute_spin_chemical_potential(25000.0)
     np.testing.assert_array_almost_equal(test, result, decimal=6)
 
     # check temperature dependent density at 25000K
@@ -162,15 +162,14 @@ def test_orbital_tool_ch4_uhf_ccpvdz():
               0.00037579, 0.00542211, 0.00046599, 0.00003973, 0.00113522, 0.00028249]
 
     # check density array
-    test = orbtool.temperature_dependent_density(25000.0)
+    test = orbtool.compute_temperature_dependent_density(25000.0)
     np.testing.assert_array_almost_equal(test, result, decimal=6)
     # check density array only using spin_chemical_potential
-    test = orbtool.temperature_dependent_density(25000.0,
-                                                 spin_chemical_potential=[-0.160688, -0.160688])
+    test = orbtool.compute_temperature_dependent_density(25000.0)
     np.testing.assert_array_almost_equal(test, result, decimal=6)
 
     # check KeyError
-    assert_raises(KeyError, orbtool.orbitals_exp, np.array([9]), spin='error')
+    assert_raises(KeyError, orbtool.compute_orbital_expression, np.array([9]), spin='error')
 
 
 def test_orbital_tool_h2o_b3lyp_sto3g():
@@ -203,7 +202,7 @@ def test_orbital_tool_h2o_b3lyp_sto3g():
     # check spin chemical potential
     # spin chemical potential result obtained from manually ecaluating the formula
     result = [0.10821228040, 0.10821228040]
-    test = orbtool.spin_chemical_potential(25000.0)
+    test = orbtool.compute_spin_chemical_potential(25000.0)
     np.testing.assert_almost_equal(test, result, decimal=6)
 
 
@@ -218,7 +217,7 @@ def test_orbital_tool_elf_h2o_dimer():
     # Build OrbitalLocal tool
     cube = CubeGen.from_cube(elf_cube_path)
     orbtool = OrbitalLocalTool(mol, cube.points)
-    test = orbtool.elf
+    test = orbtool.electron_localization_function
 
     np.testing.assert_equal(test.shape, result.shape)
     np.testing.assert_array_almost_equal(test, result, decimal=5)
@@ -251,7 +250,7 @@ def test_localip_ch4_uhf_ccpvdz_alpha():
                 -0.583253, -0.582762, -0.565703]
 
     # compute the local ionization potential
-    test = orbtool.local_ip
+    test = orbtool.local_ionization_potential
 
     np.testing.assert_almost_equal(expected, test, decimal=4)
 
@@ -283,6 +282,6 @@ def test_localip_ch4_uhf_ccpvdz_both():
                 -0.592862, -0.629875, -0.589605,
                 -0.583253, -0.582762, -0.565703]
     # compute the local ionization potential
-    test = orbtool.local_ip
+    test = orbtool.local_ionization_potential
 
     np.testing.assert_almost_equal(expected, test, decimal=4)
