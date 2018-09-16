@@ -69,8 +69,9 @@ def check_orbital_based_properties(tool, data):
     assert_array_almost_equal(dens_temp_a, 0.5 * data["density_temp_25000"], decimal=6)
     assert_array_almost_equal(dens_temp_b, 0.5 * data["density_temp_25000"], decimal=6)
     # check local ionization potential
-    assert_array_almost_equal(tool.local_ionization_potential[0], 0.5 * data["local_ip"], decimal=4)
-    assert_array_almost_equal(tool.local_ionization_potential[1], 0.5 * data["local_ip"], decimal=4)
+    result = tool.compute_average_local_ionization_energy()
+    assert_array_almost_equal(result[0], 0.5 * data["local_ip"], decimal=4)
+    assert_array_almost_equal(result[1], 0.5 * data["local_ip"], decimal=4)
 
 
 def test_orbital_based_from_file_ch4_uhf_ccpvdz():
