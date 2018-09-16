@@ -28,6 +28,7 @@ API Documentation
 
 .. module:: chemtools
 
+
 Toolbox Module
 ==============
 
@@ -35,7 +36,7 @@ Toolbox Module
 
   * :class:`Global Conceptual DFT Tools <toolbox.conceptual.GlobalConceptualDFT>`
   * :class:`Local Conceptual DFT Tools <toolbox.conceptual.LocalConceptualDFT>`
-  * :class:`Condense Conceptual DFT Tools <toolbox.conceptual.CondensedConceptualDFT>`
+  * :class:`Condensed Conceptual DFT Tools <toolbox.conceptual.CondensedConceptualDFT>`
 
 * Density Based Tools
 
@@ -43,7 +44,8 @@ Toolbox Module
 
 * Orbital Based Tools
 
-  * :class:`Orbital Analysis <toolbox.orbitalbased.OrbitalAnalysis>`
+  * :class:`Orbital Local Tool <toolbox.orbitalbased.OrbitalLocalTool>`
+
 
 Conceptual Module
 =================
@@ -68,6 +70,9 @@ Conceptual Module
 
 * Condensed Conceptual DFT Tools
 
+  * :class:`Base Condensed Tool <conceptual.base.BaseCondensedTool>`
+  * :class:`Linear Condensed Tool <conceptual.linear.LinearCondensedTool>`
+  * :class:`Quadratic Condensed Tool <conceptual.quadratic.QuadraticCondensedTool>`
   * :class:`Mixed Condensed Tool <conceptual.mixed.MixedCondensedTool>`
 
 
@@ -76,31 +81,30 @@ Density-Based Module
 
 * Density-Based Tools
 
-  * :class:`Density Local Tool <toolbox.densitybased.DensityLocalTool>`
+  * :class:`Density Local Tool <denstools.densitybased.DensityLocalTool>`
 
-Orbital-Based Module
-====================
 
-* Orbital-Based Tools
+Wrappers Module
+===============
 
-  * :class:`Orbital Local Tool <toolbox.orbitalbased.OrbitalLocalTool>`
+* :class:`Molecule <wrappers.molecule.Molecule>`
+
 
 Utility Module
 ==============
 
 * :func:`doc_inherit <utils.utils.doc_inherit>`
-* :class:`BaseMolecule <utils.molecule.BaseMolecule>`
-* :class:`HortonMolecule <utils.wrappers.HortonMolecule>`
 * :class:`CubeGen <utils.cube.CubeGen>`
+
 
 * Visualization Tools
 
   * VMD Scripts
 
-    * :func:`print_vmd_script_nci <utils.output.print_vmd_script_nci>`
-    * :func:`print_vmd_script_isosurface <utils.output.print_vmd_script_isosurface>`
-    * :func:`print_vmd_script_multiple_cube <utils.output.print_vmd_script_multiple_cube>`
-    * :func:`print_vmd_script_vector_field <utils.output.print_vmd_script_vector_field>`
+    * :func:`print_vmd_script_nci <outputs.output_vmd.print_vmd_script_nci>`
+    * :func:`print_vmd_script_isosurface <outputs.output_vmd.print_vmd_script_isosurface>`
+    * :func:`print_vmd_script_multiple_cube <outputs.output_vmd.print_vmd_script_multiple_cube>`
+    * :func:`print_vmd_script_vector_field <outputs.output_vmd.print_vmd_script_vector_field>`
 
 .. Silent api generation
     .. autosummary::
@@ -108,8 +112,10 @@ Utility Module
 
       toolbox.conceptual.GlobalConceptualDFT
       toolbox.conceptual.LocalConceptualDFT
+      toolbox.conceptual.CondensedConceptualDFT
       toolbox.nci.NCI
-      toolbox.orbitalbased.OrbitalAnalysis
+      toolbox.orbitalbased.OrbitalLocalTool
+      denstools.densitybased.DensityLocalTool
       conceptual.base.BaseGlobalTool
       conceptual.linear.LinearGlobalTool
       conceptual.quadratic.QuadraticGlobalTool
@@ -122,15 +128,15 @@ Utility Module
       conceptual.linear.LinearLocalTool
       conceptual.quadratic.QuadraticLocalTool
       conceptual.mixed.MixedLocalTool
+      conceptual.base.BaseCondensedTool
+      conceptual.linear.LinearCondensedTool
+      conceptual.quadratic.QuadraticCondensedTool
       conceptual.mixed.MixedCondensedTool
-      denstools.densitybased.DensityLocalTool
-      orbtools.orbitalbased.OrbitalLocalTool
+      wrappers.molecule.Molecule
+      outputs.output_vmd.print_vmd_script_nci
+      outputs.output_vmd.print_vmd_script_isosurface
+      outputs.output_vmd.print_vmd_script_multiple_cube
+      outputs.output_vmd.print_vmd_script_vector_field
       utils.utils.doc_inherit
       utils.cube.CubeGen
-      utils.molecule.BaseMolecule
-      utils.wrappers.HortonMolecule
-      utils.output.print_vmd_script_nci
-      utils.output.print_vmd_script_isosurface
-      utils.output.print_vmd_script_multiple_cube
-      utils.output.print_vmd_script_vector_field
 
