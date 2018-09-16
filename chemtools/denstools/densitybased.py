@@ -20,6 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+# pragma pylint: disable=invalid-name
 """Density-Based Local Conceptual Density Functional Theory (DFT) Reactivity Tools."""
 
 import numpy as np
