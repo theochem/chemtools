@@ -29,6 +29,7 @@ from chemtools.toolbox import *
 from chemtools.conceptual import *
 from chemtools.denstools import *
 from chemtools.utils import *
+from chemtools.outputs import *
 
 
 __version__ = '0.9.0'
