@@ -55,9 +55,9 @@ def check_orbital_based_properties(tool, data):
     assert_array_almost_equal(tool.density, data["density"], decimal=6)
     assert_array_almost_equal(tool.gradient, data["gradient"], decimal=6)
     # check kinetic energy density
-    result = tool.weizsacker_kinetic_energy_density
+    result = tool.kinetic_energy_density_weizsacker
     assert_array_almost_equal(result, data["ke_weizsacker"], decimal=6)
-    result = tool.thomas_fermi_kinetic_energy_density
+    result = tool.kinetic_energy_density_thomas_fermi
     assert_allclose(result, data["ke_thomas_fermi"], rtol=1e-08, atol=1e-08)
     result = tool.kinetic_energy_density
     assert_array_almost_equal(result, data["ke_positive_definite"], decimal=6)

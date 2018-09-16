@@ -106,8 +106,8 @@ class OrbitalLocalTool(DensityLocalTool):
            \tau_{\sigma} (\mathbf{r}) =
                  \sum_i^{\sigma} \lvert \nabla \phi_i (\mathbf{r}) \rvert^2
         """
-        elfd = self.kinetic_energy_density - self.weizsacker_kinetic_energy_density
-        tf = np.ma.masked_less(self.thomas_fermi_kinetic_energy_density, 1.0e-30)
+        elfd = self.kinetic_energy_density - self.kinetic_energy_density_weizsacker
+        tf = np.ma.masked_less(self.kinetic_energy_density_thomas_fermi, 1.0e-30)
         tf.filled(1.0e-30)
         elf = 1.0 / (1.0 + (elfd / tf)**2.0)
         return elf

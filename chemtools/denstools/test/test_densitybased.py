@@ -61,9 +61,9 @@ def test_density_local_tool():
     np.testing.assert_almost_equal(model.reduced_density_gradient, expected, decimal=6)
     # check Weizsacker kinetic energy
     expected = np.array([0.09375000, 0.01687500, 0.01475000, 0.04250000, 0.00575893])
-    np.testing.assert_almost_equal(model.weizsacker_kinetic_energy_density, expected, decimal=6)
+    np.testing.assert_almost_equal(model.kinetic_energy_density_weizsacker, expected, decimal=6)
     expected = np.array([2.871234, 17.91722219, 41.97769574, 9.115599745, 73.5470608])
-    np.testing.assert_almost_equal(model.thomas_fermi_kinetic_energy_density, expected, decimal=6)
+    np.testing.assert_almost_equal(model.kinetic_energy_density_thomas_fermi, expected, decimal=6)
     # check hessian
     assert model.hessian is None
     # check laplacian

@@ -147,7 +147,7 @@ class DensityLocalTool(object):
         return rdg
 
     @property
-    def weizsacker_kinetic_energy_density(self):
+    def kinetic_energy_density_weizsacker(self):
         r"""Weizsacker kinetic energy density.
 
         Weizsacker kinetic energy/local steric energy/Fisher information density defined as,
@@ -164,7 +164,7 @@ class DensityLocalTool(object):
         return kinetic
 
     @property
-    def thomas_fermi_kinetic_energy_density(self):
+    def kinetic_energy_density_thomas_fermi(self):
         r"""Thomas-Fermi kinetic energy density.
 
         Thomas-Fermi kinetic energy density defined as,
