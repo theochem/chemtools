@@ -62,12 +62,16 @@ def check_orbital_based_properties(tool, data):
     result = tool.kinetic_energy_density
     assert_array_almost_equal(result, data["ke_positive_definite"], decimal=6)
     # check spin chemical potential at T=25000K
-    test = tool.compute_spin_chemical_potential(25000.0)
-    assert_array_almost_equal(test, data["spin_mu_temp_25000"], decimal=6)
+    result = tool.compute_spin_chemical_potential(25000.0)
+    assert_array_almost_equal(result, data["spin_mu_temp_25000"], decimal=6)
     # check density at T=25000K
-    dens_temp_a, dens_temp_b = tool.compute_temperature_dependent_density(25000.0)
-    assert_array_almost_equal(dens_temp_a, 0.5 * data["density_temp_25000"], decimal=6)
-    assert_array_almost_equal(dens_temp_b, 0.5 * data["density_temp_25000"], decimal=6)
+    result = tool.compute_temperature_dependent_density(25000.0)
+    assert_array_almost_equal(result[0], 0.5 * data["density_temp_25000"], decimal=6)
+    assert_array_almost_equal(result[1], 0.5 * data["density_temp_25000"], decimal=6)
+    # check local density of state at T=25000K
+    result = tool.compute_temperature_dependent_state(25000)
+    assert_array_almost_equal(result[0], 0.5 * data["density_states_temp_25000"], decimal=6)
+    assert_array_almost_equal(result[1], 0.5 * data["density_states_temp_25000"], decimal=6)
     # check local ionization potential
     result = tool.compute_average_local_ionization_energy()
     assert_array_almost_equal(result[0], 0.5 * data["local_ip"], decimal=4)
