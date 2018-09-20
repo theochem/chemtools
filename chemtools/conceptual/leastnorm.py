@@ -183,7 +183,7 @@ class LeastNormGlobalTool(BaseGlobalTool):
 
     def _compute_n_max(self):
         # Leading coefficient dictates whether it is bounded or not.
-        if self.params[-1] > 0.:
+        if self.params[-1] < 0.:
             return np.inf
 
         # Solve for the roots of the derivative
@@ -195,15 +195,22 @@ class LeastNormGlobalTool(BaseGlobalTool):
         roots_output = []
         for i, root in enumerate(roots):
             sec_deriv = np.polyval(sec_deriv_params, root)
-            if sec_deriv < 0. and np.isreal(root) and root > 0.:
+            if sec_deriv > 0. and np.isreal(root):
                 roots_output.append(roots[i])
+        roots_output = np.array(roots_output)
+        print("params ", self.params)
+        print("roots ", roots_output)
         if len(roots_output) == 0.:
             # No Maximum were found.
             return None
 
+        # All of the roots were negative, then 0 electron has smallest value.
+        if np.all(np.array(roots_output) < 0.):
+            return 0.
+
         # Compare Energy Levels of different roots and get the one with maximum value.
-        energy_level = np.array([self.energy(x) for x in roots_output])
-        return roots_output[energy_level.argmax()]
+        energy_level = np.array([self.energy(x) for x in roots_output[roots_output >= 0.]])
+        return roots_output[roots_output >= 0.][energy_level.argmin()]
 
     def _coefficients_unweighted(self, j):
         # Get Coefficients/Parameters of the un-weighted energy model.
