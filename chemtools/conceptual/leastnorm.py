@@ -39,8 +39,7 @@ __all__ = ['LeastNormGlobalTool']
 
 class LeastNormGlobalTool(BaseGlobalTool):
     r"""
-    Class of global conceptual DFT reactivity descriptors based on the least norm energy model and
-    weighted least norm energy model.
+    Class of global conceptual DFT reactivity descriptors based on the least norm energy model.
 
     It is motivated by the desire for a model based on the n-th degree polynomial that is smooth
     and normalized.
@@ -169,7 +168,8 @@ class LeastNormGlobalTool(BaseGlobalTool):
     @doc_inherit(BaseGlobalTool)
     def energy_derivative(self, n_elec, order=1):
         # check n_elec argument
-        # check_number_electrons(n_elec, self._n_min, self._n_max)
+        check_number_electrons(n_elec, self.n0 - 1., self.n0 + 1.)
+
         # check order
         if not (isinstance(order, int) and order > 0):
             raise ValueError("Argument order should be an integer greater than or equal to 1.")
@@ -185,12 +185,12 @@ class LeastNormGlobalTool(BaseGlobalTool):
         # Leading coefficient dictates whether it is bounded or not.
         if self.params[-1] > 0.:
             return np.inf
-        # elif self.params[-1] < 0.:
-            # return np.inf
-        # Solve for the roots of the derivative and use the second derivative test.
+
+        # Solve for the roots of the derivative
         deriv = np.flip(self.params[1:] * np.arange(1, self._nth_order + 1), 0)
         roots = np.roots(deriv)
 
+        # Use the second derivative test.
         sec_deriv_params = np.flip(deriv[::-1][1:] * np.arange(2, self._nth_order + 1), 0)
         roots_output = []
         for i, root in enumerate(roots):
@@ -235,8 +235,8 @@ class LeastNormGlobalTool(BaseGlobalTool):
 
         n = 3
         while np.abs(alpha - prev_alpha) > self._eps or np.abs(beta - prev_beta) > self._eps:
-            prev_alpha = alpha
-            prev_beta = beta
+            prev_alpha = alpha.copy()
+            prev_beta = beta.copy()
             alpha += self._alpha_term(n)
             beta += self._beta_term(n)
             n += 1
