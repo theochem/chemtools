@@ -369,44 +369,50 @@ def test_n_max():
     _, dict_energy, _, expr, _, _ = make_symbolic_least_norm_model(omega, order)
     unweighted = LeastNormGlobalTool(dict_energy=dict_energy, omega=omega, nth_order=order)
 
-    # Quadratic is unbounded above when a > 0. for a * x**2.
-    for a in np.arange(0.01, 10):
+    # Quadratic is unbounded below when a < 0. for a * x**2.
+    for a in np.arange(-10., -0.01):
         unweighted._params = [5., 2., a]
         assert_equal(unweighted._compute_n_max(), np.inf)
 
     # Quadratic is bounded when a < 0.
     unweighted = LeastNormGlobalTool(dict_energy=dict_energy, omega=omega, nth_order=order)
-    for a in np.arange(-10., -0.01):
+    for a in np.arange(0.01, 10.):
         unweighted._params = [5., 2., a]
         actual = unweighted._compute_n_max()
-        maxima = -2. / (2. * a)
-        assert_equal(actual, maxima)
+        minima = -2. / (2. * a)
+        if minima < 0.:
+            minima = 0.
+        assert_equal(actual, minima)
 
     # Cubic, order=3
     order = 3
     _, dict_energy, _, expr, _, _ = make_symbolic_least_norm_model(omega, order)
     unweighted = LeastNormGlobalTool(dict_energy=dict_energy, omega=omega, nth_order=order)
-    unweighted._params = [0., 0., 3., -5.]
+    unweighted._params = [0., 0., -3., 5.]
     assert_equal(unweighted._compute_n_max(), 0.4)
 
     # Quadric
     order = 4
     _, dict_energy, _, expr, _, _ = make_symbolic_least_norm_model(omega, order)
     unweighted = LeastNormGlobalTool(dict_energy=dict_energy, omega=omega, nth_order=order)
-    unweighted._params = [3., 0, 3., -5., -5.]
+    unweighted._params = [-3., 0, -3., 5., 5.]
     assert_almost_equal(unweighted._compute_n_max(), 0.2887, decimal=2)
 
     # Quantic
     order = 5
     _, dict_energy, _, expr, _, _ = make_symbolic_least_norm_model(omega, order)
     unweighted = LeastNormGlobalTool(dict_energy=dict_energy, omega=omega, nth_order=order)
-    unweighted._params = [3., 0, 3., -5., 5., -10.]
+    unweighted._params = [-3., 0, -3., 5., -5., 10.]
     assert_almost_equal(unweighted._compute_n_max(), 0.4)
 
     # Leading coefficient is greater than zero, hence goes to infinity
     unweighted._params = [3., 0, 3., -5., 5., 110.]
-    assert_almost_equal(unweighted._compute_n_max(), np.inf)
+    assert_almost_equal(unweighted._compute_n_max(), 0.)
+
+    # The first coefficient is negative and thus energy goes to -infinity.
+    unweighted._params = [0., 60., -32, -11, 8, -1.]
+    assert_almost_equal(unweighted._compute_n_max(), np.inf, decimal=4)
 
     # Test getting global maxima when having multiple local maxima
-    unweighted._params = [0., 60., -32, -11, 8, -1.]
+    unweighted._params = [0., -60., 32, 11, -8, 1.]
     assert_almost_equal(unweighted._compute_n_max(), 4.35476, decimal=4)
