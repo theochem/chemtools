@@ -21,6 +21,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+# pragma pylint: disable=superfluous-parens
 
 import os
 from distutils.command.install_data import install_data
@@ -53,7 +54,7 @@ class my_install_data(install_data):
             # the file data_dir.txt.
             if '.' not in name:
                 destination = os.path.join(libdir, name, "data_dir.txt")
-                print "Creating %s" % destination
+                print("Creating %s" % destination)
                 if not self.dry_run:
                     with open(destination, "w") as f:
                         print >> f, my_install_dir
@@ -67,11 +68,19 @@ setup(
     author_email='horton.chemtools@gmail.com',
     package_dir={'chemtools': 'chemtools'},
     packages=[
-        'chemtools', 'chemtools.toolbox', 'chemtools.conceptual',
-        'chemtools.orbtools', 'chemtools.denstools', 'chemtools.utils',
-        'chemtools.toolbox.test', 'chemtools.conceptual.test',
-        'chemtools.orbtools.test', 'chemtools.denstools.test',
+        'chemtools',
+        'chemtools.toolbox',
+        'chemtools.conceptual',
+        'chemtools.denstools',
+        'chemtools.utils',
+        'chemtools.wrappers',
+        'chemtools.outputs',
+        'chemtools.toolbox.test',
+        'chemtools.conceptual.test',
+        'chemtools.denstools.test',
         'chemtools.utils.test',
+        'chemtools.wrappers.test',
+        'chemtools.outputs.test',
     ],
     scripts=glob("scripts/*.py"),
     cmdclass={
