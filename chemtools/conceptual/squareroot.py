@@ -74,11 +74,11 @@ class SquareRootGlobalTool(BaseGlobalTool):
         n_ref, energy_m, energy_0, energy_p = check_dict_values(dict_energy)
 
         # Compute The Coefficients
-        a1 = (energy_p - 2. * energy_0 + energy_m) / \
-             (np.sqrt(n_ref + 1) - 2. * np.sqrt(n_ref) + np.sqrt(n_ref - 1))
-        a2 = (energy_p - energy_m) / 2. - a1 * (np.sqrt(n_ref + 1) - np.sqrt(n_ref - 1)) / 2.
-        a0 = energy_0 - a1 * np.sqrt(n_ref) - a2 * n_ref
-        self._params = [a0, a1, a2]
+        param2 = (energy_p - 2. * energy_0 + energy_m) / \
+                 (np.sqrt(n_ref + 1) - 2. * np.sqrt(n_ref) + np.sqrt(n_ref - 1))
+        param3 = (energy_p - energy_m) / 2. - param2 * (np.sqrt(n_ref + 1) - np.sqrt(n_ref - 1)) / 2
+        param1 = energy_0 - param2 * np.sqrt(n_ref) - param3 * n_ref
+        self._params = [param1, param2, param3]
         n_max = self._compute_nmax()
         super(SquareRootGlobalTool, self).__init__(n_ref, n_max)
 
@@ -127,24 +127,24 @@ class SquareRootGlobalTool(BaseGlobalTool):
 
     def _compute_nmax(self):
         # Compute the local minimum, n_max
-        _, a1, a2 = self.params
+        _, coeff1, coeff2 = self.params
 
-        if a1 == 0.:
+        if coeff1 == 0.:
             # If a1 is zero then it is just a linear model.
             raise ValueError("Coefficient a1 cannot be zero or else it is a linear model.")
         # a1 requires to be negative to ensure minimum is concave up
-        if a1 < 0.:
-            if a2 <= 0.:
+        if coeff1 < 0.:
+            if coeff2 <= 0.:
                 # Energy goes to negative infinity as it is monotonically decreasing.
                 n_max = np.inf
-            elif a2 > 0.:
+            elif coeff2 > 0.:
                 # Local Minima exists.
-                n_max = (a1 / (2. * a2)) ** 2
-        elif a1 > 0.:
-            if a2 >= 0.:
+                n_max = (coeff1 / (2. * coeff2)) ** 2
+        elif coeff1 > 0.:
+            if coeff2 >= 0.:
                 # Minima occurs at the origin as it is monotonically increasing.
                 n_max = 0.
-            elif a2 < 0.:
+            elif coeff2 < 0.:
                 # Energy goes to -infinity.
                 n_max = np.inf
         return n_max

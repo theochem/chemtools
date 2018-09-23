@@ -23,36 +23,37 @@
 """Test chemtools.conceptual.squareroot module."""
 
 import numpy as np
+from numpy.testing import assert_almost_equal, assert_raises, assert_equal
 import sympy as sp
 import scipy
 
-from numpy.testing import TestCase, assert_almost_equal, assert_raises, assert_equal
 from chemtools.conceptual.squareroot import SquareRootGlobalTool
 
 
 def make_symbolic_square_root_model(energy_vals):
-    n0 = 5
-    dict_energy = {n0 - 1.: energy_vals[0], n0: energy_vals[1], n0 + 1.: energy_vals[2]}
-    a0, a1, a2, n = sp.symbols('a0 a1 a2 n')
+    r"""Create symbolic square root energy model and it's derivatives, used for testing."""
+    n_ref = 5
+    dict_energy = {n_ref - 1.: energy_vals[0], n_ref: energy_vals[1], n_ref + 1.: energy_vals[2]}
+    n_elec = sp.symbols('n_elec')
 
-    a1_function = dict_energy[n0 + 1] - 2. * dict_energy[n0] + dict_energy[n0 - 1]
-    a1_function /= (sp.sqrt(n0 + 1.) - 2. * sp.sqrt(n0) + sp.sqrt(n0 - 1.))
+    a1_function = dict_energy[n_ref + 1] - 2. * dict_energy[n_ref] + dict_energy[n_ref - 1]
+    a1_function /= (sp.sqrt(n_ref + 1.) - 2. * sp.sqrt(n_ref) + sp.sqrt(n_ref - 1.))
 
-    a2_function = (dict_energy[n0 + 1] - dict_energy[n0 - 1]) / 2.
-    a2_function -= (a1_function * (sp.sqrt(n0 + 1.) - sp.sqrt(n0 - 1.)) / 2.)
+    a2_function = (dict_energy[n_ref + 1] - dict_energy[n_ref - 1]) / 2.
+    a2_function -= (a1_function * (sp.sqrt(n_ref + 1.) - sp.sqrt(n_ref - 1.)) / 2.)
 
-    a0_function = dict_energy[n0] - a1_function * sp.sqrt(n0) - a2_function * n0
-    energy_function = a0_function + a1_function * sp.sqrt(n) + a2_function * n
+    a0_function = dict_energy[n_ref] - a1_function * sp.sqrt(n_ref) - a2_function * n_ref
+    energy_function = a0_function + a1_function * sp.sqrt(n_elec) + a2_function * n_elec
 
     parameters = [a0_function, a1_function, a2_function]
     # Take the derivatives.
-    first_deriv = sp.diff(energy_function, n)
-    sec_deriv = sp.diff(first_deriv, n)
-    third_deriv = sp.diff(sec_deriv, n)
-    fourth_deriv = sp.diff(third_deriv, n)
+    first_deriv = sp.diff(energy_function, n_elec)
+    sec_deriv = sp.diff(first_deriv, n_elec)
+    third_deriv = sp.diff(sec_deriv, n_elec)
+    fourth_deriv = sp.diff(third_deriv, n_elec)
 
     expr = (energy_function, first_deriv, sec_deriv, third_deriv, fourth_deriv)
-    return dict_energy, expr, parameters, n0
+    return dict_energy, expr, parameters, n_ref
 
 
 def test_parameters():
@@ -61,7 +62,7 @@ def test_parameters():
         for energy0 in np.arange(energy_minus - 2, 1000., 200):
             for energy1 in np.arange(energy0 + 1, 1000., 210):
                 energy_vals = [energy_minus, energy0, energy1]
-                energy, expr, params, n0 = make_symbolic_square_root_model(energy_vals)
+                energy, _, params, _ = make_symbolic_square_root_model(energy_vals)
 
                 sqrt_root = SquareRootGlobalTool(energy)
                 assert_almost_equal(sqrt_root.params[0], params[0], decimal=5)
@@ -71,19 +72,19 @@ def test_parameters():
 
 def test_energy():
     # Test energy values for the square root model.
-    for energy_minus in np.arange(-1., 1000., 300):
-        for energy0 in np.arange(energy_minus - 2, 1000., 300):
-            for energy1 in np.arange(energy0 + 1, 1000., 310):
+    for energy_minus in np.arange(-1., 1000., 400):
+        for energy0 in np.arange(energy_minus - 2, 1000., 400):
+            for energy1 in np.arange(energy0 + 1, 1000., 410):
                 energy_vals = [energy_minus, energy0, energy1]
-                energy, expr, params, n0 = make_symbolic_square_root_model(energy_vals)
+                energy, expr, _, _ = make_symbolic_square_root_model(energy_vals)
 
                 sqrt_root = SquareRootGlobalTool(energy)
-                assert_almost_equal(sqrt_root.energy(4), expr[0].subs('n', 4).evalf(),
+                assert_almost_equal(sqrt_root.energy(4), expr[0].subs("n_elec", 4).evalf(),
                                     decimal=5)
-                assert_almost_equal(sqrt_root.energy(5), expr[0].subs('n', 5).evalf(),
+                assert_almost_equal(sqrt_root.energy(5), expr[0].subs("n_elec", 5).evalf(),
                                     decimal=5)
                 assert_almost_equal(sqrt_root.energy(4.5),
-                                    expr[0].subs('n', 4.5).evalf(), decimal=5)
+                                    expr[0].subs("n_elec", 4.5).evalf(), decimal=5)
                 assert_raises(ValueError, sqrt_root.energy, -5)
 
                 # Test at infinity
@@ -93,112 +94,112 @@ def test_energy():
                         actual = sp.oo
                     else:
                         actual = -sp.oo
-                assert_equal(actual, sp.limit(expr[0], "n", sp.oo))
+                assert_equal(actual, sp.limit(expr[0], "n_elec", sp.oo))
 
 
 def test_energy_derivative():
     # Test derivative of energy for the square root model.
-    for energy_minus in np.arange(-1., 1000., 200):
-        for energy0 in np.arange(energy_minus - 2, 1000., 200):
-            for energy1 in np.arange(energy0 + 1, 1000., 210):
+    for energy_minus in np.arange(-1., 1000., 400):
+        for energy0 in np.arange(energy_minus - 2, 1000., 400):
+            for energy1 in np.arange(energy0 + 1, 1000., 410):
                 energy_vals = [energy_minus, energy0, energy1]
-                energy, expr, params, n0 = make_symbolic_square_root_model(energy_vals)
+                energy, expr, _, _ = make_symbolic_square_root_model(energy_vals)
 
                 sqrt_root = SquareRootGlobalTool(energy)
 
                 # Go through points ranging from 4 to 8.
-                for n in range(4, 8):
-                    assert_almost_equal(sqrt_root.energy_derivative(n, 1),
-                                        expr[1].subs("n", n).evalf())
-                    assert_almost_equal(sqrt_root.energy_derivative(n, 2),
-                                        expr[2].subs("n", n).evalf())
-                    assert_almost_equal(sqrt_root.energy_derivative(n, 3),
-                                        expr[3].subs("n", n).evalf())
-                    assert_almost_equal(sqrt_root.energy_derivative(n, 4),
-                                        expr[4].subs("n", n).evalf())
+                for n_elec in range(4, 8):
+                    assert_almost_equal(sqrt_root.energy_derivative(n_elec, 1),
+                                        expr[1].subs("n_elec", n_elec).evalf())
+                    assert_almost_equal(sqrt_root.energy_derivative(n_elec, 2),
+                                        expr[2].subs("n_elec", n_elec).evalf())
+                    assert_almost_equal(sqrt_root.energy_derivative(n_elec, 3),
+                                        expr[3].subs("n_elec", n_elec).evalf())
+                    assert_almost_equal(sqrt_root.energy_derivative(n_elec, 4),
+                                        expr[4].subs("n_elec", n_elec).evalf())
 
 
 def test_chemical_concepts():
     # Test chemical concepts for the square root model.
-    for energy_minus in np.arange(-1., 1000., 200):
-        for energy0 in np.arange(energy_minus - 2, 1000., 200):
-            for energy1 in np.arange(energy0 + 1, 1000., 210):
-                energy_vals = [energy_minus, energy0, energy1]
-                energy, expr, params, n0 = make_symbolic_square_root_model(energy_vals)
+    energy_vals = [100., 90.12, 102.3]
+    energy, expr, _, n_ref = make_symbolic_square_root_model(energy_vals)
 
-                sqrt_root = SquareRootGlobalTool(energy)
+    sqrt_root = SquareRootGlobalTool(energy)
 
-                # Test Electronegativity
-                assert_almost_equal(sqrt_root.electronegativity, -expr[1].subs("n", n0))
+    # Test Electronegativity
+    desired = -1. * expr[1].subs("n_elec", n_ref)
+    assert_almost_equal(sqrt_root.electronegativity, desired)
 
-                # Test Chemical Potential
-                assert_almost_equal(sqrt_root.chemical_potential, expr[1].subs("n", n0))
+    # Test Chemical Potential
+    assert_almost_equal(sqrt_root.chemical_potential, expr[1].subs("n_elec", n_ref))
 
-                # Test Chemical Hardness
-                assert_almost_equal(sqrt_root.chemical_hardness, expr[2].subs("n", n0))
+    # Test Chemical Hardness
+    assert_almost_equal(sqrt_root.chemical_hardness, expr[2].subs("n_elec", n_ref))
 
-                # Test Hyper-Hardness
-                assert_almost_equal(sqrt_root.hyper_hardness(2), expr[3].subs("n", n0))
-                assert_almost_equal(sqrt_root.hyper_hardness(3), expr[4].subs("n", n0))
-                assert_almost_equal(sqrt_root.hyper_hardness(4),
-                                    sp.diff(expr[4], "n").subs("n", n0))
+    # Test Hyper-Hardness
+    assert_almost_equal(sqrt_root.hyper_hardness(2), expr[3].subs("n_elec", n_ref))
+    assert_almost_equal(sqrt_root.hyper_hardness(3), expr[4].subs("n_elec", n_ref))
+    assert_almost_equal(sqrt_root.hyper_hardness(4),
+                        sp.diff(expr[4], "n_elec").subs("n_elec", n_ref))
 
-                # Test Softness
-                assert_almost_equal(sqrt_root.softness, 1. / expr[2].subs("n", n0))
+    # Test Softness
+    assert_almost_equal(sqrt_root.softness, 1. / expr[2].subs("n_elec", n_ref))
 
-                # Test Hyper Softness
-                desired = -expr[3].subs("n", n0) / expr[2].subs("n", n0) ** 3.
-                assert_almost_equal(sqrt_root.hyper_softness(2), desired.evalf(), decimal=5)
+    # Test Hyper Softness
+    desired = -1. * expr[3].subs("n_elec", n_ref) / expr[2].subs("n_elec", n_ref) ** 3.
+    assert_almost_equal(sqrt_root.hyper_softness(2), desired.evalf(), decimal=5)
 
-                # Test Grand Potential
-                n = sp.symbols("n")
-                grand_function = expr[0] - expr[1] * n
-                assert_almost_equal(sqrt_root.grand_potential(6), grand_function.subs(n, 6).evalf())
-                assert_almost_equal(sqrt_root.grand_potential(5), grand_function.subs(n, 5).evalf())
+    # Test Grand Potential
+    n_elec = sp.symbols("n_elec")
+    grand_function = expr[0] - expr[1] * n_elec
+    assert_almost_equal(sqrt_root.grand_potential(6),
+                        grand_function.subs(n_elec, 6).evalf())
+    assert_almost_equal(sqrt_root.grand_potential(5),
+                        grand_function.subs(n_elec, 5).evalf())
 
-                # Test Nucleofugality
-                nucleofugality = expr[0].subs(n, n + 1)
-                sign = 1
-                if np.sign(n0 + 1 - sqrt_root.n_max) == -1:
-                    sign = -1
-                # Test Nucleofugality at infinite values.
-                if sqrt_root.n_max == np.inf:
-                    limit = sp.limit(nucleofugality, "n", sp.oo)
-                    if limit == sp.oo:
-                        desired = sign * (-np.inf)
-                    elif limit == -sp.oo:
-                        desired = sign * (np.inf)
-                    else:
-                        desired = sign * (nucleofugality - limit)
-                else:
-                    nucleofugality -= expr[0].subs(n, sqrt_root.n_max)
-                    desired = nucleofugality.subs(n, n0).evalf()
-                assert_almost_equal(sqrt_root.nucleofugality, desired)
+    # Test Nucleofugality
+    nucleofugality = expr[0].subs(n_elec, n_elec + 1)
+    sign = 1
+    if np.sign(n_ref + 1 - sqrt_root.n_max) == -1:
+        sign = -1
+    # Test Nucleofugality at infinite values.
+    if sqrt_root.n_max == np.inf:
+        limit = sp.limit(nucleofugality, "n_elec", sp.oo)
+        if limit == sp.oo:
+            desired = sign * -np.inf
+        elif limit == -sp.oo:
+            desired = sign * np.inf
+        else:
+            desired = sign * (nucleofugality - limit)
+    else:
+        nucleofugality -= expr[0].subs(n_elec, sqrt_root.n_max)
+        desired = nucleofugality.subs(n_elec, n_ref).evalf()
+    assert_almost_equal(sqrt_root.nucleofugality, desired)
 
-                # Test Electrofugality
-                electrofugality_f = expr[0].subs(n, n - 1)
-                electrofugality_f -= expr[0].subs(n, sqrt_root.n_max)
-                sign = 1
-                if np.sign(sqrt_root.n_max - n0 + 1.) == -1.:
-                    sign = -1
-                desired = sign * electrofugality_f.subs(n, n0).evalf()
-                if sqrt_root.n_max == np.inf:
-                    desired = sign * np.inf
-                assert_almost_equal(sqrt_root.electrofugality, desired)
+    # Test Electrofugality
+    electrofugality_f = expr[0].subs(n_elec, n_elec - 1)
+    electrofugality_f -= expr[0].subs(n_elec, sqrt_root.n_max)
+    sign = 1
+    if np.sign(sqrt_root.n_max - n_ref + 1.) == -1.:
+        sign = -1
+    desired = sign * electrofugality_f.subs(n_elec, n_ref).evalf()
+    if sqrt_root.n_max == np.inf:
+        desired = sign * np.inf
+    assert_almost_equal(sqrt_root.electrofugality, desired)
 
-                # Test Electrophilicity
-                n = sp.symbols('n')
-                assert_almost_equal(sqrt_root.electronegativity, (-1) * expr[1].subs(n, n0))
+    # Test Electrophilicity
+    n_elec = sp.symbols("n_elec")
+    assert_almost_equal(sqrt_root.electronegativity, (-1) * expr[1].subs(n_elec, n_ref))
 
-                # Test ionization
-                ionization = expr[0].subs(n, n0 - 1) - expr[0].subs(n, n0)
-                assert_almost_equal(sqrt_root.ionization_potential, ionization)
-                assert_almost_equal(sqrt_root.ip, ionization)
+    # Test ionization
+    ionization = expr[0].subs(n_elec, n_ref - 1) - expr[0].subs(n_elec, n_ref)
+    assert_almost_equal(sqrt_root.ionization_potential, ionization)
+    assert_almost_equal(sqrt_root.ip, ionization)
 
-                # Test Electron affinity
-                ea = expr[0].subs(n, n0) - expr[0].subs(n,  n0 + 1)
-                assert_almost_equal(sqrt_root.electron_affinity, ea)
-                assert_almost_equal(sqrt_root.ea, ea)
+    # Test Electron affinity
+    electron_aff = expr[0].subs(n_elec, n_ref) - expr[0].subs(n_elec, n_ref + 1)
+    assert_almost_equal(sqrt_root.electron_affinity, electron_aff)
+    assert_almost_equal(sqrt_root.ea, electron_aff)
 
 
 def test_nmax_using_scipy():
@@ -207,11 +208,11 @@ def test_nmax_using_scipy():
         for energy0 in np.arange(energy_minus - 2, 1000., 101):
             for energy1 in np.arange(energy0 + 1, 1000., 210):
                 energy_vals = [energy_minus, energy0, energy1]
-                energy, expr, params, n0 = make_symbolic_square_root_model(energy_vals)
+                energy, expr, _, _ = make_symbolic_square_root_model(energy_vals)
                 sqrt = SquareRootGlobalTool(energy)
 
                 # Test using scipy minimize.
-                energy_minimize = sp.utilities.lambdify(sp.symbols('n'), expr[0])
+                energy_minimize = sp.utilities.lambdify(sp.symbols("n_elec"), expr[0])
                 scipy_solution = scipy.optimize.minimize_scalar(energy_minimize, 5.,
                                                                 bounds=(0, 100.),
                                                                 method='bounded')
@@ -221,14 +222,14 @@ def test_nmax_using_scipy():
                     scipy_solution.x = np.inf
                 else:
                     # Test first derivative is zero at minima.
-                    assert_almost_equal(expr[1].subs('n', sqrt.n_max).evalf(), 0)
+                    assert_almost_equal(expr[1].subs("n_elec", sqrt.n_max).evalf(), 0)
                 assert_almost_equal(sqrt.n_max, scipy_solution.x, decimal=5)
 
 
 def test_nmax_using_fixed_examples():
     # Test nmax using fixed examples for the square root model.
     energy_vals = [1., 0.5, 3.]
-    energy, expr, params, n0 = make_symbolic_square_root_model(energy_vals)
+    energy, _, _, _ = make_symbolic_square_root_model(energy_vals)
     sqrt = SquareRootGlobalTool(energy)
 
     sqrt._params = [1., 1., 1.]
@@ -239,8 +240,8 @@ def test_nmax_using_fixed_examples():
     desired = 0.25
     assert_equal(sqrt._compute_nmax(), desired)
 
-    for x in [0., -1.]:
-        sqrt._params = [1., -1., x]
+    for case in [0., -1.]:
+        sqrt._params = [1., -1., case]
         desired = np.inf
         assert_equal(sqrt._compute_nmax(), desired)
 

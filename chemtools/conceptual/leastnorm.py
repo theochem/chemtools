@@ -22,7 +22,7 @@
 # --
 """Conceptual Density Functional Theory (DFT) Reactivity Tools Based on Least Norm.
 
-This module contains the global tool class corresponding to least norm ener/gy models.
+This module contains the global tool class corresponding to least norm energy models.
 """
 
 import numpy as np
@@ -112,7 +112,6 @@ class LeastNormGlobalTool(BaseGlobalTool):
 
         self._omega = omega
         self._weight = weight
-        self._eps = eps
         self._nth_order = nth_order
         # Default coefficients for the first two terms.
         self.dict_energy = dict_energy
@@ -126,8 +125,8 @@ class LeastNormGlobalTool(BaseGlobalTool):
         # Compute the coefficients up-to nth order, specified by `nth_order` argument.
         if weight != 0.:
             # If weighted model, compute the weighted coefficients.
-            self.alpha, self.beta = self._hyperparameters()
-            self._params += [self._coefficients_weighted(j) * diff / factorial(j)
+            alpha, beta = self._hyperparameters(eps)
+            self._params += [self._coefficients_weighted(j, alpha, beta) * diff / factorial(j)
                              for j in range(2, self._nth_order + 1)]
         else:
             self._params += [self._coefficients_unweighted(j) * diff / factorial(j)
@@ -137,19 +136,18 @@ class LeastNormGlobalTool(BaseGlobalTool):
         super(LeastNormGlobalTool, self).__init__(n_ref, self._n_max)
 
     @property
-    def eps(self):
-        return self._eps
-
-    @property
     def omega(self):
+        r"""Constant for computing the coefficients."""
         return self._omega
 
     @property
     def weight(self):
+        r"""Weight for computing coefficients for the weighted least-norm model."""
         return self._weight
 
     @property
     def nth_order(self):
+        r"""Degree of the highest polynomial, truncated from the taylor polynomial."""
         return self._nth_order
 
     @property
@@ -158,11 +156,11 @@ class LeastNormGlobalTool(BaseGlobalTool):
         return self._params
 
     @doc_inherit(BaseGlobalTool)
-    def energy(self, n):
-        energy = 0.
-        for i, c in enumerate(self.params):
-            energy += c * n ** i
-        return energy
+    def energy(self, n_elec):
+        energy_val = 0.
+        for i, coefficient in enumerate(self.params):
+            energy_val += coefficient * n_elec ** i
+        return energy_val
 
     @doc_inherit(BaseGlobalTool)
     def energy_derivative(self, n_elec, order=1):
@@ -216,33 +214,33 @@ class LeastNormGlobalTool(BaseGlobalTool):
             return 1.98619 / factorial(j)
         return 17.9551 * (2. * self.omega - 1) / factorial(j)
 
-    def _coefficients_weighted(self, j):
+    def _coefficients_weighted(self, j, alpha, beta):
         # Get Coefficients/Parameters of the weighted energy model.
         assert self._weight != 0.
-        factor = 1. / (factorial(j) ** (1. - self._weight) * (self.alpha + self.beta))
+        factor = 1. / (factorial(j) ** (1. - self._weight) * (alpha + beta))
         if j % 2 == 0:
             return factor
         return (2. * self._omega - 1.) * factor
 
-    def _alpha_term(self, n):
+    def _alpha_term(self, j):
         # Only needed for the weighted model to calculate the coefficients.
-        return 1. / factorial(n) ** (2. - self._weight)
+        return 1. / factorial(j) ** (2. - self._weight)
 
-    def _beta_term(self, n):
+    def _beta_term(self, j):
         # Only needed for the weighted model to calculate the coefficients.
-        return (-1.) ** n / factorial(n) ** (2. - self._weight)
+        return (-1.) ** j / factorial(j) ** (2. - self._weight)
 
-    def _hyperparameters(self):
-        """Hyper-parameters needed to define the coefficients for the weighted model."""
-        # The series, to calculate hyper-parameters (alpha, beta), start at n=2.
+    def _hyperparameters(self, eps):
+        r"""Hyper-parameters needed to define the coefficients for the weighted model."""
+        # The series, to calculate hyper-parameters (alpha, beta), start at term=2.
         prev_alpha, alpha = 1e10, self._alpha_term(2)
         prev_beta, beta = 1e10, self._beta_term(2)
 
-        n = 3
-        while np.abs(alpha - prev_alpha) > self._eps or np.abs(beta - prev_beta) > self._eps:
+        term = 3
+        while np.abs(alpha - prev_alpha) > eps or np.abs(beta - prev_beta) > eps:
             prev_alpha = alpha.copy()
             prev_beta = beta.copy()
-            alpha += self._alpha_term(n)
-            beta += self._beta_term(n)
-            n += 1
+            alpha += self._alpha_term(term)
+            beta += self._beta_term(term)
+            term += 1
         return alpha, beta
