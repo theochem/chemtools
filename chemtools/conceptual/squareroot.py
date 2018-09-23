@@ -121,16 +121,14 @@ class SquareRootGlobalTool(BaseGlobalTool):
             raise ValueError("Coefficient a1 cannot be zero or else it is a linear model.")
         # a1 requires to be negative to ensure minimum is concave up
         if a1 < 0.:
-            if a2 < 0.:
+            if a2 <= 0.:
                 # Energy goes to negative infinity as it is monotonically decreasing.
                 n_max = np.inf
             elif a2 > 0.:
                 # Local Minima exists.
                 n_max = (a1 / (2. * a2)) ** 2
-            else:
-                raise ValueError("Coefficient a2 cannot be negative.")
         elif a1 > 0.:
-            if a2 > 0.:
+            if a2 >= 0.:
                 # Minima occurs at the origin as it is monotonically increasing.
                 n_max = 0.
             elif a2 < 0.:
