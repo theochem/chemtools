@@ -215,10 +215,18 @@ def test_nmax_using_fixed_examples():
     desired = 0.25
     assert_equal(sqrt._compute_nmax(), desired)
 
-    sqrt._params = [1., -1., -1.]
+    for x in [0., -1.]:
+        sqrt._params = [1., -1., x]
+        desired = np.inf
+        assert_equal(sqrt._compute_nmax(), desired)
+
+    sqrt._params = [1., 1., -1]
     desired = np.inf
     assert_equal(sqrt._compute_nmax(), desired)
 
-    sqrt._params = [1., 1., -1.]
-    desired = np.inf
+    sqrt._params = [1., 0., 5.]
+    assert_raises(ValueError, sqrt._compute_nmax)
+
+    sqrt._params = [1., 1., 0.]
+    desired = 0.
     assert_equal(sqrt._compute_nmax(), desired)
