@@ -24,6 +24,7 @@
 
 import numpy as np
 import sympy as sp
+
 from numpy.testing import assert_almost_equal, assert_equal
 from chemtools.conceptual.leastnorm import LeastNormGlobalTool
 
