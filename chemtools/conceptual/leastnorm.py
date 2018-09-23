@@ -20,8 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Conceptual Density Functional Theory (DFT) Reactivity Tools Based on Least Norm and
- Weighted Least NormEnergy Model.
+"""Conceptual Density Functional Theory (DFT) Reactivity Tools Based on Least Norm.
 
 This module contains the global tool class corresponding to least norm ener/gy models.
 """
@@ -155,7 +154,7 @@ class LeastNormGlobalTool(BaseGlobalTool):
 
     @property
     def params(self):
-        r""" Parameters :math:`a_j` of the least-norm energy model."""
+        r"""Parameters :math:`a_j` of the least-norm energy model."""
         return self._params
 
     @doc_inherit(BaseGlobalTool)
@@ -174,12 +173,12 @@ class LeastNormGlobalTool(BaseGlobalTool):
         if not (isinstance(order, int) and order > 0):
             raise ValueError("Argument order should be an integer greater than or equal to 1.")
 
-        energy_deriv = 0
+        deriv = 0
         # Evaluate the derivative of each term of the energy model, evaluated at n_elec.
         for term in range(order, self._nth_order + 1):
-            energy_deriv += n_elec ** (term - order) * self._params[term] * factorial(term) / \
-                            factorial(term - order)
-        return energy_deriv
+            diff = term - order
+            deriv += n_elec ** diff * self._params[term] * factorial(term) / factorial(diff)
+        return deriv
 
     def _compute_n_max(self):
         # Leading coefficient dictates whether it is bounded or not.
@@ -198,8 +197,7 @@ class LeastNormGlobalTool(BaseGlobalTool):
             if sec_deriv > 0. and np.isreal(root):
                 roots_output.append(roots[i])
         roots_output = np.array(roots_output)
-        print("params ", self.params)
-        print("roots ", roots_output)
+
         if len(roots_output) == 0.:
             # No Maximum were found.
             return None

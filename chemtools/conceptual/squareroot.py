@@ -57,7 +57,19 @@ class SquareRootGlobalTool(BaseGlobalTool):
        {2^n (-1)^{n - 1} } N^{-(n-1)} \sqrt{N}
              \quad \text{for} \quad n \geq 2
     """
+
     def __init__(self, dict_energy):
+        r"""Initialize the square-root energy model to compute global reactivity descriptors.
+
+        Parameters
+        ----------
+        dict_energy : dict
+            Dictionary of number of electrons (keys) and corresponding energy (values).
+            This model expects three energy values corresponding to three consecutive number of
+            electrons differing by one, i.e. :math:`\{(N_0 - 1): E(N_0 - 1), N_0: E(N_0),
+            (N_0 + 1): E(N_0 + 1)\}`. The :math:`N_0` value is considered as the reference number
+            of electrons.
+        """
         # check number of electrons & energy values
         n_ref, energy_m, energy_0, energy_p = check_dict_values(dict_energy)
 
@@ -72,9 +84,7 @@ class SquareRootGlobalTool(BaseGlobalTool):
 
     @property
     def params(self):
-        """
-        Parameters :math:`a`, :math:`b` and :math:`c` of energy model.
-        """
+        """Parameters :math:`a`, :math:`b` and :math:`c` of energy model."""
         return self._params
 
     @doc_inherit(BaseGlobalTool)

@@ -78,13 +78,13 @@ def make_symbolic_least_norm_model(omega, nth_order, weight=None, return_coeffs=
     if weight is not None:
         if return_coeffs:
             return n0, dict_energy, params, expr, alpha_formula, beta_formula, weighted_coeff_even,\
-                   weighted_coeff_odd
+                weighted_coeff_odd
         return n0, dict_energy, params, expr, alpha_formula, beta_formula
     return n0, dict_energy, params, expr, ion, aff
 
 
 def test_nth_order():
-    r"""Test the number of terms for the unweighted least norm model."""
+    # Test the number of terms for the unweighted least norm model.
     n0 = 10
     dict_energy = {n0 - 1: 25.3, n0: 100., n0 + 1: 50.5}
     unweighted = LeastNormGlobalTool(dict_energy, 0.5, nth_order=5)
@@ -95,7 +95,7 @@ def test_nth_order():
 
 
 def test_parameters_unweighted():
-    r"""Test parameters of the unweighted least norm."""
+    # Test parameters of the unweighted least norm.
     for omega in np.arange(-10., 10.):
         for order in range(0, 10):
             _, dict_energy, params, expr, _, _ = make_symbolic_least_norm_model(omega, order)
@@ -105,7 +105,7 @@ def test_parameters_unweighted():
 
 
 def test_parameters_weighted():
-    r"""Test parameters of the weighted least norm."""
+    # Test parameters of the weighted least norm.
     omega = 5.
     for order in range(0, 10):
         # Test weighted model.
@@ -122,7 +122,7 @@ def test_parameters_weighted():
 
 
 def test_energy_unweighted_leastnorm():
-    r"""Test energy model of unweighted least norm."""
+    # Test energy model of unweighted least norm.
     for omega in np.arange(-10., 10.):
         for order in range(0, 6):
             _, dict_energy, _, expr, _, _ = make_symbolic_least_norm_model(omega, order)
@@ -134,7 +134,7 @@ def test_energy_unweighted_leastnorm():
 
 
 def test_energy_weighted_leastnorm():
-    r"""Test energy model of weighted least norm."""
+    # Test energy model of weighted least norm.
     omega = -5.
     for order in range(0, 3):
         # Test weighted model.
@@ -153,7 +153,7 @@ def test_energy_weighted_leastnorm():
 
 
 def test_derivative_energy_unweighted():
-    r"""Test derivative of energy model of unweighted least norm model."""
+    # Test derivative of energy model of unweighted least norm model.
     for omega in np.arange(-2., 2.):
         # Take first five derivatives so I need atleast five terms.
         for order in range(5, 8):
@@ -168,7 +168,7 @@ def test_derivative_energy_unweighted():
 
 
 def test_derivative_energy_weighted():
-    r"""Test derivative of energy model of weighted least norm model."""
+    # Test derivative of energy model of weighted least norm model.
     omega = 2.
     for order in range(5, 7):
         # Test weighted model.
@@ -189,7 +189,7 @@ def test_derivative_energy_weighted():
 
 
 def test_chemical_potential():
-    r"""Test chemical potential of the least norm model."""
+    # Test chemical potential of the least norm model.
     for omega in np.arange(-5., 5.):
         for order in range(5, 10):
             n0, dict_energy, _, expr, _, _ = make_symbolic_least_norm_model(omega, order)
@@ -212,7 +212,7 @@ def test_chemical_potential():
 
 
 def test_chemical_hardness():
-    r"""Test chemical hardness of least norm model."""
+    # Test chemical hardness of least norm model.
     for omega in np.arange(-5., 5.):
         for order in range(5, 10):
             n0, dict_energy, _, expr, _, _ = make_symbolic_least_norm_model(omega, order)
@@ -236,7 +236,7 @@ def test_chemical_hardness():
 
 
 def test_hyper_hardness():
-    r"""Test hyperhardness for the least norm model."""
+    # Test hyperhardness for the least norm model.
     for omega in np.arange(-5., 5.):
         for order in range(5, 10):
             n0, dict_energy, _, expr, _, _ = make_symbolic_least_norm_model(omega, order)
@@ -260,7 +260,7 @@ def test_hyper_hardness():
 
 
 def test_chemical_softness():
-    r"""Test chemical softness for the least norm model."""
+    # Test chemical softness for the least norm model.
     for omega in np.arange(-1., 2.):
         for order in range(5, 8):
             n0, dict_energy, _, expr, _, _ = make_symbolic_least_norm_model(omega, order)
@@ -281,7 +281,7 @@ def test_chemical_softness():
 
 
 def test_hyper_softness():
-    r"""Test hyper softness for the least norm model."""
+    # Test hyper softness for the least norm model.
     for omega in np.arange(-1., 2.):
         for order in range(5, 8):
             n0, dict_energy, _, expr, _, _ = make_symbolic_least_norm_model(omega, order)
@@ -304,7 +304,7 @@ def test_hyper_softness():
 
 
 def test_electron_affinity_ionization():
-    r"""Test electron affinity and ionization for the least norm model."""
+    # Test electron affinity and ionization for the least norm model.
     for omega in np.arange(-5., 5.):
         for order in range(5, 10):
             n0, dict_energy, _, expr, ion, aff = make_symbolic_least_norm_model(omega, order)
@@ -317,7 +317,7 @@ def test_electron_affinity_ionization():
 
 
 def test_alpha_and_beta_coefficients_weighted():
-    r"""Test the alpha and beta coefficients for the weighted least norm model."""
+    # Test the alpha and beta coefficients for the weighted least norm model.
     omega = 5.
     order = 7
     n = sp.symbols('n')
@@ -338,7 +338,7 @@ def test_alpha_and_beta_coefficients_weighted():
 
 
 def test_coefficients_weighted():
-    r"""Test the coefficients for the weighted least norm model."""
+    # Test the coefficients for the weighted least norm model.
     omega = 5.
     order = 6
     n = sp.symbols('n')
@@ -364,7 +364,7 @@ def test_coefficients_weighted():
 
 
 def test_n_max():
-    r"""Test getting the maximum for the unweighted least norm model."""
+    # Test getting the maximum for the unweighted least norm model.
     omega = 0.5
     order = 2
     _, dict_energy, _, expr, _, _ = make_symbolic_least_norm_model(omega, order)

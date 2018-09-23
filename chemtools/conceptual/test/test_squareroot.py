@@ -20,7 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Test chemtools.conceptual.squareroot module"""
+"""Test chemtools.conceptual.squareroot module."""
 
 import numpy as np
 import sympy as sp
@@ -56,7 +56,7 @@ def make_symbolic_square_root_model(energy_vals):
 
 
 def test_parameters():
-    r"""Test parameters for the square root model."""
+    # Test parameters for the square root model.
     for energy_minus in np.arange(-1., 1000., 200):
         for energy0 in np.arange(energy_minus - 2, 1000., 200):
             for energy1 in np.arange(energy0 + 1, 1000., 210):
@@ -70,7 +70,7 @@ def test_parameters():
 
 
 def test_energy():
-    r"""Test energy values for the square root model."""
+    # Test energy values for the square root model.
     for energy_minus in np.arange(-1., 1000., 200):
         for energy0 in np.arange(energy_minus - 2, 1000., 200):
             for energy1 in np.arange(energy0 + 1, 1000., 210):
@@ -88,7 +88,7 @@ def test_energy():
 
 
 def test_energy_derivative():
-    r"""Test derivative of energy for the square root model."""
+    # Test derivative of energy for the square root model.
     for energy_minus in np.arange(-1., 1000., 200):
         for energy0 in np.arange(energy_minus - 2, 1000., 200):
             for energy1 in np.arange(energy0 + 1, 1000., 210):
@@ -110,7 +110,7 @@ def test_energy_derivative():
 
 
 def test_chemical_concepts():
-    r"""Test chemical concepts for the square root model."""
+    # Test chemical concepts for the square root model.
     for energy_minus in np.arange(-1., 1000., 200):
         for energy0 in np.arange(energy_minus - 2, 1000., 200):
             for energy1 in np.arange(energy0 + 1, 1000., 210):
@@ -139,32 +139,36 @@ def test_chemical_concepts():
 
                 # Test Hyper Softness
                 desired = -expr[3].subs("n", n0) / expr[2].subs("n", n0) ** 3.
-                assert_almost_equal(sqrt_root.hyper_softness(2), desired, decimal=5)
+                assert_almost_equal(sqrt_root.hyper_softness(2), desired.evalf(), decimal=5)
 
                 # Test Grand Potential
                 n = sp.symbols("n")
                 grand_function = expr[0] - expr[1] * n
-                assert_almost_equal(sqrt_root.grand_potential(6), grand_function.subs(n, 6))
-                assert_almost_equal(sqrt_root.grand_potential(5), grand_function.subs(n, 5))
+                assert_almost_equal(sqrt_root.grand_potential(6), grand_function.subs(n, 6).evalf())
+                assert_almost_equal(sqrt_root.grand_potential(5), grand_function.subs(n, 5).evalf())
 
                 # Test Nucleofugality
                 nucleofugality_function = expr[0].subs(n, n + 1)
                 nucleofugality_function -= expr[0].subs(n, sqrt_root.n_max)
-                assert_almost_equal(sqrt_root.nucleofugality,
-                                    nucleofugality_function.subs(n, n0).evalf())
+                desired = nucleofugality_function.subs(n, n0).evalf()
+                if sqrt_root.n_max == np.inf:
+                    desired = np.inf
+                assert_almost_equal(sqrt_root.nucleofugality, desired)
 
                 # Test Electrofugality
                 electrofugality_f = expr[0].subs(n, n - 1)
                 electrofugality_f -= expr[0].subs(n, sqrt_root.n_max)
+                sign = 1
                 if sqrt_root.n_max - n0 + 1. < 0.:
-                    electrofugality_f *= -1
-                assert_almost_equal(sqrt_root.electrofugality,
-                                    electrofugality_f.subs(n, n0).evalf())
+                    sign = -1
+                desired = sign * electrofugality_f.subs(n, n0).evalf()
+                if sqrt_root.n_max == np.inf:
+                    desired = sign * np.inf
+                assert_almost_equal(sqrt_root.electrofugality, desired)
 
                 # Test Electrophilicity
                 n = sp.symbols('n')
-                assert_almost_equal(sqrt_root.electronegativity,
-                                    (-1) * expr[1].subs(n, n0))
+                assert_almost_equal(sqrt_root.electronegativity, (-1) * expr[1].subs(n, n0))
 
                 # Test ionization
                 ionization = expr[0].subs(n, n0 - 1) - expr[0].subs(n, n0)
@@ -178,7 +182,7 @@ def test_chemical_concepts():
 
 
 def test_nmax_using_scipy():
-    r"""Test nmax using scipy.optimize for the square root model."""
+    # Test nmax using scipy.optimize for the square root model.
     for energy_minus in np.arange(-1., 1000., 102):
         for energy0 in np.arange(energy_minus - 2, 1000., 101):
             for energy1 in np.arange(energy0 + 1, 1000., 210):
@@ -202,7 +206,7 @@ def test_nmax_using_scipy():
 
 
 def test_nmax_using_fixed_examples():
-    r"""Test nmax using fixed examples for the square root model."""
+    # Test nmax using fixed examples for the square root model.
     energy_vals = [1., 0.5, 3.]
     energy, expr, params, n0 = make_symbolic_square_root_model(energy_vals)
     sqrt = SquareRootGlobalTool(energy)
