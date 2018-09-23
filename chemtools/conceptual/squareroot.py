@@ -94,7 +94,10 @@ class SquareRootGlobalTool(BaseGlobalTool):
 
         # Square Root Model goes to infinity as N goes to infinity.
         if np.isinf(n_elec):
-            return np.inf
+            if self.params[2] > 0.:
+                return np.inf
+            if self.params[2] < 0.:
+                return -np.inf
 
         return self._params[0] + self._params[1] * np.sqrt(n_elec) + self._params[2] * n_elec
 

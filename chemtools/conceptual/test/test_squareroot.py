@@ -71,9 +71,9 @@ def test_parameters():
 
 def test_energy():
     # Test energy values for the square root model.
-    for energy_minus in np.arange(-1., 1000., 200):
-        for energy0 in np.arange(energy_minus - 2, 1000., 200):
-            for energy1 in np.arange(energy0 + 1, 1000., 210):
+    for energy_minus in np.arange(-1., 1000., 300):
+        for energy0 in np.arange(energy_minus - 2, 1000., 300):
+            for energy1 in np.arange(energy0 + 1, 1000., 310):
                 energy_vals = [energy_minus, energy0, energy1]
                 energy, expr, params, n0 = make_symbolic_square_root_model(energy_vals)
 
@@ -85,6 +85,15 @@ def test_energy():
                 assert_almost_equal(sqrt_root.energy(4.5),
                                     expr[0].subs('n', 4.5).evalf(), decimal=5)
                 assert_raises(ValueError, sqrt_root.energy, -5)
+
+                # Test at infinity
+                actual = sqrt_root.energy(np.inf)
+                if np.isinf(actual):
+                    if actual > 0.:
+                        actual = sp.oo
+                    else:
+                        actual = -sp.oo
+                assert_equal(actual, sp.limit(expr[0], "n", sp.oo))
 
 
 def test_energy_derivative():
@@ -148,18 +157,29 @@ def test_chemical_concepts():
                 assert_almost_equal(sqrt_root.grand_potential(5), grand_function.subs(n, 5).evalf())
 
                 # Test Nucleofugality
-                nucleofugality_function = expr[0].subs(n, n + 1)
-                nucleofugality_function -= expr[0].subs(n, sqrt_root.n_max)
-                desired = nucleofugality_function.subs(n, n0).evalf()
+                nucleofugality = expr[0].subs(n, n + 1)
+                sign = 1
+                if np.sign(n0 + 1 - sqrt_root.n_max) == -1:
+                    sign = -1
+                # Test Nucleofugality at infinite values.
                 if sqrt_root.n_max == np.inf:
-                    desired = np.inf
+                    limit = sp.limit(nucleofugality, "n", sp.oo)
+                    if limit == sp.oo:
+                        desired = sign * (-np.inf)
+                    elif limit == -sp.oo:
+                        desired = sign * (np.inf)
+                    else:
+                        desired = sign * (nucleofugality - limit)
+                else:
+                    nucleofugality -= expr[0].subs(n, sqrt_root.n_max)
+                    desired = nucleofugality.subs(n, n0).evalf()
                 assert_almost_equal(sqrt_root.nucleofugality, desired)
 
                 # Test Electrofugality
                 electrofugality_f = expr[0].subs(n, n - 1)
                 electrofugality_f -= expr[0].subs(n, sqrt_root.n_max)
                 sign = 1
-                if sqrt_root.n_max - n0 + 1. < 0.:
+                if np.sign(sqrt_root.n_max - n0 + 1.) == -1.:
                     sign = -1
                 desired = sign * electrofugality_f.subs(n, n0).evalf()
                 if sqrt_root.n_max == np.inf:
