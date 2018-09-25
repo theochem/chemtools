@@ -20,6 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+# pragma pylint: disable=protected-access
 """Test chemtools.conceptual.squareroot module."""
 
 import numpy as np
@@ -121,8 +122,7 @@ def test_energy_derivative():
 
 def test_chemical_concepts():
     # Test chemical concepts for the square root model.
-    energy_vals = [100., 90.12, 102.3]
-    energy, expr, _, n_ref = make_symbolic_square_root_model(energy_vals)
+    energy, expr, _, n_ref = make_symbolic_square_root_model([100., 90.12, 102.3])
 
     sqrt_root = SquareRootGlobalTool(energy)
 

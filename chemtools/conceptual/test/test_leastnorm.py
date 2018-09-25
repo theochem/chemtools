@@ -20,6 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+# pragma pylint: disable=protected-access
 """Test chemtools.conceptual.leastnorm Module."""
 
 import numpy as np
