@@ -93,13 +93,13 @@ class SquareRootGlobalTool(BaseGlobalTool):
         check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
 
         # Square Root Model goes to infinity as N goes to infinity.
+        output = self._params[0] + self._params[1] * np.sqrt(n_elec) + self._params[2] * n_elec
         if np.isinf(n_elec):
             if self.params[2] > 0.:
-                return np.inf
-            if self.params[2] < 0.:
-                return -np.inf
-
-        return self._params[0] + self._params[1] * np.sqrt(n_elec) + self._params[2] * n_elec
+                output = np.inf
+            else:
+                output = -np.inf
+        return output
 
     @doc_inherit(BaseGlobalTool)
     def energy_derivative(self, n_elec, order=1):
@@ -137,14 +137,14 @@ class SquareRootGlobalTool(BaseGlobalTool):
             if coeff2 <= 0.:
                 # Energy goes to negative infinity as it is monotonically decreasing.
                 n_max = np.inf
-            elif coeff2 > 0.:
+            else:
                 # Local Minima exists.
                 n_max = (coeff1 / (2. * coeff2)) ** 2
-        elif coeff1 > 0.:
+        else:
             if coeff2 >= 0.:
                 # Minima occurs at the origin as it is monotonically increasing.
                 n_max = 0.
-            elif coeff2 < 0.:
+            else:
                 # Energy goes to -infinity.
                 n_max = np.inf
         return n_max

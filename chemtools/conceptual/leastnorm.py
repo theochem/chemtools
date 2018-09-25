@@ -107,6 +107,9 @@ class LeastNormGlobalTool(BaseGlobalTool):
         """
         if weight > 1. or weight < 0.:
             raise ValueError("Weights have to be between 0 and 1. It is {0}".format(weight))
+        if not isinstance(nth_order, int):
+            raise ValueError("The nth order should be integer")
+
         # check number of electrons & energy values
         n_ref, energy_m, energy_0, energy_p = check_dict_values(dict_energy)
 

@@ -24,7 +24,7 @@
 """Test chemtools.conceptual.leastnorm Module."""
 
 import numpy as np
-from numpy.testing import assert_almost_equal, assert_equal
+from numpy.testing import assert_almost_equal, assert_raises, assert_equal
 import sympy as sp
 
 from chemtools.conceptual.leastnorm import LeastNormGlobalTool
@@ -82,6 +82,28 @@ def make_symbolic_least_norm_model(omega, nth_order, weight=None, return_coeffs=
                 weighted_coeff_odd
         return n_ref, dict_energy, params, expr, alpha_func, beta_func
     return n_ref, dict_energy, params, expr
+
+
+def test_least_norm_raises():
+    # check invalid N0
+    omega = 5.
+    assert_raises(ValueError, LeastNormGlobalTool, {0: -15.0, 1: -14.4, -1: -14.0}, omega)
+    assert_raises(ValueError, LeastNormGlobalTool, {0.3: -15.0, 1.3: -14.4, -0.7: -14.0}, omega)
+    assert_raises(ValueError, LeastNormGlobalTool, {0.98: -15.0, 1.98: -14.4, -0.02: -14.0}, omega)
+    assert_raises(ValueError, LeastNormGlobalTool, {-1.: -15.0, 0.: -14.9, -2.: -14.0}, omega)
+    assert_raises(ValueError, LeastNormGlobalTool, {-2: -15.0, -1: -14.9, -3: -14.0}, omega)
+    assert_raises(ValueError, LeastNormGlobalTool, {-2: -15.0, -1: -14.9, -3: -14.0}, omega)
+    assert_raises(ValueError, LeastNormGlobalTool, {0.0: -15.0, 0.5: -14.9, 1.0: -14.0}, omega)
+    assert_raises(ValueError, LeastNormGlobalTool, {2.: -15.0, 3.5: -14.9, 4.0: -14.0}, omega)
+
+    # check invalid inputs
+    assert_raises(ValueError, LeastNormGlobalTool, {1: -15., 2: -14.4, 3: 20.}, omega, weight=10.)
+    assert_raises(ValueError, LeastNormGlobalTool, {1: -15., 2: -14.4, 3: 20.}, omega, 1.1)
+
+    # Test weight and nth order
+    least_norm = LeastNormGlobalTool({1: -15., 2: -14.4, 3: 20.}, omega, nth_order=5, weight=0.5)
+    assert_equal(least_norm.weight, 0.5)
+    assert_equal(least_norm.nth_order, 5)
 
 
 def test_nth_order():
@@ -166,6 +188,10 @@ def test_derivative_energy():
                 desired_values = [expr[d_order].subs([("n_elec", x)]) for x in range(1, 20)]
                 actual_values = [unweighted.energy_derivative(x, d_order) for x in range(1, 20)]
                 assert_almost_equal(actual_values, desired_values)
+
+    # Test assertions
+    assert_raises(ValueError, unweighted.energy_derivative, 5, -1)
+    assert_raises(ValueError, unweighted.energy_derivative, 5, 1.5)
 
 
 def test_derivative_energy_weighted():
@@ -380,14 +406,12 @@ def test_n_max():
         unweighted._params = [5., 2., third_coefficient]
         assert_equal(unweighted._compute_n_max(), np.inf)
 
-    # Quadratic is bounded when a < 0.
+    # Quadratic is bounded below when a > 0.
     unweighted = LeastNormGlobalTool(dict_energy=dict_energy, omega=omega, nth_order=order)
     for third_coefficient in np.arange(0.01, 10.):
         unweighted._params = [5., 2., third_coefficient]
         actual = unweighted._compute_n_max()
-        minima = -2. / (2. * third_coefficient)
-        if minima < 0.:
-            minima = 0.
+        minima = max(-2. / (2. * third_coefficient), 0.)
         assert_equal(actual, minima)
 
     # Cubic, order=3
