@@ -41,6 +41,16 @@ class TestGrid(TestCase):
             self.mol.pseudo_numbers,
             random_rotate=False)
 
+    def test_string_init(self):
+        grid = Grid(
+            self.mol.coordinates,
+            self.mol.numbers,
+            self.mol.pseudo_numbers,
+            grid_type='exp:1e-5:20:40:50')
+        assert grid._grid_type is None
+        assert grid.rrad == 40
+        assert grid.rpoint == 50
+
     def test_init(self):
         # check initial values and attributs
         assert isinstance(self.grid_mol, Grid)
