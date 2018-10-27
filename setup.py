@@ -63,7 +63,8 @@ class my_install_data(install_data):
 setup(
     name='chemtools',
     version='0.9.0',
-    description='Package of Chemical Tools for Interpreting Quantum Chemistry Calculations',
+    description=
+    'Package of Chemical Tools for Interpreting Quantum Chemistry Calculations',
     author='Ayers Group',
     author_email='horton.chemtools@gmail.com',
     package_dir={'chemtools': 'chemtools'},
@@ -96,7 +97,7 @@ setup(
         'Programming Language :: Python :: 2',
         'Topic :: Science/Engineering :: Molecular Science'
     ],
-    requires=[
-        'numpy', 'horton', 'numpy', 'sphinx', 'matplotlib', 'PIL', 'mayavi',
-        'Image', 'sympy', 'scipy'
+    install_requires=[
+        'numpy', 'matplotlib', 'Pillow', 'Image', 'sympy',
+        'scipy', 'importlib_resources; python_version < "3.7"',
     ])
