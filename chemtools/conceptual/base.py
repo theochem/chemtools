@@ -26,10 +26,12 @@ This module contains various global tool classes corresponding to
 linear, quadratic, exponential, general energy models.
 """
 
+
+import logging
 import numpy as np
 import sympy as sp
+
 from scipy.optimize import newton
-from horton import log
 
 
 __all__ = ["BaseGlobalTool", "BaseLocalTool", "BaseCondensedTool"]
@@ -507,8 +509,8 @@ class BaseGlobalTool(object):
         # size and there is no guarantee that a zero has been found. Consequently the result
         # should be verified.
         if not abs(self.energy_derivative(n_elec, 1) - mu) < 1.e-4:
-            log.warn('Solved number of electrons {0} corresponding to {1} gives, '
-                     'mu(N={0})={2}'.format(n_elec, mu, self.energy_derivative(n_elec, 1)))
+            logging.warning("Solved number of electrons {0} corresponding to {1} gives, "
+                            "mu(N={0})={2}".format(n_elec, mu, self.energy_derivative(n_elec, 1)))
         return n_elec
 
 

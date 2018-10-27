@@ -28,7 +28,9 @@ compute various conceptual density functional theory (DFT) descriptive tools.
 """
 
 
-from horton import log, BeckeMolGrid
+import logging
+
+from horton import BeckeMolGrid
 
 from chemtools.wrappers.molecule import Molecule
 from chemtools.toolbox.utils import check_arg_molecule, get_matching_attr
@@ -118,6 +120,13 @@ class BaseConceptualDFT(object):
         """Atomic numbers of atoms."""
         return self._numbers
 
+    def _log_init(self):
+        """Print an initial informative message."""
+        logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+        logging.info("Initialize   : {0}".format(self.__class__))
+        logging.info("Energy Model : {0}".format(self.model))
+        # logging.info("Reference N0  : {0}".format(self._tool.n0))
+
     @staticmethod
     def load_file(file_names):
         """Return `Molecule` instances corresponding to file_names.
@@ -201,15 +210,6 @@ class GlobalConceptualDFT(BaseConceptualDFT):
         content += "\n\nAvailable methods in {0} global model:\n{1}\n".format(self._model, "-" * 50)
         content += "\n".join(methods) + "\n"
         return content
-
-    def _log_init(self):
-        """Print an initial informative message."""
-        if log.do_medium:
-            log("Initialize: %s" % self.__class__)
-            log.deflist([("Energy Model", self._model),
-                         ("Parameters", self._tool.params),
-                         ("Reference Energy", self._tool.dict_energy)])
-            log.blank()
 
     @classmethod
     def from_file(cls, file_name, model):
@@ -309,14 +309,6 @@ class LocalConceptualDFT(BaseConceptualDFT):
         content += "\n\nAvailable methods in {0} global model:\n{1}\n".format(self._model, "-" * 50)
         content += "\n".join(methods) + "\n"
         return content
-
-    def _log_init(self):
-        """Print an initial informative message."""
-        if log.do_medium:
-            log("Initialize: %s" % self.__class__)
-            log.deflist([("Energy Model", self._model),
-                         ("Reference #Electrons", self._tool.n0)])
-            log.blank()
 
     @classmethod
     def from_file(cls, file_name, model, points):
@@ -418,15 +410,6 @@ class CondensedConceptualDFT(BaseConceptualDFT):
         content += "\n\nAvailable methods in {0} global model:\n{1}\n".format(self._model, "-" * 50)
         content += "\n".join(methods) + "\n"
         return content
-
-    def _log_init(self):
-        """Print an initial informative message."""
-        if log.do_medium:
-            log("Initialize: Condensed Class")
-            log("Initialize: %s" % self.__class__)
-            log.deflist([("Energy Model", self._model),
-                         ("Reference #Electrons", self._tool.n_ref)])
-            log.blank()
 
     @classmethod
     def from_file(cls, file_name, model, approach="FMR", scheme="h", **kwargs):

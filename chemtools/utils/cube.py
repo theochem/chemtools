@@ -22,8 +22,12 @@
 # --
 """The Cube Module."""
 
+
+import logging
 import numpy as np
-from horton import log, IOData
+
+from horton import IOData
+
 
 __all__ = ['CubeGen']
 
@@ -234,14 +238,13 @@ class CubeGen(object):
 
     def _log_init(self):
         """Log an overview of the cube's properties."""
-        if log.do_medium:
-            log('Initialized cube: %s' % self.__class__)
-            log.deflist([('Origin ', self._origin),
-                         ('Axes[0]', self._axes[0]),
-                         ('Axes[1]', self._axes[1]),
-                         ('Axes[2]', self._axes[2]),
-                         ('Shape  ', self._shape)])
-            log.blank()
+        logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+        logging.info("Initialized cube: {0}".format(self.__class__))
+        logging.info("Origin : {0}".format(self._origin))
+        logging.info("Axes 1 : {0}".format(self._axes[0]))
+        logging.info("Axes 2 : {0}".format(self._axes[1]))
+        logging.info("Axes 3 : {0}".format(self._axes[2]))
+        logging.info("Shape  : {0}".format(self._shape))
 
     def dump_cube(self, filename, data):
         r"""Write the data evaluated on grid points into a cube file.

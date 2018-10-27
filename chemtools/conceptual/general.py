@@ -26,9 +26,11 @@ This module contains the global and local tool classes corresponding to user-spe
 models.
 """
 
+
+import logging
 import numpy as np
 import sympy as sp
-from horton import log
+
 from scipy.optimize import root, least_squares
 
 from chemtools.conceptual.utils import check_number_electrons
@@ -248,6 +250,6 @@ class GeneralGlobalTool(BaseGlobalTool):
                     break
             else:
                 n_max = None
-                log.warn('The system of equations for Nmax could not be solved; Nmax=`None`. '
-                         'message:{0}'.format(result.message))
+                logging.warning("The system of equations for Nmax could not be solved; "
+                                "Nmax=`None`. message:{0}".format(result.message))
         return n_max

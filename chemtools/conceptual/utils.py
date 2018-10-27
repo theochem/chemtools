@@ -23,7 +23,7 @@
 """The Utility Functions of Conceptual Module."""
 
 
-from horton import log
+import logging
 
 
 __all__ = ["check_dict_values", "check_number_electrons"]
@@ -79,5 +79,5 @@ def check_number_electrons(n_elec, n_min, n_max):
     if n_elec < 0.0:
         raise ValueError("Number of electrons cannot be negative! n_elec={0}".format(n_elec))
     if not n_min <= n_elec <= n_max:
-        log.warn("Property evaluated for n_elec={0} outside of interpolation "
-                 "region [{1}, {2}].".format(n_elec, n_min, n_max))
+        logging.warning("Property evaluated for n_elec={0} outside of interpolation "
+                        "region [{1}, {2}].".format(n_elec, n_min, n_max))
