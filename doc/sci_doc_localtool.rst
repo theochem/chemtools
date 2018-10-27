@@ -114,8 +114,7 @@ they can be computed with ChemTools.
 
 In ChemTools, the expressions for reactivity indicators in the grand canonical ensemble are evaluated from the
 reactivity indicators in the canonical ensemble. This leads to rather complicated expressions for the local
-hyper-softnesses. For details about how expressions for the local hyper-softnesses can be expressed in terms of the
-hyper-Fukui functions using Faà di Bruno’s formula, please refer to :ref:`derivation_local_softness`.
+hyper-softnesses.
 
 
 .. _local_derived_indicators:

@@ -82,7 +82,6 @@ quantum chemistry.
 
    tech_dev
    tech_api
-   tech_derivations
 
 
 Indices and tables

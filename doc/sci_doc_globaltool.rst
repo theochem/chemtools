@@ -166,7 +166,6 @@ for grand potential, :math:`\Omega`, analogous to the energy model, :math:`E\lef
 specify in the canonical ensemble.)
 This leads to rather complicated expressions for the global hyper-softnesses, which are derived from the inverse
 function theorem for second- and higher-order derivatives.
-Please refer to :ref:`derivation_global_softness` for details.
 
 
 .. _global_derived_indicators:
