@@ -32,10 +32,13 @@ import numpy as np
 from numpy.testing import assert_raises, assert_equal, assert_almost_equal
 
 from horton import IOData
-from chemtools import context
 from chemtools.utils import CubeGen
 from chemtools.toolbox.nci import NCI
 from chemtools.wrappers.molecule import Molecule
+try:
+    from importlib_resources import path
+except ImportError:
+    from importlib.resources import path
 
 
 @contextmanager
@@ -51,20 +54,21 @@ def tmpdir(name):
 def test_toolbox_nci_raises():
     # check file name
     assert_raises(ValueError, NCI.from_file, "gibberish")
-    assert_raises(ValueError, NCI.from_file, context.get_fn('test/h2o_dimer_pbe_sto3g.wf'))
+    # with path('chemtools.data', 'h2o_dimer_pbe_sto3g.wf') as file1:
+    #     assert_raises(OSError, NCI.from_file, file1)
 
 
 def test_analyze_nci_h2o_dimer_wfn():
-    file_path = context.get_fn('test/h2o_dimer_pbe_sto3g.wfn')
+    with path('chemtools.data', 'h2o_dimer_pbe_sto3g-dens.cube') as dens_cube1_path:
+        cube = CubeGen.from_cube(dens_cube1_path)
+    with path('chemtools.data', 'h2o_dimer_pbe_sto3g.wfn') as file_path:
+        desp = NCI.from_file(file_path, cube)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-    dens_cube1_path = context.get_fn('test/h2o_dimer_pbe_sto3g-dens.cube')
-    cube = CubeGen.from_cube(dens_cube1_path)
     # Build the NCI tool
-    desp = NCI.from_file(file_path, cube)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-    grad_cube1_path = context.get_fn('test/h2o_dimer_pbe_sto3g-grad.cube')
-    dmol1 = IOData.from_file(dens_cube1_path)
-    gmol1 = IOData.from_file(grad_cube1_path)
+    with path('chemtools.data', 'h2o_dimer_pbe_sto3g-grad.cube') as grad_cube1_path:
+        dmol1 = IOData.from_file(str(dens_cube1_path))
+        gmol1 = IOData.from_file(str(grad_cube1_path))
 
     with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_h2o_dimer_fchk') as dn:
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g')
@@ -101,17 +105,17 @@ def test_analyze_nci_h2o_dimer_wfn():
 
 
 def test_analyze_nci_h2o_dimer_fchk():
-    file_path = context.get_fn('test/h2o_dimer_pbe_sto3g.fchk')
-    mol = Molecule.from_file(file_path)
+    with path('chemtools.data', 'h2o_dimer_pbe_sto3g.fchk') as file_path:
+        mol = Molecule.from_file(file_path)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-    dens_cube1_path = context.get_fn('test/h2o_dimer_pbe_sto3g-dens.cube')
-    cube = CubeGen.from_cube(dens_cube1_path)
+    with path('chemtools.data', 'h2o_dimer_pbe_sto3g-dens.cube') as dens_cube1_path:
+        cube = CubeGen.from_cube(dens_cube1_path)
     # Build the NCI tool
     desp = NCI.from_molecule(mol, cube)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-    grad_cube1_path = context.get_fn('test/h2o_dimer_pbe_sto3g-grad.cube')
-    dmol1 = IOData.from_file(dens_cube1_path)
-    gmol1 = IOData.from_file(grad_cube1_path)
+    with path('chemtools.data', 'h2o_dimer_pbe_sto3g-grad.cube') as grad_cube1_path:
+        dmol1 = IOData.from_file(str(dens_cube1_path))
+        gmol1 = IOData.from_file(str(grad_cube1_path))
 
     with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_h2o_dimer_fchk') as dn:
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g')
@@ -148,9 +152,9 @@ def test_analyze_nci_h2o_dimer_fchk():
 
 
 def test_analyze_nci_assert_errors():
-    file_path = context.get_fn('test/h2o_dimer_pbe_sto3g.fchk')
-    mol = Molecule.from_file(file_path)
-    cube = CubeGen.from_file(file_path, spacing=2., threshold=0.0)
+    with path('chemtools.data', 'h2o_dimer_pbe_sto3g.fchk') as file_path:
+        mol = Molecule.from_file(file_path)
+        cube = CubeGen.from_file(file_path, spacing=2., threshold=0.0)
 
     dens = np.array([2.10160232e-04, 1.11307672e-05, 3.01244062e-04, 2.31768360e-05,
                      6.56282686e-03, 2.62815892e-04, 2.46559574e-02, 1.82760928e-03,

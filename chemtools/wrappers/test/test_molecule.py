@@ -28,8 +28,11 @@ from numpy.testing import assert_raises, assert_equal, assert_almost_equal
 from chemtools.utils.test.test_data import (load_data_gaussian_cubegen_ch4_uhf_ccpvdz,
                                             load_data_fortran_ch4_uhf_ccpvdz)
 from chemtools.wrappers import Molecule
-from chemtools.utils.utils import context
 
+try:
+    from importlib_resources import path
+except ImportError:
+    from importlib.resources import path
 
 def check_horton_molecule_raises(mol):
     """Check expected raised error messages by HortonWaveFunction class."""
@@ -95,15 +98,18 @@ def check_horton_molecule_raises(mol):
 
 
 def test_horton_molecule_check_raises_fchk_ch4_uhf_ccpvdz():
-    molecule = Molecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file:
+        molecule = Molecule.from_file(file)
     check_horton_molecule_raises(molecule)
 
 def test_horton_molecule_check_raises_fchk_ch4_rhf_ccpvdz():
-    molecule = Molecule.from_file(context.get_fn("test/ch4_rhf_ccpvdz.fchk"))
+    with path('chemtools.data', 'ch4_rhf_ccpvdz.fchk') as file:
+        molecule = Molecule.from_file(file)
     check_horton_molecule_raises(molecule)
 
 def test_horton_molecule_check_raises_wfn_ch4_uhf_ccpvdz():
-    molecule = Molecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as file:
+        molecule = Molecule.from_file(file)
     check_horton_molecule_raises(molecule)
 
 
@@ -130,7 +136,8 @@ def check_horton_molecule_basics(mol):
 
 
 def test_horton_molecule_basics_fchk_ch4_uhf_ccpvdz():
-    molecule = Molecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file:
+        molecule = Molecule.from_file(file)
     # check basics
     check_horton_molecule_basics(molecule)
     # check charges
@@ -148,7 +155,8 @@ def test_horton_molecule_basics_fchk_ch4_uhf_ccpvdz():
 
 
 def test_horton_molecule_orbitals_fchk_ch4_uhf():
-    mol = Molecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file:
+        mol = Molecule.from_file(file)
     # check orbital energy
     orb_energy = np.array([-1.12152085E+01, -9.42914385E-01, -5.43117091E-01, -5.43114279E-01,
                            -5.43101269E-01,  1.93295185E-01,  2.74358942E-01,  2.74359310E-01,
@@ -181,7 +189,8 @@ def test_horton_molecule_orbitals_fchk_ch4_uhf():
 
 
 def test_horton_molecule_density_matrix_fchk_ch4_uhf():
-    mol = Molecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file:
+        mol = Molecule.from_file(file)
     # check density matrix against Gaussian (printed in log file)
     expected_diag = np.array([1.03003, 0.13222, 0.05565, 0.17944, 0.17944, 0.17944, 0.03891,
                               0.03891, 0.03891, 0.00028, 0.00064, 0.00045, 0.00011, 0.00072,
@@ -230,7 +239,8 @@ def test_horton_molecule_density_matrix_fchk_ch4_uhf():
 
 
 def test_horton_molecule_grid_esp_fchk_ch4_uhf():
-    mol = Molecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file:
+        mol = Molecule.from_file(file)
     # check esp against Gaussian (printed in log file)
     # check esp at the position of each nuclei (1.e-14 is added to avoid division by zero)
     # excluding the nucleus itself.
@@ -285,19 +295,22 @@ def check_horton_molecule_against_gaussian_ch4_uhf_ccpvdz(mol):
 
 def test_horton_molecule_grid_gaussian_fchk_ch4_uhf_ccpvdz():
     # make an instance of molecule from fchk file
-    molecule = Molecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file:
+        molecule = Molecule.from_file(file)
     check_horton_molecule_against_gaussian_ch4_uhf_ccpvdz(molecule)
 
 
 def test_horton_molecule_grid_gaussian_fchk_ch4_rhf_ccpvdz():
     # make an instance of molecule from fchk file
-    molecule = Molecule.from_file(context.get_fn("test/ch4_rhf_ccpvdz.fchk"))
+    with path('chemtools.data', 'ch4_rhf_ccpvdz.fchk') as file:
+        molecule = Molecule.from_file(file)
     check_horton_molecule_against_gaussian_ch4_uhf_ccpvdz(molecule)
 
 
 def test_horton_molecule_grid_gaussian_wfn_ch4_uhf_ccpvdz():
     # make an instance of molecule from wfn file
-    molecule = Molecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as file:
+        molecule = Molecule.from_file(file)
     check_horton_molecule_against_gaussian_ch4_uhf_ccpvdz(molecule)
 
 
@@ -333,13 +346,15 @@ def check_horton_molecule_against_fortran_ch4_uhf_ccpvdz(mol):
 
 def test_horton_molecule_grid_fortran_fchk_ch4_uhf_ccpvdz():
     # make an instance of molecule
-    molecule = Molecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file:
+        molecule = Molecule.from_file(file)
     check_horton_molecule_against_fortran_ch4_uhf_ccpvdz(molecule)
 
 
 def test_horton_molecule_grid_fortran_fchk_ch4_rhf_ccpvdz():
     # make an instance of molecule
-    molecule = Molecule.from_file(context.get_fn("test/ch4_rhf_ccpvdz.fchk"))
+    with path('chemtools.data', 'ch4_rhf_ccpvdz.fchk') as file:
+        molecule = Molecule.from_file(file)
     check_horton_molecule_against_fortran_ch4_uhf_ccpvdz(molecule)
 
 
@@ -350,8 +365,9 @@ def test_horton_molecule_grid_fortran_fchk_ch4_rhf_ccpvdz():
 
 
 def test_horton_molecule_basic_fchk_o2_uhf():
-    mol = Molecule.from_file(context.get_fn("test/o2_uhf_virtual.fchk"))
-    print mol.nelectrons
+    with path('chemtools.data', 'o2_uhf_virtual.fchk') as file:
+        mol = Molecule.from_file(file)
+    # print mol.nelectrons
     # check basic numerics
     assert_equal(mol.natom, 2)
     assert_equal(mol.nelectrons, (9, 7))

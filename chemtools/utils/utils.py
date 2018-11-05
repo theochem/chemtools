@@ -23,6 +23,7 @@
 """The Utility Module."""
 
 import os
+import warnings
 from glob import glob
 
 __all__ = ['doc_inherit', 'Context', 'context']
@@ -51,6 +52,7 @@ def doc_inherit(base_class):
     Now, ``Bar.foo.__doc__ == Bar().foo.__doc__ == Foo.foo.__doc__ ==
     "Frobber"``
     """
+
     def decorator(method):
         """Overwrite method docstring."""
         # check whether the method exists
@@ -71,12 +73,15 @@ class Context(object):
         # Determine data directory (also for in-place build)
         self.data_dir = os.getenv('CTDATA')
         if self.data_dir is None:
-            fn_data_dir = os.path.join(os.path.dirname(__file__), '../data_dir.txt')
+            fn_data_dir = os.path.join(
+                os.path.dirname(__file__), '../data_dir.txt')
             if os.path.isfile(fn_data_dir):
                 with open(fn_data_dir) as f:
-                    self.data_dir = os.path.join(f.read().strip(), 'share/chemtools')
+                    self.data_dir = os.path.join(f.read().strip(),
+                                                 'share/chemtools')
         if self.data_dir is None:
-            self.data_dir = os.path.join(os.path.dirname(__file__), '../../data')
+            self.data_dir = os.path.join(
+                os.path.dirname(__file__), '../../data')
         self.data_dir = os.path.abspath(self.data_dir)
         # Determine include directory
         self.include_dir = os.getenv('CTINCLUDE')
@@ -89,18 +94,28 @@ class Context(object):
         #                 'include/python%i.%i' % (sys.version_info.major, sys.version_info.minor))
         if not os.path.isdir(self.data_dir):
             raise IOError('Can not find data files. '
-                          'The directory {0} does not exist.'.format(self.data_dir))
+                          'The directory {0} does not exist.'.format(
+                              self.data_dir))
 
     def get_fn(self, filename):
         """Return the full path to the given filename in the data directory."""
+        warnings.warn(
+            "context is deprecated, try to use importlib.resources instead",
+            FutureWarning)
         return os.path.join(self.data_dir, filename)
 
     def glob(self, pattern):
         """Return all files in the data directory that match the given pattern."""
+        warnings.warn(
+            "context is deprecated, try to use importlib.resources instead",
+            FutureWarning)
         return glob(self.get_fn(pattern))
 
     def get_include(self):
         """Return the list with directories containing header files (.h and .pxd)."""
+        warnings.warn(
+            "context is deprecated, try to use importlib.resources instead",
+            FutureWarning)
         return self.include_dir
 
 

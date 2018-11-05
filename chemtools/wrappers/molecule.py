@@ -75,7 +75,7 @@ class Molecule(object):
             Path to molecule's files.
         """
         # load molecule
-        iodata = IOData.from_file(filename)
+        iodata = IOData.from_file(str(filename))
         return cls(iodata)
 
     def __getattr__(self, attr):
@@ -222,7 +222,7 @@ class Molecule(object):
         # check points
         if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
             raise ValueError("Argument points should be a 2d-array with 3 columns.")
-        if not np.issubdtype(points.dtype, float):
+        if not np.issubdtype(points.dtype, np.float64):
             raise ValueError("Argument points should be a 2d-array of floats!")
 
         # assign orbital index (HORTON index the orbitals from 0)
@@ -278,7 +278,7 @@ class Molecule(object):
         # check points
         if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
             raise ValueError("Argument points should be a 2d-array with 3 columns.")
-        if not np.issubdtype(points.dtype, float):
+        if not np.issubdtype(points.dtype, np.float64):
             raise ValueError("Argument points should be a 2d-array of floats!")
 
         # allocate output array
@@ -337,7 +337,7 @@ class Molecule(object):
         # check points
         if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
             raise ValueError("Argument points should be a 2d-array with 3 columns.")
-        if not np.issubdtype(points.dtype, float):
+        if not np.issubdtype(points.dtype, np.float64):
             raise ValueError("Argument points should be a 2d-array of floats!")
 
         # allocate output array
@@ -385,7 +385,7 @@ class Molecule(object):
         # check points
         if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
             raise ValueError("Argument points should be a 2d-array with 3 columns.")
-        if not np.issubdtype(points.dtype, float):
+        if not np.issubdtype(points.dtype, np.float64):
             raise ValueError("Argument points should be a 2d-array of floats!")
 
         # allocate output array
@@ -446,12 +446,12 @@ class Molecule(object):
         # check points
         if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
             raise ValueError("Argument points should be a 2d-array with 3 columns.")
-        if not np.issubdtype(points.dtype, float):
+        if not np.issubdtype(points.dtype, np.float64):
             raise ValueError("Argument points should be a 2d-array of floats!")
 
         # allocate output array
         if output is None:
-            output = np.zeros((points.shape[0],), float)
+            output = np.zeros((points.shape[0],), np.float)
         if output.shape != (points.shape[0],):
             raise ValueError("Argument output should be a {0} array.".format((points.shape[0],)))
 
@@ -507,7 +507,7 @@ class Molecule(object):
         # check points
         if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
             raise ValueError("Argument points should be a 2d-array with 3 columns.")
-        if not np.issubdtype(points.dtype, float):
+        if not np.issubdtype(points.dtype, np.float64):
             raise ValueError("Argument points should be a 2d-array of floats!")
         # allocate output array
         if output is None:

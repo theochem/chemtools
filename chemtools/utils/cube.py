@@ -157,6 +157,7 @@ class CubeGen(object):
         filename : str
             Cube file name with \*.cube extension.
         """
+        filename = str(filename)
         if not filename.endswith('.cube'):
             raise ValueError('Argument filename should be a cube file with *.cube extension!')
 
@@ -183,7 +184,7 @@ class CubeGen(object):
             aligned with the principle axes of rotation of the molecule.
         """
         # Load file
-        mol = IOData.from_file(filename)
+        mol = IOData.from_file(str(filename))
         return cls.from_molecule(mol.numbers, mol.pseudo_numbers, mol.coordinates, spacing,
                                  threshold, rotate)
 

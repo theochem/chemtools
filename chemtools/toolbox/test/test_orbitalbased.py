@@ -28,22 +28,26 @@ import numpy as np
 
 from numpy.testing import assert_raises, assert_array_almost_equal, assert_allclose
 
-from chemtools.utils.utils import context
 from chemtools.wrappers.molecule import Molecule
 from chemtools.toolbox.orbitalbased import OrbitalLocalTool
+try:
+    from importlib_resources import path
+except ImportError:
+    from importlib.resources import path
 
 
 def test_orbital_based_raises():
     # check file name
     assert_raises(ValueError, OrbitalLocalTool.from_file, "gibberish", np.array([0.0, 1.0]))
-    filename = context.get_fn("test/h2o_dimer_pbe_sto3g.wf")
+    with path("chemtools.data", "h2o_dimer_pbe_sto3g.wfn") as filename:
+        assert_raises(ValueError, OrbitalLocalTool.from_file, filename, np.array([0.0, 1.0]))
     assert_raises(ValueError, OrbitalLocalTool.from_file, filename, np.array([0.0, 1.0]))
-    filename = context.get_fn("test/h2o_dimer_pbe_sto3g.wfn")
-    assert_raises(ValueError, OrbitalLocalTool.from_file, filename, np.array([0.0, 1.0]))
-    assert_raises(ValueError, OrbitalLocalTool.from_file, filename, np.array([0.0, 1.0, 0.0]))
-    assert_raises(ValueError, OrbitalLocalTool.from_file, filename, np.array([[0, 1], [1, 0.]]))
-    # check spin argument
-    tool = OrbitalLocalTool.from_file(filename, np.array([[0., 0., 0.]]))
+    with path("chemtools.data", "h2o_dimer_pbe_sto3g.wfn") as filename:
+        assert_raises(ValueError, OrbitalLocalTool.from_file, filename, np.array([0.0, 1.0]))
+        assert_raises(ValueError, OrbitalLocalTool.from_file, filename, np.array([0.0, 1.0, 0.0]))
+        assert_raises(ValueError, OrbitalLocalTool.from_file, filename, np.array([[0, 1], [1, 0.]]))
+        # check spin argument
+        tool = OrbitalLocalTool.from_file(filename, np.array([[0., 0., 0.]]))
     assert_raises(KeyError, tool.compute_orbital_expression, np.array([9]), spin="error")
     assert_raises(KeyError, tool.compute_orbital_expression, np.array([9]), spin="alph")
     assert_raises(KeyError, tool.compute_orbital_expression, np.array([9]), spin="bet")
@@ -80,39 +84,48 @@ def check_orbital_based_properties(tool, data):
 
 def test_orbital_based_from_file_ch4_uhf_ccpvdz():
     # load data computed with Fortran code
-    data = np.load(context.get_fn("test/data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz"))
+    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as filename:
+        data = np.load(str(filename))
     # test from_file initialization & check against Fortran code
-    tool = OrbitalLocalTool.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"), data["points"])
+    with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as filename:
+        tool = OrbitalLocalTool.from_file(filename, data["points"])
     check_orbital_based_properties(tool, data)
 
 
 def test_orbital_based_from_molecule_ch4_uhf_ccpvdz():
     # load data computed with Fortran code
-    data = np.load(context.get_fn("test/data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz"))
+    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as filename:
+        data = np.load(str(filename))
     # test from_molecule initialization with exp_beta & check against Fortran code
-    molecule = Molecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as filename:
+        molecule = Molecule.from_file(filename)
     tool = OrbitalLocalTool(molecule, data["points"])
     check_orbital_based_properties(tool, data)
     # test from_molecule initialization without exp_beta & check against Fortran code
     del molecule._exp_beta
-    molecule = Molecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as filename:
+        molecule = Molecule.from_file(filename)
     tool = OrbitalLocalTool(molecule, data["points"])
     check_orbital_based_properties(tool, data)
 
 
 def test_orbital_based_from_file_ch4_rhf_ccpvdz():
     # load data computed with Fortran code
-    data = np.load(context.get_fn("test/data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz"))
+    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as filename:
+        data = np.load(str(filename))
     # test from_file initialization & check against Fortran code
-    tool = OrbitalLocalTool.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"), data["points"])
+    with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as filename:
+        tool = OrbitalLocalTool.from_file(filename, data["points"])
     check_orbital_based_properties(tool, data)
 
 
 def test_orbital_based_from_molecule_ch4_rhf_ccpvdz():
     # load data computed with Fortran code
-    data = np.load(context.get_fn("test/data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz"))
+    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as filename:
+        data = np.load(str(filename))
     # test from_file initialization & check against Fortran code
-    molecule = Molecule.from_file(context.get_fn("test/ch4_rhf_ccpvdz.fchk"))
+    with path("chemtools.data", "ch4_rhf_ccpvdz.fchk") as filename:
+        molecule = Molecule.from_file(filename)
     tool = OrbitalLocalTool(molecule, data["points"])
     check_orbital_based_properties(tool, data)
 
@@ -155,39 +168,48 @@ def check_orbital_expression(tool, data):
 
 def test_orbital_based_from_file_orbital_expression_ch4_uhf_ccpvdz():
     # load data computed with Fortran code
-    data = np.load(context.get_fn("test/data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz"))
+    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as filename:
+        data = np.load(str(filename))
     # test from_file initialization & check against Fortran code
-    tool = OrbitalLocalTool.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"), data["points"])
+    with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as filename:
+        tool = OrbitalLocalTool.from_file(filename, data["points"])
     check_orbital_expression(tool, data)
 
 
 def test_orbital_based_from_molecule_orbital_expression_ch4_uhf_ccpvdz():
     # load data computed with Fortran code
-    data = np.load(context.get_fn("test/data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz"))
+    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as filename:
+        data = np.load(str(filename))
     # test from_molecule initialization with exp_beta & check against Fortran code
-    molecule = Molecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as filename:
+        molecule = Molecule.from_file(filename)
     tool = OrbitalLocalTool(molecule, data["points"])
     check_orbital_expression(tool, data)
     # test from_molecule initialization without exp_beta & check against Fortran code
     del molecule._exp_beta
-    molecule = Molecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"))
+    with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as filename:
+        molecule = Molecule.from_file(filename)
     tool = OrbitalLocalTool(molecule, data["points"])
     check_orbital_expression(tool, data)
 
 
 def test_orbital_based_from_file_orbital_expression_ch4_rhf_ccpvdz():
     # load data computed with Fortran code
-    data = np.load(context.get_fn("test/data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz"))
+    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as filename:
+        data = np.load(str(filename))
     # test from_file initialization & check against Fortran code
-    tool = OrbitalLocalTool.from_file(context.get_fn("test/ch4_uhf_ccpvdz.fchk"), data["points"])
+    with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as filename:
+        tool = OrbitalLocalTool.from_file(filename, data["points"])
     check_orbital_expression(tool, data)
 
 
 def test_orbital_based_from_molecule_orbital_expression_ch4_rhf_ccpvdz():
     # load data computed with Fortran code
-    data = np.load(context.get_fn("test/data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz"))
+    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as filename:
+        data = np.load(str(filename))
     # test from_file initialization & check against Fortran code
-    molecule = Molecule.from_file(context.get_fn("test/ch4_rhf_ccpvdz.fchk"))
+    with path("chemtools.data", "ch4_rhf_ccpvdz.fchk") as filename:
+        molecule = Molecule.from_file(filename)
     tool = OrbitalLocalTool(molecule, data["points"])
     check_orbital_expression(tool, data)
 
@@ -201,7 +223,8 @@ def test_orbital_based_h2o_b3lyp_sto3g():
                        [ 3.,-3., 3.], [ 3., 0.,-3.], [ 3., 0., 0.], [ 3., 0., 3.], [ 3., 3.,-3.],
                        [ 3., 3., 0.], [ 3., 3., 3.]])
     # initialize OrbitalLocalTool from_file
-    tool = OrbitalLocalTool.from_file(context.get_fn("test/water_b3lyp_sto3g.fchk"), points)
+    with path("chemtools.data", "water_b3lyp_sto3g.fchk") as filename:
+        tool = OrbitalLocalTool.from_file(filename, points)
     # check mep against Fortran code
     expected = np.array([-0.01239766, -0.02982537, -0.02201149,   -0.01787292, -0.05682143,
                          -0.02503563, -0.00405942, -0.00818772,   -0.00502268,  0.00321181,
@@ -217,17 +240,20 @@ def test_orbital_based_h2o_b3lyp_sto3g():
 
 def test_orbital_based_from_file_elf_h2o_dimer():
     # load data computed with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-    data = np.load(context.get_fn("test/data_elf_nciplot_h2o_dimer_pbe_sto3g.npz"))
+    with path("chemtools.data", "data_elf_nciplot_h2o_dimer_pbe_sto3g.npz") as filename:
+        data = np.load(str(filename))
     # test from_file initialization & check ELF
-    filename = context.get_fn("test/h2o_dimer_pbe_sto3g.fchk")
-    tool = OrbitalLocalTool.from_file(filename, data["points"])
+    with path("chemtools.data", "h2o_dimer_pbe_sto3g.fchk") as filename:
+        tool = OrbitalLocalTool.from_file(filename, data["points"])
     assert_array_almost_equal(tool.electron_localization_function, data["elf"], decimal=5)
 
 
 def test_orbital_based_from_molecule_elf_h2o_dimer():
     # load data computed with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-    data = np.load(context.get_fn("test/data_elf_nciplot_h2o_dimer_pbe_sto3g.npz"))
+    with path("chemtools.data", "data_elf_nciplot_h2o_dimer_pbe_sto3g.npz") as filename:
+        data = np.load(str(filename))
     # test from_molecule initialization & check ELF
-    molecule = Molecule.from_file(context.get_fn("test/h2o_dimer_pbe_sto3g.fchk"))
+    with path("chemtools.data", "h2o_dimer_pbe_sto3g.fchk") as filename:
+        molecule = Molecule.from_file(filename)
     tool = OrbitalLocalTool(molecule, data["points"])
     assert_array_almost_equal(tool.electron_localization_function, data["elf"], decimal=5)

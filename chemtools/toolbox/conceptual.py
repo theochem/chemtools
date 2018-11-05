@@ -41,7 +41,9 @@ from chemtools.conceptual.quadratic import QuadraticCondensedTool
 from chemtools.conceptual.exponential import ExponentialGlobalTool
 from chemtools.conceptual.rational import RationalGlobalTool
 from chemtools.conceptual.general import GeneralGlobalTool
-
+try: from pathlib2 import Path
+except ImportError:
+    from pathlib import Path
 
 __all__ = ["GlobalConceptualDFT", "LocalConceptualDFT", "CondensedConceptualDFT"]
 
@@ -137,7 +139,7 @@ class BaseConceptualDFT(object):
             Strings specifying the path to molecule's file, or sequence of strings specifying
             path to molecule files.
         """
-        if isinstance(file_names, (str, unicode)):
+        if isinstance(file_names, (str, unicode, Path)):
             # case of one file not given as a list
             molecule = Molecule.from_file(file_names)
         elif len(file_names) == 1 and isinstance(file_names[0], (str, unicode)):

@@ -29,9 +29,12 @@ from contextlib import contextmanager
 from numpy.testing import assert_raises
 import numpy as np
 from horton import IOData
-from chemtools import context
 from chemtools.toolbox.conceptual import LocalConceptualDFT
 from chemtools.utils.cube import CubeGen
+try:
+    from importlib_resources import path
+except ImportError:
+    from importlib.resources import path
 
 
 @contextmanager
@@ -45,8 +48,9 @@ def tmpdir(name):
 
 
 def test_cubegen_o2_uhf():
-    path_file = context.get_fn('test/o2_uhf.fchk')
-    mol = IOData.from_file(path_file)
+    # path_file = context.get_fn('test/o2_uhf.fchk')
+    with path('chemtools.data', 'o2_uhf.fchk') as path_file:
+        mol = IOData.from_file(str(path_file))
 
     # create cube file from file:
     cube = CubeGen.from_file(path_file, spacing=0.5, threshold=6.0, rotate=False)
@@ -89,7 +93,7 @@ def test_cubegen_o2_uhf():
 
     # test integration of Fukui functions:
 
-    tool = LocalConceptualDFT.from_file(path_file, model='linear', points=cube.points)
+    tool = LocalConceptualDFT.from_file(str(path_file), model='linear', points=cube.points)
 
     ffm_default = cube.integrate(tool.ff_minus)
     ffm_r = cube.integrate(tool.ff_minus, method='R')
@@ -121,11 +125,12 @@ def test_cubegen_o2_uhf():
 
 
 def test_cube_h2o_dimer():
-    file_path = context.get_fn('test/h2o_dimer_pbe_sto3g-dens.cube')
+    # file_path = context.get_fn('test/h2o_dimer_pbe_sto3g-dens.cube')
+    with path('chemtools.data', 'h2o_dimer_pbe_sto3g-dens.cube') as file_path:
     # Build the cube
     # Check against previous generated .cube files
-    cube = CubeGen.from_cube(file_path)
-    mol1 = IOData.from_file(file_path)
+        cube = CubeGen.from_cube(file_path)
+        mol1 = IOData.from_file(str(file_path))
 
     with tmpdir('chemtools.test.test_base.test_cube_h2o_dimer') as dn:
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')

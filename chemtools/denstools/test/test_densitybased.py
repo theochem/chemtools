@@ -27,9 +27,11 @@ import numpy as np
 from horton import IOData, BeckeMolGrid
 from chemtools.denstools.densitybased import DensityLocalTool
 from chemtools.toolbox.orbitalbased import OrbitalLocalTool
-from chemtools.utils.utils import context
 from chemtools.utils.cube import CubeGen
-
+try:
+    from importlib_resources import path
+except ImportError:
+    from importlib.resources import path
 
 def test_density_local_tool():
     # fake density, gradient and Hessian arrays
@@ -84,8 +86,8 @@ def test_density_local_tool():
 
 
 def test_density_local_tool_electrostatic_potential():
-    file_path = context.get_fn('test/water_b3lyp_sto3g.fchk')
-    mol = IOData.from_file(file_path)
+    with path('chemtools.data', 'water_b3lyp_sto3g.fchk') as file_path:
+        mol = IOData.from_file(str(file_path))
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec='coarse', random_rotate=False, mode='keep')
 
@@ -97,7 +99,7 @@ def test_density_local_tool_electrostatic_potential():
     sh = np.array([3, 3, 3])
     cube = CubeGen(mol.numbers, mol.pseudo_numbers, mol.coordinates, ori, ax, sh)
 
-    orb = OrbitalLocalTool.from_file(file_path, grid.points)
+    orb = OrbitalLocalTool.from_file(str(file_path), grid.points)
 
     # build a density local model
     model = DensityLocalTool(orb.density, orb.gradient)
