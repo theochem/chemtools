@@ -100,4 +100,5 @@ setup(
     install_requires=[
         'numpy', 'matplotlib', 'Pillow', 'Image', 'sympy',
         'scipy', 'importlib_resources; python_version < "3.7"',
+        'pathlib; python_version < "3.4"',
     ])
