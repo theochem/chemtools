@@ -48,7 +48,6 @@ def tmpdir(name):
 
 
 def test_cubegen_o2_uhf():
-    # path_file = context.get_fn('test/o2_uhf.fchk')
     with path('chemtools.data', 'o2_uhf.fchk') as path_file:
         mol = IOData.from_file(str(path_file))
 
@@ -125,7 +124,6 @@ def test_cubegen_o2_uhf():
 
 
 def test_cube_h2o_dimer():
-    # file_path = context.get_fn('test/h2o_dimer_pbe_sto3g-dens.cube')
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g-dens.cube') as file_path:
     # Build the cube
     # Check against previous generated .cube files

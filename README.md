@@ -3,7 +3,7 @@ ChemTools
 
 [![Python](https://img.shields.io/badge/python-2.7-blue.svg)](https://docs.python.org/2.7/)
 [![Codecov branch](https://img.shields.io/codecov/c/github/QuantumElephant/chemtools/master.svg)](https://codecov.io/gh/QuantumElephant/chemtools)
-[![Build Status](https://travis-ci.com/QuantumElephant/chemtools.svg?token=hHqyYYLAfG3c9d5PuqS7&branch=master)](https://travis-ci.com/QuantumElephant/chemtools)
+[![Build Status](https://travis-ci.com/QuantumElephant/chemtools.svg?branch=master)](https://travis-ci.com/QuantumElephant/chemtools)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/QuantumElephant/chemtools/blob/master/LICENSE)
 
 

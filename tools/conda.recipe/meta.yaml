@@ -18,6 +18,7 @@ requirements:
     - horton
     - matplotlib
     - nose
+    - importlib_resources
   build:
     - python
     - numpy
@@ -32,6 +33,7 @@ requirements:
     - pil
     - mayavi
     - setuptools
+    - importlib_resources
 
 about:
   dev_url: https://github.com/QuantumElephant/chemtools
