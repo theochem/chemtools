@@ -53,10 +53,10 @@ def test_get_matching_attr_raises():
 
 def test_get_molecular_grid_raises():
     # check atomic numbers shape
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file:
-        molecule = Molecule.from_file(file)
-    with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as file:
-        grid = CubeGen.from_file(file)
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as filename:
+        molecule = Molecule.from_file(filename)
+    with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as filename:
+        grid = CubeGen.from_file(filename)
     assert_raises(ValueError, get_molecular_grid, molecule, grid)
     assert_raises(ValueError, get_molecular_grid, [molecule], grid)
     assert_raises(ValueError, get_molecular_grid, [molecule, molecule], grid)
@@ -67,10 +67,10 @@ def test_get_molecular_grid_raises():
     # check atomic numbers (to be added)
 
     # check atomic coordinate
-    with path('chemtools.data', 'water_b3lyp_sto3g.fchk') as file:
-        molecule = Molecule.from_file(file)
-    with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as file:
-        grid = CubeGen.from_file(file)
+    with path('chemtools.data', 'water_b3lyp_sto3g.fchk') as filename:
+        molecule = Molecule.from_file(filename)
+    with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as filename:
+        grid = CubeGen.from_file(filename)
     assert_raises(ValueError, get_molecular_grid, molecule, grid)
     assert_raises(ValueError, get_molecular_grid, molecule, grid)
     assert_raises(ValueError, get_molecular_grid, [molecule], grid)
@@ -97,10 +97,10 @@ def test_get_dict_energy_raises():
             assert_raises(ValueError, get_dict_energy, str(file1))
             assert_raises(ValueError, get_dict_energy, "gibberish")
     # check repeated molecules
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file:
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as filename:
         molecule = [
-            Molecule.from_file(file),
-            Molecule.from_file(file),
+            Molecule.from_file(filename),
+            Molecule.from_file(filename),
         ]
     assert_raises(ValueError, get_dict_energy, molecule)
     # check molecules with the same number of molecules
@@ -120,8 +120,8 @@ def test_get_dict_density_raises():
             assert_raises(ValueError, get_dict_density, "gibberish",
                           np.array([[0., 0., 0.]]))
     # check repeated molecules
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file:
-        molecule = [Molecule.from_file(file), Molecule.from_file(file),]
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as filename:
+        molecule = [Molecule.from_file(filename), Molecule.from_file(filename),]
     assert_raises(ValueError, get_dict_density, molecule, np.array([[0., 0., 0.]]))
     # check molecules with the same number of molecules
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file1:
@@ -140,8 +140,8 @@ def test_get_dict_population_raises():
             molecule = [Molecule.from_file(file1), Molecule.from_file(file2),]
     assert_raises(ValueError, get_dict_population, molecule, "RMF", "esp")
     # check condensing approach
-    with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as file:
-        molecule = Molecule.from_file(file)
+    with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as filename:
+        molecule = Molecule.from_file(filename)
     assert_raises(ValueError, get_dict_population, molecule, "fm", "h")
     assert_raises(ValueError, get_dict_population, molecule, "rm", "hi")
     assert_raises(ValueError, get_dict_population, molecule, "gibberish", "esp")

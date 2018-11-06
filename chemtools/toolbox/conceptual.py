@@ -41,7 +41,8 @@ from chemtools.conceptual.quadratic import QuadraticCondensedTool
 from chemtools.conceptual.exponential import ExponentialGlobalTool
 from chemtools.conceptual.rational import RationalGlobalTool
 from chemtools.conceptual.general import GeneralGlobalTool
-try: from pathlib2 import Path
+try:
+    from pathlib2 import Path
 except ImportError:
     from pathlib import Path
 

@@ -29,8 +29,7 @@ from glob import glob
 setup(
     name='chemtools',
     version='0.9.0',
-    description=
-    'Package of Chemical Tools for Interpreting Quantum Chemistry Calculations',
+    description='Package of Chemical Tools for Interpreting Quantum Chemistry Calculations',
     author='Ayers Group',
     author_email='horton.chemtools@gmail.com',
     package_dir={'chemtools': 'chemtools'},
@@ -50,9 +49,7 @@ setup(
         'chemtools.wrappers.test',
         'chemtools.outputs.test',
     ],
-    package_data={
-        'chemtools.data': ['*.fchk', '*.cube', '*.wfn', '*.npz'],
-        },
+    package_data={'chemtools.data': ['*.fchk', '*.cube', '*.wfn', '*.npz']},
     scripts=glob("scripts/*.py"),
     classifiers=[
         'Environment :: Console', 'Intended Audience :: Science/Research',

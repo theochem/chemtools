@@ -58,9 +58,12 @@ def test_local_conceptual_raises():
     assert_raises(ValueError, LocalConceptualDFT, values, "Rational")
     # check in valid points
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fn:
-        assert_raises(ValueError, LocalConceptualDFT.from_file, fn, "linear", np.array([0., 0., 0.]))
-        assert_raises(ValueError, LocalConceptualDFT.from_file, fn, "linear", np.array([[0., 0.]]))
-        assert_raises(ValueError, LocalConceptualDFT.from_file, fn, "quadratic", np.array([[0., 0.]]))
+        assert_raises(ValueError, LocalConceptualDFT.from_file, fn, "linear",
+                      np.array([0., 0., 0.]))
+        assert_raises(ValueError, LocalConceptualDFT.from_file, fn, "linear",
+                      np.array([[0., 0.]]))
+        assert_raises(ValueError, LocalConceptualDFT.from_file, fn, "quadratic",
+                      np.array([[0., 0.]]))
     # check molecule file inconsistency
     points = np.array([[0., 0., 0.]])
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file1:
@@ -72,13 +75,11 @@ def test_local_conceptual_raises():
         assert_raises(ValueError, LocalConceptualDFT.from_file, [fn, fn], "linear", points)
         assert_raises(ValueError, LocalConceptualDFT.from_file, [fn, fn], "quadratic", points)
     # check invalid files
-    '''
-    fns = [context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk"),
-           context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk"),
-           context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk")]
-    assert_raises(ValueError, LocalConceptualDFT.from_file, fns, "linear", points)
-    assert_raises(ValueError, LocalConceptualDFT.from_file, fns, "quadratic", points)
-    '''
+    # fns = [context.get_fn("examples/ch2o_q+0_ub3lyp_augccpvtz.fchk"),
+    #        context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk"),
+    #        context.get_fn("examples/ch2o_q-1_ub3lyp_augccpvtz.fchk")]
+    # assert_raises(ValueError, LocalConceptualDFT.from_file, fns, "linear", points)
+    # assert_raises(ValueError, LocalConceptualDFT.from_file, fns, "quadratic", points)
 
 
 def check_local_reactivity(model, energy_model, grid, n0):

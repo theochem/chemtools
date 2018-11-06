@@ -71,14 +71,14 @@ def test_global_conceptual_raises():
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file1:
         with path('chemtools.data', 'o2_uhf.fchk') as file2:
             fnames = [file1, file2]
-    assert_raises(ValueError, GlobalConceptualDFT.from_file, fnames, "linear")
-    assert_raises(ValueError, GlobalConceptualDFT.from_file, fnames, "quadratic")
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file1:
-        fname = file1
-    assert_raises(ValueError, GlobalConceptualDFT.from_file, [fname, fname], "linear")
-    assert_raises(ValueError, GlobalConceptualDFT.from_file, [fname, fname], "quadratic")
-    assert_raises(ValueError, GlobalConceptualDFT.from_file, [fname, fname, fname], "linear")
-    assert_raises(ValueError, GlobalConceptualDFT.from_file, [fname, fname, fname], "quadratic")
+            assert_raises(ValueError, GlobalConceptualDFT.from_file, fnames, "linear")
+            assert_raises(ValueError, GlobalConceptualDFT.from_file, fnames, "quadratic")
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fname:
+        assert_raises(ValueError, GlobalConceptualDFT.from_file, [fname, fname], "linear")
+        assert_raises(ValueError, GlobalConceptualDFT.from_file, [fname, fname], "quadratic")
+        assert_raises(ValueError, GlobalConceptualDFT.from_file, [fname, fname, fname], "linear")
+        assert_raises(ValueError, GlobalConceptualDFT.from_file, [fname, fname, fname],
+                      "quadratic")
 
 
 def check_global_reactivity_linear(model, ip, ea, energy, n):
@@ -155,14 +155,13 @@ def test_global_linear_from_molecule_fmo_ch4_fchk():
 def test_global_linear_from_file_fmo_ch4_wfn():
     # FMO: ip = -E(HOMO) & ea = -E(LUMO)
     ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as file:
-        filename = file
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as filename:
+        model1 = GlobalConceptualDFT.from_file(filename, "linear")
+        model2 = GlobalConceptualDFT.from_file([filename], "linear")
     # check from_file
-    model = GlobalConceptualDFT.from_file(filename, "linear")
-    check_global_reactivity_linear(model, ip, ea, energy, 10)
+    check_global_reactivity_linear(model1, ip, ea, energy, 10)
     # check from_file given as a list
-    model = GlobalConceptualDFT.from_file([filename], "linear")
-    check_global_reactivity_linear(model, ip, ea, energy, 10)
+    check_global_reactivity_linear(model2, ip, ea, energy, 10)
 
 
 def test_global_linear_from_molecule_fmo_ch4_wfn():
@@ -181,14 +180,13 @@ def test_global_linear_from_molecule_fmo_ch4_wfn():
 def test_global_linear_from_file_fmo_h2o_fchk():
     # FMO: ip = -E(HOMO) & ea = -E(LUMO)
     ip, ea, energy = -(-3.09871604E-01), -2.48704636E-02, -7.645980351270224E+01
-    with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as file:
-        filename = file
+    with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as filename:
+        model1 = GlobalConceptualDFT.from_file(filename, "linear")
+        model2 = GlobalConceptualDFT.from_file([filename], "linear")
     # check from_file
-    model = GlobalConceptualDFT.from_file(filename, "linear")
-    check_global_reactivity_linear(model, ip, ea, energy, 10)
+    check_global_reactivity_linear(model1, ip, ea, energy, 10)
     # check from_file given as a list
-    model = GlobalConceptualDFT.from_file([filename], "linear")
-    check_global_reactivity_linear(model, ip, ea, energy, 10)
+    check_global_reactivity_linear(model2, ip, ea, energy, 10)
 
 
 def test_global_linear_from_molecule_fmo_h2o_fchk():
@@ -207,14 +205,13 @@ def test_global_linear_from_molecule_fmo_h2o_fchk():
 def test_global_linear_from_file_fmo_h2o_cation_fchk():
     # FMO: ip = -E(HOMO) & ea = -E(LUMO)
     ip, ea, energy = -(-8.47044131E-01), -(-6.19391831E-01), -7.599493522312368E+01
-    with path('chemtools.data', 'h2o_q+1_ub3lyp_ccpvtz.fchk') as file:
-        filename = file
+    with path('chemtools.data', 'h2o_q+1_ub3lyp_ccpvtz.fchk') as filename:
+        model1 = GlobalConceptualDFT.from_file(filename, "linear")
+        model2 = GlobalConceptualDFT.from_file([filename], "linear")
     # check from_file
-    model = GlobalConceptualDFT.from_file(filename, "linear")
-    check_global_reactivity_linear(model, ip, ea, energy, 9)
+    check_global_reactivity_linear(model1, ip, ea, energy, 9)
     # check from_file given as a list
-    model = GlobalConceptualDFT.from_file([filename], "linear")
-    check_global_reactivity_linear(model, ip, ea, energy, 9)
+    check_global_reactivity_linear(model2, ip, ea, energy, 9)
 
 
 def test_global_linear_from_molecule_fmo_h2o_cation_fchk():
@@ -233,14 +230,13 @@ def test_global_linear_from_molecule_fmo_h2o_cation_fchk():
 def test_global_linear_from_file_fmo_h2o_anion_fchk():
     # FMO: ip = -E(HOMO) & ea = -E(LUMO)
     ip, ea, energy = -1.93118022E-01, -2.69116912E-01, -7.635212549312298E+01
-    with path('chemtools.data', 'h2o_q-1_ub3lyp_ccpvtz.fchk') as file:
-        filename = file
+    with path('chemtools.data', 'h2o_q-1_ub3lyp_ccpvtz.fchk') as filename:
+        model1 = GlobalConceptualDFT.from_file(filename, "linear")
+        model2 = GlobalConceptualDFT.from_file([filename], "linear")
     # check from_file
-    model = GlobalConceptualDFT.from_file(filename, "linear")
-    check_global_reactivity_linear(model, ip, ea, energy, 11)
+    check_global_reactivity_linear(model1, ip, ea, energy, 11)
     # check from_file given as a list
-    model = GlobalConceptualDFT.from_file([filename], "linear")
-    check_global_reactivity_linear(model, ip, ea, energy, 11)
+    check_global_reactivity_linear(model2, ip, ea, energy, 11)
 
 
 def test_global_linear_from_molecule_fmo_h2o_anion_fchk():
@@ -264,37 +260,37 @@ def test_global_linear_fd_h2o_fchk():
         with path('chemtools.data', 'h2o_q+1_ub3lyp_ccpvtz.fchk') as file2:
             with path('chemtools.data', 'h2o_q-1_ub3lyp_ccpvtz.fchk') as file3:
                 filename = [file1, file2, file3]
+                model1 = GlobalConceptualDFT.from_file(filename, "linear")
+                molecule = [Molecule.from_file(item) for item in filename]
+                model2 = GlobalConceptualDFT.from_molecule(molecule, "linear")
     # check from_file
-    model = GlobalConceptualDFT.from_file(filename, "linear")
-    check_global_reactivity_linear(model, ip, ea, energy, 10)
+    check_global_reactivity_linear(model1, ip, ea, energy, 10)
     # check from_molecule
-    molecule = [Molecule.from_file(item) for item in filename]
-    model = GlobalConceptualDFT.from_molecule(molecule, "linear")
-    check_global_reactivity_linear(model, ip, ea, energy, 10)
+    check_global_reactivity_linear(model2, ip, ea, energy, 10)
     # rearrange input files
     with path('chemtools.data', 'h2o_q-1_ub3lyp_ccpvtz.fchk') as file1:
         with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as file2:
             with path('chemtools.data', 'h2o_q+1_ub3lyp_ccpvtz.fchk') as file3:
                 filename = [file1, file2, file3]
+                model1 = GlobalConceptualDFT.from_file(filename, "linear")
+                molecule = [Molecule.from_file(item) for item in filename]
+                model2 = GlobalConceptualDFT.from_molecule(molecule, "linear")
     # check from_file
-    model = GlobalConceptualDFT.from_file(filename, "linear")
-    check_global_reactivity_linear(model, ip, ea, energy, 10)
+    check_global_reactivity_linear(model1, ip, ea, energy, 10)
     # check from_molecule
-    molecule = [Molecule.from_file(item) for item in filename]
-    model = GlobalConceptualDFT.from_molecule(molecule, "linear")
-    check_global_reactivity_linear(model, ip, ea, energy, 10)
+    check_global_reactivity_linear(model2, ip, ea, energy, 10)
     # rearrange input files
     with path('chemtools.data', 'h2o_q+1_ub3lyp_ccpvtz.fchk') as file1:
         with path('chemtools.data', 'h2o_q-1_ub3lyp_ccpvtz.fchk') as file2:
             with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as file3:
                 filename = [file1, file2, file3]
+                model1 = GlobalConceptualDFT.from_file(filename, "linear")
+                molecule = [Molecule.from_file(item) for item in filename]
+                model2 = GlobalConceptualDFT.from_molecule(molecule, "linear")
     # check from_file
-    model = GlobalConceptualDFT.from_file(filename, "linear")
-    check_global_reactivity_linear(model, ip, ea, energy, 10)
+    check_global_reactivity_linear(model1, ip, ea, energy, 10)
     # check from_molecule
-    molecule = [Molecule.from_file(item) for item in filename]
-    model = GlobalConceptualDFT.from_molecule(molecule, "linear")
-    check_global_reactivity_linear(model, ip, ea, energy, 10)
+    check_global_reactivity_linear(model2, ip, ea, energy, 10)
 
 
 def check_global_reactivity_quadratic(model, ip, ea, energy, n):
@@ -346,14 +342,13 @@ def check_global_reactivity_quadratic(model, ip, ea, energy, n):
 def test_global_quadratic_from_file_fmo_ch4_fchk():
     # FMO: ip = -E(HOMO) & ea = -E(LUMO)
     ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file:
-        filename = file
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as filename:
+        model1 = GlobalConceptualDFT.from_file(filename, "quadratic")
+        model2 = GlobalConceptualDFT.from_file([filename], "quadratic")
     # check from_file
-    model = GlobalConceptualDFT.from_file(filename, "quadratic")
-    check_global_reactivity_quadratic(model, ip, ea, energy, 10)
+    check_global_reactivity_quadratic(model1, ip, ea, energy, 10)
     # check from_file given as a list
-    model = GlobalConceptualDFT.from_file([filename], "quadratic")
-    check_global_reactivity_quadratic(model, ip, ea, energy, 10)
+    check_global_reactivity_quadratic(model2, ip, ea, energy, 10)
 
 
 def test_global_quadratic_from_molecule_fmo_ch4_fchk():
@@ -372,14 +367,13 @@ def test_global_quadratic_from_molecule_fmo_ch4_fchk():
 def test_global_quadratic_from_file_fmo_ch4_wfn():
     # FMO: ip = -E(HOMO) & ea = -E(LUMO)
     ip, ea, energy = -(-5.43101269E-01), -1.93295185E-01, -4.019868797400735E+01
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as file:
-        filename = file
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as filename:
+        model1 = GlobalConceptualDFT.from_file(filename, "quadratic")
+        model2 = GlobalConceptualDFT.from_file([filename], "quadratic")
     # check from_file
-    model = GlobalConceptualDFT.from_file(filename, "quadratic")
-    check_global_reactivity_quadratic(model, ip, ea, energy, 10)
+    check_global_reactivity_quadratic(model1, ip, ea, energy, 10)
     # check from_file given as a list
-    model = GlobalConceptualDFT.from_file([filename], "quadratic")
-    check_global_reactivity_quadratic(model, ip, ea, energy, 10)
+    check_global_reactivity_quadratic(model2, ip, ea, energy, 10)
 
 
 def test_global_quadratic_from_molecule_fmo_ch4_wfn():
@@ -398,14 +392,13 @@ def test_global_quadratic_from_molecule_fmo_ch4_wfn():
 def test_global_quadratic_from_file_fmo_h2o_fchk():
     # FMO: ip = -E(HOMO) & ea = -E(LUMO)
     ip, ea, energy = -(-3.09871604E-01), -2.48704636E-02, -7.645980351270224E+01
-    with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as file:
-        filename = file
+    with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as filename:
+        model1 = GlobalConceptualDFT.from_file(filename, "quadratic")
+        model2 = GlobalConceptualDFT.from_file([filename], "quadratic")
     # check from_file
-    model = GlobalConceptualDFT.from_file(filename, "quadratic")
-    check_global_reactivity_quadratic(model, ip, ea, energy, 10)
+    check_global_reactivity_quadratic(model1, ip, ea, energy, 10)
     # check from_file given as a list
-    model = GlobalConceptualDFT.from_file([filename], "quadratic")
-    check_global_reactivity_quadratic(model, ip, ea, energy, 10)
+    check_global_reactivity_quadratic(model2, ip, ea, energy, 10)
 
 
 def test_global_quadratic_from_molecule_fmo_h2o_fchk():
@@ -424,14 +417,13 @@ def test_global_quadratic_from_molecule_fmo_h2o_fchk():
 def test_global_quadratic_from_file_fmo_h2o_cation_fchk():
     # FMO: ip = -E(HOMO) & ea = -E(LUMO)
     ip, ea, energy = -(-8.47044131E-01), -(-6.19391831E-01), -7.599493522312368E+01
-    with path("chemtools.data", "h2o_q+1_ub3lyp_ccpvtz.fchk") as file:
-        filename = file
+    with path("chemtools.data", "h2o_q+1_ub3lyp_ccpvtz.fchk") as filename:
+        model1 = GlobalConceptualDFT.from_file(filename, "quadratic")
+        model2 = GlobalConceptualDFT.from_file([filename], "quadratic")
     # check quadratic global conceptual DFT model from a filename given as string
-    model = GlobalConceptualDFT.from_file(filename, "quadratic")
-    check_global_reactivity_quadratic(model, ip, ea, energy, 9)
+    check_global_reactivity_quadratic(model1, ip, ea, energy, 9)
     # check quadratic global conceptual DFT model from a filename given as a list of string
-    model = GlobalConceptualDFT.from_file([filename], "quadratic")
-    check_global_reactivity_quadratic(model, ip, ea, energy, 9)
+    check_global_reactivity_quadratic(model2, ip, ea, energy, 9)
 
 
 def test_global_quadratic_from_molecule_fmo_h2o_cation_fchk():
@@ -450,14 +442,13 @@ def test_global_quadratic_from_molecule_fmo_h2o_cation_fchk():
 def test_global_quadratic_from_file_fmo_h2o_anion_fchk():
     # FMO: ip = -E(HOMO) & ea = -E(LUMO)
     ip, ea, energy = -1.93118022E-01, -2.69116912E-01, -7.635212549312298E+01
-    with path("chemtools.data", "h2o_q-1_ub3lyp_ccpvtz.fchk") as file:
-        filename = file
+    with path("chemtools.data", "h2o_q-1_ub3lyp_ccpvtz.fchk") as filename:
+        model1 = GlobalConceptualDFT.from_file(filename, "quadratic")
+        model2 = GlobalConceptualDFT.from_file([filename], "quadratic")
     # check quadratic global conceptual DFT model from a filename given as string
-    model = GlobalConceptualDFT.from_file(filename, "quadratic")
-    check_global_reactivity_quadratic(model, ip, ea, energy, 11)
+    check_global_reactivity_quadratic(model1, ip, ea, energy, 11)
     # check quadratic global conceptual DFT model from a filename given as a list of string
-    model = GlobalConceptualDFT.from_file([filename], "quadratic")
-    check_global_reactivity_quadratic(model, ip, ea, energy, 11)
+    check_global_reactivity_quadratic(model2, ip, ea, energy, 11)
 
 
 def test_global_quadratic_from_molecule_fmo_h2o_anion_fchk():
@@ -481,37 +472,37 @@ def test_global_quadratic_fd_h2o_fchk():
         with path("chemtools.data", "h2o_q-1_ub3lyp_ccpvtz.fchk") as file2:
             with path("chemtools.data", "h2o_q+1_ub3lyp_ccpvtz.fchk") as file3:
                 filename = [file1, file2, file3]
+                model1 = GlobalConceptualDFT.from_file(filename, "quadratic")
+                molecule = [Molecule.from_file(item) for item in filename]
+                model2 = GlobalConceptualDFT.from_molecule(molecule, "quadratic")
     # cehck from_file
-    model = GlobalConceptualDFT.from_file(filename, "quadratic")
-    check_global_reactivity_quadratic(model, ip, ea, energy, 10)
+    check_global_reactivity_quadratic(model1, ip, ea, energy, 10)
     # check from_molecule
-    molecule = [Molecule.from_file(item) for item in filename]
-    model = GlobalConceptualDFT.from_molecule(molecule, "quadratic")
-    check_global_reactivity_quadratic(model, ip, ea, energy, 10)
+    check_global_reactivity_quadratic(model2, ip, ea, energy, 10)
     # rearrange input files
     with path("chemtools.data", "h2o_q+1_ub3lyp_ccpvtz.fchk") as file1:
         with path("chemtools.data", "h2o_q+0_ub3lyp_ccpvtz.fchk") as file2:
             with path("chemtools.data", "h2o_q-1_ub3lyp_ccpvtz.fchk") as file3:
                 filename = [file1, file2, file3]
-    # check from_file
-    model = GlobalConceptualDFT.from_file(filename, "quadratic")
-    check_global_reactivity_quadratic(model, ip, ea, energy, 10)
+                # check from_file
+                model1 = GlobalConceptualDFT.from_file(filename, "quadratic")
+                molecule = [Molecule.from_file(item) for item in filename]
+                model2 = GlobalConceptualDFT.from_molecule(molecule, "quadratic")
+    check_global_reactivity_quadratic(model1, ip, ea, energy, 10)
     # check from_molecule
-    molecule = [Molecule.from_file(item) for item in filename]
-    model = GlobalConceptualDFT.from_molecule(molecule, "quadratic")
-    check_global_reactivity_quadratic(model, ip, ea, energy, 10)
+    check_global_reactivity_quadratic(model2, ip, ea, energy, 10)
     # rearrange input files
     with path("chemtools.data", "h2o_q-1_ub3lyp_ccpvtz.fchk") as file1:
         with path("chemtools.data", "h2o_q+1_ub3lyp_ccpvtz.fchk") as file2:
             with path("chemtools.data", "h2o_q+0_ub3lyp_ccpvtz.fchk") as file3:
                 filename = [file1, file2, file3]
+                model1 = GlobalConceptualDFT.from_file(filename, "quadratic")
+                molecule = [Molecule.from_file(item) for item in filename]
+                model2 = GlobalConceptualDFT.from_molecule(molecule, "quadratic")
     # check from_file
-    model = GlobalConceptualDFT.from_file(filename, "quadratic")
-    check_global_reactivity_quadratic(model, ip, ea, energy, 10)
+    check_global_reactivity_quadratic(model1, ip, ea, energy, 10)
     # check from_molecule
-    molecule = [Molecule.from_file(item) for item in filename]
-    model = GlobalConceptualDFT.from_molecule(molecule, "quadratic")
-    check_global_reactivity_quadratic(model, ip, ea, energy, 10)
+    check_global_reactivity_quadratic(model2, ip, ea, energy, 10)
 
 
 # def test_global_rational_ch4_fchk():

@@ -41,7 +41,7 @@ def test_orbital_based_raises():
     assert_raises(ValueError, OrbitalLocalTool.from_file, "gibberish", np.array([0.0, 1.0]))
     with path("chemtools.data", "h2o_dimer_pbe_sto3g.wfn") as filename:
         assert_raises(ValueError, OrbitalLocalTool.from_file, filename, np.array([0.0, 1.0]))
-    assert_raises(ValueError, OrbitalLocalTool.from_file, filename, np.array([0.0, 1.0]))
+        assert_raises(ValueError, OrbitalLocalTool.from_file, filename, np.array([0.0, 1.0]))
     with path("chemtools.data", "h2o_dimer_pbe_sto3g.wfn") as filename:
         assert_raises(ValueError, OrbitalLocalTool.from_file, filename, np.array([0.0, 1.0]))
         assert_raises(ValueError, OrbitalLocalTool.from_file, filename, np.array([0.0, 1.0, 0.0]))
