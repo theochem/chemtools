@@ -42,6 +42,7 @@ setup(
         'chemtools.wrappers',
         'chemtools.outputs',
         'chemtools.data',
+        'chemtools.scripts',
         'chemtools.toolbox.test',
         'chemtools.conceptual.test',
         'chemtools.denstools.test',
