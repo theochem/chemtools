@@ -4,3 +4,5 @@ source=chemtools
 [report]
 exclude_lines =
     raise NotImplementedError
+    except ImportError:
+    from importlib.resources import path
