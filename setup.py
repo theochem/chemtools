@@ -24,7 +24,6 @@
 # pragma pylint: disable=superfluous-parens
 
 from distutils.core import setup
-from glob import glob
 
 setup(
     name='chemtools',
@@ -51,7 +50,9 @@ setup(
         'chemtools.outputs.test',
     ],
     package_data={'chemtools.data': ['*.fchk', '*.cube', '*.wfn', '*.npz']},
-    scripts=glob("scripts/*.py"),
+    entry_points={
+        'console_scripts': ['chemtools = chemtools.scripts.main:main'],
+    },
     classifiers=[
         'Environment :: Console', 'Intended Audience :: Science/Research',
         'Programming Language :: Python :: 2',
