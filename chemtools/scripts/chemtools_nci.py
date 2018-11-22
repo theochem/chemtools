@@ -22,12 +22,11 @@
 #
 # --
 # pragma pylint: disable=invalid-name
-"""
-Non-Covalent Interactions (NCI) Script.
+"""Non-Covalent Interactions (NCI) Script."""
 
-This script allows the user to use ChemTools from a command line.
-"""
+
 from chemtools import Molecule, CubeGen, NCI
+
 
 __all__ = ['parse_args_nci', 'main_nci']
 

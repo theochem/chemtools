@@ -22,17 +22,15 @@
 #
 # --
 # pragma pylint: disable=invalid-name
-"""
-Conceptual Density Functional Theory Script.
+"""Conceptual Density Functional Theory Script."""
 
-This script allows the user to use ChemTools from a command line.
-"""
 
 from __future__ import print_function
 
 from chemtools import Molecule
 from chemtools import CubeGen, print_vmd_script_isosurface
 from chemtools import GlobalConceptualDFT, LocalConceptualDFT
+
 
 __all__ = [
     'parse_args_global', 'parse_args_local', 'main_conceptual_global',
