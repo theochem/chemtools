@@ -39,8 +39,8 @@ __all__ = ['main']
 # basic swtich dictionary for storing all main callable function and subparser
 SCRIPT_MAIN = {
     'nci': main_nci,
-    'ccpt-l': main_conceptual_local,
-    'ccpt-g': main_conceptual_global,
+    'lcdft': main_conceptual_local,
+    'gcdft': main_conceptual_global,
 }
 
 
@@ -63,12 +63,12 @@ def parse_args_chemtools():
     parser_nci = subparser.add_parser('nci', help='visualize non-covalent interactions')
     parse_args_nci(parser_nci)
 
-    # sub parser for ccpt-1 functions
-    parser_nci = subparser.add_parser('ccpt-l', help='compute local conceptual DFT indicators')
+    # sub parser for lcdft functions
+    parser_nci = subparser.add_parser('lcdft', help='compute local conceptual DFT indicators')
     parse_args_local(parser_nci)
 
-    # sub parser for ccpt-g functions
-    parser_nci = subparser.add_parser('ccpt-g', help='compute global conceptual DFT indicators')
+    # sub parser for gcdft functions
+    parser_nci = subparser.add_parser('gcdft', help='compute global conceptual DFT indicators')
     parse_args_global(parser_nci)
 
     return parser.parse_args()
