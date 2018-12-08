@@ -13,8 +13,8 @@ import matplotlib.pyplot as plt
 from horton import IOData, get_gobasis, CholeskyLinalgFactory, guess_core_hamiltonian
 from horton import compute_nucnuc, REffHam, AufbauOccModel, PlainSCFSolver, AtomicGrid
 from horton.meanfield import RTwoIndexTerm, RDirectTerm, RExchangeTerm
-from chemtools import OrbitalLocalTool
-from chemtools.toolbox.molecule import make_molecule
+from chemtools import Molecule, OrbitalLocalTool
+
 
 # 1. Run a Hartree-Fock calculation with cc-pVDZ basis-set using HORTON
 
@@ -68,12 +68,12 @@ grid = AtomicGrid(mol.numbers[0], mol.pseudo_numbers[0], mol.coordinates[0],
 radii = grid.rgrid.radii
 
 # construct an OrbitalLocalTool
-molecule = make_molecule(mol, package_name='horton')
+molecule = Molecule(mol)
 tool = OrbitalLocalTool(molecule, grid.points)
 
 # calculate spherically-averaged density & Electron Localization Function (ELF)
 dens = grid.get_spherical_average(tool.density)
-elf = grid.get_spherical_average(tool.elf)
+elf = grid.get_spherical_average(tool.electron_localization_function)
 
 # calculate radially weighted density, i.e. $4.0 \pi r^2 \rho$
 rdens = 4.0 * np.pi * radii * radii * dens
