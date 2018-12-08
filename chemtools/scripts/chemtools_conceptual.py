@@ -24,13 +24,11 @@
 # pragma pylint: disable=invalid-name
 """Conceptual Density Functional Theory Script."""
 
-
 from __future__ import print_function
 
 from chemtools import Molecule
 from chemtools import CubeGen, print_vmd_script_isosurface
 from chemtools import GlobalConceptualDFT, LocalConceptualDFT
-
 
 __all__ = [
     'parse_args_global', 'parse_args_local', 'main_conceptual_global',
@@ -47,6 +45,7 @@ def parse_args_global(subparser):
     subparser.add_argument('model', help='Energy model.')
     subparser.add_argument(
         'file_wfn',
+        nargs='*',
         help='Wave-function file. Supported formats: fchk, mkl, molden.input, wfn.')
 
 
@@ -55,10 +54,28 @@ def parse_args_local(subparser):
     # description message
     # description = """ """
 
+    # get property list from LocalConceptualDFT's parent class
+    # property_list = [
+    #     name for name, func in BaseLocalTool.__dict__.items()
+    #     if isinstance(func, property)
+    # ]
+    property_list = [
+        'ff_plus',
+        'ff_minus',
+        'fukui_function',
+        'dual_descriptor',
+        # add more property
+    ]
+
     # required arguments
     subparser.add_argument('model', help='Energy model.')
     subparser.add_argument(
-        'prop', type=str, help='The local property to plot iso-surface.')
+        'property',
+        type=str,
+        choices=property_list,
+        metavar='property',
+        help='The local property for plotting iso-surface. '
+        'Choices: {{{}}}'.format(", ".join(property_list)))
     subparser.add_argument(
         'output_name', help='Name of generated cube files and vmd script.')
     subparser.add_argument(

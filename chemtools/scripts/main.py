@@ -24,7 +24,6 @@
 # pragma pylint: disable=invalid-name
 """Entry Point Main Script."""
 
-
 import argparse
 
 from chemtools import __version__
@@ -32,7 +31,6 @@ from chemtools.scripts.chemtools_conceptual import (
     main_conceptual_global, main_conceptual_local, parse_args_global,
     parse_args_local)
 from chemtools.scripts.chemtools_nci import main_nci, parse_args_nci
-
 
 __all__ = ['main']
 
@@ -57,18 +55,22 @@ def parse_args_chemtools():
         version="{} (ChemTools version {})".format(parser.prog, __version__))
 
     # command parser, stored in parser.command
-    subparser = parser.add_subparsers(metavar="<Commands>", help='<Functions>', dest='command')
+    subparser = parser.add_subparsers(
+        metavar="<Commands>", help='<Functions>', dest='command')
 
     # sub parser for nci functions
-    parser_nci = subparser.add_parser('nci', help='visualize non-covalent interactions')
+    parser_nci = subparser.add_parser(
+        'nci', help='visualize non-covalent interactions')
     parse_args_nci(parser_nci)
 
     # sub parser for lcdft functions
-    parser_nci = subparser.add_parser('lcdft', help='compute local conceptual DFT indicators')
+    parser_nci = subparser.add_parser(
+        'lcdft', help='compute local conceptual DFT indicators')
     parse_args_local(parser_nci)
 
     # sub parser for gcdft functions
-    parser_nci = subparser.add_parser('gcdft', help='compute global conceptual DFT indicators')
+    parser_nci = subparser.add_parser(
+        'gcdft', help='compute global conceptual DFT indicators')
     parse_args_global(parser_nci)
 
     return parser.parse_args()
@@ -79,3 +81,15 @@ def main():
     arg = parse_args_chemtools()  # parse all variables for each functions
     main_fun = SCRIPT_MAIN[arg.command]  # call the main executable function
     main_fun(arg)  # run the function
+
+
+if __name__ == '__main__':
+    import logging
+    try:
+        import gooey
+        # this is command is equivalent to use decorator
+        gooey.Gooey(main)()
+    except ImportError:
+        logging.warning(
+            "Package \'gooey\' is needed for GUI command-line tools. Please"
+            " install\nit with your package manager.")
