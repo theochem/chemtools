@@ -201,8 +201,10 @@ class GlobalConceptualDFT(BaseConceptualDFT):
         # get sorted list of public methods
         methods = [atr for atr in avs if callable(getattr(self, atr)) and not atr.startswith("_")]
         methods.sort()
-        content = "\nAvailable attributes in {0} global model:\n{1}\n".format(self._model, "-" * 50)
+        content = "\nAttributes of {0} global model:\n{1}\n".format(self._model, "-" * 50)
         for attr in attrs:
+            if attr == 'dict_energy':
+                continue
             value = getattr(self._tool, attr)
             if value is not None and not hasattr(value, "__iter__"):
                 content += "\n%s   % .6f" % (attr.ljust(25), value)
@@ -210,7 +212,7 @@ class GlobalConceptualDFT(BaseConceptualDFT):
                 content += "\n%s   [%s]" % (attr.ljust(25), ", ".join(["% .6f" % v for v in value]))
             else:
                 content += "\n%s   %s" % (attr.ljust(25), " ---")
-        content += "\n\nAvailable methods in {0} global model:\n{1}\n".format(self._model, "-" * 50)
+        content += "\n\nMethods of {0} global model:\n{1}\n".format(self._model, "-" * 50)
         content += "\n".join(methods) + "\n"
         return content
 
@@ -307,9 +309,9 @@ class LocalConceptualDFT(BaseConceptualDFT):
         # get sorted list of public methods
         methods = [atr for atr in avs if callable(getattr(self, atr)) and not atr.startswith("_")]
         methods.sort()
-        content = "Available attributes in {0} global model:\n{1}\n".format(self._model, "-" * 50)
+        content = "Attributes of {0} local model:\n{1}\n".format(self._model, "-" * 50)
         content += "\n".join(attrs)
-        content += "\n\nAvailable methods in {0} global model:\n{1}\n".format(self._model, "-" * 50)
+        content += "\n\nMethods of {0} local model:\n{1}\n".format(self._model, "-" * 50)
         content += "\n".join(methods) + "\n"
         return content
 
@@ -408,9 +410,9 @@ class CondensedConceptualDFT(BaseConceptualDFT):
         attrs.remove("n_ref")
         # get sorted list of public methods
         methods = [atr for atr in avs if callable(getattr(self, atr)) and not atr.startswith("_")]
-        content = "Available attributes in {0} global model:\n{1}\n".format(self._model, "-" * 50)
+        content = "Attributes of {0} condensed model:\n{1}\n".format(self._model, "-" * 50)
         content += "\n".join(attrs)
-        content += "\n\nAvailable methods in {0} global model:\n{1}\n".format(self._model, "-" * 50)
+        content += "\n\nMethods in {0} condensed model:\n{1}\n".format(self._model, "-" * 50)
         content += "\n".join(methods) + "\n"
         return content
 
