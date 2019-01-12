@@ -55,11 +55,12 @@ class OrbitalLocalTool(DensityLocalTool):
         self._points = points
         # boltzmann constant in hartree/kelvin
         self._kb = 3.1668144e-6
-        # compute density, gradient & hessian on grid
+        # compute density, gradient, hessian & kinetic energy density on grid
         dens = self._molecule.compute_density(self._points)
         grad = self._molecule.compute_gradient(self._points)
         # hess = self._molecule.compute_hessian(self._points)
-        super(OrbitalLocalTool, self).__init__(dens, grad, None)
+        ke = self._molecule.compute_kinetic_energy_density(self._points)
+        super(OrbitalLocalTool, self).__init__(dens, grad, None, ke)
 
     @classmethod
     def from_file(cls, filename, points):
@@ -74,43 +75,6 @@ class OrbitalLocalTool(DensityLocalTool):
         """
         molecule = Molecule.from_file(filename)
         return cls(molecule, points)
-
-    @property
-    def kinetic_energy_density(self):
-        r"""Positive definite kinetic energy density.
-
-        .. math::
-           \tau \left(\mathbf{r}\right) =
-           \sum_i^N n_i \frac{1}{2} \rvert \nabla \phi_i \left(\mathbf{r}\right) \lvert^2
-        """
-        return self._molecule.compute_kinetic_energy_density(self._points)
-
-    @property
-    def electron_localization_function(self):
-        r"""Electron Localization Function introduced by Becke and Edgecombe.
-
-        .. math::
-           ELF (\mathbf{r}) =
-                \frac{1}{\left( 1 + \left(\frac{D_{\sigma}(\mathbf{r})}
-                {D_{\sigma}^0 (\mathbf{r})} \right)^2\right)}
-
-        with XXX, XXX, and positive definite kinetic energy density defined as, respectively,
-
-        .. math::
-            D_{\sigma} (\mathbf{r}) &= \tau_{\sigma} (\mathbf{r}) -
-               \frac{1}{4} \frac{(\nabla \rho_{\sigma})^2}{\rho_{\sigma}}
-
-           D_{\sigma}^0 (\mathbf{r}) &=
-              \frac{3}{5} (6 \pi^2)^{2/3} \rho_{\sigma}^{5/3} (\mathbf{r})
-
-           \tau_{\sigma} (\mathbf{r}) =
-                 \sum_i^{\sigma} \lvert \nabla \phi_i (\mathbf{r}) \rvert^2
-        """
-        elfd = self.kinetic_energy_density - self.kinetic_energy_density_weizsacker
-        tf = np.ma.masked_less(self.kinetic_energy_density_thomas_fermi, 1.0e-30)
-        tf.filled(1.0e-30)
-        elf = 1.0 / (1.0 + (elfd / tf)**2.0)
-        return elf
 
     @property
     def electrostatic_potential(self):

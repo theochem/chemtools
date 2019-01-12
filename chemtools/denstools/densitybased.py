@@ -33,7 +33,7 @@ __all__ = ['DensityLocalTool']
 class DensityLocalTool(object):
     """Class of density-based local descriptive tools."""
 
-    def __init__(self, density, gradient, hessian=None):
+    def __init__(self, density, gradient, hessian=None, ke=None):
         """Initialize class with density and gradient.
 
         Parameters
@@ -42,8 +42,10 @@ class DensityLocalTool(object):
             Electron density of the system evaluated on a grid
         gradient : np.ndarray
             Gradient vector of electron density evaluated on a grid
-        hessian : np.ndarray
+        hessian : np.ndarray, optional
             Hessian matrix of electron density evaluated on a grid
+        ke : np.ndarray, optional
+            Kinetic energy density on a grid.
         """
         if density.ndim != 1:
             raise ValueError('Argument density should be a 1-dimensional array.')
@@ -57,6 +59,7 @@ class DensityLocalTool(object):
         self._density = density
         self._gradient = gradient
         self._hessian = hessian
+        self._ke = ke
 
     @property
     def density(self):
@@ -85,6 +88,16 @@ class DensityLocalTool(object):
         :math:`\mathbf{r} = \left(x\mathbf{i}, y\mathbf{j}, z\mathbf{k}\right)`.
         """
         return self._hessian
+
+    @property
+    def kinetic_energy_density(self):
+        r"""Positive definite kinetic energy density.
+
+        .. math::
+           \tau \left(\mathbf{r}\right) =
+           \sum_i^N n_i \frac{1}{2} \rvert \nabla \phi_i \left(\mathbf{r}\right) \lvert^2
+        """
+        return self._ke
 
     @property
     def laplacian(self):
@@ -167,6 +180,34 @@ class DensityLocalTool(object):
         prefactor = 0.3 * (3.0 * np.pi**2.0)**(2.0 / 3.0)
         kinetic = prefactor * self._density**(5.0 / 3.0)
         return kinetic
+
+    @property
+    def electron_localization_function(self):
+        r"""Electron Localization Function introduced by Becke and Edgecombe.
+
+        .. math::
+           ELF (\mathbf{r}) =
+                \frac{1}{\left( 1 + \left(\frac{D_{\sigma}(\mathbf{r})}
+                {D_{\sigma}^0 (\mathbf{r})} \right)^2\right)}
+
+        with XXX, XXX, and positive definite kinetic energy density defined as, respectively,
+
+        .. math::
+            D_{\sigma} (\mathbf{r}) &= \tau_{\sigma} (\mathbf{r}) -
+               \frac{1}{4} \frac{(\nabla \rho_{\sigma})^2}{\rho_{\sigma}}
+
+           D_{\sigma}^0 (\mathbf{r}) &=
+              \frac{3}{5} (6 \pi^2)^{2/3} \rho_{\sigma}^{5/3} (\mathbf{r})
+
+           \tau_{\sigma} (\mathbf{r}) =
+                 \sum_i^{\sigma} \lvert \nabla \phi_i (\mathbf{r}) \rvert^2
+        """
+        if self.kinetic_energy_density is not None:
+            elfd = self.kinetic_energy_density - self.kinetic_energy_density_weizsacker
+            tf = np.ma.masked_less(self.kinetic_energy_density_thomas_fermi, 1.0e-30)
+            tf.filled(1.0e-30)
+            elf = 1.0 / (1.0 + (elfd / tf)**2.0)
+            return elf
 
     def compute_electrostatic_potential(self, numbers, coordinates, weights, int_points, points):
         r"""Electrostatic potential.
