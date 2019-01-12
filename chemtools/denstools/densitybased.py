@@ -21,9 +21,11 @@
 #
 # --
 # pragma pylint: disable=invalid-name
-"""Density-Based Local Conceptual Density Functional Theory (DFT) Reactivity Tools."""
+"""Density-Based Local Reactivity Tools."""
+
 
 import numpy as np
+
 
 __all__ = ['DensityLocalTool']
 
@@ -58,18 +60,14 @@ class DensityLocalTool(object):
 
     @property
     def density(self):
-        r"""Electron density.
-
-        Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on a grid.
-        """
+        r"""Electron density :math:`\rho\left(\mathbf{r}\right)`."""
         return self._density
 
     @property
     def gradient(self):
-        r"""Gradient of electron density.
+        r"""Gradient of electron density :math:`\nabla \rho\left(\mathbf{r}\right)`.
 
-        Gradient vector of electron :math:`\nabla \rho\left(\mathbf{r}\right)`
-        defined as the first-order partial derivatives of electron density w.r.t. coordinate
+        This is the first-order partial derivatives of electron density w.r.t. coordinate
         :math:`\mathbf{r} = \left(x\mathbf{i}, y\mathbf{j}, z\mathbf{k}\right)`,
 
          .. math::
@@ -81,10 +79,9 @@ class DensityLocalTool(object):
 
     @property
     def hessian(self):
-        r"""Hessian of electron density.
+        r"""Hessian of electron density :math:`\nabla^2 \rho\left(\mathbf{r}\right)`.
 
-        Hessian matrix of electron density :math:`\nabla^2 \rho\left(\mathbf{r}\right)`
-        defined as the second-order partial derivatives of electron density w.r.t coordinate
+        This is the second-order partial derivatives of electron density w.r.t coordinate
         :math:`\mathbf{r} = \left(x\mathbf{i}, y\mathbf{j}, z\mathbf{k}\right)`.
         """
         return self._hessian
@@ -108,8 +105,8 @@ class DensityLocalTool(object):
             return np.trace(self._hessian, axis1=1, axis2=2)
 
     @property
-    def shanon_information(self):
-        r"""Shanon information defined as :math:`\rho(r) \ln \rho(r)`."""
+    def shannon_information(self):
+        r"""Shannon information defined as :math:`\rho(r) \ln \rho(r)`."""
         # masking might be needed
         value = self._density * np.log(self._density)
         return value
@@ -117,8 +114,6 @@ class DensityLocalTool(object):
     @property
     def gradient_norm(self):
         r"""Norm of the gradient of electron density.
-
-        Gradient norm representing the norm of the gradient vector at every point,
 
         .. math::
            \lvert \nabla \rho\left(\mathbf{r}\right) \rvert = \sqrt{
@@ -132,8 +127,6 @@ class DensityLocalTool(object):
     @property
     def reduced_density_gradient(self):
         r"""Reduced density gradient.
-
-        Reduced density gradient (RDG) defined as,
 
         .. math::
            s\left(\mathbf{r}\right) = \frac{1}{2\left(3\pi ^2 \right)^{1/3}}
@@ -151,11 +144,9 @@ class DensityLocalTool(object):
     def kinetic_energy_density_weizsacker(self):
         r"""Weizsacker kinetic energy density.
 
-        Weizsacker kinetic energy/local steric energy/Fisher information density defined as,
-
         .. math::
-           T\left(\mathbf{r}\right) =
-           \frac{\lvert \nabla \rho\left(\mathbf{r}\right) \rvert ^2}{8 \rho\left(\mathbf{r}\right)}
+           \tau_\text{W} \left(\mathbf{r}\right) =
+           \frac{\lvert \nabla\rho\left(\mathbf{r}\right) \rvert^2}{8 \rho\left(\mathbf{r}\right)}
         """
         # Mask density values less than 1.0d-30 to avoid diving by zero
         mdens = np.ma.masked_less(self._density, 1.0e-30)
@@ -168,10 +159,8 @@ class DensityLocalTool(object):
     def kinetic_energy_density_thomas_fermi(self):
         r"""Thomas-Fermi kinetic energy density.
 
-        Thomas-Fermi kinetic energy density defined as,
-
         .. math::
-           T\left(\mathbf{r}\right) = \frac{3}{10} \left(6 \pi^2 \right)^{2/3}
+           \tau_\text{TF} \left(\mathbf{r}\right) = \frac{3}{10} \left(6 \pi^2 \right)^{2/3}
                   \left(\frac{\rho\left(\mathbf{r}\right)}{2}\right)^{5/3}
         """
         # Compute Thomas-Fermi kinetic energy
@@ -181,8 +170,6 @@ class DensityLocalTool(object):
 
     def compute_electrostatic_potential(self, numbers, coordinates, weights, int_points, points):
         r"""Electrostatic potential.
-
-        Electrostatic potential defined as,
 
         .. math::
            \Phi\left(\mathbf{r}\right) = - v \left(\mathbf{r}\right) -

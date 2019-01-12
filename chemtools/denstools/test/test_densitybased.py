@@ -52,9 +52,9 @@ def test_density_local_tool():
     # check density and gradient
     np.testing.assert_almost_equal(model.density, d, decimal=6)
     np.testing.assert_almost_equal(model.gradient, g, decimal=6)
-    # check Shanon information
+    # check Shannon information
     expected = np.array([0.00000000, 3.29583687, 8.04718956, 1.38629436, 13.62137104])
-    np.testing.assert_almost_equal(model.shanon_information, expected, decimal=6)
+    np.testing.assert_almost_equal(model.shannon_information, expected, decimal=6)
     # check gradient norm
     expected = np.array([0.86602540, 0.63639610, 0.76811457, 0.82462113, 0.56789083])
     np.testing.assert_almost_equal(model.gradient_norm, expected, decimal=6)
