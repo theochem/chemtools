@@ -36,7 +36,7 @@ import matplotlib.pyplot as plt
 from matplotlib import rcParams
 
 from chemtools.wrappers.molecule import Molecule
-from chemtools.denstools.densitybased import DensityLocalTool
+from chemtools.denstools.densbased import DensityLocalTool
 from chemtools.utils.cube import CubeGen
 from chemtools.outputs.output_vmd import print_vmd_script_nci
 

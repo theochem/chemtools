@@ -29,7 +29,7 @@ import numpy as np
 from scipy.optimize import bisect
 
 from chemtools.wrappers.molecule import Molecule
-from chemtools.denstools.densitybased import DensityLocalTool
+from chemtools.denstools.densbased import DensityLocalTool
 
 
 __all__ = ["OrbitalLocalTool"]

@@ -23,4 +23,4 @@
 """The Density-Based Tools Module."""
 
 
-from chemtools.denstools.densitybased import *
+from chemtools.denstools.densbased import *

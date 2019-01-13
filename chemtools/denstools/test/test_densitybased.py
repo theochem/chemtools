@@ -25,7 +25,7 @@
 from numpy.testing import assert_raises
 import numpy as np
 from horton import IOData, BeckeMolGrid
-from chemtools.denstools.densitybased import DensityLocalTool
+from chemtools.denstools.densbased import DensityLocalTool
 from chemtools.toolbox.orbitalbased import OrbitalLocalTool
 from chemtools.utils.cube import CubeGen
 try:
