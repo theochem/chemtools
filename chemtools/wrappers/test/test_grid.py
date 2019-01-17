@@ -20,21 +20,25 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Test chemtools.utils.grid."""
+"""Test chemtools.wrappers.grid."""
 
 from unittest import TestCase
 
 import numpy as np
-from chemtools.utils.utils import context
+from horton import BeckeMolGrid
+from importlib_resources import path
+
 from chemtools.wrappers.grid import Grid
 from chemtools.wrappers.molecule import Molecule
-from horton import BeckeMolGrid
 
 
 class TestGrid(TestCase):
+    """Grid test class."""
+
     def setUp(self):
-        self.mol = Molecule.from_file(
-            context.get_fn("test/water_b3lyp_sto3g.fchk"))
+        """Set up function for all tests."""
+        with path('chemtools.data', 'water_b3lyp_sto3g.fchk') as file_path:
+            self.mol = Molecule.from_file(file_path)
         self.grid_mol = Grid(
             self.mol.coordinates,
             self.mol.numbers,
@@ -42,17 +46,18 @@ class TestGrid(TestCase):
             random_rotate=False)
 
     def test_string_init(self):
+        """Test Grid object initialization."""
         grid = Grid(
             self.mol.coordinates,
             self.mol.numbers,
             self.mol.pseudo_numbers,
             grid_type='exp:1e-5:20:40:50')
-        assert grid._grid_type is None
+        # assert grid._grid_type is None
         assert grid.rrad == 40
         assert grid.rpoint == 50
 
     def test_init(self):
-        # check initial values and attributs
+        """Check initial values and attributs."""
         assert isinstance(self.grid_mol, Grid)
         assert np.allclose(self.grid_mol._coordinates, self.mol.coordinates)
         assert np.allclose(self.grid_mol._numbers, self.mol.numbers)
@@ -65,7 +70,7 @@ class TestGrid(TestCase):
         assert self.grid_mol._mode == "discard"
 
     def test_error_type(self):
-        # invalid string format
+        """Check invalid string format."""
         with self.assertRaises(ValueError):
             self.grid_mol.grid_type = 'linear:1e-5:2e1:120'
         with self.assertRaises(ValueError):
@@ -81,8 +86,11 @@ class TestGrid(TestCase):
             self.grid_mol.rpoint = 120.
         with self.assertRaises(ValueError):
             self.grid_mol.rpoint = 119
+        with self.assertRaises(TypeError):
+            self.grid_mol.rrange = ('start', 'end')
 
     def test_switching_format(self):
+        """Change grid format between two styles."""
         # set grid with string
         ref_grid = 'linear:1e-5:2e1:120:110'
         self.grid_mol.grid_type = ref_grid
@@ -93,22 +101,32 @@ class TestGrid(TestCase):
         assert float(contents[2]) == 20
         assert int(contents[3]) == 120
         assert int(contents[4]) == 110
-        assert self.grid_mol._grid_type is None
-        assert self.grid_mol._custom_type[0] == 'linear'
-        assert self.grid_mol._custom_type[1] == 1e-5
-        assert self.grid_mol._custom_type[2] == 20
-        assert self.grid_mol._custom_type[3] == 120
-        assert self.grid_mol._custom_type[4] == 110
+        # assert self.grid_mol._grid_type is None
+        assert self.grid_mol.rname == 'linear'
+        assert np.allclose(self.grid_mol.rrange, (1e-5, 20))
+        assert self.grid_mol.rrad == 120
+        assert self.grid_mol.rpoint == 110
 
         # switch back to test grid
         self.grid_mol.grid_type = 'fine'
         assert self.grid_mol.grid_type == 'fine'
         self.grid_mol.rname = 'exp'
         self.grid_mol.rrange = [0.0005, 20]
-        assert self.grid_mol._grid_type is None
+        # test not have enough info for generate a grid
+        with self.assertRaises(ValueError):
+            grid = self.grid_mol.grid
+        self.grid_mol.rrad = 40
+        self.grid_mol.rpoint = 50
+
+        # compare two grids
+        grid = self.grid_mol.grid
+        ref_grid = Grid.from_molecule(self.mol, 'exp:5e-4:2e1:40:50').grid
+        assert np.array_equal(grid.points, ref_grid.points)
+        assert np.array_equal(grid.weights, ref_grid.weights)
+        # assert self.grid_mol._grid_type is None
 
     def test_form_grid(self):
-        # compare generate the same grid.
+        """Generate the same grid."""
         gene_grid = self.grid_mol.grid
         ref_grid = BeckeMolGrid(
             self.mol.coordinates,
@@ -156,3 +174,16 @@ class TestGrid(TestCase):
             random_rotate=False)
         assert np.array_equal(gene_grid.points, ref_grid.points)
         assert np.array_equal(gene_grid.weights, ref_grid.weights)
+
+    def test_grid_from_molecule(self):
+        """Test from_molecule generate the same grid."""
+        ref_grid = Grid.from_molecule(self.mol).grid
+        gene_grid = self.grid_mol.grid
+        assert np.array_equal(gene_grid.points, ref_grid.points)
+        assert np.array_equal(gene_grid.weights, ref_grid.weights)
+
+        # set to wrong mode
+        with self.assertRaises(ValueError):
+            Grid.from_molecule(self.mol, mode='random')
+        with self.assertRaises(TypeError):
+            Grid.from_molecule('random')
