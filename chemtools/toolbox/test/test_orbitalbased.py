@@ -55,16 +55,6 @@ def test_orbital_based_raises():
 
 def check_orbital_based_properties(tool, data):
     """Test OrbitalLocalTool against stored data arrays."""
-    # check density & gradient
-    assert_array_almost_equal(tool.density, data["density"], decimal=6)
-    assert_array_almost_equal(tool.gradient, data["gradient"], decimal=6)
-    # check kinetic energy density
-    result = tool.kinetic_energy_density_weizsacker
-    assert_array_almost_equal(result, data["ke_weizsacker"], decimal=6)
-    result = tool.kinetic_energy_density_thomas_fermi
-    assert_allclose(result, data["ke_thomas_fermi"], rtol=1e-08, atol=1e-08)
-    result = tool.kinetic_energy_density
-    assert_array_almost_equal(result, data["ke_positive_definite"], decimal=6)
     # check spin chemical potential at T=25000K
     result = tool.compute_spin_chemical_potential(25000.0)
     assert_array_almost_equal(result, data["spin_mu_temp_25000"], decimal=6)
@@ -238,22 +228,11 @@ def test_orbital_based_h2o_b3lyp_sto3g():
     assert_array_almost_equal(result, [0.10821228040, 0.10821228040], decimal=6)
 
 
-def test_orbital_based_from_file_elf_h2o_dimer():
-    # load data computed with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-    with path("chemtools.data", "data_elf_nciplot_h2o_dimer_pbe_sto3g.npz") as filename:
-        data = np.load(str(filename))
-    # test from_file initialization & check ELF
-    with path("chemtools.data", "h2o_dimer_pbe_sto3g.fchk") as filename:
-        tool = OrbitalLocalTool.from_file(filename, data["points"])
-    assert_array_almost_equal(tool.electron_localization_function, data["elf"], decimal=5)
-
-
-def test_orbital_based_from_molecule_elf_h2o_dimer():
-    # load data computed with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-    with path("chemtools.data", "data_elf_nciplot_h2o_dimer_pbe_sto3g.npz") as filename:
-        data = np.load(str(filename))
-    # test from_molecule initialization & check ELF
-    with path("chemtools.data", "h2o_dimer_pbe_sto3g.fchk") as filename:
-        molecule = Molecule.from_file(filename)
-    tool = OrbitalLocalTool(molecule, data["points"])
-    assert_array_almost_equal(tool.electron_localization_function, data["elf"], decimal=5)
+# def test_orbital_based_from_file_elf_h2o_dimer():
+#     # load data computed with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
+#     with path("chemtools.data", "data_elf_nciplot_h2o_dimer_pbe_sto3g.npz") as filename:
+#         data = np.load(str(filename))
+#     # test from_file initialization & check ELF
+#     with path("chemtools.data", "h2o_dimer_pbe_sto3g.fchk") as filename:
+#         tool = OrbitalLocalTool.from_file(filename, data["points"])
+#     assert_array_almost_equal(tool.electron_localization_function, data["elf"], decimal=5)

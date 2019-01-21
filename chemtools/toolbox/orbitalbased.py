@@ -29,13 +29,12 @@ import numpy as np
 from scipy.optimize import bisect
 
 from chemtools.wrappers.molecule import Molecule
-from chemtools.denstools.densbased import DensityLocalTool
 
 
 __all__ = ["OrbitalLocalTool"]
 
 
-class OrbitalLocalTool(DensityLocalTool):
+class OrbitalLocalTool(object):
     """Class of orbital-based descriptive tools."""
 
     def __init__(self, molecule, points):
@@ -56,11 +55,7 @@ class OrbitalLocalTool(DensityLocalTool):
         # boltzmann constant in hartree/kelvin
         self._kb = 3.1668144e-6
         # compute density, gradient, hessian & kinetic energy density on grid
-        dens = self._molecule.compute_density(self._points)
-        grad = self._molecule.compute_gradient(self._points)
-        # hess = self._molecule.compute_hessian(self._points)
-        ke = self._molecule.compute_kinetic_energy_density(self._points)
-        super(OrbitalLocalTool, self).__init__(dens, grad, None, ke)
+        self._density = self._molecule.compute_density(self._points)
 
     @classmethod
     def from_file(cls, filename, points):
@@ -117,8 +112,8 @@ class OrbitalLocalTool(DensityLocalTool):
         ip_a = self.compute_orbital_expression(index, spin="alpha")**2
         ip_b = self.compute_orbital_expression(index, spin="beta")**2
         # compute local ionization potential of alpha and beta orbitals
-        ip_a = np.dot(occ_a * energy_a, ip_a.T) / self.density
-        ip_b = np.dot(occ_b * energy_b, ip_b.T) / self.density
+        ip_a = np.dot(occ_a * energy_a, ip_a.T) / self._density
+        ip_b = np.dot(occ_b * energy_b, ip_b.T) / self._density
         return ip_a, ip_b
 
     def compute_spin_chemical_potential(self, temperature, maxiter=500, tolerance=1.e-12):

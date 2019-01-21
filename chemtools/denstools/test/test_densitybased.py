@@ -22,16 +22,18 @@
 # --
 """Test chemtools.toolbox.densitybased."""
 
+
 from numpy.testing import assert_raises
 import numpy as np
-from horton import IOData, BeckeMolGrid
+from horton import BeckeMolGrid
+from chemtools.wrappers.molecule import Molecule
 from chemtools.denstools.densbased import DensityLocalTool
-from chemtools.toolbox.orbitalbased import OrbitalLocalTool
 from chemtools.utils.cube import CubeGen
 try:
     from importlib_resources import path
 except ImportError:
     from importlib.resources import path
+
 
 def test_density_local_tool():
     # fake density, gradient and Hessian arrays
@@ -87,7 +89,7 @@ def test_density_local_tool():
 
 def test_density_local_tool_electrostatic_potential():
     with path('chemtools.data', 'water_b3lyp_sto3g.fchk') as file_path:
-        mol = IOData.from_file(str(file_path))
+        mol = Molecule.from_file(str(file_path))
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                         agspec='coarse', random_rotate=False, mode='keep')
 
@@ -99,10 +101,9 @@ def test_density_local_tool_electrostatic_potential():
     sh = np.array([3, 3, 3])
     cube = CubeGen(mol.numbers, mol.pseudo_numbers, mol.coordinates, ori, ax, sh)
 
-    orb = OrbitalLocalTool.from_file(str(file_path), grid.points)
-
     # build a density local model
-    model = DensityLocalTool(orb.density, orb.gradient)
+    mol = Molecule.from_file(str(file_path))
+    model = DensityLocalTool(mol.compute_density(grid.points), mol.compute_gradient(grid.points))
 
     # mep results obtained from Fortran code:
     expected = np.array([-0.01239766, -0.02982537, -0.02201149,   -0.01787292, -0.05682143,
