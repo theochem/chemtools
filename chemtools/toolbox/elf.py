@@ -34,7 +34,27 @@ __all__ = ['ELF']
 
 
 class ELF(object):
-    """Electron Localization Function (ELF) Class."""
+    r"""Electron Localization Function (ELF) Class.
+
+    Introduced by Becke and Edgecombe:
+
+    .. math::
+       ELF (\mathbf{r}) =
+            \frac{1}{\left( 1 + \left(\frac{D_{\sigma}(\mathbf{r})}
+            {D_{\sigma}^0 (\mathbf{r})} \right)^2\right)}
+
+    with XXX, XXX, and positive definite kinetic energy density defined as, respectively,
+
+    .. math::
+        D_{\sigma} (\mathbf{r}) &= \tau_{\sigma} (\mathbf{r}) -
+           \frac{1}{4} \frac{(\nabla \rho_{\sigma})^2}{\rho_{\sigma}}
+
+       D_{\sigma}^0 (\mathbf{r}) &=
+          \frac{3}{5} (6 \pi^2)^{2/3} \rho_{\sigma}^{5/3} (\mathbf{r})
+
+       \tau_{\sigma} (\mathbf{r}) =
+             \sum_i^{\sigma} \lvert \nabla \phi_i (\mathbf{r}) \rvert^2
+    """
 
     def __init__(self, dens, grad, kin, grid):
         """
@@ -46,13 +66,14 @@ class ELF(object):
         kin
         grid
         """
-        if dens.shape != (grid.npoints,):
-            raise ValueError("Arguments dens should have the same size as grid.npoints!")
-        if grad.shape != (grid.npoints, 3):
-            raise ValueError("Arguments grad should have the same size as grid.npoints!")
-        if kin.shape != (grid.shape,):
-            raise ValueError("Arguments kin should have the same size as grid.npoints!")
+        # if dens.shape != (grid.npoints,):
+        #     raise ValueError("Arguments dens should have the same size as grid.npoints!")
+        # if grad.shape != (grid.npoints, 3):
+        #     raise ValueError("Arguments grad should have the same size as grid.npoints!")
+        # if kin.shape != (grid.shape,):
+        #     raise ValueError("Arguments kin should have the same size as grid.npoints!")
         self._vals = DensityLocalTool(dens, grad, None, kin).electron_localization_function
+        self._dens = dens
         self._grid = grid
         self._basins = None
         self._topology = None
@@ -67,7 +88,7 @@ class ELF(object):
             Path to molecule's files.
         spin
         index
-        grid : instance of `CubeGen`, default=None
+        grid : instance of `CubeGen`, optional
             Cubic grid used for calculating and visualizing the NCI.
             If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
         """
@@ -85,35 +106,40 @@ class ELF(object):
         index
         grid
         """
-        # Generate or check cubic grid
+        # generate cubic grid or check grid
         if grid is None:
-            cube = CubeGen.from_molecule(molecule.numbers, molecule.pseudo_numbers,
+            grid = CubeGen.from_molecule(molecule.numbers, molecule.pseudo_numbers,
                                          molecule.coordinates, spacing=0.1, threshold=5.0)
         elif not hasattr(grid, 'points'):
             raise ValueError('Argument grid should have "points" attribute!')
 
-        # Compute density, gradient & kinetic energy density on cubic grid
-        dens = molecule.compute_density(cube.points, spin=spin, index=index)
-        grad = molecule.compute_gradient(cube.points, spin=spin, index=index)
-        kin = molecule.compute_kinetic_energy_density(cube.points, spin=spin, index=index)
+        # compute density, gradient & kinetic energy density on grid
+        dens = molecule.compute_density(grid.points, spin=spin, index=index)
+        grad = molecule.compute_gradient(grid.points, spin=spin, index=index)
+        kin = molecule.compute_kinetic_energy_density(grid.points, spin=spin, index=index)
 
-        return cls(dens, grad, kin, cube)
+        return cls(dens, grad, kin, grid)
+
+    @property
+    def density(self):
+        r"""Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on grid points."""
+        return self._dens
 
     @property
     def values(self):
-        """Electron Localization Function (ELF) evaluated on grid points."""
+        """Electron localization function :math:`ELF(\mathbf{r})` evaluated on grid points."""
         return self._vals
 
     @property
     def basins(self):
-        """Electron Localization Function (ELF) basin values of grid points."""
+        """Electron localization function basin values of grid points."""
         if not self._basins:
             self._basins = self._compute_basins()
         return self._basins
 
     @property
     def topology(self):
-        """Electron Localization Function (ELF) topology."""
+        """Electron localization function topology."""
         if not self._topology:
             self._topology = self._compute_topology()
         return self._topology
