@@ -21,11 +21,7 @@
 #
 # --
 # pragma pylint: disable=wrong-import-position
-"""Module for Non-Covalent Interactions (NCI) analysis of Quantum Chemistry Output Files.
-
-This modules contains wrappers which take outputs of quantum chemistry software and
-computes the Non-Covalent Interactions.
-"""
+"""Module for Non-Covalent Interactions (NCI) analysis of Quantum Chemistry Output Files."""
 
 
 import numpy as np
@@ -45,10 +41,10 @@ __all__ = ['NCI']
 
 
 class NCI(object):
-    """Class for the Non-Covalent Interactions (NCI)."""
+    """Non-Covalent Interactions (NCI) Class."""
 
     def __init__(self, density, rdgradient, cube, hessian=None):
-        """Initialize class using density, Reduced density gradient and `CubeGen` instance.
+        """Initialize class using density, reduced density gradient and `CubeGen` instance.
 
         Parameters
         ----------
@@ -56,10 +52,10 @@ class NCI(object):
             Density evaluated on grid points of `cube`.
         rdgradient : np.array
             Reduced density gradient evaluated on grid points of `cube`
-        cube : instance of `CubeGen`, default=None
+        cube : instance of `CubeGen`, optional
             Cubic grid used for calculating and visualizing the NCI.
             If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
-        hessian : np.array, default=None
+        hessian : np.array, optional
             Hessian of density evaluated on grid points of `cube`. This is a array with shape
             (n, 6) where n is the number of grid points of `cube`.
         """
@@ -75,17 +71,17 @@ class NCI(object):
                 raise ValueError('Shape of hessian argument {0} does not match expected ({1}, 6)'
                                  ' shape.'.format(hessian.shape, len(cube.points)))
 
-            # Convert the (n, 6) shape to (n, 3, 3) to calculate eigenvalues.
+            # convert the (n, 6) shape to (n, 3, 3) to calculate eigenvalues.
             hestri = np.zeros((len(cube.points), 3, 3))
             tmp = np.zeros((3, 3))
             for i in range(0, len(cube.points)):
                 tmp[np.triu_indices(3)] = hessian[i, :]
                 hestri[i, :] = tmp
 
-            # Compute hessian and its eigenvalues on cubuc grid
+            # compute hessian and its eigenvalues on cubic grid
             eigvalues = np.linalg.eigvalsh(hestri, UPLO='U')
 
-            # Use sign of second eigenvalue to distinguish interaction types
+            # use sign of second eigenvalue to distinguish interaction types
             sdens = np.sign(eigvalues[:, 1]) * density
 
             self._signed_density = sdens
@@ -107,7 +103,7 @@ class NCI(object):
         ----------
         filename : str
             Path to molecule's files.
-        cube : instance of `CubeGen`, default=None
+        cube : instance of `CubeGen`, optional
             Cubic grid used for calculating and visualizing the NCI.
             If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
         """
@@ -122,27 +118,22 @@ class NCI(object):
         ----------
         molecule : ``Molecule``
             Instance of ``Molecule``.
-        cube : instance of `CubeGen`, default=None
+        cube : instance of `CubeGen`, optional
             Cubic grid used for calculating and visualizing the NCI.
             If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
         """
-        # Generate or check cubic grid
+        # generate or check cubic grid
         if cube is None:
             cube = CubeGen.from_molecule(molecule.numbers, molecule.pseudo_numbers,
                                          molecule.coordinates, spacing=0.1, threshold=2.0)
         elif not isinstance(cube, CubeGen):
             raise ValueError('Argument cube should be an instance of CubeGen!')
-
-        # Compute density & gradient on cubic grid
+        # compute density, gradient & hessian on cubic grid
         dens = molecule.compute_density(cube.points)
         grad = molecule.compute_gradient(cube.points)
-        # Compute hessian on cubic grid
         hess = molecule.compute_hessian(cube.points)
-
-        # initialize DensityLocalTool & compute reduced gradient
-        temp = DensityLocalTool(dens, grad)
-        rdgrad = temp.reduced_density_gradient
-
+        # compute reduced gradient
+        rdgrad = DensityLocalTool(dens, grad).reduced_density_gradient
         return cls(dens, rdgrad, cube, hessian=hess)
 
     @property
@@ -157,7 +148,7 @@ class NCI(object):
 
     @property
     def eigvalues(self):
-        r"""The eigenvalues of Hessian."""
+        r"""Eigenvalues of Hessian."""
         return self._eigvalues
 
     def plot(self, filename, color='b'):
@@ -185,7 +176,7 @@ class NCI(object):
             - 'rgba' (Raw RGBA bitmap)
             - 'pdf' (Portable Document Format)
 
-        color : str, default='b'
+        color : str, optional
             Color of plot. Default is blue specified with 'b'.
             For details on specifying colors, please refer to
             http://matplotlib.org/users/colors.html
@@ -223,9 +214,9 @@ class NCI(object):
         ----------
         filename : str
             Name of generated cube files and vmd script.
-        isosurf : float, default=0.5
+        isosurf : float, optional
             Value of reduced density gradient (RDG) iso-surface used in VMD script.
-        denscut : float, default=0.05
+        denscut : float, optional
             Density cutoff used in creating reduced density gradient cube file.
             Similar to NCIPlot program, reduced density gradient of points with
             density > denscut will be set to 100.0 to display reduced density gradient
@@ -236,13 +227,14 @@ class NCI(object):
         ----
         The generated cube files and script imitate the NCIPlot software version 1.0.
         """
-        # Similar to NCIPlot program, reduced density gradient of points with
+        # similar to NCIPlot program, reduced density gradient of points with
         # density > cutoff will be set to 100.0 before generating cube file to
         # display reduced density gradient iso-surface subject to the constraint
         # of low density, i.e. density < denscut.
         cutrdg = np.array(self._rdgrad, copy=True)
         cutrdg[abs(self._density) > denscut] = 100.0
-        # Similar to NCIPlot program, sign(hessian second eigenvalue)*density is
+
+        # similar to NCIPlot program, sign(hessian second eigenvalue)*density is
         # multiplied by 100.0 before generating cube file used for coloring the
         # reduced density gradient iso-surface.
         if self._signed_density is not None:
@@ -250,12 +242,12 @@ class NCI(object):
         else:
             dens = 100.0 * self._density
 
-        # Name of output files:
+        # name of output files
         densfile = filename + '-dens.cube'    # density cube file
-        rdgfile = filename + '-grad.cube'    # reduced density gradient cube file
-        vmdfile = filename + '.vmd'          # vmd script file
-        # Dump density & reduced density gradient cube files
+        rdgfile = filename + '-grad.cube'     # reduced density gradient cube file
+        vmdfile = filename + '.vmd'           # vmd script file
+        # dump density & reduced density gradient cube files
         self._cube.dump_cube(densfile, dens)
         self._cube.dump_cube(rdgfile, cutrdg)
-        # Make VMD scripts for visualization
+        # write VMD scripts
         print_vmd_script_nci(vmdfile, densfile, rdgfile, isosurf, denscut * 100.0)
