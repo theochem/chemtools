@@ -20,12 +20,17 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""The Toolbox Module."""
+"""Test chemtools.analysis.elf."""
 
 
-from chemtools.toolbox.utils import *
-from chemtools.toolbox.conceptual import *
-from chemtools.toolbox.nci import *
-from chemtools.toolbox.elf import *
-from chemtools.toolbox.kinetic import *
-from chemtools.toolbox.orbitalbased import *
+from chemtools.toolbox.elf import ELF
+try:
+    from importlib_resources import path
+except ImportError:
+    from importlib.resources import path
+
+
+def test_h2o_b3lyp_sto3g_elf():
+    with path('chemtools.data', 'water_b3lyp_sto3g.fchk') as file_path:
+        elf = ELF.from_file(file_path)
+    elf.dump_isosurface_files('h2o', isosurf=0.8)
