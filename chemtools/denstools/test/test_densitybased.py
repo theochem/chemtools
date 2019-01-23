@@ -27,7 +27,7 @@ from numpy.testing import assert_raises
 import numpy as np
 from horton import BeckeMolGrid
 from chemtools.wrappers.molecule import Molecule
-from chemtools.denstools.densbased import DensityLocalTool
+from chemtools.denstools.densbased import DensityBasedTool
 from chemtools.utils.cube import CubeGen
 try:
     from importlib_resources import path
@@ -51,7 +51,7 @@ def test_density_local_tool():
     l = np.array([1.5, 0.0, -0.4, 1.0, -1.75])
 
     # build a density local model
-    model = DensityLocalTool(d, g, l, kin=None)
+    model = DensityBasedTool(d, g, l, kin=None)
     # check density and gradient
     np.testing.assert_almost_equal(model.density, d, decimal=6)
     np.testing.assert_almost_equal(model.gradient, g, decimal=6)
@@ -71,9 +71,9 @@ def test_density_local_tool():
     np.testing.assert_almost_equal(model.kinetic_energy_density_thomas_fermi, expected, decimal=6)
 
     # check ValueError
-    assert_raises(ValueError, DensityLocalTool, np.array([[0.], [0.]]), g)
-    assert_raises(ValueError, DensityLocalTool, d, np.array([0.]))
-    assert_raises(ValueError, DensityLocalTool, d, g, lap=np.array([0.]))
+    assert_raises(ValueError, DensityBasedTool, np.array([[0.], [0.]]), g)
+    assert_raises(ValueError, DensityBasedTool, d, np.array([0.]))
+    assert_raises(ValueError, DensityBasedTool, d, g, lap=np.array([0.]))
 
 
 def test_density_local_tool_electrostatic_potential():
@@ -92,7 +92,7 @@ def test_density_local_tool_electrostatic_potential():
 
     # build a density local model
     mol = Molecule.from_file(str(file_path))
-    model = DensityLocalTool(mol.compute_density(grid.points), mol.compute_gradient(grid.points))
+    model = DensityBasedTool(mol.compute_density(grid.points), mol.compute_gradient(grid.points))
 
     # mep results obtained from Fortran code:
     expected = np.array([-0.01239766, -0.02982537, -0.02201149,   -0.01787292, -0.05682143,

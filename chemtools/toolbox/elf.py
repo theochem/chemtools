@@ -26,7 +26,7 @@
 
 from chemtools.utils.cube import CubeGen
 from chemtools.wrappers.molecule import Molecule
-from chemtools.denstools.densbased import DensityLocalTool
+from chemtools.denstools.densbased import DensityBasedTool
 from chemtools.outputs import print_vmd_script_isosurface
 
 
@@ -72,7 +72,7 @@ class ELF(object):
         #     raise ValueError("Arguments grad should have the same size as grid.npoints!")
         # if kin.shape != (grid.shape,):
         #     raise ValueError("Arguments kin should have the same size as grid.npoints!")
-        self._vals = DensityLocalTool(dens, grad, None, kin).electron_localization_function
+        self._vals = DensityBasedTool(dens, grad, None, kin).electron_localization_function
         self._dens = dens
         self._grid = grid
         self._basins = None

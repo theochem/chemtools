@@ -27,7 +27,7 @@
 import numpy as np
 
 from chemtools.wrappers.molecule import Molecule
-from chemtools.denstools.densbased import DensityLocalTool
+from chemtools.denstools.densbased import DensityBasedTool
 
 
 class KineticEnergyDensity(object):
@@ -55,7 +55,7 @@ class KineticEnergyDensity(object):
         grad = molecule.compute_gradient(self._points, spin, index)
         ke = molecule.compute_kinetic_energy_density(self._points, spin, index)
         # initialize density-based tools class
-        self._denstools = DensityLocalTool(dens, grad, None, ke)
+        self._denstools = DensityBasedTool(dens, grad, None, ke)
 
     @classmethod
     def from_file(cls, filename, points, spin="ab", index=None):
