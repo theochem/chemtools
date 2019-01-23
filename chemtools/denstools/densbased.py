@@ -33,38 +33,37 @@ __all__ = ['DensityLocalTool']
 class DensityLocalTool(object):
     """Class of density-based local descriptive tools."""
 
-    def __init__(self, density, gradient, hessian=None, ke=None):
+    def __init__(self, dens, grad, lap=None, kin=None):
         """Initialize class with density and gradient.
 
         Parameters
         ----------
-        density : np.ndarray
-            Electron density of the system evaluated on a grid
-        gradient : np.ndarray
-            Gradient vector of electron density evaluated on a grid
-        hessian : np.ndarray, optional
-            Hessian matrix of electron density evaluated on a grid
-        ke : np.ndarray, optional
-            Kinetic energy density on a grid.
+        dens : np.ndarray
+            Electron density evaluated on a set of grid points.
+        grad : np.ndarray
+            Gradient vector of electron density evaluated on a set of grid points.
+        lap : np.ndarray, optional
+            Laplacian of electron density evaluated on a set of grid points.
+        kin : np.ndarray, optional
+            Kinetic energy density evaluated on a set of grid points.
         """
-        if density.ndim != 1:
+        if dens.ndim != 1:
             raise ValueError('Argument density should be a 1-dimensional array.')
-        if gradient.shape != (density.size, 3):
-            raise ValueError('Argument gradient should have same shape as density array.' +
-                             ' {0}!={1}'.format(gradient.shape, density.shape))
-        if hessian is not None and hessian.shape != (density.size, 3, 3):
-            raise ValueError('Argument hessian\'s shape is not consistent with the density array.' +
-                             ' {0}!={1}'.format(hessian.shape, (density.size, 3, 3)))
-
-        self._density = density
-        self._gradient = gradient
-        self._hessian = hessian
-        self._ke = ke
+        if grad.shape != (dens.size, 3):
+            raise ValueError('Argument gradient should have same shape as dens array.' +
+                             ' {0}!={1}'.format(grad.shape, dens.shape))
+        if lap is not None and lap.shape != dens.shape:
+            raise ValueError('Argument laplacian should have same shape as dens array.' +
+                             ' {0}!={1}'.format(lap.shape, dens.shape))
+        self._dens = dens
+        self._grad = grad
+        self._lap = lap
+        self._kin = kin
 
     @property
     def density(self):
         r"""Electron density :math:`\rho\left(\mathbf{r}\right)`."""
-        return self._density
+        return self._dens
 
     @property
     def gradient(self):
@@ -78,16 +77,7 @@ class DensityLocalTool(object):
             \left(\frac{\partial}{\partial x}\mathbf{i}, \frac{\partial}{\partial y}\mathbf{j},
                   \frac{\partial}{\partial z}\mathbf{k}\right) \rho\left(\mathbf{r}\right)
         """
-        return self._gradient
-
-    @property
-    def hessian(self):
-        r"""Hessian of electron density :math:`\nabla^2 \rho\left(\mathbf{r}\right)`.
-
-        This is the second-order partial derivatives of electron density w.r.t coordinate
-        :math:`\mathbf{r} = \left(x\mathbf{i}, y\mathbf{j}, z\mathbf{k}\right)`.
-        """
-        return self._hessian
+        return self._grad
 
     @property
     def kinetic_energy_density(self):
@@ -97,15 +87,14 @@ class DensityLocalTool(object):
            \tau \left(\mathbf{r}\right) =
            \sum_i^N n_i \frac{1}{2} \rvert \nabla \phi_i \left(\mathbf{r}\right) \lvert^2
         """
-        return self._ke
+        return self._kin
 
     @property
     def laplacian(self):
-        r"""Laplacian of electron density.
+        r"""Laplacian of electron density :math:`\nabla ^2 \rho\left(\mathbf{r}\right)`.
 
-        Laplacian of electron density :math:`\nabla ^2 \rho\left(\mathbf{r}\right)` defined
-        as the trace of Hessian matrix of electron density which is equal to the sum of
-        :math:`\left(\lambda_1, \lambda_2, \lambda_3\right)` eigen-values of Hessian matrix,
+        This is defined as the trace of Hessian matrix of electron density which is equal to
+        the sum of its :math:`\left(\lambda_1, \lambda_2, \lambda_3\right)` eigen-values:
 
         .. math::
            \nabla^2 \rho\left(\mathbf{r}\right) = \nabla\cdot\nabla\rho\left(\mathbf{r}\right) =
@@ -114,14 +103,13 @@ class DensityLocalTool(object):
                      \frac{\partial^2\rho\left(\mathbf{r}\right)}{\partial z^2} =
                      \lambda_1 + \lambda_2 + \lambda_3
         """
-        if self._hessian is not None:
-            return np.trace(self._hessian, axis1=1, axis2=2)
+        return self._lap
 
     @property
     def shannon_information(self):
         r"""Shannon information defined as :math:`\rho(r) \ln \rho(r)`."""
         # masking might be needed
-        value = self._density * np.log(self._density)
+        value = self._dens * np.log(self._dens)
         return value
 
     @property
@@ -134,7 +122,7 @@ class DensityLocalTool(object):
                   \left(\frac{\partial\rho\left(\mathbf{r}\right)}{\partial y}\right)^2 +
                   \left(\frac{\partial\rho\left(\mathbf{r}\right)}{\partial z}\right)^2 }
         """
-        norm = np.linalg.norm(self._gradient, axis=1)
+        norm = np.linalg.norm(self._grad, axis=1)
         return norm
 
     @property
@@ -146,7 +134,7 @@ class DensityLocalTool(object):
            \frac{\lvert \nabla\rho\left(\mathbf{r}\right) \rvert}{\rho\left(\mathbf{r}\right)^{4/3}}
         """
         # Mask density values less than 1.0d-30 to avoid diving by zero
-        mdens = np.ma.masked_less(self._density, 1.0e-30)
+        mdens = np.ma.masked_less(self._dens, 1.0e-30)
         mdens.filled(1.0e-30)
         # Compute reduced density gradient
         prefactor = 0.5 / (3.0 * np.pi**2)**(1.0 / 3.0)
@@ -162,7 +150,7 @@ class DensityLocalTool(object):
            \frac{\lvert \nabla\rho\left(\mathbf{r}\right) \rvert^2}{8 \rho\left(\mathbf{r}\right)}
         """
         # Mask density values less than 1.0d-30 to avoid diving by zero
-        mdens = np.ma.masked_less(self._density, 1.0e-30)
+        mdens = np.ma.masked_less(self._dens, 1.0e-30)
         mdens.filled(1.0e-30)
         # Compute Weizsacker kinetic energy
         kinetic = self.gradient_norm**2.0 / (8.0 * mdens)
@@ -178,7 +166,7 @@ class DensityLocalTool(object):
         """
         # Compute Thomas-Fermi kinetic energy
         prefactor = 0.3 * (3.0 * np.pi**2.0)**(2.0 / 3.0)
-        kinetic = prefactor * self._density**(5.0 / 3.0)
+        kinetic = prefactor * self._dens ** (5.0 / 3.0)
         return kinetic
 
     @property
@@ -235,12 +223,12 @@ class DensityLocalTool(object):
         if len(coordinates) != len(numbers):
             raise ValueError('Argument numbers & coordinates should have the same length. ' +
                              '{0}!={1}'.format(len(coordinates), len(numbers)))
-        if len(weights) != len(self._density):
+        if len(weights) != len(self._dens):
             raise ValueError('Argument int_weights & density should have the same shape. ' +
-                             '{0}!={1}'.format(weights.shape, self._density.shape))
-        if len(int_points) != len(self._density):
+                             '{0}!={1}'.format(weights.shape, self._dens.shape))
+        if len(int_points) != len(self._dens):
             raise ValueError('Argument int_points & density should have the same shape. ' +
-                             '{0}!={1}'.format(weights.shape, self._density.shape))
+                             '{0}!={1}'.format(weights.shape, self._dens.shape))
         if not(isinstance(points, np.ndarray) and len(points.shape) == 2 and points.shape[1] == 3):
             raise ValueError('Argument points should be a numpy array with shape of (n, 3)')
 
@@ -258,6 +246,6 @@ class DensityLocalTool(object):
             deltas = point - int_points
             distance = np.linalg.norm(deltas, axis=1)
             # avoid computing esp, if points are very close
-            esp[n] -= np.sum(self._density[distance > 1e-6] * weights / distance[distance > 1e-6])
+            esp[n] -= np.sum(self._dens[distance > 1e-6] * weights / distance[distance > 1e-6])
 
         return esp

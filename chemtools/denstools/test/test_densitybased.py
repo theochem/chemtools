@@ -43,14 +43,15 @@ def test_density_local_tool():
                   [-0.30, -0.50, -0.50],
                   [ 0.40,  0.40,  0.60],
                   [ 0.25, -0.10, -0.50]])
-    h = np.array([[[ 0.50,  0.50,  0.50], [ 0.50,  0.50,  0.50], [ 0.50,  0.50,  0.50]],
-                  [[ 0.35, -0.35,  0.40], [ 0.35, -0.50,  0.40], [ 0.35, -0.35,  0.15]],
-                  [[-0.30, -0.50, -0.50], [ 0.40,  0.40,  0.60], [ 0.25, -0.10, -0.50]],
-                  [[ 0.40,  0.40,  0.60], [ 0.00,  0.00,  0.00], [ 0.00, -1.50,  0.60]],
-                  [[ 0.25, -0.10, -0.50], [ 0.35, -1.50,  0.40], [ 0.45, -0.20, -0.50]]])
+    # h = np.array([[[ 0.50,  0.50,  0.50], [ 0.50,  0.50,  0.50], [ 0.50,  0.50,  0.50]],
+    #               [[ 0.35, -0.35,  0.40], [ 0.35, -0.50,  0.40], [ 0.35, -0.35,  0.15]],
+    #               [[-0.30, -0.50, -0.50], [ 0.40,  0.40,  0.60], [ 0.25, -0.10, -0.50]],
+    #               [[ 0.40,  0.40,  0.60], [ 0.00,  0.00,  0.00], [ 0.00, -1.50,  0.60]],
+    #               [[ 0.25, -0.10, -0.50], [ 0.35, -1.50,  0.40], [ 0.45, -0.20, -0.50]]])
+    l = np.array([1.5, 0.0, -0.4, 1.0, -1.75])
 
-    # build a density local model without hessian
-    model = DensityLocalTool(d, g)
+    # build a density local model
+    model = DensityLocalTool(d, g, l, kin=None)
     # check density and gradient
     np.testing.assert_almost_equal(model.density, d, decimal=6)
     np.testing.assert_almost_equal(model.gradient, g, decimal=6)
@@ -68,23 +69,11 @@ def test_density_local_tool():
     np.testing.assert_almost_equal(model.kinetic_energy_density_weizsacker, expected, decimal=6)
     expected = np.array([2.871234, 17.91722219, 41.97769574, 9.115599745, 73.5470608])
     np.testing.assert_almost_equal(model.kinetic_energy_density_thomas_fermi, expected, decimal=6)
-    # check hessian
-    assert model.hessian is None
-    # check laplacian
-    assert model.laplacian is None
-
-    # build a density local model with hessian
-    model = DensityLocalTool(d, g, h)
-    # check hessian
-    np.testing.assert_almost_equal(model.hessian, h, decimal=6)
-    # check laplacian
-    expected = np.array([1.5, 0.0, -0.4, 1.0, -1.75])
-    np.testing.assert_almost_equal(model.laplacian, expected, decimal=6)
 
     # check ValueError
     assert_raises(ValueError, DensityLocalTool, np.array([[0.], [0.]]), g)
     assert_raises(ValueError, DensityLocalTool, d, np.array([0.]))
-    assert_raises(ValueError, DensityLocalTool, d, g, hessian=np.array([0.]))
+    assert_raises(ValueError, DensityLocalTool, d, g, lap=np.array([0.]))
 
 
 def test_density_local_tool_electrostatic_potential():
