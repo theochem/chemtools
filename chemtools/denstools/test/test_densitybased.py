@@ -35,26 +35,35 @@ except ImportError:
     from importlib.resources import path
 
 
-def test_density_local_tool():
-    # fake density, gradient and Hessian arrays
+def test_densbased_raises():
+    # fake dens & grad arrays
     d = np.array([1.00, 3.00, 5.00, 2.00, 7.00])
     g = np.array([[ 0.50,  0.50,  0.50],
                   [ 0.35, -0.35,  0.40],
                   [-0.30, -0.50, -0.50],
                   [ 0.40,  0.40,  0.60],
                   [ 0.25, -0.10, -0.50]])
-    # h = np.array([[[ 0.50,  0.50,  0.50], [ 0.50,  0.50,  0.50], [ 0.50,  0.50,  0.50]],
-    #               [[ 0.35, -0.35,  0.40], [ 0.35, -0.50,  0.40], [ 0.35, -0.35,  0.15]],
-    #               [[-0.30, -0.50, -0.50], [ 0.40,  0.40,  0.60], [ 0.25, -0.10, -0.50]],
-    #               [[ 0.40,  0.40,  0.60], [ 0.00,  0.00,  0.00], [ 0.00, -1.50,  0.60]],
-    #               [[ 0.25, -0.10, -0.50], [ 0.35, -1.50,  0.40], [ 0.45, -0.20, -0.50]]])
-    l = np.array([1.5, 0.0, -0.4, 1.0, -1.75])
+    # check ValueError
+    assert_raises(ValueError, DensityBasedTool, np.array([[0.], [0.]]), g)
+    assert_raises(ValueError, DensityBasedTool, d, np.array([0.]))
+    assert_raises(ValueError, DensityBasedTool, d, g, lap=np.array([0.]))
 
-    # build a density local model
+
+def test_density_local_tool_fake():
+    # fake density, gradient and laplacian arrays
+    d = np.array([1.00, 3.00, 5.00, 2.00, 7.00])
+    g = np.array([[ 0.50,  0.50,  0.50],
+                  [ 0.35, -0.35,  0.40],
+                  [-0.30, -0.50, -0.50],
+                  [ 0.40,  0.40,  0.60],
+                  [ 0.25, -0.10, -0.50]])
+    l = np.array([1.5, 0.0, -0.4, 1.0, -1.75])
+    # build a model
     model = DensityBasedTool(d, g, l, kin=None)
-    # check density and gradient
+    # check attributes
     np.testing.assert_almost_equal(model.density, d, decimal=6)
     np.testing.assert_almost_equal(model.gradient, g, decimal=6)
+    np.testing.assert_almost_equal(model.laplacian, l, decimal=6)
     # check Shannon information
     expected = np.array([0.00000000, 3.29583687, 8.04718956, 1.38629436, 13.62137104])
     np.testing.assert_almost_equal(model.shannon_information, expected, decimal=6)
@@ -69,11 +78,6 @@ def test_density_local_tool():
     np.testing.assert_almost_equal(model.kinetic_energy_density_weizsacker, expected, decimal=6)
     expected = np.array([2.871234, 17.91722219, 41.97769574, 9.115599745, 73.5470608])
     np.testing.assert_almost_equal(model.kinetic_energy_density_thomas_fermi, expected, decimal=6)
-
-    # check ValueError
-    assert_raises(ValueError, DensityBasedTool, np.array([[0.], [0.]]), g)
-    assert_raises(ValueError, DensityBasedTool, d, np.array([0.]))
-    assert_raises(ValueError, DensityBasedTool, d, g, lap=np.array([0.]))
 
 
 def test_density_local_tool_electrostatic_potential():
@@ -91,7 +95,6 @@ def test_density_local_tool_electrostatic_potential():
     cube = CubeGen(mol.numbers, mol.pseudo_numbers, mol.coordinates, ori, ax, sh)
 
     # build a density local model
-    mol = Molecule.from_file(str(file_path))
     model = DensityBasedTool(mol.compute_density(grid.points), mol.compute_gradient(grid.points))
 
     # mep results obtained from Fortran code:
