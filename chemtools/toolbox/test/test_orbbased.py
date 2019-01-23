@@ -21,7 +21,7 @@
 #
 # --
 # pragma pylint: disable=invalid-name,bad-whitespace,bad-continuation
-"""Test chemtools.toolbox.orbitalbased."""
+"""Test chemtools.toolbox.orbbased."""
 
 
 import numpy as np
@@ -29,7 +29,7 @@ import numpy as np
 from numpy.testing import assert_raises, assert_array_almost_equal, assert_allclose
 
 from chemtools.wrappers.molecule import Molecule
-from chemtools.toolbox.orbitalbased import OrbitalLocalTool
+from chemtools.toolbox.orbbased import OrbitalLocalTool
 try:
     from importlib_resources import path
 except ImportError:
