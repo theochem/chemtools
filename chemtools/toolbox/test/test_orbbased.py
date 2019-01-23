@@ -226,13 +226,3 @@ def test_orbital_based_h2o_b3lyp_sto3g():
     # check spin chemical potential against manual calculation
     result = tool.compute_spin_chemical_potential(25000.0)
     assert_array_almost_equal(result, [0.10821228040, 0.10821228040], decimal=6)
-
-
-# def test_orbital_based_from_file_elf_h2o_dimer():
-#     # load data computed with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-#     with path("chemtools.data", "data_elf_nciplot_h2o_dimer_pbe_sto3g.npz") as filename:
-#         data = np.load(str(filename))
-#     # test from_file initialization & check ELF
-#     with path("chemtools.data", "h2o_dimer_pbe_sto3g.fchk") as filename:
-#         tool = OrbitalLocalTool.from_file(filename, data["points"])
-#     assert_array_almost_equal(tool.electron_localization_function, data["elf"], decimal=5)

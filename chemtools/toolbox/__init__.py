@@ -29,3 +29,4 @@ from chemtools.toolbox.nci import *
 from chemtools.toolbox.elf import *
 from chemtools.toolbox.kinetic import *
 from chemtools.toolbox.orbbased import *
+from chemtools.toolbox.densbased import *

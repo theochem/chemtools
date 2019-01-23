@@ -22,6 +22,7 @@
 # --
 """Wrapper Module."""
 
+
 import numpy as np
 from horton import IOData, DenseLinalgFactory
 
@@ -524,3 +525,21 @@ class Molecule(object):
             # include specified set of orbitals
             raise NotImplementedError()
         return output
+
+    def compute_megga(self, points, spin='ab', index=None):
+
+        # check points
+        if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
+            raise ValueError("Argument points should be a 2d-array with 3 columns.")
+        if not np.issubdtype(points.dtype, np.float64):
+            raise ValueError("Argument points should be a 2d-array of floats!")
+
+        # get density matrix corresponding to the specified spin
+        dm = self._get_density_matrix(spin)
+
+        # compute for the given set of orbitals
+        if index is None:
+            output = self._iodata.obasis.compute_grid_mgga_dm(dm, points)
+        else:
+            raise NotImplementedError()
+        return output[:, 0], output[:, 1:4], output[:, 4], output[:, 5]
