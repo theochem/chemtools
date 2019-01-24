@@ -31,7 +31,7 @@ import warnings
 __all__ = ["find_critical_pts", "poincare_hopf_relation"]
 
 
-class _TopologyInfo(object):
+class TopologyInfo(object):
     __slots__ = ["eigenvals", 'eigenvecs', "type", "poincare_hopf",
                  "critical_pts"]
 
@@ -117,11 +117,13 @@ def find_critical_pts(watershed_pts, maxima, grid_cont, grad_func, hessian,
     # TODO: Add vander wall radius
     # TODO: Why do I have the gradient is less than gradient of neighbours.
     options = {"maxfev": 10000, "factor": 0.5, "xtol": 1e-15}
-    topo = _TopologyInfo(len(maxima))
+    topo = TopologyInfo(len(maxima))
 
-    for i, wat_pt in enumerate(watershed_pts):
+    for _, wat_pt in enumerate(watershed_pts):
+        # obtain near by points value
         if _passes_critical_pt_conditions(wat_pt, grid_cont, grad_func, dens_cutoff):
             print("Cartesian pt ", wat_pt)
+            # solve nonlinear equation with scipy root
             rt = root(grad_func, wat_pt, jac=hessian, tol=1e-15, method="hybr",
                       options=options)
 
