@@ -169,34 +169,6 @@ class DensityBasedTool(object):
         kinetic = prefactor * self._dens ** (5.0 / 3.0)
         return kinetic
 
-    @property
-    def electron_localization_function(self):
-        r"""Electron Localization Function introduced by Becke and Edgecombe.
-
-        .. math::
-           ELF (\mathbf{r}) =
-                \frac{1}{\left( 1 + \left(\frac{D_{\sigma}(\mathbf{r})}
-                {D_{\sigma}^0 (\mathbf{r})} \right)^2\right)}
-
-        with XXX, XXX, and positive definite kinetic energy density defined as, respectively,
-
-        .. math::
-            D_{\sigma} (\mathbf{r}) &= \tau_{\sigma} (\mathbf{r}) -
-               \frac{1}{4} \frac{(\nabla \rho_{\sigma})^2}{\rho_{\sigma}}
-
-           D_{\sigma}^0 (\mathbf{r}) &=
-              \frac{3}{5} (6 \pi^2)^{2/3} \rho_{\sigma}^{5/3} (\mathbf{r})
-
-           \tau_{\sigma} (\mathbf{r}) =
-                 \sum_i^{\sigma} \lvert \nabla \phi_i (\mathbf{r}) \rvert^2
-        """
-        if self.kinetic_energy_density is not None:
-            elfd = self.kinetic_energy_density - self.kinetic_energy_density_weizsacker
-            tf = np.ma.masked_less(self.kinetic_energy_density_thomas_fermi, 1.0e-30)
-            tf.filled(1.0e-30)
-            elf = 1.0 / (1.0 + (elfd / tf)**2.0)
-            return elf
-
     def compute_electrostatic_potential(self, numbers, coordinates, weights, int_points, points):
         r"""Electrostatic potential.
 

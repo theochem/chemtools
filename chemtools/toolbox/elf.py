@@ -24,6 +24,8 @@
 """Module for Electron Localization Function (ELF) analysis of Quantum Chemistry Output Files."""
 
 
+from numpy.ma import masked_less
+
 from chemtools.utils.cube import CubeGen
 from chemtools.wrappers.molecule import Molecule
 from chemtools.denstools.densbased import DensityBasedTool
@@ -34,7 +36,7 @@ __all__ = ['ELF']
 
 
 class ELF(object):
-    r"""Electron Localization Function (ELF) Class.
+    r"""Electron Localization Function (ELF).
 
     Introduced by Becke and Edgecombe:
 
@@ -55,8 +57,7 @@ class ELF(object):
        \tau_{\sigma} (\mathbf{r}) =
              \sum_i^{\sigma} \lvert \nabla \phi_i (\mathbf{r}) \rvert^2
     """
-
-    def __init__(self, dens, grad, kin, grid):
+    def __init__(self, dens, grad, kin, grid=None):
         """
         Parameters
         ----------
@@ -72,9 +73,14 @@ class ELF(object):
         #     raise ValueError("Arguments grad should have the same size as grid.npoints!")
         # if kin.shape != (grid.shape,):
         #     raise ValueError("Arguments kin should have the same size as grid.npoints!")
-        self._vals = DensityBasedTool(dens, grad, None, kin).electron_localization_function
-        self._dens = dens
         self._grid = grid
+        self._denstool = DensityBasedTool(dens, grad, None, kin)
+        # compute elf value
+        self._vals = self._denstool.kinetic_energy_density
+        self._vals -= self._denstool.kinetic_energy_density_weizsacker
+        self._vals /= masked_less(self._denstool.kinetic_energy_density_thomas_fermi, 1.0e-30)
+        self._vals = 1.0 / (1.0 + self._vals**2.0)
+        # assign basins and topology attributes
         self._basins = None
         self._topology = None
 
@@ -123,7 +129,7 @@ class ELF(object):
     @property
     def density(self):
         r"""Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on grid points."""
-        return self._dens
+        return self._denstool.density
 
     @property
     def values(self):
