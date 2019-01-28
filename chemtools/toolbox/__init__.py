@@ -20,6 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+# pragma pylint: disable=wildcard-import
 """The Toolbox Module."""
 
 

@@ -30,6 +30,9 @@ from chemtools.wrappers.molecule import Molecule
 from chemtools.denstools.densbased import DensityBasedTool
 
 
+__all__ = ["KineticEnergyDensity"]
+
+
 class KineticEnergyDensity(object):
     """Kinetic Energy Density Class."""
 
@@ -77,6 +80,7 @@ class KineticEnergyDensity(object):
 
     @property
     def points(self):
+        """Coordinates of grid points."""
         return self._points
 
     @property

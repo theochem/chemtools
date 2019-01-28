@@ -127,7 +127,7 @@ class ELF(object):
 
     @property
     def values(self):
-        """Electron localization function :math:`ELF(\mathbf{r})` evaluated on grid points."""
+        r"""Electron localization function :math:`ELF(\mathbf{r})` evaluated on grid points."""
         return self._vals
 
     @property

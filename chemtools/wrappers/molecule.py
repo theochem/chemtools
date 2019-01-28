@@ -527,7 +527,26 @@ class Molecule(object):
         return output
 
     def compute_megga(self, points, spin='ab', index=None):
+        """Return electron density, gradient, laplacian & kinetic energy density.
 
+        Parameters
+        ----------
+        points : ndarray
+           The 2d-array containing the cartesian coordinates of points on which density is
+           evaluated. It has a shape (n, 3) where n is the number of points.
+        spin : str
+           The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
+           alpha and beta occupied spin orbitals) are used for computing the electron density.
+
+           - "a" or "alpha": consider alpha electrons
+           - "b" or "beta": consider beta electrons
+           - "ab": consider alpha and beta electrons
+
+        index : sequence
+           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
+           orbitals are each indexed from 1 to :attr:`nbasis`.
+           If ``None``, all occupied spin orbtails are included.
+        """
         # check points
         if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
             raise ValueError("Argument points should be a 2d-array with 3 columns.")
