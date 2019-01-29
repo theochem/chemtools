@@ -57,8 +57,10 @@ class ELF(object):
        \tau_{\sigma} (\mathbf{r}) =
              \sum_i^{\sigma} \lvert \nabla \phi_i (\mathbf{r}) \rvert^2
     """
+
     def __init__(self, dens, grad, kin, grid=None):
-        """
+        """Initialize ELF class.
+
         Parameters
         ----------
         dens : array_like

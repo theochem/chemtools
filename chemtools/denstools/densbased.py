@@ -50,10 +50,10 @@ class DensityBasedTool(object):
         if dens.ndim != 1:
             raise ValueError('Argument density should be a 1-dimensional array.')
         if grad.shape != (dens.size, 3):
-            raise ValueError('Argument gradient should have same shape as dens array.' +
+            raise ValueError('Argument gradient should have same shape as dens array.'
                              ' {0}!={1}'.format(grad.shape, dens.shape))
         if lap is not None and lap.shape != dens.shape:
-            raise ValueError('Argument laplacian should have same shape as dens array.' +
+            raise ValueError('Argument laplacian should have same shape as dens array.'
                              ' {0}!={1}'.format(lap.shape, dens.shape))
         self._dens = dens
         self._grad = grad
