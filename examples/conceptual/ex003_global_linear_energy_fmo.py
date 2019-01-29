@@ -9,12 +9,12 @@ EX3: Global Linear Reactivity Descriptors (FMO Approach)
 3. Compute linear energy model and its derivatives for various numbers of electrons.
 """
 
-from chemtools import GlobalConceptualDFT, context
+from chemtools import GlobalConceptualDFT
 
 # 1. Build linear energy model using FMO approach
 
 # path to molecule's fchk file
-file_path = context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk')
+file_path = '../data/examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'
 # build linear global conceptual DFT tool (one file is passed, so FMO approach is taken)
 tool = GlobalConceptualDFT.from_file(file_path, model='linear')
 

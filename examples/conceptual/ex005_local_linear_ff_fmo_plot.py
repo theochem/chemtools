@@ -1,7 +1,10 @@
 r"""
-=========================================
-EX5: Linear Fukui function (FMO Approach)
-=========================================
+========================================
+EX5: Linear Fukui Function (Frontier MO)
+========================================
+
+Compute linear Fukui function based on the linear energy model using
+frontier molecular orbital (FMO) approach.
 
 1. Make a Cubic grid for plotting Fukui functions.
 2. Build linear energy model for Formaldehyde, :math:`\mathbf{CH_2O}`,
@@ -10,9 +13,9 @@ EX5: Linear Fukui function (FMO Approach)
 4. Generate VMD (Visual Molecular Dynamics) scripts to plot Fukui function iso-surfaces.
 """
 
-from chemtools import LocalConceptualDFT, CubeGen, print_vmd_script_isosurface, context
+from chemtools import LocalConceptualDFT, CubeGen, print_vmd_script_isosurface
 
-file_path = context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk')
+file_path = '../data/examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'
 
 # 1. Make a Cubic grid for plotting Fukui functions.
 #    The cubic grid points are spaced by 0.2 a.u. & extending 5.0 a.u. on each side.

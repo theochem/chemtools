@@ -9,14 +9,14 @@ EX2: Global Quadratic Reactivity Descriptors (FD Approach)
 3. Compute quadratic energy model and its derivatives for various numbers of electrons.
 """
 
-from chemtools import GlobalConceptualDFT, context
+from chemtools import GlobalConceptualDFT
 
 # 1. Build quadratic energy model
 
 # make list of path to 3 molecule's fchk files used in finite difference approach
-file_path = [context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'),
-             context.get_fn('examples/ch2o_q+1_ub3lyp_augccpvtz.fchk'),
-             context.get_fn('examples/ch2o_q-1_ub3lyp_augccpvtz.fchk')]
+file_path = ['../data/examples/ch2o_q+0_ub3lyp_augccpvtz.fchk',
+             '../data/examples/ch2o_q+1_ub3lyp_augccpvtz.fchk',
+             '../data/examples/ch2o_q-1_ub3lyp_augccpvtz.fchk']
 # build quadratic global conceptual DFT tool (3 files are given, so FD approach is taken)
 tool = GlobalConceptualDFT.from_file(file_path, model='quadratic')
 

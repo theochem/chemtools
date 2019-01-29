@@ -1,21 +1,17 @@
 r"""
-===========================================================
-EX1: Global Quadratic Reactivity Descriptors (FMO Approach)
-===========================================================
+===============================================
+EX1: Global Quadratic Descriptors (Frontier MO)
+===============================================
 
-1. Build a quadratic energy model for formaldehyde, :math:`\mathbf{CH_2O}`,
-   using frontier molecular orbital (FMO) theory approach.
-2. Print all available global quadratic reactivity descriptors.
-3. Compute quadratic energy model and its derivatives for various numbers of electrons.
+Compute global conceptual density functional theory reactivity descriptors
+based on the quadratic energy model using frontier molecular orbital (FMO)
+approach.
 """
 
-from chemtools import GlobalConceptualDFT, context
+from chemtools import GlobalConceptualDFT
 
-# 1. Build quadratic energy model using FMO approach
-
-# path to molecule's fchk file
-file_path = context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk')
 # build quadratic global conceptual DFT tool (one file is passed, so FMO approach is taken)
+file_path = '../data/examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'
 tool = GlobalConceptualDFT.from_file(file_path, model='quadratic')
 
 # 2. Print all available global quadratic reactivity descriptors

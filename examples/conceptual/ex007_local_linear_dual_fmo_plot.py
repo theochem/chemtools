@@ -10,12 +10,12 @@ EX7: Quadratic Dual Descriptor (FMO Approach)
 4. Generate VMD (Visual Molecular Dynamics) script to visualize dual descriptor iso-surface.
 """
 
-from chemtools import LocalConceptualDFT, CubeGen, print_vmd_script_isosurface, context
+from chemtools import LocalConceptualDFT, CubeGen, print_vmd_script_isosurface
 
 # 1. Make cubic grid for plotting dual descriptor.
 #    The cubic grid points are spaced by 0.2 a.u. & extending 5.0 a.u. on each side.
 
-file_path = context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk')
+file_path = '../data/examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'
 cube = CubeGen.from_file(file_path, spacing=0.2, threshold=5.0)
 
 # 2. Build quadratic energy model for Formaldehyde using FMO approach.

@@ -11,7 +11,7 @@ EX10: 2D-Contours Quadratic Fukui Function (FMO Approach)
 
 import numpy as np
 import matplotlib.pyplot as plt
-from chemtools import LocalConceptualDFT, context
+from chemtools import LocalConceptualDFT
 
 # 1. Make a 2D grid in xy-plane (molecular plane).
 
@@ -30,7 +30,7 @@ xyz = np.ascontiguousarray(xyz, dtype=np.float64)
 # 2. Build a quadratic energy models using FMO approach
 
 # path to molecule's fchk file
-file_path = context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk')
+file_path = '../data/examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'
 # build a quadratic global conceptual DFT tool
 tool = LocalConceptualDFT.from_file(file_path, model='quadratic', points=xyz)
 
