@@ -30,18 +30,11 @@ If you have questions, please post them on the `ChemTools Google Group <https://
 For general inquiries, please contact:
 
 **Farnaz Heidar-Zadeh**
-    | Department of Chemistry & Chemical Biology
-    | `McMaster University <http://www.mcmaster.ca/>`_
-    | 25-1280 Main Street West
-    | L8S 4M1 Hamilton, ON, Canada
+    | Department of Chemistry
+    | `Queen's University <https://www.queensu.ca/>`_
+    | 99 University Ave
+    | K7L 3N6 Kingston, ON, Canada
     | farnazhz@gmail.com
-
-**Stijn Fias**
-    | Department of Chemistry & Chemical Biology
-    | `McMaster University <http://www.mcmaster.ca/>`_
-    | 25-1280 Main Street West
-    | L8S 4M1 Hamilton, ON, Canada
-    | stijn.fias@gmail.com
 
 **Paul W. Ayers**
    | `The Ayers group <http://www.chemistry.mcmaster.ca/ayers/>`_
@@ -58,14 +51,6 @@ For general inquiries, please contact:
    | Universidad de Concepción
    | Concepción, Chile
    | evohringer@udec.cl
-
-**Carlos Cárdenas**
-   | `The Cárdenas Group <http://macul.ciencias.uchile.cl/personal/academicos/ccardenas_n.htm>`_
-   | Departamento de Física
-   | Facultad de Ciencias
-   | `vUniversidad de Chile <http://www.uchile.cl/>`_
-   | Casilla 653, Santiago, Chile
-   | cardena@macul.ciencias.uchile.cl
 
 **Toon Verstraelen**
    | `Center for Molecular Modeling (CMM) <http://molmod.ugent.be/>`_
