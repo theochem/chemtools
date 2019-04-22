@@ -45,7 +45,7 @@ Toolbox Module
 
 * Orbital Based Tools
 
-  * :class:`Orbital Local Tool <toolbox.orbitalbased.OrbitalLocalTool>`
+  * :class:`Orbital Local Tool <toolbox.orbbased.OrbitalLocalTool>`
 
 
 Conceptual Module
@@ -116,7 +116,7 @@ Utility Module
       toolbox.conceptual.CondensedConceptualDFT
       toolbox.nci.NCI
       toolbox.kinetic.KineticEnergyDensity
-      toolbox.orbitalbased.OrbitalLocalTool
+      toolbox.orbbased.OrbitalLocalTool
       denstools.densitybased.DensityLocalTool
       conceptual.base.BaseGlobalTool
       conceptual.linear.LinearGlobalTool
