@@ -55,6 +55,7 @@ quantum chemistry.
    intro_about
    intro_citing
    intro_license
+   intro_conduct
    intro_contact
 
 .. toctree::
