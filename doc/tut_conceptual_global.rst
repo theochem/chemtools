@@ -73,27 +73,6 @@ To lean more about these models, please refer to
   global reactivity descriptors. However, if ``filenames`` represents a list of output files, the finite difference (FD)
   approach is taken (the order of output files in the list is not important).
 
-  You can use any supported output file(s) in this tutorial, however, here we demonstrate how to access formaldehyde
-  example files in ChemTools using ``context`` module. To use FMO approach,
-
-    .. code-block:: python
-
-       from chemtools import context
-       # obtain path to the formatted checkpoint file for a ub3lyp/aug-cc-pvtz
-       # calculation on formaldehyde
-       filename = context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk')
-
-  To use FD approach (as mentioned before, the order of files in the rest does not matter),
-
-    .. code-block:: python
-
-       from chemtools import context
-       # obtain list of paths to the formatted checkpoint files for
-       # ub3lyp/aug-cc-pvtz calculations on formaldehyde, and its anion/cation
-       # counterparts (computed at the same geometry by adding/removing an electron).
-       filename = [context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'),
-                   context.get_fn('examples/ch2o_q+1_ub3lyp_augccpvtz.fchk'),
-                   context.get_fn('examples/ch2o_q-1_ub3lyp_augccpvtz.fchk')]
 
 - **Using HORTON** ``IOData`` **Object(s):**
 
@@ -125,10 +104,9 @@ within the FMO approach. So,
 
   .. ipython:: python
 
-     from chemtools import context
      # obtain path to the formatted checkpoint file for a ub3lyp/aug-cc-pvtz
      # calculation on formaldehyde
-     filename = context.get_fn('examples/ch2o_q+0_ub3lyp_augccpvtz.fchk')
+     filename = '../examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'
      # initialize quadratic global conceptual DFT class from one output file
      model = GlobalConceptualDFT.from_file(filename, 'quadratic')
 
