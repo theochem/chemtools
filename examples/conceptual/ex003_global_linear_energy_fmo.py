@@ -1,22 +1,20 @@
 r"""
-========================================================
-EX3: Global Linear Reactivity Descriptors (FMO Approach)
-========================================================
+============================================
+EX3: Global Linear Descriptors (Frontier MO)
+============================================
 
-1. Build a linear energy model for formaldehyde, :math:`\mathbf{CH_2O}`,
-   using frontier molecular orbital (FMO) theory approach.
-2. Print all available global linear reactivity descriptors.
-3. Compute linear energy model and its derivatives for various numbers of electrons.
+Compute global conceptual density functional theory reactivity descriptors
+based on the linear energy model using frontier molecular orbital (FMO)
+approach.
+
 """
 
 from chemtools import GlobalConceptualDFT
 
 # 1. Build linear energy model using FMO approach
 
-# path to molecule's fchk file
-file_path = '../data/examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'
 # build linear global conceptual DFT tool (one file is passed, so FMO approach is taken)
-tool = GlobalConceptualDFT.from_file(file_path, model='linear')
+tool = GlobalConceptualDFT.from_file('ch2o_q+0.fchk', model='linear')
 
 # 2. Print all available global linear reactivity descriptors
 
