@@ -96,15 +96,15 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'ChemTools'
-copyright = u'2016, Ayers\' Group @ McMaster University'
-author = u'Ayers\' Group @ McMaster University'
+copyright = u'2016, ChemTools Dev Team'
+author = u'ChemTools Dev Team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = u'0.9.0'
+version = u'0.0.0'
 # The full version, including alpha/beta/rc tags.
 release = u'0.0'
 
@@ -273,7 +273,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'ChemTools.tex', u'ChemTools Documentation',
-     u'Ayers\' Group @ McMaster University', 'manual'),
+     u'ChemTools Dev Team', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
