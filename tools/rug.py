@@ -39,8 +39,8 @@ def plot_existing_image(imagename):
         It is assumed that the imagefile exists in data/examples directory.
     """
     # find full path to the image file
-    path = os.path.abspath(os.path.dirname(__file__)).rsplit('/', 1)[0] + '/data/examples/images/'
-    imagepath = os.path.join(path, imagename)
+    basepath = os.path.abspath(os.path.dirname(__file__)).rsplit('/', 1)[0]
+    imagepath = os.path.join(basepath + '/chemtools/data/examples/images/', imagename)
     # show the image
     img = mpimg.imread(imagepath)
     imgplot = plt.imshow(img)
