@@ -1,13 +1,11 @@
 r"""
-======================================
-EX8: Plot Energy Models (FMO Approach)
-======================================
+=====================================
+EX8: Plot Energy Models (Frontier MO)
+=====================================
 
-1. Build a linear and quadratic energy models for formaldehyde, :math:`\mathbf{CH_2O}`,
-   using frontier molecular orbital (FMO) theory approach.
-2. Compute energy values for various number of electrons.
-3. Plot energy vs. number of electrons.
-4. Plot data points used for modeling energy.
+Compute linear, quadratic, rational and exponential energy models for various number of electrons
+using frontier molecular orbital (FMO) approach and plotting E vs. N.
+
 """
 
 import numpy as np
@@ -17,7 +15,7 @@ from chemtools import GlobalConceptualDFT
 # 1. Build linear and quadratic energy models using FMO approach
 
 # path to molecule's fchk file
-file_path = '../data/examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'
+file_path = 'ch2o_q+0.fchk'
 # build linear & quadratic global conceptual DFT tool (one file is passed, so FMO approach is taken)
 model_lin = GlobalConceptualDFT.from_file(file_path, 'linear')
 model_qua = GlobalConceptualDFT.from_file(file_path, 'quadratic')
