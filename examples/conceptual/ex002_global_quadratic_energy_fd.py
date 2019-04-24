@@ -1,12 +1,11 @@
 r"""
-==========================================================
-EX2: Global Quadratic Reactivity Descriptors (FD Approach)
-==========================================================
+===============================================
+EX2: Global Quadratic Descriptors (Finite Diff)
+===============================================
 
-1. Build a quadratic energy model for formaldehyde, :math:`\mathbf{CH_2O}`,
-   using finite difference (FD) approach.
-2. Print all available global quadratic reactivity descriptors.
-3. Compute quadratic energy model and its derivatives for various numbers of electrons.
+Compute global conceptual density functional theory reactivity descriptors
+based on the quadratic energy model using finite difference (FD) approach.
+
 """
 
 from chemtools import GlobalConceptualDFT
@@ -14,9 +13,7 @@ from chemtools import GlobalConceptualDFT
 # 1. Build quadratic energy model
 
 # make list of path to 3 molecule's fchk files used in finite difference approach
-file_path = ['../data/examples/ch2o_q+0_ub3lyp_augccpvtz.fchk',
-             '../data/examples/ch2o_q+1_ub3lyp_augccpvtz.fchk',
-             '../data/examples/ch2o_q-1_ub3lyp_augccpvtz.fchk']
+file_path = ['ch2o_q+0.fchk', 'ch2o_q+1.fchk', 'ch2o_q-1.fchk']
 # build quadratic global conceptual DFT tool (3 files are given, so FD approach is taken)
 tool = GlobalConceptualDFT.from_file(file_path, model='quadratic')
 
