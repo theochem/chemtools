@@ -3,11 +3,9 @@ r"""
 EX8: Plot Energy Models (FD Approach)
 =====================================
 
-1. Build a linear and quadratic energy models for formaldehyde, :math:`\mathbf{CH_2O}`,
-   using finite difference (FD) approach.
-2. Compute energy values for various number of electrons.
-3. Plot energy vs. number of electrons.
-4. Plot data points used for modeling energy.
+Compute linear and quadratic energy models for various number of electrons
+using finite Difference (FD) approach and plotting E vs. N.
+
 """
 
 import numpy as np
@@ -17,9 +15,7 @@ from chemtools import GlobalConceptualDFT
 # 1. Build linear and quadratic energy models using FD approach
 
 # make list of path to 3 molecule's fchk files used in finite difference approach
-file_path = ['../data/examples/ch2o_q+0_ub3lyp_augccpvtz.fchk',
-             '../data/examples/ch2o_q+1_ub3lyp_augccpvtz.fchk',
-             '../data/examples/ch2o_q-1_ub3lyp_augccpvtz.fchk']
+file_path = ['ch2o_q+0.fchk', 'ch2o_q+1.fchk', 'ch2o_q-1.fchk']
 # build linear & quadratic global conceptual DFT tool (3 files are given, so FD approach is taken)
 tool_lin = GlobalConceptualDFT.from_file(file_path, model='linear')
 tool_qua = GlobalConceptualDFT.from_file(file_path, model='quadratic')
