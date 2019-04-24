@@ -7,6 +7,7 @@ EX10: 2D-Contours Quadratic Fukui Function (FMO Approach)
 2. Build a quadratic energy models using frontier molecular orbital (FMO) theory approach.
 3. Evaluate quadratic Fukui function on the grid points.
 4. Plot 2D-contour plots of quadratic Fukui function.
+
 """
 
 import numpy as np
@@ -30,7 +31,7 @@ xyz = np.ascontiguousarray(xyz, dtype=np.float64)
 # 2. Build a quadratic energy models using FMO approach
 
 # path to molecule's fchk file
-file_path = '../data/examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'
+file_path = 'ch2o_q+0.fchk'
 # build a quadratic global conceptual DFT tool
 tool = LocalConceptualDFT.from_file(file_path, model='quadratic', points=xyz)
 
