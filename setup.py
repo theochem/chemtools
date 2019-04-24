@@ -27,9 +27,9 @@ from distutils.core import setup
 
 setup(
     name='chemtools',
-    version='0.9.0',
+    version='0.0.0',
     description='Package of Chemical Tools for Interpreting Quantum Chemistry Calculations',
-    author='Ayers Group',
+    author='ChemTools Dev Team',
     author_email='horton.chemtools@gmail.com',
     package_dir={'chemtools': 'chemtools'},
     packages=[
@@ -49,7 +49,8 @@ setup(
         'chemtools.wrappers.test',
         'chemtools.outputs.test',
     ],
-    package_data={'chemtools.data': ['*.fchk', '*.cube', '*.wfn', '*.npz']},
+    package_data={'chemtools.data': ['*.fchk', '*.cube', '*.wfn', '*.npz'],
+                  'chemtools.data.examples': ['*.fchk', '*.cube', '*.wfn', '*.npz']},
     entry_points={
         'console_scripts': ['chemtools = chemtools.scripts.main:main'],
     },
