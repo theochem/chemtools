@@ -1,7 +1,10 @@
 r"""
-==================================================
-EX11: Krypton Electron Localization Function (ELF)
-==================================================
+==========================================
+EX11: Electron Localization Function (ELF)
+==========================================
+
+Compute electron localization function (ELF) and plot it.
+
 """
 
 
@@ -13,8 +16,7 @@ from horton import AtomicGrid
 
 
 # load atom and construct and atomic grid
-filename = 'data/examples/atom_kr_hf_ccpvdz.fchk'
-molecule = Molecule.from_file(filename)
+molecule = Molecule.from_file('atom_kr.fchk')
 grid = AtomicGrid(molecule.numbers[0], molecule.pseudo_numbers[0], molecule.coordinates[0],
                   agspec='exp:0.005:10.0:200:194', random_rotate=False)
 
