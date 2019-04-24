@@ -25,6 +25,6 @@
 Code of Conduct
 ###############
 
-We have zero tolerance for disrespectful and inconsiderate contributions, and very strongly
-adhere to Python Foundation `Code of Conduct <https://legacy.python.org/psf/codeofconduct/>`_
+We have zero tolerance for disrespectful or inconsiderate contributions, and very strongly
+adhere to `Python Community Code of Conduct <https://legacy.python.org/psf/codeofconduct/>`_
 guidelines in developing ChemTools.
