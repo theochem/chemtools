@@ -1,13 +1,11 @@
 r"""
-=============================================
-EX7: Quadratic Dual Descriptor (FMO Approach)
-=============================================
+==================================
+EX7: Dual Descriptor (Frontier MO)
+==================================
 
-1. Make cubic grid for plotting dual descriptor.
-2. Build quadratic energy model for Formaldehyde, :math:`\mathbf{CH_2O}`,
-   using frontier molecular orbital (FMO) theory approach.
-3. Dump dual descriptor evaluated on cubic grid.
-4. Generate VMD (Visual Molecular Dynamics) script to visualize dual descriptor iso-surface.
+Compute dual descriptor on a cubic grid based on the quadratic energy model using
+frontier molecular orbital (FMO) approach, and generate visualization scripts.
+
 """
 
 from chemtools import LocalConceptualDFT, CubeGen, print_vmd_script_isosurface
@@ -15,7 +13,7 @@ from chemtools import LocalConceptualDFT, CubeGen, print_vmd_script_isosurface
 # 1. Make cubic grid for plotting dual descriptor.
 #    The cubic grid points are spaced by 0.2 a.u. & extending 5.0 a.u. on each side.
 
-file_path = '../data/examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'
+file_path = 'ch2o_q+0.fchk'
 cube = CubeGen.from_file(file_path, spacing=0.2, threshold=5.0)
 
 # 2. Build quadratic energy model for Formaldehyde using FMO approach.
