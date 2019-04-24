@@ -6,13 +6,13 @@ EX1: Global Quadratic Descriptors (Frontier MO)
 Compute global conceptual density functional theory reactivity descriptors
 based on the quadratic energy model using frontier molecular orbital (FMO)
 approach.
+
 """
 
 from chemtools import GlobalConceptualDFT
 
 # build quadratic global conceptual DFT tool (one file is passed, so FMO approach is taken)
-file_path = '../data/examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'
-tool = GlobalConceptualDFT.from_file(file_path, model='quadratic')
+tool = GlobalConceptualDFT.from_file('ch2o_q+0.fchk', model='quadratic')
 
 # 2. Print all available global quadratic reactivity descriptors
 
