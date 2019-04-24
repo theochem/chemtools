@@ -30,7 +30,7 @@ Global Descriptive Tools
 To refresh your mind on theoretical background, please refer to
 :ref:`Scientific Documentation on Global Descriptive Tools <global_tools>`.
 
-To learn about the API documentation, please refer to :mod:`chemtools.analysis.conceptual`.
+To learn about the API documentation, please refer to :mod:`chemtools.toolbox.conceptual`.
 
 To compute global conceptual reactivity descriptors of your molecule of interest, please follow
 the steps bellow:
@@ -74,20 +74,6 @@ To lean more about these models, please refer to
   approach is taken (the order of output files in the list is not important).
 
 
-- **Using HORTON** ``IOData`` **Object(s):**
-
-  The ``IOData`` object of HORTON library can be used directly to initialize an instance of ``GlobalConceptualDFT``
-  class for the selected energy model. There are denoted by ``iodatas`` and ``energy_model`` arguments, respectively.
-
-    .. code-block:: python
-
-       model = GlobalConceptualDFT.from_iodata(iodatas, energy_model)
-
-  Similar to the previous section, if ``iodatas`` represents one ``IOData`` object, the frontier molecular orbital (FMO)
-  theory approach is used to compute global reactivity descriptors. However, if ``iodatas`` represents a list of
-  ``IOData`` objects, the finite difference (FD) approach is taken (the order of ``IOData`` objects in the list is
-  not important).
-
 - **Using Dictionary of Energy Values:**
 
   The energy values corresponding to various number of electrons can also be used to directly initialize an instance
@@ -106,7 +92,7 @@ within the FMO approach. So,
 
      # obtain path to the formatted checkpoint file for a ub3lyp/aug-cc-pvtz
      # calculation on formaldehyde
-     filename = '../examples/ch2o_q+0_ub3lyp_augccpvtz.fchk'
+     filename = 'ch2o_q+0.fchk'
      # initialize quadratic global conceptual DFT class from one output file
      model = GlobalConceptualDFT.from_file(filename, 'quadratic')
 
