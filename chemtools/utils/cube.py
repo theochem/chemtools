@@ -27,6 +27,10 @@ import logging
 import numpy as np
 
 from horton import IOData
+try:
+    from importlib_resources import path
+except ImportError:
+    from importlib.resources import path
 
 
 __all__ = ['CubeGen']
@@ -184,7 +188,16 @@ class CubeGen(object):
             aligned with the principle axes of rotation of the molecule.
         """
         # Load file
-        mol = IOData.from_file(str(filename))
+        logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+        try:
+            mol = IOData.from_file(str(filename))
+        except IOError as _:
+            try:
+                with path('chemtools.data.examples', str(filename)) as filename:
+                    logging.info('Loading {0}'.format(str(filename)))
+                    mol = IOData.from_file(str(filename))
+            except IOError as error:
+                logging.info(error)
         return cls.from_molecule(mol.numbers, mol.pseudo_numbers, mol.coordinates, spacing,
                                  threshold, rotate)
 
