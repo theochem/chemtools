@@ -28,7 +28,7 @@ from glob import glob
 __all__ = ['doc_inherit']
 
 
-def doc_inherit(base_class):
+def doc_inherit(base_class, base_method=None):
     """
     Docstring inheriting method descriptor.
 
@@ -55,7 +55,10 @@ def doc_inherit(base_class):
     def decorator(method):
         """Overwrite method docstring."""
         # check whether the method exists
-        overridden = getattr(base_class, method.__name__, None)
+        if base_method is None:
+            overridden = getattr(base_class, method.__name__, None)
+        else:
+            overridden = getattr(base_class, base_method, None)
         if overridden is None:
             raise AttributeError('Can\'t find method \'%s\' in base class.')
         # change docstring
