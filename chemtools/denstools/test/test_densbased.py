@@ -26,10 +26,7 @@
 
 from numpy.testing import assert_raises
 import numpy as np
-from horton import BeckeMolGrid
-from chemtools.wrappers.molecule import Molecule
 from chemtools.denstools.densbased import DensityBasedTool
-from chemtools.utils.cube import CubeGen
 try:
     from importlib_resources import path
 except ImportError:
@@ -79,48 +76,3 @@ def test_density_local_tool_fake():
     np.testing.assert_almost_equal(model.kinetic_energy_density_weizsacker, expected, decimal=6)
     expected = np.array([2.871234, 17.91722219, 41.97769574, 9.115599745, 73.5470608])
     np.testing.assert_almost_equal(model.kinetic_energy_density_thomas_fermi, expected, decimal=6)
-
-
-def test_density_local_tool_electrostatic_potential():
-    with path('chemtools.data', 'water_b3lyp_sto3g.fchk') as file_path:
-        mol = Molecule.from_file(str(file_path))
-    grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
-                        agspec='coarse', random_rotate=False, mode='keep')
-
-    # creating cube file:
-    ori = np.array([-3.000000, -3.000000, -3.000000])
-    ax = np.array([[ 3.000000,  0.000000,  0.000000],
-                   [ 0.000000,  3.000000,  0.000000],
-                   [ 0.000000,  0.000000,  3.000000]])
-    sh = np.array([3, 3, 3])
-    cube = CubeGen(mol.numbers, mol.pseudo_numbers, mol.coordinates, ori, ax, sh)
-
-    # build a density local model
-    model = DensityBasedTool(mol.compute_density(grid.points), mol.compute_gradient(grid.points))
-
-    # mep results obtained from Fortran code:
-    expected = np.array([-0.01239766, -0.02982537, -0.02201149,   -0.01787292, -0.05682143,
-                         -0.02503563, -0.00405942, -0.00818772,   -0.00502268,  0.00321181,
-                         -0.03320573, -0.02788605,  0.02741914, 1290.21135500, -0.03319778,
-                          0.01428660,  0.10127092,  0.01518299,    0.01530548,  0.00197975,
-                         -0.00894206,  0.04330806,  0.03441681,   -0.00203017,  0.02272626,
-                          0.03730846,  0.01463959])
-
-    test = model.compute_electrostatic_potential(mol.numbers, mol.coordinates, grid.weights,
-                                                 grid.points, cube.points)
-
-    np.testing.assert_almost_equal(test, expected, decimal=1)
-
-    # check ValueError
-    assert_raises(ValueError, model.compute_electrostatic_potential, np.array([0.]),
-                  mol.coordinates, grid.weights, grid.points, cube.points)
-    assert_raises(ValueError, model.compute_electrostatic_potential, mol.numbers, np.array([0.]),
-                  grid.weights, grid.points, cube.points)
-    assert_raises(ValueError, model.compute_electrostatic_potential, mol.numbers, mol.coordinates,
-                  np.array([0.]), grid.points, cube.points)
-    assert_raises(ValueError, model.compute_electrostatic_potential, mol.numbers, mol.coordinates,
-                  grid.weights, np.array([0.]), cube.points)
-    assert_raises(ValueError, model.compute_electrostatic_potential, mol.numbers, mol.coordinates,
-                  grid.weights, grid.points, np.array([0.]))
-    assert_raises(ValueError, model.compute_electrostatic_potential, mol.numbers, mol.coordinates,
-                  grid.weights, grid.points, np.array([[0.]]))
