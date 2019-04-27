@@ -86,36 +86,21 @@ class KED(object):
         return self._points
 
     @property
+    @doc_inherit(DensityBasedLocalTool, 'density')
     def density(self):
-        r"""Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on the grid."""
         return self._denstools.density
 
     @property
+    @doc_inherit(DensityBasedLocalTool, 'kinetic_energy_density_positive_definite')
     def positive_definite(self):
-        """Positive definite kinetic energy density.
-
-        See :py:meth:`DensityLocalTool.kinetic_energy_density
-        <chemtools.denstools.densitybased.DensityLocalTool.kinetic_energy_density>`
-        attribute.
-        """
-        return self._denstools.kinetic_energy_density
+        return self._denstools.kinetic_energy_density_positive_definite
 
     @property
+    @doc_inherit(DensityBasedLocalTool, 'kinetic_energy_density_thomas_fermi')
     def thomas_fermi(self):
-        """Thomas-Fermi kinetic energy density.
-
-        See :py:meth:`DensityLocalTool.kinetic_energy_density_thomas_fermi
-        <chemtools.denstools.densitybased.DensityLocalTool.kinetic_energy_density_thomas_fermi>`
-        attribute.
-        """
         return self._denstools.kinetic_energy_density_thomas_fermi
 
     @property
+    @doc_inherit(DensityBasedLocalTool, 'kinetic_energy_density_weizsacker')
     def weizsacker(self):
-        """Weizsacker kinetic energy density.
-
-        See :py:meth:`DensityLocalTool.kinetic_energy_density_weizsacker
-        <chemtools.denstools.densitybased.DensityLocalTool.kinetic_energy_density_weizsacker>`
-        attribute.
-        """
         return self._denstools.kinetic_energy_density_weizsacker
