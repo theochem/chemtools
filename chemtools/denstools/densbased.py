@@ -45,7 +45,8 @@ class DensityBasedTool(object):
         lap : np.ndarray, optional
             Laplacian of electron density evaluated on a set of grid points.
         kin : np.ndarray, optional
-            Kinetic energy density evaluated on a set of grid points.
+            Positive definite kinetic energy density evaluated on a set of grid points.
+
         """
         if dens.ndim != 1:
             raise ValueError('Argument density should be a 1-dimensional array.')
@@ -80,16 +81,6 @@ class DensityBasedTool(object):
         return self._grad
 
     @property
-    def kinetic_energy_density(self):
-        r"""Positive definite kinetic energy density.
-
-        .. math::
-           \tau \left(\mathbf{r}\right) =
-           \sum_i^N n_i \frac{1}{2} \rvert \nabla \phi_i \left(\mathbf{r}\right) \lvert^2
-        """
-        return self._kin
-
-    @property
     def laplacian(self):
         r"""Laplacian of electron density :math:`\nabla ^2 \rho\left(\mathbf{r}\right)`.
 
@@ -104,6 +95,16 @@ class DensityBasedTool(object):
                      \lambda_1 + \lambda_2 + \lambda_3
         """
         return self._lap
+
+    @property
+    def kinetic_energy_density_positive_definite(self):
+        r"""Positive definite kinetic energy density.
+
+        .. math::
+           \tau \left(\mathbf{r}\right) =
+           \sum_i^N n_i \frac{1}{2} \rvert \nabla \phi_i \left(\mathbf{r}\right) \lvert^2
+        """
+        return self._kin
 
     @property
     def shannon_information(self):
