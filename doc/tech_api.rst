@@ -94,7 +94,6 @@ Wrappers Module
 Utility Module
 ==============
 
-* :func:`doc_inherit <utils.utils.doc_inherit>`
 * :class:`CubeGen <utils.cube.CubeGen>`
 
 
@@ -139,6 +138,5 @@ Utility Module
       outputs.output_vmd.print_vmd_script_isosurface
       outputs.output_vmd.print_vmd_script_multiple_cube
       outputs.output_vmd.print_vmd_script_vector_field
-      utils.utils.doc_inherit
       utils.cube.CubeGen
 
