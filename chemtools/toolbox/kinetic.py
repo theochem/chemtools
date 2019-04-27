@@ -26,14 +26,15 @@
 
 import numpy as np
 
+from chemtools.utils.utils import doc_inherit
 from chemtools.wrappers.molecule import Molecule
 from chemtools.denstools.densbased import DensityBasedLocalTool
 
 
-__all__ = ["KineticEnergyDensity"]
+__all__ = ["KED"]
 
 
-class KineticEnergyDensity(object):
+class KED(object):
     """Kinetic Energy Density Class."""
 
     def __init__(self, molecule, points, spin="ab", index=None):
@@ -49,6 +50,7 @@ class KineticEnergyDensity(object):
             The type of occupied spin orbitals.
         index : sequence
             Sequence of integers representing the index of spin orbitals.
+
         """
         if points.ndim != 2 or points.shape[1] != 3:
             raise ValueError("Argument points should be a 2D array with 3 columns.")

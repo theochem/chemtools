@@ -29,7 +29,7 @@ import numpy as np
 from numpy.testing import assert_array_almost_equal, assert_allclose
 
 from chemtools.wrappers.molecule import Molecule
-from chemtools.toolbox.kinetic import KineticEnergyDensity
+from chemtools.toolbox.kinetic import KED
 try:
     from importlib_resources import path
 except ImportError:
@@ -53,7 +53,7 @@ def test_kinetic_from_file_ch4_uhf_ccpvdz():
         data = np.load(str(filename))
     # test from_file initialization & check against Fortran code
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as filename:
-        tool = KineticEnergyDensity.from_file(filename, data["points"])
+        tool = KED.from_file(filename, data["points"])
     check_kinetic_energy_density(tool, data)
 
 
@@ -64,13 +64,13 @@ def test_kinetic_from_molecule_ch4_uhf_ccpvdz():
     # test from_molecule initialization with exp_beta & check against Fortran code
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as filename:
         molecule = Molecule.from_file(filename)
-    tool = KineticEnergyDensity(molecule, data["points"])
+    tool = KED(molecule, data["points"])
     check_kinetic_energy_density(tool, data)
     # test from_molecule initialization without exp_beta & check against Fortran code
     del molecule._exp_beta
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as filename:
         molecule = Molecule.from_file(filename)
-    tool = KineticEnergyDensity(molecule, data["points"])
+    tool = KED(molecule, data["points"])
     check_kinetic_energy_density(tool, data)
 
 
@@ -80,7 +80,7 @@ def test_kinetic_from_file_ch4_rhf_ccpvdz():
         data = np.load(str(filename))
     # test from_file initialization & check against Fortran code
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as filename:
-        tool = KineticEnergyDensity.from_file(filename, data["points"])
+        tool = KED.from_file(filename, data["points"])
     check_kinetic_energy_density(tool, data)
 
 
@@ -91,5 +91,5 @@ def test_kinetic_from_molecule_ch4_rhf_ccpvdz():
     # test from_file initialization & check against Fortran code
     with path("chemtools.data", "ch4_rhf_ccpvdz.fchk") as filename:
         molecule = Molecule.from_file(filename)
-    tool = KineticEnergyDensity(molecule, data["points"])
+    tool = KED(molecule, data["points"])
     check_kinetic_energy_density(tool, data)

@@ -41,7 +41,7 @@ Toolbox Module
 * Density Based Tools
 
   * :class:`Noncovalent Interaction (NCI) <toolbox.nci.NCI>`
-  * :class:`Kinetic Energy Density <toolbox.kinetic.KineticEnergyDensity>`
+  * :class:`Kinetic Energy Density (KED) <toolbox.kinetic.KED>`
 
 * Orbital Based Tools
 
@@ -115,7 +115,7 @@ Utility Module
       toolbox.conceptual.LocalConceptualDFT
       toolbox.conceptual.CondensedConceptualDFT
       toolbox.nci.NCI
-      toolbox.kinetic.KineticEnergyDensity
+      toolbox.kinetic.KED
       toolbox.orbbased.OrbitalLocalTool
       denstools.densbased.DensityBasedLocalTool
       conceptual.base.BaseGlobalTool
