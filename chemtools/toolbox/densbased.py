@@ -24,14 +24,14 @@
 """Density-Based Local Tools."""
 
 
-from chemtools.denstools.densbased import DensityBasedTool
+from chemtools.denstools.densbased import DensityBasedLocalTool
 from chemtools.wrappers.molecule import Molecule
 
 
 __all__ = ['DensityLocalTool']
 
 
-class DensityLocalTool(DensityBasedTool):
+class DensityLocalTool(DensityBasedLocalTool):
     """Density Local Tool Class."""
 
     def __init__(self, molecule, spin='ab', index=None, points=None):

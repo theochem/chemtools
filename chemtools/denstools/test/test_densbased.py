@@ -26,7 +26,7 @@
 
 from numpy.testing import assert_raises
 import numpy as np
-from chemtools.denstools.densbased import DensityBasedTool
+from chemtools.denstools.densbased import DensityBasedLocalTool
 try:
     from importlib_resources import path
 except ImportError:
@@ -42,9 +42,9 @@ def test_densbased_raises():
                   [ 0.40,  0.40,  0.60],
                   [ 0.25, -0.10, -0.50]])
     # check ValueError
-    assert_raises(ValueError, DensityBasedTool, np.array([[0.], [0.]]), g)
-    assert_raises(ValueError, DensityBasedTool, d, np.array([0.]))
-    assert_raises(ValueError, DensityBasedTool, d, g, lap=np.array([0.]))
+    assert_raises(ValueError, DensityBasedLocalTool, np.array([[0.], [0.]]), g)
+    assert_raises(ValueError, DensityBasedLocalTool, d, np.array([0.]))
+    assert_raises(ValueError, DensityBasedLocalTool, d, g, lap=np.array([0.]))
 
 
 def test_density_local_tool_fake():
@@ -57,7 +57,7 @@ def test_density_local_tool_fake():
                   [ 0.25, -0.10, -0.50]])
     l = np.array([1.5, 0.0, -0.4, 1.0, -1.75])
     # build a model
-    model = DensityBasedTool(d, g, l, kin=None)
+    model = DensityBasedLocalTool(d, g, l, kin=None)
     # check attributes
     np.testing.assert_almost_equal(model.density, d, decimal=6)
     np.testing.assert_almost_equal(model.gradient, g, decimal=6)

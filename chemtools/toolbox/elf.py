@@ -28,7 +28,7 @@ from numpy.ma import masked_less
 
 from chemtools.utils.cube import CubeGen
 from chemtools.wrappers.molecule import Molecule
-from chemtools.denstools.densbased import DensityBasedTool
+from chemtools.denstools.densbased import DensityBasedLocalTool
 from chemtools.outputs import print_vmd_script_isosurface
 
 
@@ -76,7 +76,7 @@ class ELF(object):
         # if kin.shape != (grid.shape,):
         #     raise ValueError("Arguments kin should have the same size as grid.npoints!")
         self._grid = grid
-        self._denstool = DensityBasedTool(dens, grad, None, kin)
+        self._denstool = DensityBasedLocalTool(dens, grad, None, kin)
         # compute elf value
         self._vals = self._denstool.kinetic_energy_density
         self._vals -= self._denstool.kinetic_energy_density_weizsacker

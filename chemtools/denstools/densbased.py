@@ -27,10 +27,10 @@
 import numpy as np
 
 
-__all__ = ['DensityBasedTool']
+__all__ = ['DensityBasedLocalTool']
 
 
-class DensityBasedTool(object):
+class DensityBasedLocalTool(object):
     """Class of density-based local descriptive tools."""
 
     def __init__(self, dens, grad, lap=None, kin=None):

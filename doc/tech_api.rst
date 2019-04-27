@@ -82,7 +82,7 @@ Density-Based Module
 
 * Density-Based Tools
 
-  * :class:`Density Local Tool <denstools.densbased.DensityLocalTool>`
+  * :class:`Density Local Tool <denstools.densbased.DensityBasedLocalTool>`
 
 
 Wrappers Module
@@ -117,7 +117,7 @@ Utility Module
       toolbox.nci.NCI
       toolbox.kinetic.KineticEnergyDensity
       toolbox.orbbased.OrbitalLocalTool
-      denstools.densbased.DensityLocalTool
+      denstools.densbased.DensityBasedLocalTool
       conceptual.base.BaseGlobalTool
       conceptual.linear.LinearGlobalTool
       conceptual.quadratic.QuadraticGlobalTool
