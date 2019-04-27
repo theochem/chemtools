@@ -21,7 +21,7 @@
 #
 # --
 # pragma pylint: disable=invalid-name,bad-whitespace
-"""Test chemtools.toolbox.densitybased."""
+"""Test chemtools.denstools.densbased."""
 
 
 from numpy.testing import assert_raises
