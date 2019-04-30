@@ -2,7 +2,10 @@
 import numpy as np
 
 
-def mulliken_populations(coeff_ab_mo, occupations, olp_ab_ab, num_atoms, ab_atom_indices, atom_weights=None):
+# FIXME: bad name (since providing atom_weights will result in the population not being Mulliken)
+def mulliken_populations(
+    coeff_ab_mo, occupations, olp_ab_ab, num_atoms, ab_atom_indices, atom_weights=None
+):
     r"""Return the Mulliken populations of the given molecular orbitals.
 
     ..math::
@@ -88,6 +91,13 @@ def mulliken_populations(coeff_ab_mo, occupations, olp_ab_ab, num_atoms, ab_atom
         Index of the atom to which each atomic basis function belongs.
         Data type must be integers.
         `K` is the number of atomic orbitals.
+    atom_weights : np.ndarray(A, K, K)
+        Weights of the atomic orbital pairs for the atoms. In other words, this weight controls the
+        amount of electrons associated with an atomic orbital pair that will be attributed to an
+        atom.
+        `A` is the number of atoms and `K` is the number of atomic orbitals.
+        Default is the Mulliken partitioning scheme where two orbitals that belong to the given atom
+        is 1, only one orbital that belong to the given atoms is 0.5, and no orbitals is 0.
 
     Returns
     -------
@@ -104,6 +114,8 @@ def mulliken_populations(coeff_ab_mo, occupations, olp_ab_ab, num_atoms, ab_atom
         If `olp_ab_ab` is not a two-dimensional numpy array of floats.
         If `num_atoms` is not an integer.
         If `ab_atom_indices` is not a a one-dimensional numpy array of ints.
+        If `atom_weights` is not the default value (`None`) and is not a 3-dimensional numpy array
+        of ints/flotas.
     ValueError
         If `olp_ab_ab` is not square.
         If the number of rows in `coeff_ab_mo` is not equal to the number of rows in
@@ -118,6 +130,13 @@ def mulliken_populations(coeff_ab_mo, occupations, olp_ab_ab, num_atoms, ab_atom
         functions (i.e. number of rows in `olp_ab_ab`).
         If `ab_atom_indices` contains indices that are less than 0 or greater than or equal to the
         number of atoms.
+        If `atom_weights` has first dimension that is not equal to the number of atoms.
+        If `atom_weights` has second and third dimensions that are not equal to the number of atomic
+        orbitals.
+        If `atom_weights` is not symmetric with respect to the interchange of the second and third
+        indices.
+        If `atom_weights` is not normalized. i.e. sum over the first dimension does not result in
+        1's.
 
     Warns
     -----
@@ -197,21 +216,51 @@ def mulliken_populations(coeff_ab_mo, occupations, olp_ab_ab, num_atoms, ab_atom
             " less than the number of atoms"
         )
 
-    num_ab = olp_ab_ab.shape[0]
-    # NOTE: creating this numpy array is quite memory intensive. Since nothing here will ever be a
-    # computational bottleneck, it will be smarter to use a for loop incorporating the next two
-    # parts (weights and density) together. However, we keep these two parts separated to make it
-    # easier to implement different weight paradigms.
-    atom_weights = np.zeros((num_atoms, num_ab, num_ab))
-    ab_atom_indices_separated = ab_atom_indices[None, :] == np.arange(num_atoms)[:, None]
-    atom_weights += (ab_atom_indices_separated.astype(float) * 0.5)[:, :, None]
-    atom_weights += (ab_atom_indices_separated.astype(float) * 0.5)[:, None, :]
-    # code above is equivalent to the following:
-    # atom_weights = {}
-    # for i in range(num_atoms):
-    #     weights = np.zeros(num_ab)
-    #     weights[ab_atom_indices == i] = 0.5
-    #     atom_weights[i] = weights[:, None] + weights[None, :]
+    if atom_weights is None:
+        num_ab = olp_ab_ab.shape[0]
+        # NOTE: creating this numpy array is quite memory intensive. Since nothing here will ever be
+        # a computational bottleneck, it will be smarter to use a for loop incorporating the next
+        # two parts (weights and density) together. However, we keep these two parts separated to
+        # make it easier to implement different weight paradigms.
+        atom_weights = np.zeros((num_atoms, num_ab, num_ab))
+        ab_atom_indices_separated = ab_atom_indices[None, :] == np.arange(num_atoms)[:, None]
+        atom_weights += (ab_atom_indices_separated.astype(float) * 0.5)[:, :, None]
+        atom_weights += (ab_atom_indices_separated.astype(float) * 0.5)[:, None, :]
+        # code above is equivalent to the following:
+        # atom_weights = {}
+        # for i in range(num_atoms):
+        #     weights = np.zeros(num_ab)
+        #     weights[ab_atom_indices == i] = 0.5
+        #     atom_weights[i] = weights[:, None] + weights[None, :]
+    else:
+        if not (
+            isinstance(atom_weights, np.ndarray)
+            and atom_weights.ndim == 3
+            and atom_weights.dtype in [float, int]
+        ):
+            raise TypeError(
+                "Orbital weights for the atoms must be a 3-dimensional numpy array of ints/floats."
+            )
+        if atom_weights.shape[0] != num_atoms:
+            raise ValueError(
+                "First dimension of the orbital weights for the atoms must be equal to the number "
+                "of atoms."
+            )
+        if atom_weights.shape[1:] != olp_ab_ab.shape:
+            raise ValueError(
+                "Second and third dimension of the orbital weights for the atoms must be equal to "
+                "the number of atomic orbitals."
+            )
+        if not np.allclose(atom_weights, np.swapaxes(atom_weights, 1, 2)):
+            raise ValueError(
+                "Orbital weights for each atom must be symmetric, i.e. `atom_weights` must be "
+                "symmetric with respect to the interchange of the second and third indices."
+            )
+        if not np.allclose(np.sum(atom_weights, axis=0), 1):
+            raise ValueError(
+                "Orbital weights for the atoms must be normalized, i.e. sum over the first "
+                "dimension must result in 1's."
+            )
 
     # NOTE: the axis keyword used here for np.sum uses API introduced in numpy 1.7.0. This means
     # that this function call will restrict the version of numpy used by this package.

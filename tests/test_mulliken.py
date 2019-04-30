@@ -19,6 +19,9 @@ def test_mulliken_populations_input():
     occupations = np.random.rand(15)
     num_atoms = 4
     ab_atom_indices = np.array([0, 1, 2, 1, 1, 0, 2, 1, 0, 2, 1, 2, 0, 1, 2, 0, 3, 3, 1, 0])
+    atom_weights = np.random.rand(4, 20, 20)
+    atom_weights += np.swapaxes(atom_weights, 1, 2)
+    atom_weights /= np.sum(atom_weights, axis=0)[None, :, :]
 
     with pytest.raises(TypeError):
         mulliken_populations(
@@ -106,15 +109,37 @@ def test_mulliken_populations_input():
             coeff_ab_mo, occupations, rand_olp_ab_ab, num_atoms, ab_atom_indices.tolist()
         )
 
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         rand_occupations = np.random.rand(15)
         rand_occupations[6] = -1
         mulliken_populations(coeff_ab_mo, rand_occupations, olp_ab_ab, num_atoms, ab_atom_indices)
-    with pytest.raises(TypeError):
-        rand_occupations = np.random.rand(15)
-        rand_occupations[6] = 2
-        # not sure how to check that the warning is raised
-        mulliken_populations(coeff_ab_mo, rand_occupations, olp_ab_ab, num_atoms, ab_atom_indices)
+
+    # not sure how to check that the warning is raised but the following code prints the warning
+    rand_occupations = np.random.rand(15)
+    rand_occupations[6] = 2
+    mulliken_populations(coeff_ab_mo, rand_occupations, olp_ab_ab, num_atoms, ab_atom_indices)
+
+    with pytest.raises(ValueError):
+        rand_weights = np.random.rand(3, 20, 20)
+        mulliken_populations(
+            coeff_ab_mo, rand_occupations, olp_ab_ab, num_atoms, ab_atom_indices, atom_weights=rand_weights
+        )
+    with pytest.raises(ValueError):
+        rand_weights = np.random.rand(4, 20, 19)
+        mulliken_populations(
+            coeff_ab_mo, rand_occupations, olp_ab_ab, num_atoms, ab_atom_indices, atom_weights=rand_weights
+        )
+    with pytest.raises(ValueError):
+        rand_weights = np.random.rand(4, 20, 20)
+        mulliken_populations(
+            coeff_ab_mo, rand_occupations, olp_ab_ab, num_atoms, ab_atom_indices, atom_weights=rand_weights
+        )
+    with pytest.raises(ValueError):
+        rand_weights = np.random.rand(4, 20, 20)
+        rand_weights += np.swapaxes(rand_weights, 1, 2)
+        mulliken_populations(
+            coeff_ab_mo, rand_occupations, olp_ab_ab, num_atoms, ab_atom_indices, atom_weights=rand_weights
+        )
 
 
 def test_mulliken_populations():
