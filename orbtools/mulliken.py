@@ -1,391 +1,229 @@
-"""Mulliken population analysis.
-
-This code has been copied from https://github.com/QuantumElephant/dumbo.
-
-"""
+"""Mulliken population analysis."""
 import numpy as np
 
 
-class Mulliken:
-    r"""Class for applying Mulliken analysis.
+def mulliken_populations(coeff_ab_mo, occupations, olp_ab_ab, num_atoms, ab_atom_indices, atom_weights=None):
+    r"""Return the Mulliken populations of the given molecular orbitals.
 
     ..math::
-        \mo_i = \sum_i \ketf{\ab_j} C_{ji}
+
+        \ket{\psi_i} = \sum_j \ket{\phi_j} C_{ji}
+
+    where :math:`\psi_i` is a molecular orbital and :math:`\phi_j` is an atomic orbital.
 
     ..math::
-        1 &= \braket{\mo_i}{\mo_i}\\
-        N &= \sum_i^{occ} n_i \braket{\mo_i}{\mo_i}\\
 
-    where N is the number of electrons and :math:`n_i` is the occupation number of
-    molecular orbital i.
+        1 &= \braket{\psi_i | \psi_i}\\
+        N &= \sum_i^{occ} n_i \braket{\psi_i | \psi_i}\\
+
+    where :math:`N` is the number of electrons and :math:`n_i` is the occupation number of molecular
+    orbital :math:`\psi_i`.
 
     ..math::
-        N &= \sum_i^{occ} n_i \braket{\mo_i}{\mo_i}\\
-        &= \sum_i^{occ} n_i \sum_{jk} C_{ij}^\dagger \braket{\ab_j|\ab_k} C_{ki}\\
-        &= \sum_{jk} \braket{\ab_j}{\ab_k} \sum_i^{occ} C_{ki} n_i C_{ij}^\dagger\\
+
+        N &= \sum_i^{occ} n_i \braket{\psi_i | \psi_i}\\
+        &= \sum_i^{occ} n_i \sum_{jk} C_{ij}^\dagger \braket{\phi_j | \phi_k} C_{ki}\\
+        &= \sum_{jk} \braket{\phi_j | \phi_k} \sum_i^{occ} C_{ki} n_i C_{ij}^\dagger\\
         &= \sum_{jk} S_{jk} X_{kj}\\
 
     where
 
     ..math::
-        S_{jk} &= \braket{\ab_k}{\ab_j}\\
-        X_{kj} &= \sum_i^{occ} C_{ki} n_i C_{ij}^\dagger \\
 
-    Divide up the sum of N into corresponding contribution from each atom
+        S_{jk} = \braket{\phi_j | \phi_k}
+
+    is the overlap of the atomic orbitals and
 
     ..math::
-        N = \sum_A \sum_{j,k} a_{jk}^A S_{jk} X_{kj}
 
-    where (j,k) and :math:`a_{jk}^A` corresponds to atom A and depends on the
-    ``partition'' scheme of :math:`S_{\ab}`.
+        P_{kj} = \sum_i^{occ} C_{ki} n_i C_{ij}^\dagger
 
-    Note that
+    is the density matrix (or charge-density bond order matrix).
+
+    We can now divide up the total number of electrons into corresponding contribution from each
+    atom
+
     ..math::
-        N &= \sum_A \sum_{jk} a_{jk}^A S_{jk} X_{kj}\\
-        &= \sum_{jk} (\sum_A a_{jk}^A) S_{jk} X_{kj}\\
-        &= \sum_{jk} S_{jk} X_{kj}
 
-    So :math:`\sum_A a_{jk}^A = 1` for any j and k.
+        N = \sum_A \sum_{jk} w_{jk}^A S_{jk} P_{kj}
+
+    where :math:`w_{jk}^A` corresponds weight for the electrons associated with atomic orbitals
+    :math:`\phi_j` and :math:`\phi_k` belonging to atom A. Different values of :math:`w_{jk}^A`
+    correspond to different partitioning schemes.
+
+    Note that the weights must be normalized. i.e. :math:`\sum_A w_{jk}^A = 1` for all :math:`j` and
+    :math:`k` such that
+
+    ..math::
+
+        N &= \sum_A \sum_{jk} w_{jk}^A S_{jk} P_{kj}\\
+        &= \sum_{jk} (\sum_A w_{jk}^A) S_{jk} P_{kj}\\
+        &= \sum_{jk} S_{jk} P_{kj}
+
+    Parameters
+    ----------
+    coeff_ab_mo : np.ndarray(K, M)
+        Transformation matrix from the atomic basis to molecular orbitals.
+        Rows correspond to the atomic basis.
+        Columns correspond to the molecular orbitals.
+        The transformation matrix is applied to the right:
+        .. math::
+
+            \ket{\psi_i} = \sum_j \phi_i C_{ij}
+
+        Data type must be float.
+        `K` is the number of atomic orbitals and `M` is the number of molecular orbitals.
+    occupations : np.ndarray(M,)
+        Occupation numbers of each molecular orbital.
+        Data type must be integers or floats.
+        `M` is the number of molecular orbitals.
+    olp_ab_ab : np.ndarray(K, K)
+        Overlap between atomic basis functions.
+        Data type must be floats.
+        `K` is the number of atomic orbitals.
+    num_atoms : int
+        Number of atoms.
+        Must be an integer.
+    ab_atom_indices : np.ndarray(K,)
+        Index of the atom to which each atomic basis function belongs.
+        Data type must be integers.
+        `K` is the number of atomic orbitals.
+
+    Returns
+    -------
+    population : np.ndarray(M,)
+        Number of electrons associated with each atom.
+        `M` is the number of atoms, which will be assumed to be the maximum index in
+        `ab_atom_indices`.
+
+    Raises
+    ------
+    TypeError
+        If `coeff_ab_mo` is not a two-dimensional numpy array of floats.
+        If `occupations` is not a one-dimensional numpy array of ints/floats.
+        If `olp_ab_ab` is not a two-dimensional numpy array of floats.
+        If `num_atoms` is not an integer.
+        If `ab_atom_indices` is not a a one-dimensional numpy array of ints.
+    ValueError
+        If `olp_ab_ab` is not square.
+        If the number of rows in `coeff_ab_mo` is not equal to the number of rows in
+        `olp_ab_ab`.
+        If the number of columns in `coeff_ab_mo` is not equal to the number of entries in
+        `occupations`.
+        If `olp_ab_ab` is not symmetric.
+        If `olp_ab_ab` does not have diagonals of 1.
+        If molecular orbitals are not normalized.
+        If `occupations` has any negative numbers.
+        If `ab_atom_indices` does not have the same number of entries as there are atomic basis
+        functions (i.e. number of rows in `olp_ab_ab`).
+        If `ab_atom_indices` contains indices that are less than 0 or greater than or equal to the
+        number of atoms.
+
+    Warns
+    -----
+    If there are any occupation numbers of the molecular orbitals that is greater than 2.
+    If the total population does not match the sum of the electrons provided by the `occupations`.
 
     """
-    def __init__(self, coeff_ab_mo, occupations, olp_ab_ab, num_center, basis_map, weights=None):
-        """Initialize Mulliken analysis.
+    # pylint: disable=R0912,R0915
+    if not (
+        isinstance(coeff_ab_mo, np.ndarray) and coeff_ab_mo.ndim == 2 and coeff_ab_mo.dtype == float
+    ):
+        raise TypeError(
+            "Transformation matrix from atomic basis functions to molecular orbitals must be a "
+            "two-dimensional numpy array of floats."
+        )
+    if not (
+        isinstance(occupations, np.ndarray)
+        and occupations.ndim == 1
+        and occupations.dtype in [float, int]
+    ):
+        raise TypeError(
+            "Molecular orbital occupation numbers must be not a one-dimensional numpy array of "
+            "floats or ints."
+        )
+    if not (isinstance(olp_ab_ab, np.ndarray) and olp_ab_ab.ndim == 2 and olp_ab_ab.dtype == float):
+        raise TypeError(
+            "Overlap of the atomic basis functions must be a two-dimensional numpy array of floats."
+        )
+    if not isinstance(num_atoms, int):
+        raise TypeError("Number of atoms must be an integer.")
+    if not (
+        isinstance(ab_atom_indices, np.ndarray)
+        and ab_atom_indices.ndim == 1
+        and ab_atom_indices.dtype == int
+    ):
+        raise TypeError(
+            "Atom indices of each atomic basis function must be a one-dimensional numpy array of "
+            "integers with size equal to the number of atomic basis functions."
+        )
 
-        Parameters
-        ----------
-        coeff_ab_mo : np.ndarray(K, N)
-            Transformation matrix from the atomic basis to molecular orbitals
-        occupations : np.ndarray(N, )
-            Occupation numbers of each of the molecular orbitals
-        olp_ab_ab : np.ndarray(K, K)
-            Overlap matrix of the molecular orbitals
-        weights : {None, np.ndarray(N, N)}
+    if not olp_ab_ab.shape[0] == olp_ab_ab.shape[1]:
+        raise ValueError("Overlap matrix is not square.")
+    if not coeff_ab_mo.shape[0] == olp_ab_ab.shape[0]:
+        raise ValueError(
+            "Number of atomic orbitals in the transformation matrix and overlap matrix are not "
+            "equal."
+        )
+    if not coeff_ab_mo.shape[1] == occupations.size:
+        raise ValueError(
+            "Number of molecular orbitals in the transformation matrix and occupations are not "
+            "equal."
+        )
 
-        Raises
-        ------
-        TypeError
-            If `coeff_ab_mo` is not a numpy array.
-            If `coeff_ab_mo` is not a two-dimensional numpy array.
-            If `occupations` is not a numpy array.
-            If `occupations` is not a one-dimensional numpy array.
-            If `olp_ab_ab` is not a numpy array.
-            If `olp_ab_ab` is not a two-dimensional numpy array.
-            If number of atom centers is not an integer
-            If the basis mapping is not iterable
-            If `weights` is not iterable.
-            If `weights` contains objects that are not numpy arrays.
-            If `weights` is not a two dimensional array
-        ValueError
-            If `olp_ab_ab` is not symmetric.
-            If `olp_ab_ab` is not normalized.
-            If molecular orbitals are not normalized
-            If overlap matrix is not square.
-            If number of atomic orbitals in the transformation matrix and overlap matrix are not
-            equal.
-            If number of molecular orbitals in the transformation matrix and occupations are not
-            equal.
-            If there are negative occupation numbers
-            If the indices used in the basis mapping must be within the number of atom centers
-            If `weights` does not have an entry for each atom center
-            If `weights` does not have the same shape as the overlap matrix
-            If `weights` is not symmeteric
-            If `weights` is not normalized (add up to 1)
-        """
-        # Check if numpy arrays of right shape
-        if not isinstance(coeff_ab_mo, np.ndarray):
-            raise TypeError('`coeff_ab_mo` is not a numpy array.')
-        elif not len(coeff_ab_mo.shape) == 2:
-            raise TypeError('`coeff_ab_mo` is not a two-dimensional numpy array.')
+    if not np.allclose(olp_ab_ab, olp_ab_ab.T):
+        raise ValueError("Overlap of the atomic basis functions must be symmetric.")
+    if not np.allclose(np.diag(olp_ab_ab), 1):
+        raise ValueError("Overlap of the atomic basis functions must be normalized.")
+    if not np.allclose(np.diag(coeff_ab_mo.T.dot(olp_ab_ab).dot(coeff_ab_mo)), 1):
+        raise ValueError(
+            "Molecular orbitals (and the corresponding transformation matrix) must be normalized."
+        )
 
-        if not isinstance(occupations, np.ndarray):
-            raise TypeError('`occupations` is not a numpy array.')
-        elif not len(occupations.shape) == 1:
-            raise TypeError('`occupations` is not a one-dimensional numpy array.')
+    if not np.all(occupations >= 0):
+        raise ValueError("Occupation numbers must be greater than or equal to 0.")
+    if np.any(occupations > 2):
+        print("WARNING: Atleast one occupation number exceeds 2.")
 
-        if not isinstance(olp_ab_ab, np.ndarray):
-            raise TypeError('`olp_ab_ab` is not a numpy array.')
-        elif not len(olp_ab_ab.shape) == 2:
-            raise TypeError('`olp_ab_ab` is not a two-dimensional numpy array.')
+    # Check basis mapping
+    if ab_atom_indices.size != olp_ab_ab.shape[0]:
+        raise ValueError(
+            "Number of indices in `ab_atom_indices` must be equal to the number of atomic basis "
+            "functions."
+        )
+    if not (np.all(ab_atom_indices >= 0) and np.all(ab_atom_indices < num_atoms)):
+        raise ValueError(
+            "Atom indices of each atomic basis function must be greater than or equal to zero and "
+            " less than the number of atoms"
+        )
 
-        # Check if overlap is symmetric
-        if not np.allclose(olp_ab_ab, olp_ab_ab.T):
-            raise ValueError('`olp_ab_ab` is not symmetric.')
-        # Check if overlap is normalized
-        if not np.allclose(np.diag(olp_ab_ab), np.ones(coeff_ab_mo.shape[0])):
-            raise ValueError('`olp_ab_ab` is not normalized.')
-        # Check if molecular orbitals are normalized
-        if not np.allclose(np.diag(coeff_ab_mo.T.dot(olp_ab_ab).dot(coeff_ab_mo)), 1):
-            raise ValueError('Molecular orbitals are not normalized.')
-        # Check if given values are consistent
-        if not olp_ab_ab.shape[0] == olp_ab_ab.shape[1]:
-            raise ValueError('Overlap matrix is not square.')
-        if not coeff_ab_mo.shape[0] == olp_ab_ab.shape[0]:
-            raise ValueError('Number of atomic orbitals in the transformation matrix and overlap '
-                             'matrix are not equal.')
-        if not coeff_ab_mo.shape[1] == occupations.size:
-            raise ValueError('Number of molecular orbitals in the transformation matrix and '
-                             'occupations are not equal.')
-        # Check if occupations look okay
-        if not np.all(occupations >= 0):
-            raise ValueError('Negative occupation numbers.')
-        if np.any(occupations > 2):
-            print('Warning: Atleast one occupation number exceeds 2.')
-        # Check number of center
-        if not isinstance(num_center, int):
-            raise TypeError('Number of atom centers must be an integer')
-        # Check basis mapping
-        if not hasattr(basis_map, '__iter__'):
-            raise TypeError('Basis mapping must be iterable.')
-        if not all(i in range(num_center) for i in basis_map):
-            raise ValueError('Indices used in the basis mapping must be within the number of atom'
-                             'centers')
+    num_ab = olp_ab_ab.shape[0]
+    # NOTE: creating this numpy array is quite memory intensive. Since nothing here will ever be a
+    # computational bottleneck, it will be smarter to use a for loop incorporating the next two
+    # parts (weights and density) together. However, we keep these two parts separated to make it
+    # easier to implement different weight paradigms.
+    atom_weights = np.zeros((num_atoms, num_ab, num_ab))
+    ab_atom_indices_separated = ab_atom_indices[None, :] == np.arange(num_atoms)[:, None]
+    atom_weights += (ab_atom_indices_separated.astype(float) * 0.5)[:, :, None]
+    atom_weights += (ab_atom_indices_separated.astype(float) * 0.5)[:, None, :]
+    # code above is equivalent to the following:
+    # atom_weights = {}
+    # for i in range(num_atoms):
+    #     weights = np.zeros(num_ab)
+    #     weights[ab_atom_indices == i] = 0.5
+    #     atom_weights[i] = weights[:, None] + weights[None, :]
 
-        if weights is not None:
-            if not hasattr(weights, '__iter__'):
-                raise TypeError('`weights` must be iterable.')
-            if not len(weights) == num_center:
-                raise ValueError('`weights` must have one entry for each atom center.')
-            for weight in weights:
-                if not isinstance(weight, np.ndarray):
-                    raise TypeError('`weights` must contain numpy arrays.')
-                if not len(weight.shape) == 2:
-                    raise TypeError('`weights` must contain two-dimensional numpy arrays.')
-                if weight.shape != olp_ab_ab.shape:
-                    raise ValueError('`weights` must have the same shape as the overlap matrix.')
-                if not np.allclose(weight, weight.T):
-                    raise ValueError('`weights` must be symmetric.')
-            # check if normalized
-            if not np.allclose(sum(weights), np.ones(olp_ab_ab.shape)):
-                raise ValueError('`weights` must be normalized.')
+    # NOTE: the axis keyword used here for np.sum uses API introduced in numpy 1.7.0. This means
+    # that this function call will restrict the version of numpy used by this package.
+    density = (coeff_ab_mo * occupations[None, :]).dot(coeff_ab_mo.T)
+    raw_pops = (olp_ab_ab * density.T)[None, :, :] * atom_weights
+    output = np.sum(raw_pops, axis=(1, 2))
+    # code above is equivalent to the following:
+    # output = np.zeros(num_atoms)
+    # for atom_ind, weights in atom_weights.items():
+    #     output[atom_ind] = np.sum(olp_ab_ab * density.T * weights)
 
-        # Initialize
-        #  Remove unoccupied
-        ind_occ = occupations > 0
-        self.coeff_ab_mo = coeff_ab_mo[:, ind_occ]
-        self.occupations = occupations[ind_occ]
-        self.olp_ab_ab = olp_ab_ab
-        self.num_center = num_center
-        self.basis_map = tuple(basis_map)
+    if not abs(np.sum(occupations) - np.sum(output)) < 1e-6:
+        print("WARNING: Population does not match up with the number of electrons.")
 
-        if weights is None:
-            self.weights = self.weights_default(num_center, basis_map)
-        else:
-            self.weights = weights
-
-    @property
-    def num_ab(self):
-        return self.coeff_ab_mo.shape[0]
-
-    def weights_default(self, num_center, basis_map):
-        r"""Return the default weights for Mulliken analysis.
-
-        ..math::
-            a_{jk}^A &= 1 \mbox{ if $j \in A$ and $k \in A$}\\
-            &= 0.5 \mbox{ if $j \in A$ and $k \not\in A$}\\
-            &= 0.5 \mbox{ if $j \not\in A$ and $k \in A$}\\
-            &= 0 \mbox{ if $j \not\in A$ and $k \not\in A$\\
-
-        Parameters
-        ----------
-        num_center : int
-            Number of atom centers.
-        basis_map : iterable
-            List of indices of the center of which the corresponding basis function (atomic basis)
-            belong
-
-        Returns
-        -------
-        weights : list of np.ndarray
-            Population weight matrix for each atom center
-
-        Raises
-        ------
-        TypeError
-            If `basis_map` is not iterable
-            If there are indices in `basis_map` that are outside the range of `num_center`
-
-        Example
-        -------
-        If the 1st through 4th basis functions belongs on the 1st atom, and
-        the 5th through 10th basis functions belong on the 2nd atom, then
-        basis_map = [0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
-        """
-        output = []
-        if not hasattr(basis_map, '__iter__'):
-            raise TypeError('`basis_map` must be iterable')
-        if not all(i in range(num_center) for i in basis_map):
-            raise TypeError('Each index in `basis_map` must be within range of `num_center`')
-        for ind_center in range(num_center):
-            weight = np.zeros([self.num_ab]*2)
-            indices = np.array([i for i, j in enumerate(basis_map) if j == ind_center])
-            if indices.size != 0:
-                weight[indices, :] += 0.5
-                weight[:, indices] += 0.5
-            output.append(weight)
-        return output
-
-    @staticmethod
-    def weights_olp(num_center, aao_map, olp_aao_basis):
-        """Return the weights modified using the overlap matrix.
-
-        Weights are distributed by the overlap of the given orbital with the AAO's. If the overlap
-        is large, then a larger weight is attributed.
-
-        Parameters
-        ----------
-        num_center : int
-            Number of atom centers.
-        aao_map : iterable
-            List of indices of the center of which the corresponding basis function (AAO) belong
-        olp_aao_basis : np.ndarray
-            Overlap matrix between the AAO and the AB
-
-        Raises
-        ------
-        TypeError
-            If `aao_map` is not an iterable
-        ValueError
-            If `aao_map` does not have indices that are within range of `num_center`
-        """
-        if not hasattr(aao_map, '__iter__'):
-            raise TypeError('`aao_map` is not an iterable')
-        if not all(i in range(num_center) for i in aao_map):
-            raise ValueError('`aao_map` does not have indices that are within range of '
-                             '`num_center`')
-        output = []
-        num_basis = olp_aao_basis.shape[1]
-        olp_aao_basis = np.abs(olp_aao_basis)**2
-        total = np.sum(olp_aao_basis, axis=0)
-        total = total.reshape(1, total.size)
-        total_2d = total+total.T
-        total_2d[np.abs(total_2d) < 1e-9] = 1
-        for ind_center in range(num_center):
-            indices = np.array([i for i, j in enumerate(aao_map) if j == ind_center])
-            weight = np.zeros([num_basis]*2)
-            if indices.size != 0:
-                top = np.sum(olp_aao_basis[indices, :], axis=0)
-                top = top.reshape(1, top.size)
-                top_2d = top+top.T
-                weight += top_2d/total_2d
-            output.append(weight)
-        hack = sum(output)
-        for i in range(num_center):
-            output[i][hack < 1e-9] = 1.0/num_center
-        return output
-
-    @staticmethod
-    def weights_chi(num_center, basis_map, electronegs):
-        """Return the weights modified using the electronegativity.
-
-        Weights are distributed by the electronegativity of the given atom center. If the atom is
-        electronegative, then a larger weight is attributed.
-
-        Parameters
-        ----------
-        num_center : int
-            Number of atom centers.
-        basis_map : iterable
-            List of indices of the center of which the corresponding basis function (AAO) belong
-        electronegs : np.ndarray
-            Electronegativity of the atom centers
-
-        Raises
-        ------
-        TypeError
-            If `aao_map` is not an iterable
-        ValueError
-            If `aao_map` does not have indices that are within range of `num_center`
-        """
-        if not hasattr(basis_map, '__iter__'):
-            raise TypeError('`basis_map` is not an iterable')
-        if not all(i in range(num_center) for i in basis_map):
-            raise ValueError('`basis_map` does not have indices that are within range of '
-                             '`num_center`')
-        output = []
-        num_basis = len(basis_map)
-        electronegs = electronegs.reshape(1, electronegs.size)
-        total_electronegs = electronegs+electronegs.T
-        for ind_center in range(num_center):
-            weight = np.zeros([num_basis]*2)
-            indices = np.array([i for i, j in enumerate(basis_map) if j == ind_center])
-            if indices.size != 0:
-                weight[indices, :] += electronegs.T[indices, :]/total_electronegs[indices, :]
-                weight[:, indices] += electronegs[:, indices]/total_electronegs[:, indices]
-            output.append(weight)
-        return output
-
-    @staticmethod
-    def weights_olp_chi(num_center, aao_map, olp_aao_basis, electronegs):
-        """Return the weights modified using the overlap matrix and the electronegativities.
-
-        Weights are distributed by the overlap of the given orbital with the AAO's and the
-        electronegativities of the atoms. If the overlap and the electronegativity is large, then a
-        larger weight is attributed.
-
-        Parameters
-        ----------
-        num_center : int
-            Number of atom centers.
-        aao_map : iterable
-            List of indices of the center of which the corresponding basis function (AAO) belong
-        olp_aao_basis : np.ndarray
-            Overlap matrix between the AAO and the AB
-        electronegs : np.ndarray
-            Electronegativity of the atom centers
-
-        Raises
-        ------
-        TypeError
-            If `aao_map` is not an iterable
-        ValueError
-            If `aao_map` does not have indices that are within range of `num_center`
-        """
-        if not hasattr(aao_map, '__iter__'):
-            raise TypeError('`aao_map` is not an iterable')
-        if not all(i in range(num_center) for i in aao_map):
-            raise ValueError('`aao_map` does not have indices that are within range of '
-                             '`num_center`')
-        output = []
-        num_basis = olp_aao_basis.shape[1]
-        electronegs = electronegs.reshape(electronegs.size, 1)
-        olp_aao_basis = olp_aao_basis**2*electronegs
-        total = np.sum(olp_aao_basis, axis=0)
-        total = total.reshape(1, total.size)
-        total_2d = total+total.T
-        total_2d[np.abs(total_2d) < 1e-9] = 1
-        for ind_center in range(num_center):
-            indices = np.array([i for i, j in enumerate(aao_map) if j == ind_center])
-            weight = np.zeros([num_basis]*2)
-            if indices.size != 0:
-                top = np.sum(olp_aao_basis[indices, :], axis=0)
-                top = top.reshape(1, top.size)
-                top_2d = top+top.T
-                weight += top_2d/total_2d
-            output.append(weight)
-        hack = sum(output)
-        for i in range(num_center):
-            output[i][hack < 1e-9] = 1.0/num_center
-        return output
-
-    def get_population(self):
-        """ Returns the numpy array for the atomic populations.
-
-        Returns
-        -------
-        populations : np.ndarray
-            One dimension numpy array that contains the mulliken charges or partial charges of each
-            center
-
-        Raises
-        ------
-        ValueError
-            If the total population is not equal to the total number of electrons
-        """
-        output = []
-        num_elec = np.sum(self.occupations)
-        X = (self.coeff_ab_mo*self.occupations).dot(self.coeff_ab_mo.T)
-        for weight in self.weights:
-            output.append(np.sum(self.olp_ab_ab*X.T*weight))
-        if not abs(num_elec-sum(output)) < 1e-6:
-            raise ValueError('Population does not match up with the number of electrons.')
-        return np.array(output)
+    return output
