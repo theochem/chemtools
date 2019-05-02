@@ -1,12 +1,29 @@
+"""Tests for orbtools.orthogonalization."""
 import numpy as np
-import quasibasis.orthogonalization as orth
+import orbtools.orthogonalization as orth
+import pytest
 
 
 def test_eigh():
+    """Test orbtools.orthogonalization.eigh."""
+    with pytest.raises(TypeError):
+        orth.eigh(np.random.rand(3, 3).tolist())
+    with pytest.raises(TypeError):
+        orth.eigh(np.random.rand(3, 3, 3))
+    with pytest.raises(ValueError):
+        orth.eigh(np.random.rand(3, 5))
+    with pytest.raises(ValueError):
+        orth.eigh(np.random.rand(3, 3))
+    with pytest.raises(TypeError):
+        matrix = np.random.rand(3, 3)
+        orth.eigh(matrix + matrix.T, threshold=None)
+    with pytest.raises(ValueError):
+        matrix = np.random.rand(3, 3)
+        orth.eigh(matrix + matrix.T, threshold=-2)
     # positive semidefinite
-    A = np.arange(9).reshape(3, 3)
-    B = A.dot(A.T)
-    eigval, eigvec = orth.eigh(B)
+    matrix = np.arange(9).reshape(3, 3)
+    matrix = matrix.dot(matrix.T)
+    eigval, eigvec = orth.eigh(matrix)
     assert np.allclose(eigval, np.array([2.02399203e02, 1.60079682e00]))
     assert np.allclose(
         eigvec,
@@ -15,23 +32,24 @@ def test_eigh():
         ),
     )
     # reconstruct random symmetric positive semidefinite
-    A = np.random.rand(100, 100)
-    B = A.dot(A.T)
-    eigval, eigvec = orth.eigh(B)
-    assert np.allclose((eigvec * eigval).dot(eigvec.T), B)
-    # not positive semidefinite
-    A = np.arange(9).reshape(3, 3)
-    B = (A + A.T) / 2
-    eigval, eigvec = orth.eigh(B)
-    # reconstruct random symmetric positive semidefinite
-    A = np.random.rand(100, 100)
-    B = (A + A.T) / 2
-    eigval, eigvec = orth.eigh(B)
-    assert np.allclose((eigvec * eigval).dot(eigvec.T), B)
+    matrix = np.random.rand(100, 100)
+    matrix = matrix.dot(matrix.T)
+    eigval, eigvec = orth.eigh(matrix)
+    assert np.allclose((eigvec * eigval).dot(eigvec.T), matrix)
+    # reconstruct random symmetric
+    matrix = np.random.rand(100, 100)
+    matrix = matrix + matrix.T
+    eigval, eigvec = orth.eigh(matrix)
+    assert np.allclose((eigvec * eigval).dot(eigvec.T), matrix)
 
 
 def test_svd():
-    A = np.array(
+    """Test orbtools.orthogonalization.svd."""
+    with pytest.raises(TypeError):
+        orth.svd(np.random.rand(3, 3).tolist())
+    with pytest.raises(TypeError):
+        orth.svd(np.random.rand(3, 3, 3))
+    matrix = np.array(
         [
             [0.20090975, 0.97054546, 0.28661335, 0.07573257, 0.3917035, 0.75842177],
             [0.87478886, 0.95606901, 0.39057639, 0.36235354, 0.1355327, 0.15858099],
@@ -39,9 +57,9 @@ def test_svd():
             [0.97382223, 0.27750593, 0.64722406, 0.60750097, 0.78990422, 0.26197507],
         ]
     )
-    U, S, Vdag = orth.svd(A, threshold=1)
+    u, sigma, vdagger = orth.svd(matrix, threshold=1)
     assert np.allclose(
-        U,
+        u,
         np.array(
             [
                 [-0.48550089, -0.16348557],
@@ -51,9 +69,9 @@ def test_svd():
             ]
         ),
     )
-    assert np.allclose(S, np.array([2.36256353, 1.17763142]))
+    assert np.allclose(sigma, np.array([2.36256353, 1.17763142]))
     assert np.allclose(
-        Vdag,
+        vdagger,
         np.array(
             [
                 [-0.49021672, 0.45762222],
@@ -68,24 +86,22 @@ def test_svd():
 
 
 def test_power_symmetric():
-    A = np.random.rand(5, 5)
+    """Test orbtools.orthogonalization.power_symmetric."""
+    matrix = np.random.rand(5, 5)
     # positive semidefinite
-    B = A.dot(A.T)
-    assert np.allclose(orth.power_symmetric(B, 2), B.dot(B))
-    assert np.allclose(orth.power_symmetric(B, -1).dot(B), np.identity(5))
-    C = orth.power_symmetric(B, 0.5)
-    assert np.allclose(C.dot(C), B)
-    C = orth.power_symmetric(B, 1.0 / 3.0)
-    assert np.allclose(C.dot(C).dot(C), B)
+    matrix = matrix.dot(matrix.T)
+    assert np.allclose(orth.power_symmetric(matrix, 2), matrix.dot(matrix))
+    assert np.allclose(orth.power_symmetric(matrix, -1).dot(matrix), np.identity(5))
+    power_matrix = orth.power_symmetric(matrix, 0.5)
+    assert np.allclose(power_matrix.dot(power_matrix), matrix)
+    power_matrix = orth.power_symmetric(matrix, 1.0 / 3.0)
+    assert np.allclose(power_matrix.dot(power_matrix).dot(power_matrix), matrix)
     # not positive semidifinite (probably)
-    B = (A + A.T) / 2
-    assert np.allclose(orth.power_symmetric(B, 2), B.dot(B))
-    assert np.allclose(orth.power_symmetric(B, -1).dot(B), np.identity(5))
+    matrix = matrix + matrix.T
+    assert np.allclose(orth.power_symmetric(matrix, 2), matrix.dot(matrix))
+    assert np.allclose(orth.power_symmetric(matrix, -1).dot(matrix), np.identity(5))
     # following crashes because it has negative eigenvalues
-    # C = orth.power_symmetric(B, 0.5)
-    # assert np.allclose(C.dot(C), B)
-
-
-test_eigh()
-test_svd()
-test_power_symmetric()
+    matrix = np.random.rand(100, 100)
+    matrix = matrix + matrix.T
+    with pytest.raises(ValueError):
+        orth.power_symmetric(matrix, 0.5)

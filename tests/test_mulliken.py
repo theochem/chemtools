@@ -122,28 +122,48 @@ def test_mulliken_populations_input():
     with pytest.raises(ValueError):
         rand_weights = np.random.rand(3, 20, 20)
         mulliken_populations(
-            coeff_ab_mo, rand_occupations, olp_ab_ab, num_atoms, ab_atom_indices, atom_weights=rand_weights
+            coeff_ab_mo,
+            rand_occupations,
+            olp_ab_ab,
+            num_atoms,
+            ab_atom_indices,
+            atom_weights=rand_weights,
         )
     with pytest.raises(ValueError):
         rand_weights = np.random.rand(4, 20, 19)
         mulliken_populations(
-            coeff_ab_mo, rand_occupations, olp_ab_ab, num_atoms, ab_atom_indices, atom_weights=rand_weights
+            coeff_ab_mo,
+            rand_occupations,
+            olp_ab_ab,
+            num_atoms,
+            ab_atom_indices,
+            atom_weights=rand_weights,
         )
     with pytest.raises(ValueError):
         rand_weights = np.random.rand(4, 20, 20)
         mulliken_populations(
-            coeff_ab_mo, rand_occupations, olp_ab_ab, num_atoms, ab_atom_indices, atom_weights=rand_weights
+            coeff_ab_mo,
+            rand_occupations,
+            olp_ab_ab,
+            num_atoms,
+            ab_atom_indices,
+            atom_weights=rand_weights,
         )
     with pytest.raises(ValueError):
         rand_weights = np.random.rand(4, 20, 20)
         rand_weights += np.swapaxes(rand_weights, 1, 2)
         mulliken_populations(
-            coeff_ab_mo, rand_occupations, olp_ab_ab, num_atoms, ab_atom_indices, atom_weights=rand_weights
+            coeff_ab_mo,
+            rand_occupations,
+            olp_ab_ab,
+            num_atoms,
+            ab_atom_indices,
+            atom_weights=rand_weights,
         )
 
 
 def test_mulliken_populations():
-    """Tests Mulliken.get_populations."""
+    """Test orbtools.mulliken.mulliken_populations."""
     # Model system
     coeff_ab_mo = np.identity(10)
     occupations = np.array([2] * 4 + [0] * 6)
