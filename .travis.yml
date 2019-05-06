@@ -121,7 +121,7 @@ install:
 
 # Install the latest cardboardlinter
 - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
-    pip install --upgrade git+https://github.com/theochem/cardboardlint.git@master#egg=cardboardlint;
+    pip install --upgrade git+https://github.com/theochem/cardboardlint.git@chemtools#egg=cardboardlint;
   fi
 
 script:
