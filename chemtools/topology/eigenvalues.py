@@ -162,8 +162,7 @@ class EigenDescriptor(object):
         int :
             The number of non-zero eigenvalues.
         """
-        nonzero_eigen = [x for x in self._eigenvals[index] if np.abs(x) > self._zero_eps]
-        return len(nonzero_eigen)
+        return np.sum(np.abs(self._eigenvals[index]) > self._zero_eps, axis=0)
 
     def signature(self, index):
         r"""
