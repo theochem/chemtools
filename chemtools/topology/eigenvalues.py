@@ -121,12 +121,10 @@ class EigenDescriptor(object):
             The condition number, the square root of largest eigenval divided by minimum eigenval.
             If one of maximima or mininum is negative, then none is returned.
         """
-        max_eigen = np.max(self._eigenvals[index])
-        min_eigen = np.min(self._eigenvals[index])
-        ratio = max_eigen / min_eigen
+        ratio = np.amax(self._eigenvals[index], axis=0) / np.amin(self._eigenvals[index], axis=0)
         if ratio < 0.:
             return None
-        return np.sqrt(max_eigen / min_eigen)
+        return np.sqrt(ratio)
 
     def index_critical_pt(self, index):
         r"""
