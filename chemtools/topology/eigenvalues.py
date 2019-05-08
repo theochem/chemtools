@@ -67,23 +67,11 @@ class EigenDescriptor(object):
             Returns the ratio of the largest two eigenvalues minus one. If second largest eigenvalue
             is zero, then infinity is returned.
         """
-        def _largest_two_numbers(arr):
-            r"""Get the first two largest values of the array."""
-            num1 = -np.inf
-            num2 = -np.inf
-            for eigen in arr:
-                if eigen > num1:
-                    num2 = num1
-                    num1 = eigen
-                elif eigen >= num2:
-                    num2 = eigen
-            return num1, num2
-
-        eigen1, eigen2 = _largest_two_numbers(self.eigenvals[index])
+        # get the two largest eigenvalues
+        eigen2, eigen1 = self.eigenvals[index][np.argsort(self.eigenvals[index], axis=0)[-2:]]
         if np.abs(eigen2) < self._zero_eps:
             warnings.warn("Second largest eigenvalue is zero.")
             return np.inf
-
         return (eigen1 / eigen2) - 1.
 
     def bond_descriptor(self, index):
