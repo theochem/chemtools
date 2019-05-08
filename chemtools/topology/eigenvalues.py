@@ -101,16 +101,18 @@ class EigenDescriptor(object):
             Ratio of average positive eigenvalues to average negative eigenvalues. If there are no
             negative eigenvalues, then None is returned.
         """
-        pos_eigen, neg_eigen = self._positive_negative_eigenvalues(index)
-        if len(pos_eigen) == 0.:
-            ratio_pos = np.sum(pos_eigen)
+        # compute numerator
+        pos_eigen = self._eigenvals[index][self._eigenvals[index] > self._zero_eps]
+        result = np.sum(pos_eigen)
+        if len(pos_eigen) != 0:
+            result /= len(pos_eigen)
+        # compute denominator
+        neg_eigen = self._eigenvals[index][self._eigenvals[index] < -self._zero_eps]
+        if len(neg_eigen) != 0:
+            result /= (np.sum(neg_eigen) / len(neg_eigen))
         else:
-            ratio_pos = np.sum(pos_eigen) / len(pos_eigen)
-
-        if len(neg_eigen) == 0.:
-            return None
-        ratio_neg = np.sum(neg_eigen) / len(neg_eigen)
-        return ratio_pos / ratio_neg
+            result = None
+        return result
 
     def eccentricity(self, index):
         r"""
