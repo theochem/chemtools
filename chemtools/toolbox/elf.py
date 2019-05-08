@@ -78,7 +78,7 @@ class ELF(object):
         self._grid = grid
         self._denstool = DensityBasedLocalTool(dens, grad, None, kin)
         # compute elf value
-        self._vals = self._denstool.kinetic_energy_density
+        self._vals = self._denstool.kinetic_energy_density_positive_definite
         self._vals -= self._denstool.kinetic_energy_density_weizsacker
         self._vals /= masked_less(self._denstool.kinetic_energy_density_thomas_fermi, 1.0e-30)
         self._vals = 1.0 / (1.0 + self._vals**2.0)
