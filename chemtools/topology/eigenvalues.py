@@ -152,8 +152,7 @@ class EigenDescriptor(object):
         int :
             Number of negative eigenvalues.
         """
-        neg_eigen = [x for x in self._eigenvals[index] if x < -self._zero_eps]
-        return len(neg_eigen)
+        return np.sum(self._eigenvals[index] < -self._zero_eps, axis=0)
 
     def rank(self, index):
         r"""
