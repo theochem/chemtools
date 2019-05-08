@@ -20,14 +20,14 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+r"""Test chemtools.topology.eigenvalues module."""
 
-r"""Test chemtools.utils.eigenvalues module."""
 
 import warnings
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_raises, assert_equal
 
-from chemtools.utils.eigenvalues import EigenDescriptor
+from chemtools.topology.eigenvalues import EigenDescriptor
 
 
 def test_raises():
