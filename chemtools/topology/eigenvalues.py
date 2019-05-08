@@ -22,28 +22,27 @@
 # --
 r"""Contains class responsible for calculating various descriptors based on eigenvalues."""
 
+
 import warnings
 import numpy as np
+
 
 __all__ = ["EigenDescriptor"]
 
 
 class EigenDescriptor(object):
-    r"""
-    Stores eigenvalues with various descriptors based on the ratio between eigenvalues.
-
-    Primarily used for Quantum Theory of Atoms in Molecules (QTAIM).
-    """
+    r"""Class of descriptive tools based on eigenvalues."""
 
     def __init__(self, eigenvals, zero_eps=1e-15):
-        r"""
-        Construct an EigenDescriptor class, only requiring an array of eigenvalues.
+        r"""Initialize class.
 
+        Parameters
+        ----------
         eigenvals : np.ndarray
             A two-dimensional array holding the eigenvalues separately for each point.
-
         zero_eps : float, optional
             The error bound for being a zero eigenvalue.
+
         """
         if not isinstance(eigenvals, np.ndarray):
             raise TypeError("Eigenvalues should be a numpy array.")
@@ -51,6 +50,11 @@ class EigenDescriptor(object):
             raise TypeError("Eigenvalues should be a two dimensional array.")
         self._eigenvals = eigenvals
         self._zero_eps = zero_eps
+
+    @property
+    def eigenvals(self):
+        r"""Set of two-dimensional eigenvalues."""
+        return self._eigenvals
 
     def ellipticity(self, index):
         r"""Ellipticity of a bond critical point.
@@ -175,7 +179,7 @@ class EigenDescriptor(object):
         certain directions flow inwards).
 
         .. math::
-            \sum_{\lambda_k > 0.}1 - \sum_{\lambda_k < 0.}1
+            \sum_{\lambda_k > 0.} 1 - \sum_{\lambda_k < 0.} 1
 
         Parameters
         ----------
@@ -192,7 +196,7 @@ class EigenDescriptor(object):
         return result
 
     def morse_critical_pt(self, index):
-        r"""Return both the rank and signature of the critical point.
+        r"""Rank and signature of the critical point.
 
         .. math::
             \left(\sum_{\lambda_k > 0} 1, \sum_{\lambda_k > 0.}1 - \sum_{\lambda_k < 0.} 1\right)
@@ -208,8 +212,3 @@ class EigenDescriptor(object):
         if np.any(np.abs(self._eigenvals) < self._zero_eps):
             warnings.warn("Near catastrophic eigenvalue (close to zero) been found.")
         return self.rank(index), self.signature(index)
-
-    @property
-    def eigenvals(self):
-        r"""Return two-dimensional set of eigenvalues."""
-        return self._eigenvals
