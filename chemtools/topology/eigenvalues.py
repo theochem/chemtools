@@ -184,8 +184,9 @@ class EigenDescriptor(object):
         int :
             The number of positive eigenvalues minus the number of negative eigenvalues.
         """
-        pos_eigen, neg_eigen = self._positive_negative_eigenvalues(index)
-        return len(pos_eigen) - len(neg_eigen)
+        result = np.sum(self._eigenvals[index] > self._zero_eps, axis=0)
+        result -= np.sum(self._eigenvals[index] < -self._zero_eps, axis=0)
+        return result
 
     def morse_critical_pt(self, index):
         r"""
@@ -205,17 +206,6 @@ class EigenDescriptor(object):
         if np.any(np.abs(self._eigenvals) < self._zero_eps):
             warnings.warn("Near catastrophic eigenvalue (close to zero) been found.")
         return self.rank(index), self.signature(index)
-
-    def _positive_negative_eigenvalues(self, index):
-        r"""Return the positive and negative eigenvalues."""
-        pos_eigen = []
-        neg_eigen = []
-        for eigen in self._eigenvals[index]:
-            if eigen > self._zero_eps:
-                pos_eigen.append(eigen)
-            elif eigen < -self._zero_eps:
-                neg_eigen.append(eigen)
-        return pos_eigen, neg_eigen
 
     @property
     def eigenvals(self):
