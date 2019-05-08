@@ -53,8 +53,10 @@ class EigenDescriptor(object):
         self._zero_eps = zero_eps
 
     def ellipticity(self, index):
-        r"""
-        Ellipticity of a bond critical point.
+        r"""Ellipticity of a bond critical point.
+
+        .. math::
+           \frac{\lambda_\text{max}}{\lambda_\text{max-1}} - 1
 
         Parameters
         ----------
@@ -75,8 +77,11 @@ class EigenDescriptor(object):
         return (eigen1 / eigen2) - 1.
 
     def bond_descriptor(self, index):
-        r"""
-        Bond descriptor is defined as the ratio of average of positive and negative eigenvalues.
+        r"""Bond descriptor defined as the ratio of average of positive and negative eigenvalues.
+
+        .. math::
+           \frac{\left(\frac{\sum_{\lambda_k > 0} \lambda_k}{\sum_{\lambda_k > 0} 1}\right)}
+                {\left(\frac{\sum_{\lambda_k < 0} \lambda_k}{\sum_{\lambda_k < 0} 1}\right)}
 
         Parameters
         ----------
@@ -103,12 +108,10 @@ class EigenDescriptor(object):
         return result
 
     def eccentricity(self, index):
-        r"""
-        Eccentricity of the set of eigenvalues.
+        r"""Eccentricity (essentially the condition number) of the set of eigenvalues.
 
-        This is defined as
         .. math ::
-            \sqrt{\frac{\lambda_{max}}{\lambda_{min}}}
+            \sqrt{\frac{\lambda_\text{max}}{\lambda_\text{min}}}
 
         Parameters
         ----------
@@ -127,8 +130,10 @@ class EigenDescriptor(object):
         return np.sqrt(ratio)
 
     def index_critical_pt(self, index):
-        r"""
-        Index of the critical point is the number of negative-curvature directions.
+        r"""Index of critical point which is the number of negative-curvature directions.
+
+        .. math::
+           \sum_{\lambda_k < 0} 1
 
         Parameters
         ----------
@@ -143,13 +148,12 @@ class EigenDescriptor(object):
         return np.sum(self._eigenvals[index] < -self._zero_eps, axis=0)
 
     def rank(self, index):
-        r"""
-        Rank of the critical point.
+        r"""Rank of the critical point.
 
         The rank of a critical point is the number of positive eigenvalues.
         This is used to classify critical points on it's stability (trajectories going in or out).
 
-        .. math ::
+        .. math::
             \sum_{\lambda_i > 0} 1
 
         Parameters
@@ -165,14 +169,13 @@ class EigenDescriptor(object):
         return np.sum(np.abs(self._eigenvals[index]) > self._zero_eps, axis=0)
 
     def signature(self, index):
-        r"""
-        Signature of the critical point.
+        r"""Signature of the critical point.
 
         This is used to classify saddle critical points (ie certain directions flow outwards and
         certain directions flow inwards).
 
-        .. math ::
-            \sum_{\lambda_{i} > 0.}1 - \sum_{\lambda_{i} < 0.}1
+        .. math::
+            \sum_{\lambda_k > 0.}1 - \sum_{\lambda_k < 0.}1
 
         Parameters
         ----------
@@ -189,11 +192,10 @@ class EigenDescriptor(object):
         return result
 
     def morse_critical_pt(self, index):
-        r"""
-        Return both the rank and signature of the critical point.
+        r"""Return both the rank and signature of the critical point.
 
-        .. math ::
-            (\sum_{\lambda_i > 0} 1, \sum_{\lambda_{i} > 0.}1 - \sum_{\lambda_{i} < 0.}1)
+        .. math::
+            \left(\sum_{\lambda_k > 0} 1, \sum_{\lambda_k > 0.}1 - \sum_{\lambda_k < 0.} 1\right)
 
         A system is degenerate if it has a zero eigenvalue and consequently, it's critical point
         is said to be "catastrophe". It returns a warning in this case.
