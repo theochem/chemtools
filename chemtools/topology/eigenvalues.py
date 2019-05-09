@@ -120,7 +120,7 @@ class EigenDescriptor(object):
         return np.sqrt(ratio)
 
     @property
-    def index_critical_pt(self):
+    def index(self):
         r"""Index of critical point which is the number of negative-curvature directions.
 
         .. math::
@@ -170,7 +170,7 @@ class EigenDescriptor(object):
         return result
 
     @property
-    def morse_critical_pt(self):
+    def morse(self):
         r"""Rank and signature of the critical point.
 
         .. math::

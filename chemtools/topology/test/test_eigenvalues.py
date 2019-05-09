@@ -63,7 +63,7 @@ def test_index_critical_pt():
     eigenvalues = np.array([[-10., -20., 3.], [1., 2., 3.],
                             [10., -20., -1e-10], [10., -20., -1e-20],
                             [10., -20., 0.]])
-    result = EigenDescriptor(eigenvalues).index_critical_pt
+    result = EigenDescriptor(eigenvalues).index
     assert_equal(result, [2, 0, 2, 1, 1])
 
 
@@ -72,7 +72,7 @@ def test_morse_critical_pt():
                             [-10., -2., -5.], [-10., 0., 1.],
                             [-1e-20, 1e-20, 1e-20],
                             [1e-5, 1e-5, 1e-5]])
-    result = EigenDescriptor(eigenvalues).morse_critical_pt
+    result = EigenDescriptor(eigenvalues).morse
     # Catch warning about zero eigenvalue.
     # with warnings.catch_warnings(record=True) as warn_msg:
     #     warnings.simplefilter("always")
