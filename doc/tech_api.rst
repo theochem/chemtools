@@ -41,6 +41,7 @@ Toolbox Module
 * Density Based Tools
 
   * :class:`Noncovalent Interaction (NCI) <toolbox.nci.NCI>`
+  * :class:`Electron Localization Function (ELF) <toolbox.elf.ELF>`
   * :class:`Kinetic Energy Density (KED) <toolbox.kinetic.KED>`
 
 * Orbital Based Tools
@@ -120,6 +121,7 @@ Utility Module
       toolbox.conceptual.LocalConceptualDFT
       toolbox.conceptual.CondensedConceptualDFT
       toolbox.nci.NCI
+      toolbox.elf.ELF
       toolbox.kinetic.KED
       toolbox.orbbased.OrbitalLocalTool
       denstools.densbased.DensityBasedLocalTool
