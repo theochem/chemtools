@@ -27,27 +27,27 @@ import warnings
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_raises, assert_equal
 
-from chemtools.topology.eigenvalues import EigenDescriptor
+from chemtools.topology.eigenvalues import EigenValueTool
 
 
 def test_raises():
     eigenvalues = [[]]
-    assert_raises(TypeError, EigenDescriptor, eigenvalues)
-    assert_raises(TypeError, EigenDescriptor, np.array([5.]))
+    assert_raises(TypeError, EigenValueTool, eigenvalues)
+    assert_raises(TypeError, EigenValueTool, np.array([5.]))
 
 
 def test_ellipticity():
     eigenvalues = np.array([[10., 20., 30.], [20., 10., 20.],
                             [-10., -2., -5.], [-10., 0., 1.],
                             [30., 10., 20.]])
-    result = EigenDescriptor(eigenvalues).ellipticity
+    result = EigenValueTool(eigenvalues).ellipticity
     assert_almost_equal(result, [0.5, 0., -0.6, np.inf, 0.5])
 
 
 def test_bond_descriptor():
     eigenvalues = np.array([[-10., -20., 30.], [20., 10., 20.],
                             [-10., -2., -5.], [-10., 0., 1.]])
-    result = EigenDescriptor(eigenvalues).bond_descriptor
+    result = EigenValueTool(eigenvalues).bond_descriptor
     # TODO: Check [30. / (-30. / 2.), np.nan, 0., 1. / -10.])
     assert_equal(result, [30. / (-30. / 2.), np.nan, np.nan, 1. / -10.])
 
@@ -55,7 +55,7 @@ def test_bond_descriptor():
 def test_eccentricity():
     eigenvalues = np.array([[-10., -20., 30.], [20., 10., 20.],
                             [-10., -2., -5.], [-10., 0., 1.]])
-    result = EigenDescriptor(eigenvalues).eccentricity
+    result = EigenValueTool(eigenvalues).eccentricity
     assert_almost_equal(result, [np.nan, 2.**0.5, (-2. / -10.)**0.5, np.nan])
 
 
@@ -63,7 +63,7 @@ def test_index_critical_pt():
     eigenvalues = np.array([[-10., -20., 3.], [1., 2., 3.],
                             [10., -20., -1e-10], [10., -20., -1e-20],
                             [10., -20., 0.]])
-    result = EigenDescriptor(eigenvalues).index
+    result = EigenValueTool(eigenvalues).index
     assert_equal(result, [2, 0, 2, 1, 1])
 
 
@@ -72,7 +72,7 @@ def test_morse_critical_pt():
                             [-10., -2., -5.], [-10., 0., 1.],
                             [-1e-20, 1e-20, 1e-20],
                             [1e-5, 1e-5, 1e-5]])
-    result = EigenDescriptor(eigenvalues).morse
+    result = EigenValueTool(eigenvalues).morse
     # Catch warning about zero eigenvalue.
     # with warnings.catch_warnings(record=True) as warn_msg:
     #     warnings.simplefilter("always")

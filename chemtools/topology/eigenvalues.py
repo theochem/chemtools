@@ -27,10 +27,10 @@ import warnings
 import numpy as np
 
 
-__all__ = ["EigenDescriptor"]
+__all__ = ["EigenValueTool"]
 
 
-class EigenDescriptor(object):
+class EigenValueTool(object):
     r"""Class of descriptive tools based on eigenvalues."""
 
     def __init__(self, eigenvals, zero_eps=1e-15):
