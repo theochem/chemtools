@@ -85,6 +85,12 @@ Density-Based Module
   * :class:`Density Local Tool <denstools.densbased.DensityBasedLocalTool>`
 
 
+Topological Analysis
+====================
+
+  * :class:`Eigenvalue Descriptors <topology.eigenvalues.EigenValueTool>`
+
+
 Wrappers Module
 ===============
 
@@ -133,6 +139,7 @@ Utility Module
       conceptual.linear.LinearCondensedTool
       conceptual.quadratic.QuadraticCondensedTool
       conceptual.mixed.MixedCondensedTool
+      topology.eigenvalues.EigenValueTool
       wrappers.molecule.Molecule
       outputs.output_vmd.print_vmd_script_nci
       outputs.output_vmd.print_vmd_script_isosurface
