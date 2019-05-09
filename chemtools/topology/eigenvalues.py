@@ -56,16 +56,12 @@ class EigenDescriptor(object):
         r"""Set of two-dimensional eigenvalues."""
         return self._eigenvals
 
-    def ellipticity(self, index):
+    @property
+    def ellipticity(self):
         r"""Ellipticity of a bond critical point.
 
         .. math::
            \frac{\lambda_\text{max}}{\lambda_\text{max-1}} - 1
-
-        Parameters
-        ----------
-        index : int
-            The index of the eigenvalues.
 
         Returns
         -------
@@ -74,23 +70,21 @@ class EigenDescriptor(object):
             is zero, then infinity is returned.
         """
         # get the two largest eigenvalues
-        eigen2, eigen1 = self.eigenvals[index][np.argsort(self.eigenvals[index], axis=0)[-2:]]
-        if np.abs(eigen2) < self._zero_eps:
-            warnings.warn("Second largest eigenvalue is zero.")
-            return np.inf
-        return (eigen1 / eigen2) - 1.
+        index = np.argsort(self.eigenvals, axis=1)[:, -2:]
+        max1 = self.eigenvals[np.arange(self.eigenvals.shape[0]), index[:, 1]]
+        max2 = self.eigenvals[np.arange(self.eigenvals.shape[0]), index[:, 0]]
+        # if np.abs(eigen2) < self._zero_eps:
+        #    warnings.warn("Second largest eigenvalue is zero.")
+        #     return np.inf
+        return (max1 / max2) - 1.
 
-    def bond_descriptor(self, index):
+    @property
+    def bond_descriptor(self):
         r"""Bond descriptor defined as the ratio of average of positive and negative eigenvalues.
 
         .. math::
            \frac{\left(\frac{\sum_{\lambda_k > 0} \lambda_k}{\sum_{\lambda_k > 0} 1}\right)}
                 {\left(\frac{\sum_{\lambda_k < 0} \lambda_k}{\sum_{\lambda_k < 0} 1}\right)}
-
-        Parameters
-        ----------
-        index : int
-            The index of the eigenvalues.
 
         Returns
         -------
@@ -99,28 +93,20 @@ class EigenDescriptor(object):
             negative eigenvalues, then None is returned.
         """
         # compute numerator
-        pos_eigen = self._eigenvals[index][self._eigenvals[index] > self._zero_eps]
-        result = np.sum(pos_eigen)
-        if len(pos_eigen) != 0:
-            result /= len(pos_eigen)
+        pos_mask = (self._eigenvals > self._zero_eps).astype(int)
+        result = np.sum(self._eigenvals * pos_mask, axis=1)
+        result /= np.sum(pos_mask, axis=1)
         # compute denominator
-        neg_eigen = self._eigenvals[index][self._eigenvals[index] < -self._zero_eps]
-        if len(neg_eigen) != 0:
-            result /= (np.sum(neg_eigen) / len(neg_eigen))
-        else:
-            result = None
+        neg_mask = (self._eigenvals < -self._zero_eps).astype(int)
+        result /= (np.sum(self._eigenvals * neg_mask, axis=1) / np.sum(neg_mask, axis=1))
         return result
 
-    def eccentricity(self, index):
+    @property
+    def eccentricity(self):
         r"""Eccentricity (essentially the condition number) of the set of eigenvalues.
 
         .. math ::
             \sqrt{\frac{\lambda_\text{max}}{\lambda_\text{min}}}
-
-        Parameters
-        ----------
-        index : int
-            The index of the eigenvalues.
 
         Returns
         -------
@@ -128,30 +114,27 @@ class EigenDescriptor(object):
             The condition number, the square root of largest eigenval divided by minimum eigenval.
             If one of maximima or mininum is negative, then none is returned.
         """
-        ratio = np.amax(self._eigenvals[index], axis=0) / np.amin(self._eigenvals[index], axis=0)
-        if ratio < 0.:
-            return None
+        ratio = np.amax(self._eigenvals, axis=1) / np.amin(self._eigenvals, axis=1)
+        # set negative values to None
+        ratio[ratio < 0.] = np.nan
         return np.sqrt(ratio)
 
-    def index_critical_pt(self, index):
+    @property
+    def index_critical_pt(self):
         r"""Index of critical point which is the number of negative-curvature directions.
 
         .. math::
            \sum_{\lambda_k < 0} 1
-
-        Parameters
-        ----------
-        index : int
-            The index of the eigenvalues, not to be confused with index of critical point.
 
         Returns
         -------
         int :
             Number of negative eigenvalues.
         """
-        return np.sum(self._eigenvals[index] < -self._zero_eps, axis=0)
+        return np.sum(self._eigenvals < -self._zero_eps, axis=1)
 
-    def rank(self, index):
+    @property
+    def rank(self):
         r"""Rank of the critical point.
 
         The rank of a critical point is the number of positive eigenvalues.
@@ -160,19 +143,15 @@ class EigenDescriptor(object):
         .. math::
             \sum_{\lambda_i > 0} 1
 
-        Parameters
-        ----------
-        index : int
-            The index of the eigenvalue.
-
         Returns
         -------
         int :
             The number of non-zero eigenvalues.
         """
-        return np.sum(np.abs(self._eigenvals[index]) > self._zero_eps, axis=0)
+        return np.sum(np.abs(self._eigenvals) > self._zero_eps, axis=1)
 
-    def signature(self, index):
+    @property
+    def signature(self):
         r"""Signature of the critical point.
 
         This is used to classify saddle critical points (ie certain directions flow outwards and
@@ -181,21 +160,17 @@ class EigenDescriptor(object):
         .. math::
             \sum_{\lambda_k > 0.} 1 - \sum_{\lambda_k < 0.} 1
 
-        Parameters
-        ----------
-        index : int
-            The index of the eigenvalues.
-
         Returns
         -------
         int :
             The number of positive eigenvalues minus the number of negative eigenvalues.
         """
-        result = np.sum(self._eigenvals[index] > self._zero_eps, axis=0)
-        result -= np.sum(self._eigenvals[index] < -self._zero_eps, axis=0)
+        result = np.sum(self._eigenvals > self._zero_eps, axis=1)
+        result -= np.sum(self._eigenvals < -self._zero_eps, axis=1)
         return result
 
-    def morse_critical_pt(self, index):
+    @property
+    def morse_critical_pt(self):
         r"""Rank and signature of the critical point.
 
         .. math::
@@ -211,4 +186,4 @@ class EigenDescriptor(object):
         """
         if np.any(np.abs(self._eigenvals) < self._zero_eps):
             warnings.warn("Near catastrophic eigenvalue (close to zero) been found.")
-        return self.rank(index), self.signature(index)
+        return np.hstack([self.rank[:, np.newaxis], self.signature[:, np.newaxis]])
