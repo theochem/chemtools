@@ -33,28 +33,28 @@ __all__ = ["EigenValueTool"]
 class EigenValueTool(object):
     r"""Class of descriptive tools based on eigenvalues."""
 
-    def __init__(self, eigenvals, zero_eps=1e-15):
+    def __init__(self, eigenvalues, eps=1e-15):
         r"""Initialize class.
 
         Parameters
         ----------
-        eigenvals : np.ndarray
+        eigenvalues : np.ndarray
             A two-dimensional array holding the eigenvalues separately for each point.
-        zero_eps : float, optional
+        eps : float, optional
             The error bound for being a zero eigenvalue.
 
         """
-        if not isinstance(eigenvals, np.ndarray):
+        if not isinstance(eigenvalues, np.ndarray):
             raise TypeError("Eigenvalues should be a numpy array.")
-        if not eigenvals.ndim == 2:
+        if not eigenvalues.ndim == 2:
             raise TypeError("Eigenvalues should be a two dimensional array.")
-        self._eigenvals = eigenvals
-        self._zero_eps = zero_eps
+        self._eigenvalues = eigenvalues
+        self._eps = eps
 
     @property
-    def eigenvals(self):
+    def eigenvalues(self):
         r"""Set of two-dimensional eigenvalues."""
-        return self._eigenvals
+        return self._eigenvalues
 
     @property
     def ellipticity(self):
@@ -70,9 +70,9 @@ class EigenValueTool(object):
             is zero, then infinity is returned.
         """
         # get the two largest eigenvalues
-        index = np.argsort(self.eigenvals, axis=1)[:, -2:]
-        max1 = self.eigenvals[np.arange(self.eigenvals.shape[0]), index[:, 1]]
-        max2 = self.eigenvals[np.arange(self.eigenvals.shape[0]), index[:, 0]]
+        index = np.argsort(self.eigenvalues, axis=1)[:, -2:]
+        max1 = self.eigenvalues[np.arange(self.eigenvalues.shape[0]), index[:, 1]]
+        max2 = self.eigenvalues[np.arange(self.eigenvalues.shape[0]), index[:, 0]]
         # if np.abs(eigen2) < self._zero_eps:
         #    warnings.warn("Second largest eigenvalue is zero.")
         #     return np.inf
@@ -93,12 +93,11 @@ class EigenValueTool(object):
             negative eigenvalues, then None is returned.
         """
         # compute numerator
-        pos_mask = (self._eigenvals > self._zero_eps).astype(int)
-        result = np.sum(self._eigenvals * pos_mask, axis=1)
-        result /= np.sum(pos_mask, axis=1)
+        pos_mask = (self.eigenvalues > self._eps).astype(int)
+        result = np.sum(self.eigenvalues * pos_mask, axis=1) / np.sum(pos_mask, axis=1)
         # compute denominator
-        neg_mask = (self._eigenvals < -self._zero_eps).astype(int)
-        result /= (np.sum(self._eigenvals * neg_mask, axis=1) / np.sum(neg_mask, axis=1))
+        neg_mask = (self.eigenvalues < -self._eps).astype(int)
+        result /= (np.sum(self.eigenvalues * neg_mask, axis=1) / np.sum(neg_mask, axis=1))
         return result
 
     @property
@@ -114,7 +113,7 @@ class EigenValueTool(object):
             The condition number, the square root of largest eigenval divided by minimum eigenval.
             If one of maximima or mininum is negative, then none is returned.
         """
-        ratio = np.amax(self._eigenvals, axis=1) / np.amin(self._eigenvals, axis=1)
+        ratio = np.amax(self.eigenvalues, axis=1) / np.amin(self.eigenvalues, axis=1)
         # set negative values to None
         ratio[ratio < 0.] = np.nan
         return np.sqrt(ratio)
@@ -131,7 +130,7 @@ class EigenValueTool(object):
         int :
             Number of negative eigenvalues.
         """
-        return np.sum(self._eigenvals < -self._zero_eps, axis=1)
+        return np.sum(self._eigenvalues < -self._eps, axis=1)
 
     @property
     def rank(self):
@@ -148,7 +147,7 @@ class EigenValueTool(object):
         int :
             The number of non-zero eigenvalues.
         """
-        return np.sum(np.abs(self._eigenvals) > self._zero_eps, axis=1)
+        return np.sum(np.abs(self._eigenvalues) > self._eps, axis=1)
 
     @property
     def signature(self):
@@ -165,8 +164,8 @@ class EigenValueTool(object):
         int :
             The number of positive eigenvalues minus the number of negative eigenvalues.
         """
-        result = np.sum(self._eigenvals > self._zero_eps, axis=1)
-        result -= np.sum(self._eigenvals < -self._zero_eps, axis=1)
+        result = np.sum(self.eigenvalues > self._eps, axis=1)
+        result -= np.sum(self.eigenvalues < -self._eps, axis=1)
         return result
 
     @property
@@ -184,6 +183,6 @@ class EigenValueTool(object):
         (int, int) :
             Returns the rank and signature of the critical point.
         """
-        if np.any(np.abs(self._eigenvals) < self._zero_eps):
+        if np.any(np.abs(self.eigenvalues) < self._eps):
             warnings.warn("Near catastrophic eigenvalue (close to zero) been found.")
         return np.hstack([self.rank[:, np.newaxis], self.signature[:, np.newaxis]])
