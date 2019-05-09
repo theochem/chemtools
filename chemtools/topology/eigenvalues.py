@@ -39,7 +39,7 @@ class EigenValueTool(object):
         Parameters
         ----------
         eigenvalues : np.ndarray
-            A two-dimensional array holding the eigenvalues separately for each point.
+            A two-dimensional array recording the eigenvalues of each point in a row.
         eps : float, optional
             The error bound for being a zero eigenvalue.
 
@@ -53,21 +53,15 @@ class EigenValueTool(object):
 
     @property
     def eigenvalues(self):
-        r"""Set of two-dimensional eigenvalues."""
+        r"""Eigenvalues of points."""
         return self._eigenvalues
 
     @property
     def ellipticity(self):
-        r"""Ellipticity of a bond critical point.
+        r"""Ellipticity of point(s).
 
         .. math::
            \frac{\lambda_\text{max}}{\lambda_\text{max-1}} - 1
-
-        Returns
-        -------
-        float :
-            Returns the ratio of the largest two eigenvalues minus one. If second largest eigenvalue
-            is zero, then infinity is returned.
         """
         # get the two largest eigenvalues
         index = np.argsort(self.eigenvalues, axis=1)[:, -2:]
@@ -85,12 +79,6 @@ class EigenValueTool(object):
         .. math::
            \frac{\left(\frac{\sum_{\lambda_k > 0} \lambda_k}{\sum_{\lambda_k > 0} 1}\right)}
                 {\left(\frac{\sum_{\lambda_k < 0} \lambda_k}{\sum_{\lambda_k < 0} 1}\right)}
-
-        Returns
-        -------
-        float :
-            Ratio of average positive eigenvalues to average negative eigenvalues. If there are no
-            negative eigenvalues, then None is returned.
         """
         # compute numerator
         pos_mask = (self.eigenvalues > self._eps).astype(int)
@@ -106,12 +94,6 @@ class EigenValueTool(object):
 
         .. math ::
             \sqrt{\frac{\lambda_\text{max}}{\lambda_\text{min}}}
-
-        Returns
-        -------
-        float :
-            The condition number, the square root of largest eigenval divided by minimum eigenval.
-            If one of maximima or mininum is negative, then none is returned.
         """
         ratio = np.amax(self.eigenvalues, axis=1) / np.amin(self.eigenvalues, axis=1)
         # set negative values to None
@@ -124,11 +106,6 @@ class EigenValueTool(object):
 
         .. math::
            \sum_{\lambda_k < 0} 1
-
-        Returns
-        -------
-        int :
-            Number of negative eigenvalues.
         """
         return np.sum(self._eigenvalues < -self._eps, axis=1)
 
@@ -141,28 +118,15 @@ class EigenValueTool(object):
 
         .. math::
             \sum_{\lambda_i > 0} 1
-
-        Returns
-        -------
-        int :
-            The number of non-zero eigenvalues.
         """
         return np.sum(np.abs(self._eigenvalues) > self._eps, axis=1)
 
     @property
     def signature(self):
-        r"""Signature of the critical point.
-
-        This is used to classify saddle critical points (ie certain directions flow outwards and
-        certain directions flow inwards).
+        r"""Signature of point(s) which is the difference of number of positive & negative values.
 
         .. math::
             \sum_{\lambda_k > 0.} 1 - \sum_{\lambda_k < 0.} 1
-
-        Returns
-        -------
-        int :
-            The number of positive eigenvalues minus the number of negative eigenvalues.
         """
         result = np.sum(self.eigenvalues > self._eps, axis=1)
         result -= np.sum(self.eigenvalues < -self._eps, axis=1)
@@ -178,10 +142,6 @@ class EigenValueTool(object):
         A system is degenerate if it has a zero eigenvalue and consequently, it's critical point
         is said to be "catastrophe". It returns a warning in this case.
 
-        Returns
-        -------
-        (int, int) :
-            Returns the rank and signature of the critical point.
         """
         if np.any(np.abs(self.eigenvalues) < self._eps):
             warnings.warn("Near catastrophic eigenvalue (close to zero) been found.")
