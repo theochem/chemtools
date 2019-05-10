@@ -32,7 +32,7 @@ import matplotlib.pyplot as plt
 from matplotlib import rcParams
 
 from chemtools.wrappers.molecule import Molecule
-from chemtools.denstools.densbased import DensityBasedLocalTool
+from chemtools.denstools.densbased import DensGradBasedTool
 from chemtools.utils.cube import CubeGen
 from chemtools.outputs.output_vmd import print_vmd_script_nci
 
@@ -133,7 +133,7 @@ class NCI(object):
         grad = molecule.compute_gradient(cube.points)
         hess = molecule.compute_hessian(cube.points)
         # compute reduced gradient
-        rdgrad = DensityBasedLocalTool(dens, grad).reduced_density_gradient
+        rdgrad = DensGradBasedTool(dens, grad).reduced_density_gradient
         return cls(dens, rdgrad, cube, hessian=hess)
 
     @property

@@ -27,14 +27,56 @@
 import numpy as np
 
 
-__all__ = ['DensityBasedLocalTool']
+__all__ = ['DensBasedTool', 'DensGradBasedTool', 'DensGradLapBasedTool']
 
 
-class DensityBasedLocalTool(object):
+class DensBasedTool(object):
     """Class of density-based local descriptive tools."""
 
-    def __init__(self, dens, grad, lap=None, kin=None):
-        """Initialize class with density and gradient.
+    def __init__(self, dens):
+        """Initialize class.
+
+        Parameters
+        ----------
+        dens : np.ndarray
+            Electron density evaluated on a set of grid points.
+
+        """
+        if dens.ndim != 1:
+            raise ValueError('Argument dens should be a 1-dimensional array.')
+        self._dens = dens
+
+    @property
+    def density(self):
+        r"""Electron density :math:`\rho\left(\mathbf{r}\right)`."""
+        return self._dens
+
+    @property
+    def shannon_information(self):
+        r"""Shannon information defined as :math:`\rho(r) \ln \rho(r)`."""
+        # TODO: masking might be needed
+        value = self.density * np.log(self.density)
+        return value
+
+    @property
+    def kinetic_energy_density_thomas_fermi(self):
+        r"""Thomas-Fermi kinetic energy density.
+
+        .. math::
+           \tau_\text{TF} \left(\mathbf{r}\right) = \frac{3}{10} \left(6 \pi^2 \right)^{2/3}
+                  \left(\frac{\rho\left(\mathbf{r}\right)}{2}\right)^{5/3}
+        """
+        # compute Thomas-Fermi kinetic energy
+        prefactor = 0.3 * (3.0 * np.pi**2.0)**(2.0 / 3.0)
+        kinetic = prefactor * self.density ** (5.0 / 3.0)
+        return kinetic
+
+
+class DensGradBasedTool(DensBasedTool):
+    """Class of density- & gradient-based local descriptive tools."""
+
+    def __init__(self, dens, grad):
+        """Initialize class.
 
         Parameters
         ----------
@@ -42,29 +84,12 @@ class DensityBasedLocalTool(object):
             Electron density evaluated on a set of grid points.
         grad : np.ndarray
             Gradient vector of electron density evaluated on a set of grid points.
-        lap : np.ndarray, optional
-            Laplacian of electron density evaluated on a set of grid points.
-        kin : np.ndarray, optional
-            Positive definite kinetic energy density evaluated on a set of grid points.
 
         """
-        if dens.ndim != 1:
-            raise ValueError('Argument density should be a 1-dimensional array.')
+        super(DensGradBasedTool, self).__init__(dens)
         if grad.shape != (dens.size, 3):
-            raise ValueError('Argument gradient should have same shape as dens array.'
-                             ' {0}!={1}'.format(grad.shape, dens.shape))
-        if lap is not None and lap.shape != dens.shape:
-            raise ValueError('Argument laplacian should have same shape as dens array.'
-                             ' {0}!={1}'.format(lap.shape, dens.shape))
-        self._dens = dens
+            raise ValueError('Argument grad should be of {0} shape.'.format((dens.shape, 3)))
         self._grad = grad
-        self._lap = lap
-        self._kin = kin
-
-    @property
-    def density(self):
-        r"""Electron density :math:`\rho\left(\mathbf{r}\right)`."""
-        return self._dens
 
     @property
     def gradient(self):
@@ -81,39 +106,6 @@ class DensityBasedLocalTool(object):
         return self._grad
 
     @property
-    def laplacian(self):
-        r"""Laplacian of electron density :math:`\nabla ^2 \rho\left(\mathbf{r}\right)`.
-
-        This is defined as the trace of Hessian matrix of electron density which is equal to
-        the sum of its :math:`\left(\lambda_1, \lambda_2, \lambda_3\right)` eigen-values:
-
-        .. math::
-           \nabla^2 \rho\left(\mathbf{r}\right) = \nabla\cdot\nabla\rho\left(\mathbf{r}\right) =
-                     \frac{\partial^2\rho\left(\mathbf{r}\right)}{\partial x^2} +
-                     \frac{\partial^2\rho\left(\mathbf{r}\right)}{\partial y^2} +
-                     \frac{\partial^2\rho\left(\mathbf{r}\right)}{\partial z^2} =
-                     \lambda_1 + \lambda_2 + \lambda_3
-        """
-        return self._lap
-
-    @property
-    def kinetic_energy_density_positive_definite(self):
-        r"""Positive definite kinetic energy density.
-
-        .. math::
-           \tau \left(\mathbf{r}\right) =
-           \sum_i^N n_i \frac{1}{2} \rvert \nabla \phi_i \left(\mathbf{r}\right) \lvert^2
-        """
-        return self._kin
-
-    @property
-    def shannon_information(self):
-        r"""Shannon information defined as :math:`\rho(r) \ln \rho(r)`."""
-        # masking might be needed
-        value = self._dens * np.log(self._dens)
-        return value
-
-    @property
     def gradient_norm(self):
         r"""Norm of the gradient of electron density.
 
@@ -123,7 +115,7 @@ class DensityBasedLocalTool(object):
                   \left(\frac{\partial\rho\left(\mathbf{r}\right)}{\partial y}\right)^2 +
                   \left(\frac{\partial\rho\left(\mathbf{r}\right)}{\partial z}\right)^2 }
         """
-        norm = np.linalg.norm(self._grad, axis=1)
+        norm = np.linalg.norm(self.gradient, axis=1)
         return norm
 
     @property
@@ -135,7 +127,7 @@ class DensityBasedLocalTool(object):
            \frac{\lvert \nabla\rho\left(\mathbf{r}\right) \rvert}{\rho\left(\mathbf{r}\right)^{4/3}}
         """
         # Mask density values less than 1.0d-30 to avoid diving by zero
-        mdens = np.ma.masked_less(self._dens, 1.0e-30)
+        mdens = np.ma.masked_less(self.density, 1.0e-30)
         mdens.filled(1.0e-30)
         # Compute reduced density gradient
         prefactor = 0.5 / (3.0 * np.pi**2)**(1.0 / 3.0)
@@ -150,22 +142,47 @@ class DensityBasedLocalTool(object):
            \tau_\text{W} \left(\mathbf{r}\right) =
            \frac{\lvert \nabla\rho\left(\mathbf{r}\right) \rvert^2}{8 \rho\left(\mathbf{r}\right)}
         """
-        # Mask density values less than 1.0d-30 to avoid diving by zero
-        mdens = np.ma.masked_less(self._dens, 1.0e-30)
+        # mask density values less than 1.0d-30 to avoid diving by zero
+        mdens = np.ma.masked_less(self.density, 1.0e-30)
         mdens.filled(1.0e-30)
-        # Compute Weizsacker kinetic energy
+        # compute Weizsacker kinetic energy
         kinetic = self.gradient_norm**2.0 / (8.0 * mdens)
         return kinetic
 
+
+class DensGradLapBasedTool(DensGradBasedTool):
+    """Class of density-, gradient- & Laplacian-based local descriptive tools."""
+
+    def __init__(self, dens, grad, lap):
+        """Initialize class.
+
+        Parameters
+        ----------
+        dens : np.ndarray
+            Electron density evaluated on a set of grid points.
+        grad : np.ndarray
+            Gradient vector of electron density evaluated on a set of grid points.
+        lap : np.ndarray
+            Laplacian of electron density evaluated on a set of grid points.
+
+        """
+        super(DensGradLapBasedTool, self).__init__(dens, grad)
+        if lap.shape != dens.shape:
+            raise ValueError('Argument lap should be of {0} shape.'.format(dens.shape))
+        self._lap = lap
+
     @property
-    def kinetic_energy_density_thomas_fermi(self):
-        r"""Thomas-Fermi kinetic energy density.
+    def laplacian(self):
+        r"""Laplacian of electron density :math:`\nabla ^2 \rho\left(\mathbf{r}\right)`.
+
+        This is defined as the trace of Hessian matrix of electron density which is equal to
+        the sum of its :math:`\left(\lambda_1, \lambda_2, \lambda_3\right)` eigen-values:
 
         .. math::
-           \tau_\text{TF} \left(\mathbf{r}\right) = \frac{3}{10} \left(6 \pi^2 \right)^{2/3}
-                  \left(\frac{\rho\left(\mathbf{r}\right)}{2}\right)^{5/3}
+           \nabla^2 \rho\left(\mathbf{r}\right) = \nabla\cdot\nabla\rho\left(\mathbf{r}\right) =
+                     \frac{\partial^2\rho\left(\mathbf{r}\right)}{\partial x^2} +
+                     \frac{\partial^2\rho\left(\mathbf{r}\right)}{\partial y^2} +
+                     \frac{\partial^2\rho\left(\mathbf{r}\right)}{\partial z^2} =
+                     \lambda_1 + \lambda_2 + \lambda_3
         """
-        # Compute Thomas-Fermi kinetic energy
-        prefactor = 0.3 * (3.0 * np.pi**2.0)**(2.0 / 3.0)
-        kinetic = prefactor * self._dens ** (5.0 / 3.0)
-        return kinetic
+        return self._lap

@@ -28,7 +28,7 @@ from numpy.ma import masked_less
 
 from chemtools.utils.cube import CubeGen
 from chemtools.wrappers.molecule import Molecule
-from chemtools.denstools.densbased import DensityBasedLocalTool
+from chemtools.denstools.densbased import DensGradBasedTool
 from chemtools.outputs import print_vmd_script_isosurface
 
 
@@ -76,10 +76,9 @@ class ELF(object):
         # if kin.shape != (grid.shape,):
         #     raise ValueError("Arguments kin should have the same size as grid.npoints!")
         self._grid = grid
-        self._denstool = DensityBasedLocalTool(dens, grad, None, kin)
+        self._denstool = DensGradBasedTool(dens, grad)
         # compute elf value
-        self._vals = self._denstool.kinetic_energy_density_positive_definite
-        self._vals -= self._denstool.kinetic_energy_density_weizsacker
+        self._vals = kin - self._denstool.kinetic_energy_density_weizsacker
         self._vals /= masked_less(self._denstool.kinetic_energy_density_thomas_fermi, 1.0e-30)
         self._vals = 1.0 / (1.0 + self._vals**2.0)
         # assign basins and topology attributes

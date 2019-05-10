@@ -28,7 +28,7 @@ import numpy as np
 
 from chemtools.utils.utils import doc_inherit
 from chemtools.wrappers.molecule import Molecule
-from chemtools.denstools.densbased import DensityBasedLocalTool
+from chemtools.denstools.densbased import DensGradBasedTool
 
 
 __all__ = ["KED"]
@@ -58,9 +58,9 @@ class KED(object):
         # compute density, gradient, & kinetic energy density on grid
         dens = molecule.compute_density(self._points, spin, index)
         grad = molecule.compute_gradient(self._points, spin, index)
-        ke = molecule.compute_kinetic_energy_density(self._points, spin, index)
-        # initialize density-based tools class
-        self._denstools = DensityBasedLocalTool(dens, grad, None, ke)
+        self._ke = molecule.compute_kinetic_energy_density(self._points, spin, index)
+        # initialize dens- & grad-based tools class
+        self._denstools = DensGradBasedTool(dens, grad)
 
     @classmethod
     def from_file(cls, filename, points, spin="ab", index=None):
@@ -86,21 +86,26 @@ class KED(object):
         return self._points
 
     @property
-    @doc_inherit(DensityBasedLocalTool, 'density')
+    @doc_inherit(DensGradBasedTool, 'density')
     def density(self):
         return self._denstools.density
 
     @property
-    @doc_inherit(DensityBasedLocalTool, 'kinetic_energy_density_positive_definite')
     def positive_definite(self):
-        return self._denstools.kinetic_energy_density_positive_definite
+        r"""Positive definite kinetic energy density.
+
+        .. math::
+           \tau \left(\mathbf{r}\right) =
+           \sum_i^N n_i \frac{1}{2} \rvert \nabla \phi_i \left(\mathbf{r}\right) \lvert^2
+        """
+        return self._ke
 
     @property
-    @doc_inherit(DensityBasedLocalTool, 'kinetic_energy_density_thomas_fermi')
+    @doc_inherit(DensGradBasedTool, 'kinetic_energy_density_thomas_fermi')
     def thomas_fermi(self):
         return self._denstools.kinetic_energy_density_thomas_fermi
 
     @property
-    @doc_inherit(DensityBasedLocalTool, 'kinetic_energy_density_weizsacker')
+    @doc_inherit(DensGradBasedTool, 'kinetic_energy_density_weizsacker')
     def weizsacker(self):
         return self._denstools.kinetic_energy_density_weizsacker

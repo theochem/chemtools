@@ -24,14 +24,14 @@
 """Density-Based Local Tools."""
 
 
-from chemtools.denstools.densbased import DensityBasedLocalTool
+from chemtools.denstools.densbased import DensGradLapBasedTool
 from chemtools.wrappers.molecule import Molecule
 
 
 __all__ = ['DensityLocalTool']
 
 
-class DensityLocalTool(DensityBasedLocalTool):
+class DensityLocalTool(DensGradLapBasedTool):
     """Density Local Tool Class."""
 
     def __init__(self, molecule, spin='ab', index=None, points=None):
@@ -48,7 +48,8 @@ class DensityLocalTool(DensityBasedLocalTool):
         """
         if points is None:
             raise NotImplementedError()
-        super(DensityLocalTool, self).__init__(*molecule.compute_megga(points, spin, index))
+        res = molecule.compute_megga(points, spin, index)[:-1]
+        super(DensityLocalTool, self).__init__(*res)
 
     @classmethod
     def from_file(cls, filename, spin='ab', index=None, points=None):
