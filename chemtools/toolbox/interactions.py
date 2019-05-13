@@ -92,7 +92,7 @@ class BaseInteraction(object):
         return grid
 
     @staticmethod
-    def transform(ratio, transformation, k):
+    def _transform(ratio, transformation, k):
         if transformation == 'original':
             return 1.0 / (1.0 + ratio**k)
         elif transformation == 'hyperbolic':
@@ -333,7 +333,7 @@ class ELF(BaseInteraction):
         # compute elf ratio & apply transformation
         self._ratio = kin - self._denstool.kinetic_energy_density_weizsacker
         self._ratio /= masked_less(self._denstool.kinetic_energy_density_thomas_fermi, 1.0e-30)
-        self._value = self.transform(self._ratio, trans, k)
+        self._value = self._transform(self._ratio, trans, k)
         # assign basins and topology attributes
         self._basins = None
         self._topology = None
