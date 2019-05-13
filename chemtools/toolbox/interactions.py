@@ -319,10 +319,10 @@ class ELF(BaseInteraction):
         #     raise ValueError("Arguments kin should have the same size as grid.npoints!")
         self._grid = grid
         self._denstool = DensGradBasedTool(dens, grad)
-        # compute elf value
-        self._vals = kin - self._denstool.kinetic_energy_density_weizsacker
-        self._vals /= masked_less(self._denstool.kinetic_energy_density_thomas_fermi, 1.0e-30)
-        self._vals = 1.0 / (1.0 + self._vals**2.0)
+        # compute elf ratio & apply transformation
+        self._ratio = kin - self._denstool.kinetic_energy_density_weizsacker
+        self._ratio /= masked_less(self._denstool.kinetic_energy_density_thomas_fermi, 1.0e-30)
+        self._vals = 1.0 / (1.0 + self.ratio**2.0)
         # assign basins and topology attributes
         self._basins = None
         self._topology = None
@@ -343,6 +343,11 @@ class ELF(BaseInteraction):
     def density(self):
         r"""Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on grid points."""
         return self._denstool.density
+
+    @property
+    def ratio(self):
+        r"""The ELF ratio evaluated on the grid points."""
+        return self._ratio
 
     @property
     def values(self):
