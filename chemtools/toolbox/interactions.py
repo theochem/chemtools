@@ -311,7 +311,7 @@ class ELF(BaseInteraction):
              \sum_i^{\sigma} \lvert \nabla \phi_i (\mathbf{r}) \rvert^2
     """
 
-    def __init__(self, dens, grad, kin, grid=None, transformation='original', k=2.0):
+    def __init__(self, dens, grad, kin, grid=None, trans='original', k=2):
         """Initialize ELF class.
 
         Parameters
@@ -333,14 +333,14 @@ class ELF(BaseInteraction):
         # compute elf ratio & apply transformation
         self._ratio = kin - self._denstool.kinetic_energy_density_weizsacker
         self._ratio /= masked_less(self._denstool.kinetic_energy_density_thomas_fermi, 1.0e-30)
-        self._value = self.transform(self._ratio, transformation, k)
+        self._value = self.transform(self._ratio, trans, k)
         # assign basins and topology attributes
         self._basins = None
         self._topology = None
 
     @classmethod
     @doc_inherit(BaseInteraction, 'from_molecule')
-    def from_molecule(cls, molecule, spin='ab', index=None, grid=None):
+    def from_molecule(cls, molecule, spin='ab', index=None, grid=None, trans='original', k=2):
         # generate cubic grid or check grid
         grid = BaseInteraction._check_grid(molecule, grid)
         # compute density, gradient & kinetic energy density on grid
@@ -348,7 +348,7 @@ class ELF(BaseInteraction):
         grad = molecule.compute_gradient(grid.points, spin=spin, index=index)
         kin = molecule.compute_kinetic_energy_density(grid.points, spin=spin, index=index)
 
-        return cls(dens, grad, kin, grid)
+        return cls(dens, grad, kin, grid, trans, k)
 
     @property
     def density(self):
