@@ -62,7 +62,7 @@ def test_analyze_nci_h2o_dimer_wfn():
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g-dens.cube') as dens_cube1_path:
         cube = CubeGen.from_cube(dens_cube1_path)
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g.wfn') as file_path:
-        desp = NCI.from_file(file_path, cube)
+        desp = NCI.from_file(file_path, grid=cube)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     # Build the NCI tool
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
@@ -111,7 +111,7 @@ def test_analyze_nci_h2o_dimer_fchk():
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g-dens.cube') as dens_cube1_path:
         cube = CubeGen.from_cube(dens_cube1_path)
     # Build the NCI tool
-    desp = NCI.from_molecule(mol, cube)
+    desp = NCI.from_molecule(mol, grid=cube)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g-grad.cube') as grad_cube1_path:
         dmol1 = IOData.from_file(str(dens_cube1_path))
@@ -169,7 +169,7 @@ def test_analyze_nci_assert_errors():
     assert_raises(ValueError, NCI, np.array([0.]), rdg, cube)
     assert_raises(ValueError, NCI, dens, np.array([0.]), cube)
     assert_raises(ValueError, NCI, dens, rdg, cube, hessian=np.array([0.]))
-    assert_raises(ValueError, NCI.from_file, file_path, cube=1)
+    assert_raises(ValueError, NCI.from_file, file_path, grid=1)
 
     desp = NCI(dens, rdg, cube)
     assert desp.signed_density is None
@@ -188,7 +188,7 @@ def test_analyze_nci_assert_errors():
     desp = NCI.from_molecule(mol)
     assert desp.signed_density.shape == desp._density.shape
 
-    desp = NCI.from_file(file_path, cube)
+    desp = NCI.from_file(file_path, grid=cube)
 
     with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_assert_errors') as dn:
         test = '%s/%s' % (dn, 'test.png')

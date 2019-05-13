@@ -45,7 +45,7 @@ __all__ = ['NCI', 'ELF']
 class NCI(object):
     """Non-Covalent Interactions (NCI) Class."""
 
-    def __init__(self, density, rdgradient, cube, hessian=None):
+    def __init__(self, density, rdgradient, grid, hessian=None):
         """Initialize class using density, reduced density gradient and `CubeGen` instance.
 
         Parameters
@@ -61,22 +61,22 @@ class NCI(object):
             Hessian of density evaluated on grid points of `cube`. This is a array with shape
             (n, 6) where n is the number of grid points of `cube`.
         """
-        if density.shape != (len(cube.points),):
+        if density.shape != (len(grid.points),):
             raise ValueError('Shape of density argument {0} does not match '
-                             'expected ({1},) shape.'.format(density.shape, len(cube.points)))
-        if rdgradient.shape != (len(cube.points),):
+                             'expected ({1},) shape.'.format(density.shape, len(grid.points)))
+        if rdgradient.shape != (len(grid.points),):
             raise ValueError('Shape of rdgradient argument {0} does not '
-                             'match expected ({1},) shape.'.format(density.shape, len(cube.points)))
+                             'match expected ({1},) shape.'.format(density.shape, len(grid.points)))
 
         if hessian is not None:
-            if hessian.shape != (len(cube.points), 6):
+            if hessian.shape != (len(grid.points), 6):
                 raise ValueError('Shape of hessian argument {0} does not match expected ({1}, 6)'
-                                 ' shape.'.format(hessian.shape, len(cube.points)))
+                                 ' shape.'.format(hessian.shape, len(grid.points)))
 
             # convert the (n, 6) shape to (n, 3, 3) to calculate eigenvalues.
-            hestri = np.zeros((len(cube.points), 3, 3))
+            hestri = np.zeros((len(grid.points), 3, 3))
             tmp = np.zeros((3, 3))
-            for i in range(0, len(cube.points)):
+            for i in range(0, len(grid.points)):
                 tmp[np.triu_indices(3)] = hessian[i, :]
                 hestri[i, :] = tmp
 
@@ -95,48 +95,52 @@ class NCI(object):
 
         self._density = density
         self._rdgrad = rdgradient
-        self._cube = cube
+        self._grid = grid
 
     @classmethod
-    def from_file(cls, filename, cube=None):
+    def from_file(cls, filename, spin='ab', index=None, grid=None):
         """Initialize class using wave-function file.
 
         Parameters
         ----------
         filename : str
             Path to molecule's files.
-        cube : instance of `CubeGen`, optional
+        spin
+        index
+        grid : instance of `CubeGen`, optional
             Cubic grid used for calculating and visualizing the NCI.
             If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
         """
         molecule = Molecule.from_file(filename)
-        return cls.from_molecule(molecule, cube)
+        return cls.from_molecule(molecule, spin=spin, index=index, grid=grid)
 
     @classmethod
-    def from_molecule(cls, molecule, cube=None):
+    def from_molecule(cls, molecule, spin='ab', index=None, grid=None):
         """Initialize class from ``Molecule`` object.
 
         Parameters
         ----------
         molecule : ``Molecule``
             Instance of ``Molecule``.
-        cube : instance of `CubeGen`, optional
+        spin : str, optional
+        index : int or Sequence of int, optional
+        grid : instance of `CubeGen`, optional
             Cubic grid used for calculating and visualizing the NCI.
             If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
         """
         # generate or check cubic grid
-        if cube is None:
-            cube = CubeGen.from_molecule(molecule.numbers, molecule.pseudo_numbers,
+        if grid is None:
+            grid = CubeGen.from_molecule(molecule.numbers, molecule.pseudo_numbers,
                                          molecule.coordinates, spacing=0.1, threshold=2.0)
-        elif not isinstance(cube, CubeGen):
-            raise ValueError('Argument cube should be an instance of CubeGen!')
+        elif not hasattr(grid, 'points'):
+            raise ValueError('Argument grid should have "points" attribute!')
         # compute density, gradient & hessian on cubic grid
-        dens = molecule.compute_density(cube.points)
-        grad = molecule.compute_gradient(cube.points)
-        hess = molecule.compute_hessian(cube.points)
+        dens = molecule.compute_density(grid.points, spin=spin, index=index)
+        grad = molecule.compute_gradient(grid.points, spin=spin, index=index)
+        hess = molecule.compute_hessian(grid.points, spin=spin, index=index)
         # compute reduced gradient
         rdgrad = DensGradBasedTool(dens, grad).reduced_density_gradient
-        return cls(dens, rdgrad, cube, hessian=hess)
+        return cls(dens, rdgrad, grid, hessian=hess)
 
     @property
     def signed_density(self):
@@ -229,6 +233,8 @@ class NCI(object):
         ----
         The generated cube files and script imitate the NCIPlot software version 1.0.
         """
+        if not isinstance(self._grid, CubeGen):
+            raise ValueError('Scripts can only be generated when grid is a CubeGen.')
         # similar to NCIPlot program, reduced density gradient of points with
         # density > cutoff will be set to 100.0 before generating cube file to
         # display reduced density gradient iso-surface subject to the constraint
@@ -249,8 +255,8 @@ class NCI(object):
         rdgfile = filename + '-grad.cube'     # reduced density gradient cube file
         vmdfile = filename + '.vmd'           # vmd script file
         # dump density & reduced density gradient cube files
-        self._cube.dump_cube(densfile, dens)
-        self._cube.dump_cube(rdgfile, cutrdg)
+        self._grid.dump_cube(densfile, dens)
+        self._grid.dump_cube(rdgfile, cutrdg)
         # write VMD scripts
         print_vmd_script_nci(vmdfile, densfile, rdgfile, isosurf, denscut * 100.0)
 
