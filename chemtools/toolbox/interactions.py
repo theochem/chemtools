@@ -42,7 +42,28 @@ from numpy.ma import masked_less
 __all__ = ['NCI', 'ELF']
 
 
-class NCI(object):
+class BaseInteraction(object):
+    """Base class for (non)bonding interactions indicators."""
+
+    @classmethod
+    def from_file(cls, filename, spin='ab', index=None, grid=None):
+        """Initialize class using wave-function file.
+
+        Parameters
+        ----------
+        filename : str
+            Path to molecule's files.
+        spin
+        index
+        grid : instance of `CubeGen`, optional
+            Cubic grid used for calculating and visualizing the NCI.
+            If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
+        """
+        molecule = Molecule.from_file(filename)
+        return cls.from_molecule(molecule, spin=spin, index=index, grid=grid)
+
+
+class NCI(BaseInteraction):
     """Non-Covalent Interactions (NCI) Class."""
 
     def __init__(self, density, rdgradient, grid, hessian=None):
@@ -96,23 +117,6 @@ class NCI(object):
         self._density = density
         self._rdgrad = rdgradient
         self._grid = grid
-
-    @classmethod
-    def from_file(cls, filename, spin='ab', index=None, grid=None):
-        """Initialize class using wave-function file.
-
-        Parameters
-        ----------
-        filename : str
-            Path to molecule's files.
-        spin
-        index
-        grid : instance of `CubeGen`, optional
-            Cubic grid used for calculating and visualizing the NCI.
-            If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
-        """
-        molecule = Molecule.from_file(filename)
-        return cls.from_molecule(molecule, spin=spin, index=index, grid=grid)
 
     @classmethod
     def from_molecule(cls, molecule, spin='ab', index=None, grid=None):
@@ -261,7 +265,7 @@ class NCI(object):
         print_vmd_script_nci(vmdfile, densfile, rdgfile, isosurf, denscut * 100.0)
 
 
-class ELF(object):
+class ELF(BaseInteraction):
     r"""Electron Localization Function (ELF) introduced by Becke and Edgecombe.
 
     .. math::
@@ -308,23 +312,6 @@ class ELF(object):
         # assign basins and topology attributes
         self._basins = None
         self._topology = None
-
-    @classmethod
-    def from_file(cls, filename, spin='ab', index=None, grid=None):
-        """Initialize class using wave-function file.
-
-        Parameters
-        ----------
-        filename : str
-            Path to molecule's files.
-        spin
-        index
-        grid : instance of `CubeGen`, optional
-            Cubic grid used for calculating and visualizing the NCI.
-            If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
-        """
-        molecule = Molecule.from_file(filename)
-        return cls.from_molecule(molecule, spin=spin, index=index, grid=grid)
 
     @classmethod
     def from_molecule(cls, molecule, spin='ab', index=None, grid=None):
