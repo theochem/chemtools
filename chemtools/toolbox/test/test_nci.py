@@ -33,7 +33,7 @@ from numpy.testing import assert_raises, assert_equal, assert_almost_equal
 
 from horton import IOData
 from chemtools.utils import CubeGen
-from chemtools.toolbox.nci import NCI
+from chemtools.toolbox.interactions import NCI
 from chemtools.wrappers.molecule import Molecule
 try:
     from importlib_resources import path

@@ -23,7 +23,7 @@
 """Test chemtools.analysis.elf."""
 
 
-from chemtools.toolbox.elf import ELF
+from chemtools.toolbox.interactions import ELF
 try:
     from importlib_resources import path
 except ImportError:
