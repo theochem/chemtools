@@ -33,6 +33,7 @@ from matplotlib import rcParams
 
 from chemtools.wrappers.molecule import Molecule
 from chemtools.denstools.densbased import DensGradBasedTool
+from chemtools.utils.utils import doc_inherit
 from chemtools.utils.cube import CubeGen
 from chemtools.outputs.output_vmd import print_vmd_script_nci, print_vmd_script_isosurface
 
@@ -61,6 +62,34 @@ class BaseInteraction(object):
         """
         molecule = Molecule.from_file(filename)
         return cls.from_molecule(molecule, spin=spin, index=index, grid=grid)
+
+    @classmethod
+    def from_molecule(cls, molecule, spin='ab', index=None, grid=None):
+        """Initialize class from ``Molecule`` object.
+
+        Parameters
+        ----------
+        molecule : instance of `Molecule` class.
+            Instance of `Molecular` class.
+        spin : str, optional
+            The type of occupied spin orbitals. Options are 'a', 'b' & 'ab'.
+        index : int or Sequence of int, optional
+            Sequence of integers representing the index of spin orbitals.
+            If ``None``, all occupied spin orbitals are included.
+        grid : instance of `Grid` class, optional
+            Instance of `Grid` class.
+        """
+        pass
+
+    @staticmethod
+    def _check_grid(molecule, grid):
+        if grid is None:
+            grid = CubeGen.from_molecule(molecule.numbers, molecule.pseudo_numbers,
+                                         molecule.coordinates, spacing=0.1, threshold=5.0)
+        elif not hasattr(grid, 'points'):
+            raise ValueError('Argument grid should have "points" attribute!')
+
+        return grid
 
 
 class NCI(BaseInteraction):
@@ -119,25 +148,10 @@ class NCI(BaseInteraction):
         self._grid = grid
 
     @classmethod
+    @doc_inherit(BaseInteraction, 'from_molecule')
     def from_molecule(cls, molecule, spin='ab', index=None, grid=None):
-        """Initialize class from ``Molecule`` object.
-
-        Parameters
-        ----------
-        molecule : ``Molecule``
-            Instance of ``Molecule``.
-        spin : str, optional
-        index : int or Sequence of int, optional
-        grid : instance of `CubeGen`, optional
-            Cubic grid used for calculating and visualizing the NCI.
-            If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
-        """
         # generate or check cubic grid
-        if grid is None:
-            grid = CubeGen.from_molecule(molecule.numbers, molecule.pseudo_numbers,
-                                         molecule.coordinates, spacing=0.1, threshold=2.0)
-        elif not hasattr(grid, 'points'):
-            raise ValueError('Argument grid should have "points" attribute!')
+        grid = BaseInteraction._check_grid(molecule, grid)
         # compute density, gradient & hessian on cubic grid
         dens = molecule.compute_density(grid.points, spin=spin, index=index)
         grad = molecule.compute_gradient(grid.points, spin=spin, index=index)
@@ -314,23 +328,10 @@ class ELF(BaseInteraction):
         self._topology = None
 
     @classmethod
+    @doc_inherit(BaseInteraction, 'from_molecule')
     def from_molecule(cls, molecule, spin='ab', index=None, grid=None):
-        """Initialize class from ``Molecule`` object.
-
-        Parameters
-        ----------
-        molecule
-        spin
-        index
-        grid
-        """
         # generate cubic grid or check grid
-        if grid is None:
-            grid = CubeGen.from_molecule(molecule.numbers, molecule.pseudo_numbers,
-                                         molecule.coordinates, spacing=0.1, threshold=5.0)
-        elif not hasattr(grid, 'points'):
-            raise ValueError('Argument grid should have "points" attribute!')
-
+        grid = BaseInteraction._check_grid(molecule, grid)
         # compute density, gradient & kinetic energy density on grid
         dens = molecule.compute_density(grid.points, spin=spin, index=index)
         grad = molecule.compute_gradient(grid.points, spin=spin, index=index)
