@@ -100,7 +100,7 @@ class BaseInteraction(object):
         elif transformation == 'inverse':
             return NotImplementedError
         else:
-            raise ValueError('Argument transformation={0} not recognized!'.format(transformation))
+            raise ValueError('Argument trans={0} not recognized!'.format(transformation))
 
 
 class NCI(BaseInteraction):
