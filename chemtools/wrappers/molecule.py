@@ -198,7 +198,7 @@ class Molecule(object):
         """
         # check orbital spin
         if spin not in ["a", "b", "alpha", "beta", "ab"]:
-            raise ValueError("Argument spin is not recognized!")
+            raise ValueError("Argument spin={0} is not recognized!".format(spin))
         # compute density matrix
         if spin == "ab":
             # get density matrix of alpha & beta electrons
