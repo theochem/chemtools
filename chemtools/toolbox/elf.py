@@ -36,12 +36,10 @@ __all__ = ['ELF']
 
 
 class ELF(object):
-    r"""Electron Localization Function (ELF).
-
-    Introduced by Becke and Edgecombe:
+    r"""Electron Localization Function (ELF) introduced by Becke and Edgecombe.
 
     .. math::
-       ELF (\mathbf{r}) =
+       \text{ELF} (\mathbf{r}) =
             \frac{1}{\left( 1 + \left(\frac{D_{\sigma}(\mathbf{r})}
             {D_{\sigma}^0 (\mathbf{r})} \right)^2\right)}
 
@@ -54,7 +52,7 @@ class ELF(object):
        D_{\sigma}^0 (\mathbf{r}) &=
           \frac{3}{5} (6 \pi^2)^{2/3} \rho_{\sigma}^{5/3} (\mathbf{r})
 
-       \tau_{\sigma} (\mathbf{r}) =
+       \tau_{\sigma} (\mathbf{r}) &=
              \sum_i^{\sigma} \lvert \nabla \phi_i (\mathbf{r}) \rvert^2
     """
 
