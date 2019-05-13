@@ -33,4 +33,4 @@ except ImportError:
 def test_h2o_b3lyp_sto3g_elf():
     with path('chemtools.data', 'water_b3lyp_sto3g.fchk') as file_path:
         elf = ELF.from_file(file_path)
-    elf.dump_isosurface_files('h2o', isosurf=0.8)
+    elf.generate_scripts('h2o', isosurf=0.8)

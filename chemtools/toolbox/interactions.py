@@ -239,7 +239,7 @@ class NCI(BaseInteraction):
         # save plot ('.png' extension is added by default, if filename is not a supported format)
         plt.savefig(filename, dpi=800)
 
-    def dump_files(self, filename, isosurf=0.50, denscut=0.05):
+    def generate_scripts(self, filename, isosurf=0.50, denscut=0.05):
         r"""Generate cube files and VMD script to visualize non-covalent interactions (NCI).
 
         Generate density and reduced density gradient cube files, as well as a VMD (Visual
@@ -385,7 +385,7 @@ class ELF(BaseInteraction):
     def _compute_topology(self):
         raise NotImplementedError
 
-    def dump_isosurface_files(self, filename, isosurf=0.8):
+    def generate_scripts(self, filename, isosurf=0.8):
         """
         Parameters
         ----------

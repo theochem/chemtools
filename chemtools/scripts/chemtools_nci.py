@@ -146,7 +146,7 @@ def main_nci(args):
     nci = NCI.from_molecule(mol, cube)
 
     # dump files/scripts for visualizing NCI
-    nci.dump_files(args.output_name, args.isosurface, args.denscut)
+    nci.generate_scripts(args.output_name, args.isosurface, args.denscut)
 
     # plot reduced density gradient vs. signed density
     if args.plot:

@@ -72,7 +72,7 @@ def test_analyze_nci_h2o_dimer_wfn():
 
     with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_h2o_dimer_fchk') as dn:
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g')
-        desp.dump_files(cube2)
+        desp.generate_scripts(cube2)
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')
         mol2 = IOData.from_file(cube2)
         # Check coordinates
@@ -119,7 +119,7 @@ def test_analyze_nci_h2o_dimer_fchk():
 
     with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_h2o_dimer_fchk') as dn:
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g')
-        desp.dump_files(cube2)
+        desp.generate_scripts(cube2)
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')
         mol2 = IOData.from_file(cube2)
         # Check coordinates
@@ -177,7 +177,7 @@ def test_analyze_nci_assert_errors():
 
     with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_assert_errors') as dn:
         test = '%s/%s' % (dn, 'test')
-        desp.dump_files(test)
+        desp.generate_scripts(test)
         test = '%s/%s' % (dn, 'test-dens.cube')
         assert os.path.isfile(test) and os.access(test, os.R_OK)
         test = '%s/%s' % (dn, 'test-grad.cube')
