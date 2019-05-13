@@ -91,6 +91,17 @@ class BaseInteraction(object):
 
         return grid
 
+    @staticmethod
+    def transform(ratio, transformation, k):
+        if transformation == 'original':
+            return 1.0 / (1.0 + ratio**k)
+        elif transformation == 'hyperbolic':
+            return NotImplementedError
+        elif transformation == 'inverse':
+            return NotImplementedError
+        else:
+            raise ValueError('Argument transformation={0} not recognized!'.format(transformation))
+
 
 class NCI(BaseInteraction):
     """Non-Covalent Interactions (NCI) Class."""
@@ -300,7 +311,7 @@ class ELF(BaseInteraction):
              \sum_i^{\sigma} \lvert \nabla \phi_i (\mathbf{r}) \rvert^2
     """
 
-    def __init__(self, dens, grad, kin, grid=None):
+    def __init__(self, dens, grad, kin, grid=None, transformation='original', k=2.0):
         """Initialize ELF class.
 
         Parameters
@@ -322,7 +333,7 @@ class ELF(BaseInteraction):
         # compute elf ratio & apply transformation
         self._ratio = kin - self._denstool.kinetic_energy_density_weizsacker
         self._ratio /= masked_less(self._denstool.kinetic_energy_density_thomas_fermi, 1.0e-30)
-        self._vals = 1.0 / (1.0 + self.ratio**2.0)
+        self._value = self.transform(self._ratio, transformation, k)
         # assign basins and topology attributes
         self._basins = None
         self._topology = None
@@ -350,9 +361,9 @@ class ELF(BaseInteraction):
         return self._ratio
 
     @property
-    def values(self):
+    def value(self):
         r"""Electron localization function :math:`ELF(\mathbf{r})` evaluated on grid points."""
-        return self._vals
+        return self._value
 
     @property
     def basins(self):
@@ -384,6 +395,6 @@ class ELF(BaseInteraction):
         if not isinstance(self._grid, CubeGen):
             raise ValueError("")
         # dump ELF cube files
-        self._grid.dump_cube(filename + '-elf.cube', self.values)
+        self._grid.dump_cube(filename + '-elf.cube', self.value)
         # write VMD script for visualization
         print_vmd_script_isosurface(filename + '.vmd', filename + '-elf.cube', isosurf=isosurf)
