@@ -398,3 +398,64 @@ class ELF(BaseInteraction):
         self._grid.dump_cube(filename + '-elf.cube', self.value)
         # write VMD script for visualization
         print_vmd_script_isosurface(filename + '.vmd', filename + '-elf.cube', isosurf=isosurf)
+
+
+class LOL(BaseInteraction):
+    r"""Localized orbital Locator (LOL) Class."""
+
+    def __init__(self, dens, grad, kin, grid, trans='original', k=2):
+        self._tool = DensGradBasedTool(dens, grad)
+        self._dens = dens
+        self._grid = grid
+        self._ratio = self._tool.kinetic_energy_density_thomas_fermi / kin
+        self._value = self._transform(self._ratio, trans, k)
+
+    @classmethod
+    def from_molecule(cls, molecule, spin='ab', index=None, grid=None, trans='original', k=2):
+        """Initialize class from ``Molecule`` object.
+        Parameters
+        ----------
+        molecule
+        spin
+        index
+        grid
+        trans
+        k
+        """
+        # generate cubic grid or check grid
+        if grid is None:
+            grid = CubeGen.from_molecule(molecule.numbers, molecule.pseudo_numbers,
+                                         molecule.coordinates, spacing=0.1, threshold=5.0)
+        elif not hasattr(grid, 'points'):
+            raise ValueError('Argument grid should have "points" attribute!')
+
+        # compute density, gradient & kinetic energy density on grid
+        dens = molecule.compute_density(grid.points, spin=spin, index=index)
+        grad = molecule.compute_gradient(grid.points, spin=spin, index=index)
+        kin = molecule.compute_kinetic_energy_density(grid.points, spin=spin, index=index)
+
+        return cls(dens, grad, kin, grid)
+
+    @property
+    def ratio(self):
+        r"""The LOL ratio evaluated on the grid points."""
+        return self._ratio
+
+    @property
+    def value(self):
+        """The :math:`LOL(\mathbf{r})` evaluated on grid points."""
+        return self._value
+
+    def dump_isosurface_files(self, filename, isosurf=0.5):
+        """
+        Parameters
+        ----------
+        filename
+        isosurf
+        """
+        if not isinstance(self._grid, CubeGen):
+            raise ValueError("")
+        # dump LOL cube files
+        self._grid.dump_cube(filename + '-lol.cube', self.value)
+        # write VMD script for visualization
+        print_vmd_script_isosurface(filename + '.vmd', filename + '-lol.cube', isosurf=isosurf)
