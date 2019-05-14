@@ -27,7 +27,7 @@
 import numpy as np
 
 
-__all__ = ['DensTool', 'DensGradTool', 'DensGradLapTool', 'DensGradLapKedBasedTool']
+__all__ = ['DensTool', 'DensGradTool', 'DensGradLapTool', 'DensGradLapKedTool']
 
 
 class DensTool(object):
@@ -233,7 +233,7 @@ class DensGradLapTool(DensGradTool):
         return value
 
 
-class DensGradLapKedBasedTool(DensGradLapTool):
+class DensGradLapKedTool(DensGradLapTool):
     """Local descriptive tools based on density, gradient, Laplacian & kinetic energy density."""
 
     def __init__(self, dens, grad, lap, ked):
@@ -251,7 +251,7 @@ class DensGradLapKedBasedTool(DensGradLapTool):
             Kinetic energy density evaluated on a set of grid points.
 
         """
-        super(DensGradLapKedBasedTool, self).__init__(dens, grad)
+        super(DensGradLapKedTool, self).__init__(dens, grad)
         if lap.shape != ked.shape:
             raise ValueError('Argument ked should be of {0} shape.'.format(dens.shape))
         self._ked = ked
