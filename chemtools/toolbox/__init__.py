@@ -29,3 +29,4 @@ from chemtools.toolbox.conceptual import *
 from chemtools.toolbox.kinetic import *
 from chemtools.toolbox.orbbased import *
 from chemtools.toolbox.densbased import *
+from chemtools.toolbox.interactions import *
