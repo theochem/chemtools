@@ -186,3 +186,48 @@ class DensGradLapBasedTool(DensGradBasedTool):
                      \lambda_1 + \lambda_2 + \lambda_3
         """
         return self._lap
+
+    @property
+    def kinetic_energy_density_gradient_expansion(self):
+        r"""Gradient expansion approximation of kinetic energy density.
+
+        .. math::
+           \tau_\text{GEA} \left(\mathbf{r}\right) =
+           \tau_\text{TF} \left(\mathbf{r}\right) +
+           \tfrac{1}{9} \tau_\text{W} \left(\mathbf{r}\right) +
+           \tfrac{1}{6} \nabla^2 \rho\left(\mathbf{r}\right)
+        """
+        return self.kinetic_energy_density_gradient_expansion_general(9., 6.)
+
+    @property
+    def kinetic_energy_density_gradient_expansion_empirical(self):
+        r"""Empirical gradient expansion approximation of kinetic energy density.
+
+        .. math::
+           \tau_\text{empGEA} \left(\mathbf{r}\right) =
+           \tau_\text{TF} \left(\mathbf{r}\right) +
+           \tfrac{1}{5} \tau_\text{W} \left(\mathbf{r}\right) +
+           \tfrac{1}{6} \nabla^2 \rho\left(\mathbf{r}\right)
+        """
+        return self.kinetic_energy_density_gradient_expansion_general(5., 6.)
+
+    def kinetic_energy_density_gradient_expansion_general(self, alpha, beta):
+        r"""General gradient expansion approximation of kinetic energy density.
+
+        .. math::
+           \tau_\text{genGEA} \left(\mathbf{r}\right) =
+           \tau_\text{TF} \left(\mathbf{r}\right) +
+           \tfrac{1}{\alpha} \tau_\text{W} \left(\mathbf{r}\right) +
+           \tfrac{1}{\beta} \nabla^2 \rho\left(\mathbf{r}\right)
+
+        Parameters
+        ----------
+        alpha : float
+            Value of parameter :math:`\alpha`.
+        beta : float
+            Value of parameter :math:`\beta`.
+        """
+        value = self.kinetic_energy_density_thomas_fermi
+        value += self.kinetic_energy_density_weizsacker / alpha
+        value += self.laplacian / beta
+        return value
