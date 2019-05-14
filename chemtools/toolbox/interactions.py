@@ -298,8 +298,8 @@ class ELF(BaseInteraction):
         self._grid = grid
         self._denstool = DensGradBasedTool(dens, grad)
         # compute elf ratio & apply transformation
-        self._ratio = kin - self._denstool.kinetic_energy_density_weizsacker
-        self._ratio /= masked_less(self._denstool.kinetic_energy_density_thomas_fermi, 1.0e-30)
+        self._ratio = kin - self._denstool.ked_weizsacker
+        self._ratio /= masked_less(self._denstool.ked_thomas_fermi, 1.0e-30)
         self._value = self._transform(self._ratio, trans, k)
         # assign basins and topology attributes
         self._basins = None

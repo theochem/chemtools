@@ -101,11 +101,11 @@ class KED(object):
         return self._ke
 
     @property
-    @doc_inherit(DensGradBasedTool, 'kinetic_energy_density_thomas_fermi')
+    @doc_inherit(DensGradBasedTool, 'ked_thomas_fermi')
     def thomas_fermi(self):
-        return self._denstools.kinetic_energy_density_thomas_fermi
+        return self._denstools.ked_thomas_fermi
 
     @property
-    @doc_inherit(DensGradBasedTool, 'kinetic_energy_density_weizsacker')
+    @doc_inherit(DensGradBasedTool, 'ked_weizsacker')
     def weizsacker(self):
-        return self._denstools.kinetic_energy_density_weizsacker
+        return self._denstools.ked_weizsacker

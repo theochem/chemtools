@@ -59,7 +59,7 @@ def test_dens_based_fake():
     np.testing.assert_almost_equal(model.shannon_information, expected, decimal=6)
     # check TF kinetic energy density
     expected = np.array([2.871234, 17.91722219, 41.97769574, 9.115599745, 73.5470608])
-    np.testing.assert_almost_equal(model.kinetic_energy_density_thomas_fermi, expected, decimal=6)
+    np.testing.assert_almost_equal(model.ked_thomas_fermi, expected, decimal=6)
 
 
 def test_dens_grad_based_fake():
@@ -86,10 +86,10 @@ def test_dens_grad_based_fake():
     np.testing.assert_almost_equal(model.reduced_density_gradient, expected, decimal=6)
     # check Weizsacker kinetic energy
     expected = np.array([0.09375000, 0.01687500, 0.01475000, 0.04250000, 0.00575893])
-    np.testing.assert_almost_equal(model.kinetic_energy_density_weizsacker, expected, decimal=6)
+    np.testing.assert_almost_equal(model.ked_weizsacker, expected, decimal=6)
     # check TF kinetic energy density
     expected = np.array([2.871234, 17.91722219, 41.97769574, 9.115599745, 73.5470608])
-    np.testing.assert_almost_equal(model.kinetic_energy_density_thomas_fermi, expected, decimal=6)
+    np.testing.assert_almost_equal(model.ked_thomas_fermi, expected, decimal=6)
 
 
 def test_dens_grad_lap_based_fake():
@@ -118,7 +118,7 @@ def test_dens_grad_lap_based_fake():
     np.testing.assert_almost_equal(model.reduced_density_gradient, expected, decimal=6)
     # check Weizsacker kinetic energy
     expected = np.array([0.09375000, 0.01687500, 0.01475000, 0.04250000, 0.00575893])
-    np.testing.assert_almost_equal(model.kinetic_energy_density_weizsacker, expected, decimal=6)
+    np.testing.assert_almost_equal(model.ked_weizsacker, expected, decimal=6)
     # check TF kinetic energy density
     expected = np.array([2.871234, 17.91722219, 41.97769574, 9.115599745, 73.5470608])
-    np.testing.assert_almost_equal(model.kinetic_energy_density_thomas_fermi, expected, decimal=6)
+    np.testing.assert_almost_equal(model.ked_thomas_fermi, expected, decimal=6)

@@ -59,7 +59,7 @@ class DensTool(object):
         return value
 
     @property
-    def kinetic_energy_density_thomas_fermi(self):
+    def ked_thomas_fermi(self):
         r"""Thomas-Fermi kinetic energy density.
 
         .. math::
@@ -135,7 +135,7 @@ class DensGradTool(DensTool):
         return rdg
 
     @property
-    def kinetic_energy_density_weizsacker(self):
+    def ked_weizsacker(self):
         r"""Weizsacker kinetic energy density.
 
         .. math::
@@ -188,7 +188,7 @@ class DensGradLapTool(DensGradTool):
         return self._lap
 
     @property
-    def kinetic_energy_density_gradient_expansion(self):
+    def ked_gradient_expansion(self):
         r"""Gradient expansion approximation of kinetic energy density.
 
         .. math::
@@ -197,10 +197,10 @@ class DensGradLapTool(DensGradTool):
            \tfrac{1}{9} \tau_\text{W} \left(\mathbf{r}\right) +
            \tfrac{1}{6} \nabla^2 \rho\left(\mathbf{r}\right)
         """
-        return self.kinetic_energy_density_gradient_expansion_general(9., 6.)
+        return self.ked_gradient_expansion_general(9., 6.)
 
     @property
-    def kinetic_energy_density_gradient_expansion_empirical(self):
+    def ked_gradient_expansion_empirical(self):
         r"""Empirical gradient expansion approximation of kinetic energy density.
 
         .. math::
@@ -209,9 +209,9 @@ class DensGradLapTool(DensGradTool):
            \tfrac{1}{5} \tau_\text{W} \left(\mathbf{r}\right) +
            \tfrac{1}{6} \nabla^2 \rho\left(\mathbf{r}\right)
         """
-        return self.kinetic_energy_density_gradient_expansion_general(5., 6.)
+        return self.ked_gradient_expansion_general(5., 6.)
 
-    def kinetic_energy_density_gradient_expansion_general(self, alpha, beta):
+    def ked_gradient_expansion_general(self, alpha, beta):
         r"""General gradient expansion approximation of kinetic energy density.
 
         .. math::
@@ -227,10 +227,7 @@ class DensGradLapTool(DensGradTool):
         beta : float
             Value of parameter :math:`\beta`.
         """
-        value = self.kinetic_energy_density_thomas_fermi
-        value += self.kinetic_energy_density_weizsacker / alpha
-        value += self.laplacian / beta
-        return value
+        return self.ked_thomas_fermi + self.ked_weizsacker / alpha + self.laplacian / beta
 
 
 class DensGradLapKedTool(DensGradLapTool):
@@ -257,7 +254,7 @@ class DensGradLapKedTool(DensGradLapTool):
         self._ked = ked
 
     @property
-    def kinetic_energy_density_positive_definite(self):
+    def ked_positive_definite(self):
         r"""Positive definite kinetic energy density.
 
         .. math::
@@ -266,7 +263,7 @@ class DensGradLapKedTool(DensGradLapTool):
         """
         return self._ked
 
-    def kinetic_energy_density_general(self, alpha):
+    def ked_general(self, alpha):
         r"""Return general(ish) kinetic energy density.
 
         .. math::
@@ -279,4 +276,4 @@ class DensGradLapKedTool(DensGradLapTool):
         alpha : float
             Value of parameter :math:`\alpha`.
         """
-        return self.kinetic_energy_density_positive_definite + self.laplacian * (alpha - 1) / 4.
+        return self.ked_positive_definite + self.laplacian * (alpha - 1) / 4.
