@@ -31,7 +31,7 @@ __all__ = ['DensBasedTool', 'DensGradBasedTool', 'DensGradLapBasedTool']
 
 
 class DensBasedTool(object):
-    """Class of density-based local descriptive tools."""
+    """Local descriptive tools based on density."""
 
     def __init__(self, dens):
         """Initialize class.
@@ -73,7 +73,7 @@ class DensBasedTool(object):
 
 
 class DensGradBasedTool(DensBasedTool):
-    """Class of density- & gradient-based local descriptive tools."""
+    """Local descriptive tools based on density & gradient."""
 
     def __init__(self, dens, grad):
         """Initialize class.
@@ -151,7 +151,7 @@ class DensGradBasedTool(DensBasedTool):
 
 
 class DensGradLapBasedTool(DensGradBasedTool):
-    """Class of density-, gradient- & Laplacian-based local descriptive tools."""
+    """Local descriptive tools based on density, gradient & Laplacian."""
 
     def __init__(self, dens, grad, lap):
         """Initialize class.
