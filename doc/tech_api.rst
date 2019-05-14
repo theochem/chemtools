@@ -40,8 +40,9 @@ Toolbox Module
 
 * Density Based Tools
 
-  * :class:`Noncovalent Interaction (NCI) <toolbox.nci.NCI>`
-  * :class:`Electron Localization Function (ELF) <toolbox.elf.ELF>`
+  * :class:`Noncovalent Interaction (NCI) <toolbox.interactions.NCI>`
+  * :class:`Electron Localization Function (ELF) <toolbox.interactions.ELF>`
+  * :class:`Localized orbital Locator (LOL) <toolbox.interactions.LOL>`
   * :class:`Kinetic Energy Density (KED) <toolbox.kinetic.KED>`
 
 * Orbital Based Tools
@@ -83,7 +84,9 @@ Density-Based Module
 
 * Density-Based Tools
 
-  * :class:`Density Local Tool <denstools.densbased.DensityBasedLocalTool>`
+  * :class:`Density-Based Tool <denstools.densbased.DensBasedTool>`
+  * :class:`Density- & Gradient-Based Tool <denstools.densbased.DensGradBasedTool>`
+  * :class:`Density-, Gradient- & Laplacian-Based Tool <denstools.densbased.DensGradLapBasedTool>`
 
 
 Topological Analysis
@@ -127,11 +130,14 @@ Utility Module
       toolbox.conceptual.GlobalConceptualDFT
       toolbox.conceptual.LocalConceptualDFT
       toolbox.conceptual.CondensedConceptualDFT
-      toolbox.nci.NCI
-      toolbox.elf.ELF
+      toolbox.interactions.NCI
+      toolbox.interactions.ELF
+      toolbox.interactions.LOL
       toolbox.kinetic.KED
       toolbox.orbbased.OrbitalLocalTool
-      denstools.densbased.DensityBasedLocalTool
+      denstools.densbased.DensBasedTool
+      denstools.densbased.DensGradBasedTool
+      denstools.densbased.DensGradLapBasedTool
       conceptual.base.BaseGlobalTool
       conceptual.linear.LinearGlobalTool
       conceptual.quadratic.QuadraticGlobalTool
