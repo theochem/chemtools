@@ -28,7 +28,7 @@ import numpy as np
 
 from chemtools.utils.utils import doc_inherit
 from chemtools.wrappers.molecule import Molecule
-from chemtools.denstools.densbased import DensGradTool
+from chemtools.denstools.densbased import DensGradTool, DensGradLapKedTool
 
 
 __all__ = ["KED"]
@@ -91,13 +91,8 @@ class KED(object):
         return self._denstools.density
 
     @property
+    @doc_inherit(DensGradLapKedTool, 'ked_positive_definite')
     def positive_definite(self):
-        r"""Positive definite kinetic energy density.
-
-        .. math::
-           \tau \left(\mathbf{r}\right) =
-           \sum_i^N n_i \frac{1}{2} \rvert \nabla \phi_i \left(\mathbf{r}\right) \lvert^2
-        """
         return self._ke
 
     @property
