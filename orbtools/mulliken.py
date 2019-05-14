@@ -1,5 +1,6 @@
 """Mulliken population analysis."""
 import numpy as np
+from orbtools.orthogonalization import power_symmetric
 from orbtools.quasi import project
 
 
@@ -356,4 +357,68 @@ def mulliken_populations_newbasis(
         num_atoms,
         new_atom_indices,
         atom_weights=new_atom_weights,
+    )
+
+
+def lowdin_populations(
+    coeff_ab_mo, occupations, olp_ab_ab, num_atoms, ab_atom_indices, atom_weights=None
+):
+    r"""Return the Lowdin populations of the given molecular orbitals in atomic orbital basis set.
+
+    Lowdin population analysis is simply the Mulliken population analysis where the basis functions
+    are symmeterically orthogonalized.
+
+    Parameters
+    ----------
+    coeff_ab_mo : np.ndarray(K, M)
+        Transformation matrix from the atomic basis to molecular orbitals.
+        Rows correspond to the atomic basis.
+        Columns correspond to the molecular orbitals.
+        The transformation matrix is applied to the right:
+        .. math::
+
+            \ket{\psi_i} = \sum_j \phi_i C_{ij}
+
+        Data type must be float.
+        `K` is the number of atomic orbitals and `M` is the number of molecular orbitals.
+    occupations : np.ndarray(M,)
+        Occupation numbers of each molecular orbital.
+        Data type must be integers or floats.
+        `M` is the number of molecular orbitals.
+    olp_ab_ab : np.ndarray(K, K)
+        Overlap between atomic basis functions.
+        Data type must be floats.
+        `K` is the number of atomic orbitals.
+    num_atoms : int
+        Number of atoms.
+        Must be an integer.
+    ab_atom_indices : np.ndarray(K,)
+        Index of the atom to which each atomic basis function belongs.
+        Data type must be integers.
+        `K` is the number of atomic orbitals.
+    atom_weights : np.ndarray(A, K, K)
+        Weights of the atomic orbital pairs for the atoms. In other words, this weight controls the
+        amount of electrons associated with an atomic orbital pair that will be attributed to an
+        atom.
+        `A` is the number of atoms and `K` is the number of atomic orbitals.
+        Default is the Mulliken partitioning scheme where two orbitals that belong to the given atom
+        is 1, only one orbital that belong to the given atoms is 0.5, and no orbitals is 0.
+
+    Returns
+    -------
+    population : np.ndarray(M,)
+        Number of electrons associated with each atom.
+        `M` is the number of atoms, which will be assumed to be the maximum index in
+        `ab_atom_indices`.
+
+    """
+    coeff_ab_oab = power_symmetric(olp_ab_ab, -0.5)
+    return mulliken_populations_newbasis(
+        coeff_ab_mo,
+        occupations,
+        olp_ab_ab,
+        num_atoms,
+        coeff_ab_oab,
+        ab_atom_indices,
+        new_atom_weights=atom_weights,
     )

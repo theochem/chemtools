@@ -2,7 +2,12 @@
 import os
 
 import numpy as np
-from orbtools.mulliken import mulliken_populations, mulliken_populations_newbasis
+from orbtools.mulliken import (
+    lowdin_populations,
+    mulliken_populations,
+    mulliken_populations_newbasis,
+)
+from orbtools.orthogonalization import power_symmetric
 from orbtools.quasi import project
 import pytest
 
@@ -294,4 +299,22 @@ def test_mulliken_populations_newbasis():
             coeff_ab_mo, occupations, olp_ab_ab, 6, coeff_ab_rand, rand_atom_indices
         ),
         mulliken_populations(coeff_rand_mo, occupations, olp_rand_rand, 6, rand_atom_indices),
+    )
+
+
+def test_lowdin_populations():
+    """Test orbtools.mulliken.lowdin_populations."""
+    current_dir = os.path.dirname(__file__)
+    coeff_ab_mo = np.load(os.path.join(current_dir, "naclo4_coeff_ab_mo.npy"))
+    olp_ab_ab = np.load(os.path.join(current_dir, "naclo4_olp_ab_ab.npy"))
+    occupations = np.load(os.path.join(current_dir, "naclo4_occupations.npy"))
+    ab_atom_indices = np.load(os.path.join(current_dir, "naclo4_ab_atom_indices.npy"))
+
+    coeff_ab_oab = power_symmetric(olp_ab_ab, -0.5)
+    assert np.allclose(coeff_ab_oab.T.dot(olp_ab_ab).dot(coeff_ab_oab), np.identity(124))
+    assert np.allclose(
+        mulliken_populations_newbasis(
+            coeff_ab_mo, occupations, olp_ab_ab, 6, coeff_ab_oab, ab_atom_indices
+        ),
+        lowdin_populations(coeff_ab_mo, occupations, olp_ab_ab, 6, ab_atom_indices),
     )
