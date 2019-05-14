@@ -64,13 +64,14 @@ def test_kinetic_from_molecule_ch4_uhf_ccpvdz():
     # test from_molecule initialization with exp_beta & check against Fortran code
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as filename:
         molecule = Molecule.from_file(filename)
-    tool = KED(molecule, data["points"])
+    tool = KED.from_molecule(molecule, data["points"])
+    print('tool = ', tool)
     check_kinetic_energy_density(tool, data)
     # test from_molecule initialization without exp_beta & check against Fortran code
     del molecule._exp_beta
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as filename:
         molecule = Molecule.from_file(filename)
-    tool = KED(molecule, data["points"])
+    tool = KED.from_molecule(molecule, data["points"])
     check_kinetic_energy_density(tool, data)
 
 
@@ -91,5 +92,5 @@ def test_kinetic_from_molecule_ch4_rhf_ccpvdz():
     # test from_file initialization & check against Fortran code
     with path("chemtools.data", "ch4_rhf_ccpvdz.fchk") as filename:
         molecule = Molecule.from_file(filename)
-    tool = KED(molecule, data["points"])
+    tool = KED.from_molecule(molecule, data["points"])
     check_kinetic_energy_density(tool, data)

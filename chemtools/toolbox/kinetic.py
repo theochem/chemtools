@@ -28,7 +28,7 @@ import numpy as np
 
 from chemtools.utils.utils import doc_inherit
 from chemtools.wrappers.molecule import Molecule
-from chemtools.denstools.densbased import DensGradTool, DensGradLapKedTool
+from chemtools.denstools.densbased import DensGradTool, DensGradLapTool, DensGradLapKedTool
 
 
 __all__ = ["KED"]
@@ -37,7 +37,34 @@ __all__ = ["KED"]
 class KED(object):
     """Kinetic Energy Density Class."""
 
-    def __init__(self, molecule, points, spin="ab", index=None):
+    def __init__(self, dens, grad, lap=None, kin=None):
+        """Initialize class.
+
+        Parameters
+        ----------
+        dens : np.ndarray
+            Electron density evaluated on a set of grid points.
+        grad : np.ndarray
+            Gradient vector of electron density evaluated on a set of grid points.
+        lap : np.ndarray
+            Laplacian of electron density evaluated on a set of grid points.
+        kin : np.ndarray
+            Positive-definite kinetic energy density evaluated on a set of grid points.
+
+        """
+        # initialize dens-based tools class
+        if lap is None and kin is None:
+            self._denstools = DensGradTool(dens, grad)
+        elif kin is None:
+            self._denstools = DensGradLapTool(dens, grad, lap)
+        elif lap is None:
+            self._denstools = DensGradTool(dens, grad)
+            self._ked_pd = kin
+        else:
+            self._denstools = DensGradLapKedTool(dens, grad, lap, kin)
+
+    @classmethod
+    def from_molecule(cls, molecule, points, spin="ab", index=None):
         r"""Initialize class using instance of `Molecule` and grid points.
 
         Parameters
@@ -54,13 +81,8 @@ class KED(object):
         """
         if points.ndim != 2 or points.shape[1] != 3:
             raise ValueError("Argument points should be a 2D array with 3 columns.")
-        self._points = points
         # compute density, gradient, & kinetic energy density on grid
-        dens = molecule.compute_density(self._points, spin, index)
-        grad = molecule.compute_gradient(self._points, spin, index)
-        self._ke = molecule.compute_kinetic_energy_density(self._points, spin, index)
-        # initialize dens- & grad-based tools class
-        self._denstools = DensGradTool(dens, grad)
+        return cls(*molecule.compute_megga(points, spin=spin, index=index))
 
     @classmethod
     def from_file(cls, filename, points, spin="ab", index=None):
@@ -78,7 +100,7 @@ class KED(object):
             Sequence of integers representing the index of spin orbitals.
         """
         molecule = Molecule.from_file(filename)
-        return cls(molecule, points, spin, index)
+        return cls.from_molecule(molecule, points, spin, index)
 
     @property
     def points(self):
@@ -93,7 +115,12 @@ class KED(object):
     @property
     @doc_inherit(DensGradLapKedTool, 'ked_positive_definite')
     def ked_positive_definite(self):
-        return self._ke
+        if hasattr(self._denstools, 'ked_positive_definite'):
+            return self._denstools.ked_positive_definite
+        elif hasattr(self, '_ked_pd'):
+            return self._ked_pd
+        else:
+            raise ValueError('Argument kin should be given when initializing the class.')
 
     @property
     @doc_inherit(DensGradTool, 'ked_thomas_fermi')
