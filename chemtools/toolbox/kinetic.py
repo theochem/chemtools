@@ -92,15 +92,15 @@ class KED(object):
 
     @property
     @doc_inherit(DensGradLapKedTool, 'ked_positive_definite')
-    def positive_definite(self):
+    def ked_positive_definite(self):
         return self._ke
 
     @property
     @doc_inherit(DensGradTool, 'ked_thomas_fermi')
-    def thomas_fermi(self):
+    def ked_thomas_fermi(self):
         return self._denstools.ked_thomas_fermi
 
     @property
     @doc_inherit(DensGradTool, 'ked_weizsacker')
-    def weizsacker(self):
+    def ked_weizsacker(self):
         return self._denstools.ked_weizsacker
