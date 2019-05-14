@@ -27,7 +27,7 @@
 import numpy as np
 
 
-__all__ = ['DensBasedTool', 'DensGradBasedTool', 'DensGradLapBasedTool']
+__all__ = ['DensBasedTool', 'DensGradBasedTool', 'DensGradLapBasedTool', 'DensGradLapKedBasedTool']
 
 
 class DensBasedTool(object):
@@ -231,3 +231,52 @@ class DensGradLapBasedTool(DensGradBasedTool):
         value += self.kinetic_energy_density_weizsacker / alpha
         value += self.laplacian / beta
         return value
+
+
+class DensGradLapKedBasedTool(DensGradLapBasedTool):
+    """Local descriptive tools based on density, gradient, Laplacian & kinetic energy density."""
+
+    def __init__(self, dens, grad, lap, ked):
+        """Initialize class.
+
+        Parameters
+        ----------
+        dens : np.ndarray
+            Electron density evaluated on a set of grid points.
+        grad : np.ndarray
+            Gradient vector of electron density evaluated on a set of grid points.
+        lap : np.ndarray
+            Laplacian of electron density evaluated on a set of grid points.
+        ked : np.ndarray
+            Kinetic energy density evaluated on a set of grid points.
+
+        """
+        super(DensGradLapKedBasedTool, self).__init__(dens, grad)
+        if lap.shape != ked.shape:
+            raise ValueError('Argument ked should be of {0} shape.'.format(dens.shape))
+        self._ked = ked
+
+    @property
+    def kinetic_energy_density_positive_definite(self):
+        r"""Positive definite kinetic energy density.
+
+        .. math::
+           \tau_\text{PD} \left(\mathbf{r}\right) =
+           \sum_i^N n_i \frac{1}{2} \rvert \nabla \phi_i \left(\mathbf{r}\right) \lvert^2
+        """
+        return self._ked
+
+    def kinetic_energy_density_general(self, alpha):
+        r"""Return general(ish) kinetic energy density.
+
+        .. math::
+           \tau_\text{G} \left(\mathbf{r}, \alpha\right) =
+               \tau_\text{PD} \left(\mathbf{r}\right) +
+               \tfrac{1}{4} (\alpha - 1) \nabla^2 \rho\left(\mathbf{r}\right)
+
+        Parameters
+        ----------
+        alpha : float
+            Value of parameter :math:`\alpha`.
+        """
+        return self.kinetic_energy_density_positive_definite + self.laplacian * (alpha - 1) / 4.
