@@ -25,16 +25,12 @@
 
 
 import numpy as np
-import matplotlib
-matplotlib.use('agg')
-import matplotlib.pyplot as plt
-
-from matplotlib import rcParams
 
 from chemtools.wrappers.molecule import Molecule
 from chemtools.denstools.densbased import DensGradBasedTool
 from chemtools.utils.utils import doc_inherit
 from chemtools.utils.cube import CubeGen
+from chemtools.outputs.plot import plot_scatter
 from chemtools.outputs.output_vmd import print_vmd_script_nci, print_vmd_script_isosurface
 
 from numpy.ma import masked_less
@@ -186,7 +182,7 @@ class NCI(BaseInteraction):
         r"""Eigenvalues of Hessian."""
         return self._eigvalues
 
-    def plot(self, filename, color='b'):
+    def plot(self, fname, color='b'):
         r"""Plot reduced density gradient.
 
         Reduced density gradient vs.
@@ -194,50 +190,21 @@ class NCI(BaseInteraction):
 
         Parameters
         ----------
-        filename : str
-            Name of generated 2D plot.
-
-            If the given filename does not have a proper extension (representing its format),
-            the 'png' format is used by default (i.e. plot is saved as filename.png).
-
-            Supported formats (which should be specified as filename extensions) include:
-
-            - 'svgz' or 'svg' (Scalable Vector Graphics)
-            - 'tif' or 'tiff' (Tagged Image File Format)
-            - 'raw' (Raw RGBA bitmap)
-            - 'png' (Portable Network Graphics)
-            - 'ps' (Postscript)
-            - 'eps' (Encapsulated Postscript)
-            - 'rgba' (Raw RGBA bitmap)
-            - 'pdf' (Portable Document Format)
-
+        fname : str
+            A string representing the path to a filename for storing the plot.
+            If the given filename does not have a proper extension, the 'png' format is used
+            by default, i.e. plot is saved as filename.png.
         color : str, optional
-            Color of plot. Default is blue specified with 'b'.
-            For details on specifying colors, please refer to
-            http://matplotlib.org/users/colors.html
+            Color of plot. To customize color, see http://matplotlib.org/users/colors.html
+
         """
-        # set font
-        rcParams['font.family'] = 'serif'
-        rcParams['font.serif'] = ['Times New Roman']
-        rcParams['mathtext.fontset'] = 'stix'
-        # create figure
-        fig = plt.figure()
-        ax = fig.add_subplot(1, 1, 1)
         # scatter plot
-        plt.scatter(self._signed_density, self._rdgrad, marker='o', color=color)
-        # set axis range and label
-        plt.xlim(-0.2, 0.2)
-        plt.ylim(0.0, 2.0)
-        plt.xlabel(r'sgn$\mathbf{(\lambda_2)}$ $\times$ $\mathbf{\rho(r)}$ (a.u)',
-                   fontsize=12, fontweight='bold')
-        plt.ylabel('Reduced Density Gradient', fontsize=12, fontweight='bold')
-        # hide the right, top and bottom spines
-        ax.spines['right'].set_visible(False)
-        ax.spines['top'].set_visible(False)
-        ax.xaxis.tick_bottom()
-        ax.yaxis.tick_left()
-        # save plot ('.png' extension is added by default, if filename is not a supported format)
-        plt.savefig(filename, dpi=800)
+        kwargs = {'color': color,
+                  'xlim': (-0.2, 0.2),
+                  'ylim': (0., 2.),
+                  'xlabel': r'sgn$\mathbf{(\lambda_2)}$ $\times$ $\mathbf{\rho(r)}$ (a.u)',
+                  'ylabel': 'Reduced Density Gradient'}
+        plot_scatter(self._signed_density, self._rdgrad, fname, **kwargs)
 
     def generate_scripts(self, filename, isosurf=0.50, denscut=0.05):
         r"""Generate cube files and VMD script to visualize non-covalent interactions (NCI).
