@@ -24,7 +24,7 @@ grid = AtomicGrid(molecule.numbers[0], molecule.pseudo_numbers[0], molecule.coor
 tool = ELF.from_molecule(molecule, spin='ab', index=None, grid=grid)
 
 # calculate spherically-averaged density ($4.0 \pi r^2 \rho$) & ELF
-elf = grid.get_spherical_average(tool.values)
+elf = grid.get_spherical_average(tool.value)
 dens = grid.get_spherical_average(tool.density)
 dens *= (4.0 * np.pi * grid.rgrid.radii**2)
 
