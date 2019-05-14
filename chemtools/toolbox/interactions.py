@@ -36,27 +36,30 @@ from chemtools.outputs.vmd import print_vmd_script_nci, print_vmd_script_isosurf
 from numpy.ma import masked_less
 
 
-__all__ = ['NCI', 'ELF']
+__all__ = ['NCI', 'ELF', 'LOL']
 
 
 class BaseInteraction(object):
     """Base class for (non)bonding interactions indicators."""
 
     @classmethod
-    def from_file(cls, filename, spin='ab', index=None, grid=None):
+    def from_file(cls, fname, spin='ab', index=None, grid=None):
         """Initialize class using wave-function file.
 
         Parameters
         ----------
-        filename : str
-            Path to molecule's files.
-        spin
-        index
-        grid : instance of `CubeGen`, optional
-            Cubic grid used for calculating and visualizing the NCI.
-            If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
+        fname : str
+            A string representing the path to a molecule's filename.
+        spin : str, optional
+            The type of occupied spin orbitals; options are 'a', 'b' & 'ab'.
+        index : int or Sequence of int, optional
+            Sequence of integers representing the index of spin orbitals.
+            If None, all occupied spin orbitals are included.
+        grid : instance of `Grid`, optional
+            Grid used for calculating and visualizing the property values.
+            If None, a cubic grid is constructed from molecule with spacing=0.1 & threshold=2.0.
         """
-        molecule = Molecule.from_file(filename)
+        molecule = Molecule.from_file(fname)
         return cls.from_molecule(molecule, spin=spin, index=index, grid=grid)
 
     @classmethod
@@ -68,12 +71,13 @@ class BaseInteraction(object):
         molecule : instance of `Molecule` class.
             Instance of `Molecular` class.
         spin : str, optional
-            The type of occupied spin orbitals. Options are 'a', 'b' & 'ab'.
+            The type of occupied spin orbitals; options are 'a', 'b' & 'ab'.
         index : int or Sequence of int, optional
             Sequence of integers representing the index of spin orbitals.
-            If ``None``, all occupied spin orbitals are included.
-        grid : instance of `Grid` class, optional
-            Instance of `Grid` class.
+            If None, all occupied spin orbitals are included.
+        grid : instance of `Grid`, optional
+            Grid used for calculating and visualizing the property values.
+            If None, a cubic grid is constructed from molecule with spacing=0.1 & threshold=2.0.
         """
         pass
 
@@ -111,7 +115,7 @@ class NCI(BaseInteraction):
             Density evaluated on grid points of `cube`.
         rdgradient : np.array
             Reduced density gradient evaluated on grid points of `cube`
-        cube : instance of `CubeGen`, optional
+        grid : instance of `CubeGen`, optional
             Cubic grid used for calculating and visualizing the NCI.
             If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
         hessian : np.array, optional
@@ -191,9 +195,9 @@ class NCI(BaseInteraction):
         Parameters
         ----------
         fname : str
-            A string representing the path to a filename for storing the plot.
-            If the given filename does not have a proper extension, the 'png' format is used
-            by default, i.e. plot is saved as filename.png.
+            A string representing the path to a fname for storing the plot.
+            If the given fname does not have a proper extension, the 'png' format is used
+            by default, i.e. plot is saved as fname.png.
         color : str, optional
             Color of plot. To customize color, see http://matplotlib.org/users/colors.html
 
@@ -206,7 +210,7 @@ class NCI(BaseInteraction):
                   'ylabel': 'Reduced Density Gradient'}
         plot_scatter(self._signed_density, self._rdgrad, fname, **kwargs)
 
-    def generate_scripts(self, filename, isosurf=0.50, denscut=0.05):
+    def generate_scripts(self, fname, isosurf=0.50, denscut=0.05):
         r"""Generate cube files and VMD script to visualize non-covalent interactions (NCI).
 
         Generate density and reduced density gradient cube files, as well as a VMD (Visual
@@ -214,7 +218,7 @@ class NCI(BaseInteraction):
 
         Parameters
         ----------
-        filename : str
+        fname : str
             Name of generated cube files and vmd script.
         isosurf : float, optional
             Value of reduced density gradient (RDG) iso-surface used in VMD script.
@@ -230,7 +234,7 @@ class NCI(BaseInteraction):
         The generated cube files and script imitate the NCIPlot software version 1.0.
         """
         if not isinstance(self._grid, CubeGen):
-            raise ValueError('Scripts can only be generated when grid is a CubeGen.')
+            raise ValueError("Only possible if argument grid is a cubic grid.")
         # similar to NCIPlot program, reduced density gradient of points with
         # density > cutoff will be set to 100.0 before generating cube file to
         # display reduced density gradient iso-surface subject to the constraint
@@ -247,9 +251,9 @@ class NCI(BaseInteraction):
             dens = 100.0 * self._density
 
         # name of output files
-        densfile = filename + '-dens.cube'    # density cube file
-        rdgfile = filename + '-grad.cube'     # reduced density gradient cube file
-        vmdfile = filename + '.vmd'           # vmd script file
+        densfile = fname + '-dens.cube'    # density cube file
+        rdgfile = fname + '-grad.cube'     # reduced density gradient cube file
+        vmdfile = fname + '.vmd'           # vmd script file
         # dump density & reduced density gradient cube files
         self._grid.dump_cube(densfile, dens)
         self._grid.dump_cube(rdgfile, cutrdg)
@@ -279,15 +283,24 @@ class ELF(BaseInteraction):
     """
 
     def __init__(self, dens, grad, kin, grid=None, trans='original', k=2):
-        """Initialize ELF class.
+        r"""Initialize class.
 
         Parameters
         ----------
-        dens : array_like
-            Density evaluated on `cube.points`.
-        grad
-        kin
-        grid
+        dens : np.ndarray
+            Electron density evaluated on a set of grid points.
+        grad : np.ndarray
+            Gradient vector of electron density evaluated on a set of grid points.
+        ked : np.ndarray
+            Kinetic energy density evaluated on a set of grid points.
+        grid : instance of `Grid`, optional
+            Grid used for calculating and visualizing the property values.
+            If None, a cubic grid is constructed from molecule with spacing=0.1 & threshold=2.0.
+        trans : str, optional
+            The approach for transforming the ELF ration to obtain ELF value.
+        k : float, optional
+            Value of parameter :math:`k`.
+
         """
         # if dens.shape != (grid.npoints,):
         #     raise ValueError("Arguments dens should have the same size as grid.npoints!")
@@ -314,7 +327,6 @@ class ELF(BaseInteraction):
         dens = molecule.compute_density(grid.points, spin=spin, index=index)
         grad = molecule.compute_gradient(grid.points, spin=spin, index=index)
         kin = molecule.compute_kinetic_energy_density(grid.points, spin=spin, index=index)
-
         return cls(dens, grad, kin, grid, trans, k)
 
     @property
@@ -329,7 +341,7 @@ class ELF(BaseInteraction):
 
     @property
     def value(self):
-        r"""Electron localization function :math:`ELF(\mathbf{r})` evaluated on grid points."""
+        r"""The :math:`ELF(\mathbf{r})` evaluated on grid points."""
         return self._value
 
     @property
@@ -352,55 +364,44 @@ class ELF(BaseInteraction):
     def _compute_topology(self):
         raise NotImplementedError
 
-    def generate_scripts(self, filename, isosurf=0.8):
-        """
+    def generate_scripts(self, fname, isosurf=0.8):
+        """Generate VMD scripts & cube file to visualize ELF iso-surface.
+
         Parameters
         ----------
-        filename
-        isosurf
+        fname : str
+            A string representing the path to a fname of generated files.
+            The VMD script and cube file will be name fname.vmd and fname-elf.cube, respectively.
+        isosurf : float
+            Value of ELF iso-surface used in VMD script.
+
         """
         if not isinstance(self._grid, CubeGen):
-            raise ValueError("")
-        # dump ELF cube files
-        self._grid.dump_cube(filename + '-elf.cube', self.value)
-        # write VMD script for visualization
-        print_vmd_script_isosurface(filename + '.vmd', filename + '-elf.cube', isosurf=isosurf)
+            raise ValueError("Only possible if argument grid is a cubic grid.")
+        # dump ELF cube file & generate vmd script
+        self._grid.dump_cube(fname + '-elf.cube', self.value)
+        print_vmd_script_isosurface(fname + '.vmd', fname + '-elf.cube', isosurf=isosurf)
 
 
 class LOL(BaseInteraction):
     r"""Localized orbital Locator (LOL) Class."""
 
     def __init__(self, dens, grad, kin, grid, trans='original', k=2):
-        self._tool = DensGradBasedTool(dens, grad)
+        self._tool = DensGradTool(dens, grad)
         self._dens = dens
         self._grid = grid
-        self._ratio = self._tool.kinetic_energy_density_thomas_fermi / kin
+        self._ratio = self._tool.ked_thomas_fermi / kin
         self._value = self._transform(self._ratio, trans, k)
 
     @classmethod
+    @doc_inherit(BaseInteraction, 'from_molecule')
     def from_molecule(cls, molecule, spin='ab', index=None, grid=None, trans='original', k=2):
-        """Initialize class from ``Molecule`` object.
-        Parameters
-        ----------
-        molecule
-        spin
-        index
-        grid
-        trans
-        k
-        """
         # generate cubic grid or check grid
-        if grid is None:
-            grid = CubeGen.from_molecule(molecule.numbers, molecule.pseudo_numbers,
-                                         molecule.coordinates, spacing=0.1, threshold=5.0)
-        elif not hasattr(grid, 'points'):
-            raise ValueError('Argument grid should have "points" attribute!')
-
+        grid = BaseInteraction._check_grid(molecule, grid)
         # compute density, gradient & kinetic energy density on grid
         dens = molecule.compute_density(grid.points, spin=spin, index=index)
         grad = molecule.compute_gradient(grid.points, spin=spin, index=index)
         kin = molecule.compute_kinetic_energy_density(grid.points, spin=spin, index=index)
-
         return cls(dens, grad, kin, grid)
 
     @property
@@ -410,19 +411,23 @@ class LOL(BaseInteraction):
 
     @property
     def value(self):
-        """The :math:`LOL(\mathbf{r})` evaluated on grid points."""
+        r"""The :math:`LOL(\mathbf{r})` evaluated on grid points."""
         return self._value
 
-    def dump_isosurface_files(self, filename, isosurf=0.5):
-        """
+    def generate_scripts(self, fname, isosurf=0.5):
+        """Generate VMD scripts & cube file to visualize LOL iso-surface.
+
         Parameters
         ----------
-        filename
-        isosurf
+        fname : str
+            A string representing the path to a fname of generated files.
+            The VMD script and cube file will be name fname.vmd and fname-lol.cube, respectively.
+        isosurf : float
+            Value of LOL iso-surface used in VMD script.
         """
         if not isinstance(self._grid, CubeGen):
-            raise ValueError("")
+            raise ValueError("Only possible if argument grid is a cubic grid.")
         # dump LOL cube files
-        self._grid.dump_cube(filename + '-lol.cube', self.value)
+        self._grid.dump_cube(fname + '-lol.cube', self.value)
         # write VMD script for visualization
-        print_vmd_script_isosurface(filename + '.vmd', filename + '-lol.cube', isosurf=isosurf)
+        print_vmd_script_isosurface(fname + '.vmd', fname + '-lol.cube', isosurf=isosurf)
