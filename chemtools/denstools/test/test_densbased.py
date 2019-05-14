@@ -26,7 +26,7 @@
 
 from numpy.testing import assert_raises
 import numpy as np
-from chemtools.denstools.denstool import DensTool, DensGradBasedTool, DensGradLapBasedTool
+from chemtools.denstools.denstool import DensTool, DensGradTool, DensGradLapBasedTool
 try:
     from importlib_resources import path
 except ImportError:
@@ -71,7 +71,7 @@ def test_dens_grad_based_fake():
                   [ 0.40,  0.40,  0.60],
                   [ 0.25, -0.10, -0.50]])
     # build a model
-    model = DensGradBasedTool(d, g)
+    model = DensGradTool(d, g)
     # check attributes
     np.testing.assert_almost_equal(model.density, d, decimal=6)
     np.testing.assert_almost_equal(model.gradient, g, decimal=6)
