@@ -131,3 +131,29 @@ class KED(object):
     @doc_inherit(DensGradTool, 'ked_weizsacker')
     def ked_weizsacker(self):
         return self._denstools.ked_weizsacker
+
+    @property
+    @doc_inherit(DensGradLapTool, 'ked_gradient_expansion')
+    def ked_gradient_expansion(self):
+        if not hasattr(self._denstools, 'ked_gradient_expansion'):
+            raise ValueError('Argument lap should be given when initializing the class.')
+        return self._denstools.ked_gradient_expansion
+
+    @property
+    @doc_inherit(DensGradLapTool, 'ked_gradient_expansion_empirical')
+    def ked_gradient_expansion_empirical(self):
+        if not hasattr(self._denstools, 'ked_gradient_expansion_empirical'):
+            raise ValueError('Argument lap should be given when initializing the class.')
+        return self._denstools.ked_gradient_expansion_empirical
+
+    @doc_inherit(DensGradLapTool, 'ked_gradient_expansion_general')
+    def ked_gradient_expansion(self, alpha, beta):
+        if not hasattr(self._denstools, 'ked_gradient_expansion_general'):
+            raise ValueError('Argument lap should be given when initializing the class.')
+        return self._denstools.ked_gradient_expansion_general(alpha, beta)
+
+    @doc_inherit(DensGradLapKedTool, 'ked_general')
+    def ked_general(self, alpha):
+        if not hasattr(self._denstools, 'ked_general'):
+            raise ValueError('Argument lap & kin should be given when initializing the class.')
+        return self._denstools.ked_general(alpha)
