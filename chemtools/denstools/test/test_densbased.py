@@ -26,7 +26,7 @@
 
 from numpy.testing import assert_raises
 import numpy as np
-from chemtools.denstools.denstool import DensTool, DensGradTool, DensGradLapTool
+from chemtools.denstools.densbased import DensTool, DensGradTool, DensGradLapTool
 try:
     from importlib_resources import path
 except ImportError:
