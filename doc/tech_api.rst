@@ -98,20 +98,27 @@ Wrappers Module
 * :class:`Molecule <wrappers.molecule.Molecule>`
 
 
+Output Module
+=============
+
+* VMD Scripts
+
+  * :func:`print_vmd_script_nci <outputs.output_vmd.print_vmd_script_nci>`
+  * :func:`print_vmd_script_isosurface <outputs.output_vmd.print_vmd_script_isosurface>`
+  * :func:`print_vmd_script_multiple_cube <outputs.output_vmd.print_vmd_script_multiple_cube>`
+  * :func:`print_vmd_script_vector_field <outputs.output_vmd.print_vmd_script_vector_field>`
+
+* 2-D Plots
+
+  * :func:`plot_scatter <outputs.plot.plot_scatter>`
+
+
 Utility Module
 ==============
 
 * :class:`CubeGen <utils.cube.CubeGen>`
 
 
-* Visualization Tools
-
-  * VMD Scripts
-
-    * :func:`print_vmd_script_nci <outputs.output_vmd.print_vmd_script_nci>`
-    * :func:`print_vmd_script_isosurface <outputs.output_vmd.print_vmd_script_isosurface>`
-    * :func:`print_vmd_script_multiple_cube <outputs.output_vmd.print_vmd_script_multiple_cube>`
-    * :func:`print_vmd_script_vector_field <outputs.output_vmd.print_vmd_script_vector_field>`
 
 .. Silent api generation
     .. autosummary::
@@ -147,5 +154,6 @@ Utility Module
       outputs.output_vmd.print_vmd_script_isosurface
       outputs.output_vmd.print_vmd_script_multiple_cube
       outputs.output_vmd.print_vmd_script_vector_field
+      outputs.plot.plot_scatter
       utils.cube.CubeGen
 
