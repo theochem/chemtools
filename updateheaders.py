@@ -3,7 +3,7 @@
 # ChemTools is a collection of interpretive chemical tools for
 # analyzing outputs of the quantum chemistry calculations.
 #
-# Copyright (C) 2014-2015 The ChemTools Development Team
+# Copyright (C) 2016-2019 The ChemTools Development Team
 #
 # This file is part of ChemTools.
 #
@@ -50,9 +50,9 @@ def fix_python(fn, lines, header_lines):
     # remove the current header
     strip_header(lines, '# --\n')
     # add a pylint line for test files:
-    if os.path.basename(fn).startswith('test_'):
-        if not lines[1].startswith('#pylint: skip-file'):
-            lines.insert(1, '#pylint: skip-file\n')
+    # if os.path.basename(fn).startswith('test_'):
+    #     if not lines[1].startswith('#pylint: skip-file'):
+    #         lines.insert(1, '#pylint: skip-file\n')
     # add new header (insert in reverse order)
     for hline in header_lines[::-1]:
         lines.insert(0, ('# ' + hline).strip() + '\n')
@@ -125,6 +125,8 @@ def main():
                     print ' Fixing:', fn
                     with open(fn) as f:
                         lines = f.readlines()
+                    if len(lines) == 0:
+                        continue
                     fixer(fn, lines, header_lines)
                     with open(fn, 'w') as f:
                         f.writelines(lines)

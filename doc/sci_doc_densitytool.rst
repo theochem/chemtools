@@ -2,7 +2,7 @@
     : ChemTools is a collection of interpretive chemical tools for
     : analyzing outputs of the quantum chemistry calculations.
     :
-    : Copyright (C) 2014-2015 The ChemTools Development Team
+    : Copyright (C) 2016-2019 The ChemTools Development Team
     :
     : This file is part of ChemTools.
     :
