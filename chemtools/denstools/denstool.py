@@ -27,10 +27,10 @@
 import numpy as np
 
 
-__all__ = ['DensBasedTool', 'DensGradBasedTool', 'DensGradLapBasedTool', 'DensGradLapKedBasedTool']
+__all__ = ['DensTool', 'DensGradBasedTool', 'DensGradLapBasedTool', 'DensGradLapKedBasedTool']
 
 
-class DensBasedTool(object):
+class DensTool(object):
     """Local descriptive tools based on density."""
 
     def __init__(self, dens):
@@ -72,7 +72,7 @@ class DensBasedTool(object):
         return kinetic
 
 
-class DensGradBasedTool(DensBasedTool):
+class DensGradBasedTool(DensTool):
     """Local descriptive tools based on density & gradient."""
 
     def __init__(self, dens, grad):

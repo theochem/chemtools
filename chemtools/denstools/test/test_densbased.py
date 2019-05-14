@@ -26,7 +26,7 @@
 
 from numpy.testing import assert_raises
 import numpy as np
-from chemtools.denstools.densbased import DensBasedTool, DensGradBasedTool, DensGradLapBasedTool
+from chemtools.denstools.denstool import DensTool, DensGradBasedTool, DensGradLapBasedTool
 try:
     from importlib_resources import path
 except ImportError:
@@ -51,7 +51,7 @@ def test_dens_based_fake():
     # fake density, gradient and laplacian arrays
     d = np.array([1.00, 3.00, 5.00, 2.00, 7.00])
     # build a model
-    model = DensBasedTool(d)
+    model = DensTool(d)
     # check attributes
     np.testing.assert_almost_equal(model.density, d, decimal=6)
     # check Shannon information
