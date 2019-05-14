@@ -84,9 +84,10 @@ Density-Based Module
 
 * Density-Based Tools
 
-  * :class:`Density-Based Tool <denstools.densbased.DensBasedTool>`
-  * :class:`Density- & Gradient-Based Tool <denstools.densbased.DensGradBasedTool>`
-  * :class:`Density-, Gradient- & Laplacian-Based Tool <denstools.densbased.DensGradLapBasedTool>`
+  * :class:`Density Based Tool <denstools.densbased.DensTool>`
+  * :class:`Density & Gradient Based Tool <denstools.densbased.DensGradTool>`
+  * :class:`Density, Gradient & Laplacian Based Tool <denstools.densbased.DensGradLapTool>`
+  * :class:`Density, Gradient, Laplacian & KED Based Tool <denstools.densbased.DensGradLapKedTool>`
 
 
 Topological Analysis
@@ -135,9 +136,10 @@ Utility Module
       toolbox.interactions.LOL
       toolbox.kinetic.KED
       toolbox.orbbased.OrbitalLocalTool
-      denstools.densbased.DensBasedTool
-      denstools.densbased.DensGradBasedTool
-      denstools.densbased.DensGradLapBasedTool
+      denstools.densbased.DensTool
+      denstools.densbased.DensGradTool
+      denstools.densbased.DensGradLapTool
+      denstools.densbased.DensGradLapKedTool
       conceptual.base.BaseGlobalTool
       conceptual.linear.LinearGlobalTool
       conceptual.quadratic.QuadraticGlobalTool
