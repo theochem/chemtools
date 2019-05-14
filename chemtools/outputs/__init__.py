@@ -23,5 +23,5 @@
 """Outputs Module."""
 
 
+from chemtools.outputs.vmd import *
 from chemtools.outputs.plot import *
-from chemtools.outputs.output_vmd import *

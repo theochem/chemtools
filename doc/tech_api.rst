@@ -103,10 +103,10 @@ Output Module
 
 * VMD Scripts
 
-  * :func:`print_vmd_script_nci <outputs.output_vmd.print_vmd_script_nci>`
-  * :func:`print_vmd_script_isosurface <outputs.output_vmd.print_vmd_script_isosurface>`
-  * :func:`print_vmd_script_multiple_cube <outputs.output_vmd.print_vmd_script_multiple_cube>`
-  * :func:`print_vmd_script_vector_field <outputs.output_vmd.print_vmd_script_vector_field>`
+  * :func:`print_vmd_script_nci <outputs.vmd.print_vmd_script_nci>`
+  * :func:`print_vmd_script_isosurface <outputs.vmd.print_vmd_script_isosurface>`
+  * :func:`print_vmd_script_multiple_cube <outputs.vmd.print_vmd_script_multiple_cube>`
+  * :func:`print_vmd_script_vector_field <outputs.vmd.print_vmd_script_vector_field>`
 
 * 2-D Plots
 
@@ -150,10 +150,10 @@ Utility Module
       conceptual.mixed.MixedCondensedTool
       topology.eigenvalues.EigenValueTool
       wrappers.molecule.Molecule
-      outputs.output_vmd.print_vmd_script_nci
-      outputs.output_vmd.print_vmd_script_isosurface
-      outputs.output_vmd.print_vmd_script_multiple_cube
-      outputs.output_vmd.print_vmd_script_vector_field
+      outputs.vmd.print_vmd_script_nci
+      outputs.vmd.print_vmd_script_isosurface
+      outputs.vmd.print_vmd_script_multiple_cube
+      outputs.vmd.print_vmd_script_vector_field
       outputs.plot.plot_scatter
       utils.cube.CubeGen
 

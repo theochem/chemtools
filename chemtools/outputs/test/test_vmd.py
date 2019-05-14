@@ -21,7 +21,7 @@
 #
 # --
 # pragma pylint: disable=protected-access
-"""Test chemtools.outputs Module."""
+"""Test chemtools.outputs.vmd."""
 
 
 import shutil
@@ -30,7 +30,7 @@ import numpy as np
 
 from contextlib import contextmanager
 from numpy.testing import assert_raises
-from chemtools.outputs import output_vmd
+from chemtools.outputs import vmd
 
 
 @contextmanager
@@ -56,13 +56,13 @@ header = ('#!/usr/local/bin/vmd\n'
 
 
 def test_vmd_script_start():
-    assert output_vmd._vmd_script_start() == header
+    assert vmd._vmd_script_start() == header
 
 
 def test_vmd_script_molecule():
-    assert_raises(ValueError, output_vmd._vmd_script_molecule)
-    assert_raises(TypeError, output_vmd._vmd_script_molecule, 'example.log')
-    assert output_vmd._vmd_script_molecule('test.xyz') == \
+    assert_raises(ValueError, vmd._vmd_script_molecule)
+    assert_raises(TypeError, vmd._vmd_script_molecule, 'example.log')
+    assert vmd._vmd_script_molecule('test.xyz') == \
         ('# load new molecule\n'
          'mol new test.xyz type {xyz} first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all\n'
          '#\n'
@@ -74,7 +74,7 @@ def test_vmd_script_molecule():
          'mol material Opaque\n'
          'mol addrep top\n'
          '#\n')
-    assert output_vmd._vmd_script_molecule('test.xyz', 'test.xyz') == \
+    assert vmd._vmd_script_molecule('test.xyz', 'test.xyz') == \
         ('# load new molecule\n'
          'mol new test.xyz type {xyz} first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all\n'
          'mol addfile test.xyz type {xyz} first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor '
@@ -88,7 +88,7 @@ def test_vmd_script_molecule():
          'mol material Opaque\n'
          'mol addrep top\n'
          '#\n')
-    assert output_vmd._vmd_script_molecule('test.cube', 'test.xyz') == \
+    assert vmd._vmd_script_molecule('test.cube', 'test.xyz') == \
         ('# load new molecule\n'
          'mol new test.cube type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all\n'
          'mol addfile test.xyz type {xyz} first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor '
@@ -105,26 +105,26 @@ def test_vmd_script_molecule():
 
 
 def test_vmd_script_isosurface():
-    assert_raises(TypeError, output_vmd._vmd_script_isosurface, isosurf=None)
-    assert_raises(TypeError, output_vmd._vmd_script_isosurface, isosurf=1)
-    assert_raises(TypeError, output_vmd._vmd_script_isosurface, index=1.0)
-    assert_raises(TypeError, output_vmd._vmd_script_isosurface, index=None)
-    assert_raises(TypeError, output_vmd._vmd_script_isosurface, show_type='boxes')
-    assert_raises(TypeError, output_vmd._vmd_script_isosurface, show_type=None)
-    assert_raises(TypeError, output_vmd._vmd_script_isosurface, draw_type='lskdfj')
-    assert_raises(TypeError, output_vmd._vmd_script_isosurface, draw_type=None)
-    assert_raises(TypeError, output_vmd._vmd_script_isosurface, material='lksjdf')
-    assert_raises(TypeError, output_vmd._vmd_script_isosurface, material=None)
-    assert_raises(TypeError, output_vmd._vmd_script_isosurface, scalemin=1)
-    assert_raises(TypeError, output_vmd._vmd_script_isosurface, scalemin=None)
-    assert_raises(TypeError, output_vmd._vmd_script_isosurface, scalemax=1)
-    assert_raises(TypeError, output_vmd._vmd_script_isosurface, scalemax=None)
-    assert_raises(TypeError, output_vmd._vmd_script_isosurface, colorscheme=-1)
-    assert_raises(TypeError, output_vmd._vmd_script_isosurface, colorscheme=1057)
-    assert_raises(TypeError, output_vmd._vmd_script_isosurface, colorscheme='asdfasdf')
-    assert_raises(TypeError, output_vmd._vmd_script_isosurface, colorscheme=None)
+    assert_raises(TypeError, vmd._vmd_script_isosurface, isosurf=None)
+    assert_raises(TypeError, vmd._vmd_script_isosurface, isosurf=1)
+    assert_raises(TypeError, vmd._vmd_script_isosurface, index=1.0)
+    assert_raises(TypeError, vmd._vmd_script_isosurface, index=None)
+    assert_raises(TypeError, vmd._vmd_script_isosurface, show_type='boxes')
+    assert_raises(TypeError, vmd._vmd_script_isosurface, show_type=None)
+    assert_raises(TypeError, vmd._vmd_script_isosurface, draw_type='lskdfj')
+    assert_raises(TypeError, vmd._vmd_script_isosurface, draw_type=None)
+    assert_raises(TypeError, vmd._vmd_script_isosurface, material='lksjdf')
+    assert_raises(TypeError, vmd._vmd_script_isosurface, material=None)
+    assert_raises(TypeError, vmd._vmd_script_isosurface, scalemin=1)
+    assert_raises(TypeError, vmd._vmd_script_isosurface, scalemin=None)
+    assert_raises(TypeError, vmd._vmd_script_isosurface, scalemax=1)
+    assert_raises(TypeError, vmd._vmd_script_isosurface, scalemax=None)
+    assert_raises(TypeError, vmd._vmd_script_isosurface, colorscheme=-1)
+    assert_raises(TypeError, vmd._vmd_script_isosurface, colorscheme=1057)
+    assert_raises(TypeError, vmd._vmd_script_isosurface, colorscheme='asdfasdf')
+    assert_raises(TypeError, vmd._vmd_script_isosurface, colorscheme=None)
 
-    assert output_vmd._vmd_script_isosurface() == ('# add representation of the surface\n'
+    assert vmd._vmd_script_isosurface() == ('# add representation of the surface\n'
                                                'mol representation Isosurface 0.50000 0 0 0 1 1\n'
                                                'mol color Volume 0\n'
                                                'mol selection {all}\n'
@@ -137,7 +137,7 @@ def test_vmd_script_isosurface():
                                                'mol drawframes top 1 {now}\n'
                                                'color scale method RGB\n'
                                                '#\n')
-    assert output_vmd._vmd_script_isosurface(colorscheme=1) == \
+    assert vmd._vmd_script_isosurface(colorscheme=1) == \
         ('# add representation of the surface\n'
          'mol representation Isosurface 0.50000 0 0 0 1 1\n'
          'mol color ColorID 1\n'
@@ -158,7 +158,7 @@ def test_vmd_script_vector_field():
     unit_vecs = np.array([[1, 0, 0]])
     weights = np.array([1])
     # check output_vmd._vmd_script_vector_field
-    method = output_vmd._vmd_script_vector_field
+    method = vmd._vmd_script_vector_field
     assert_raises(ValueError, method, centers, unit_vecs, np.array([1, 2]))
     assert_raises(ValueError, method, centers, np.array([[1, 2, 3]]), weights)
 
@@ -227,15 +227,15 @@ def test_vmd_script_vector_field():
 
 def test_print_vmd_script_isosurface():
     # check TypeError:
-    assert_raises(TypeError, output_vmd.print_vmd_script_isosurface, 'test.vmd', 'iso.cube',
+    assert_raises(TypeError, vmd.print_vmd_script_isosurface, 'test.vmd', 'iso.cube',
                   colorscheme=[1], negative=True)
 
     with tmpdir('chemtools.utils.test.test_base.test_vmd_script_isosurface') as dn:
-        vmd = '%s/%s' % (dn, 'test.vmd')
+        fname = '%s/%s' % (dn, 'test.vmd')
 
-        output_vmd.print_vmd_script_isosurface(vmd, 'iso.cube')
+        vmd.print_vmd_script_isosurface(fname, 'iso.cube')
 
-        with open(vmd, 'r') as content_file:
+        with open(fname, 'r') as content_file:
             assert content_file.read() == \
                 (header +
                  '# load new molecule\n'
@@ -264,11 +264,11 @@ def test_print_vmd_script_isosurface():
                  'color scale method RGB\n'
                  '#\n')
 
-        output_vmd.print_vmd_script_isosurface(vmd, 'iso.cube', colorfile='col.cube',
-                                               isosurf=0.6, material='Transparent',
-                                               scalemin=-0.06, scalemax=0.08)
+        vmd.print_vmd_script_isosurface(fname, 'iso.cube', colorfile='col.cube',
+                                        isosurf=0.6, material='Transparent',
+                                        scalemin=-0.06, scalemax=0.08)
 
-        with open(vmd, 'r') as content_file:
+        with open(fname, 'r') as content_file:
             assert content_file.read() == \
                 (header +
                  '# load new molecule\n'
@@ -299,9 +299,9 @@ def test_print_vmd_script_isosurface():
                  'color scale method RGB\n'
                  '#\n')
 
-        output_vmd.print_vmd_script_isosurface(vmd, 'iso.cube', colorscheme=[0, 1], negative=True)
+        vmd.print_vmd_script_isosurface(fname, 'iso.cube', colorscheme=[0, 1], negative=True)
 
-        with open(vmd, 'r') as content_file:
+        with open(fname, 'r') as content_file:
             assert content_file.read() == \
                 (header +
                  '# load new molecule\n'
@@ -346,8 +346,8 @@ def test_print_vmd_script_isosurface():
 
 def test_print_vmd_script_multiple_cube():
     # check TypeError and ValueError:
-    assert_raises(TypeError, output_vmd.print_vmd_script_multiple_cube, 'test.vmd', 'iso.cube')
-    assert_raises(ValueError, output_vmd.print_vmd_script_multiple_cube, 'test.vmd',
+    assert_raises(TypeError, vmd.print_vmd_script_multiple_cube, 'test.vmd', 'iso.cube')
+    assert_raises(ValueError, vmd.print_vmd_script_multiple_cube, 'test.vmd',
                   ['iso.cube', 'iso.wrong_end'])
 
     ratom = ('# representation of the atoms\n'
@@ -376,15 +376,15 @@ def test_print_vmd_script_multiple_cube():
                 '#\n')
 
     with tmpdir('chemtools.utils.test.test_base.test_vmd_script_multiple_cube') as dn:
-        vmd = '%s/%s' % (dn, 'test.vmd')
+        fname = '%s/%s' % (dn, 'test.vmd')
         c1 = '%s/%s' % (dn, 'iso1.cube')
         c2 = '%s/%s' % (dn, 'iso2.cube')
         open(c1, 'a').close()
         open(c2, 'a').close()
 
-        output_vmd.print_vmd_script_multiple_cube(vmd, [c1, c2])
+        vmd.print_vmd_script_multiple_cube(fname, [c1, c2])
 
-        with open(vmd, 'r') as content_file:
+        with open(fname, 'r') as content_file:
             assert content_file.read() == \
                 (header +
                  '# load new molecule\n'
@@ -394,9 +394,9 @@ def test_print_vmd_script_multiple_cube():
                  'autobonds 1 waitfor all\n'
                  '#\n' + ratom + rsurf('0.50000', '0', '0') + rsurf('0.50000', '1', '1'))
 
-        output_vmd.print_vmd_script_multiple_cube(vmd, [c1, c2], isosurfs=0.6)
+        vmd.print_vmd_script_multiple_cube(fname, [c1, c2], isosurfs=0.6)
 
-        with open(vmd, 'r') as content_file:
+        with open(fname, 'r') as content_file:
             assert content_file.read() == \
                 (header +
                  '# load new molecule\n'
@@ -406,9 +406,9 @@ def test_print_vmd_script_multiple_cube():
                  'autobonds 1 waitfor all\n'
                  '#\n' + ratom + rsurf('0.60000', '0', '0') + rsurf('0.60000', '1', '1'))
 
-        output_vmd.print_vmd_script_multiple_cube(vmd, [c1, c2], isosurfs=[0.6, 0.8], colors=[3, 4])
+        vmd.print_vmd_script_multiple_cube(fname, [c1, c2], isosurfs=[0.6, 0.8], colors=[3, 4])
 
-        with open(vmd, 'r') as content_file:
+        with open(fname, 'r') as content_file:
             assert content_file.read() == \
                 (header +
                  '# load new molecule\n'
@@ -419,13 +419,13 @@ def test_print_vmd_script_multiple_cube():
                  '#\n' + ratom + rsurf('0.60000', '0', '3') + rsurf('0.80000', '1', '4'))
 
         # check TypeError and ValueError:
-        assert_raises(TypeError, output_vmd.print_vmd_script_multiple_cube, vmd, [c1, c2],
+        assert_raises(TypeError, vmd.print_vmd_script_multiple_cube, vmd, [c1, c2],
                       isosurfs=[0.6, 0.8, 0.4])
-        assert_raises(TypeError, output_vmd.print_vmd_script_multiple_cube, vmd, [c1, c2],
+        assert_raises(TypeError, vmd.print_vmd_script_multiple_cube, vmd, [c1, c2],
                       isosurfs=[0.6, 'error'])
-        assert_raises(TypeError, output_vmd.print_vmd_script_multiple_cube, vmd, [c1, c2],
+        assert_raises(TypeError, vmd.print_vmd_script_multiple_cube, vmd, [c1, c2],
                       isosurfs=[0.6, 0.8], colors=[3, 4, 8])
-        assert_raises(ValueError, output_vmd.print_vmd_script_multiple_cube, vmd, [c1, c2],
+        assert_raises(ValueError, vmd.print_vmd_script_multiple_cube, vmd, [c1, c2],
                       isosurfs=[0.6, 0.8], colors=[3, 1060])
 
 
@@ -433,9 +433,9 @@ def test_print_vmd_script_vector_field():
     centers = np.array([[1, 2, 3]])
     vecs = np.array([[1, 0, 0]])
     with tmpdir('chemtools.utils.test.test_base.test_print_vmd_script_vector_field') as dn:
-        vmd = '%s/%s' % (dn, 'test.vmd')
-        output_vmd.print_vmd_script_vector_field(vmd, 'test.xyz', centers, vecs)
-        with open(vmd, 'r') as content_file:
+        fname = '%s/%s' % (dn, 'test.vmd')
+        vmd.print_vmd_script_vector_field(fname, 'test.xyz', centers, vecs)
+        with open(fname, 'r') as content_file:
             assert content_file.read() == \
                 (header +
                  '# load new molecule\n'

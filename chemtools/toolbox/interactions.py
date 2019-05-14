@@ -31,7 +31,7 @@ from chemtools.denstools.densbased import DensGradBasedTool
 from chemtools.utils.utils import doc_inherit
 from chemtools.utils.cube import CubeGen
 from chemtools.outputs.plot import plot_scatter
-from chemtools.outputs.output_vmd import print_vmd_script_nci, print_vmd_script_isosurface
+from chemtools.outputs.vmd import print_vmd_script_nci, print_vmd_script_isosurface
 
 from numpy.ma import masked_less
 
