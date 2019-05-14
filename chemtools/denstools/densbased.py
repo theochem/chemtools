@@ -248,7 +248,7 @@ class DensGradLapKedTool(DensGradLapTool):
             Kinetic energy density evaluated on a set of grid points.
 
         """
-        super(DensGradLapKedTool, self).__init__(dens, grad)
+        super(DensGradLapKedTool, self).__init__(dens, grad, lap)
         if lap.shape != ked.shape:
             raise ValueError('Argument ked should be of {0} shape.'.format(dens.shape))
         self._ked = ked
