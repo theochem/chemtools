@@ -1,6 +1,9 @@
 """Test orbtools.mulliken."""
+import os
+
 import numpy as np
-from orbtools.mulliken import mulliken_populations
+from orbtools.mulliken import mulliken_populations, mulliken_populations_newbasis
+from orbtools.quasi import project
 import pytest
 
 
@@ -260,4 +263,35 @@ def test_mulliken_populations():
         np.array([-0.38189777, 0.1909489, 0.19094886]),
         np.array([8, 1, 1])
         - mulliken_populations(coeff_ab_mo, occupations, olp_ab_ab, num_atoms, ab_atom_indices),
+    )
+
+
+def test_mulliken_populations_newbasis():
+    """Test orbtools.mulliken.mulliken_populations_newabasis."""
+    current_dir = os.path.dirname(__file__)
+    coeff_ab_mo = np.load(os.path.join(current_dir, "naclo4_coeff_ab_mo.npy"))
+    olp_ab_ab = np.load(os.path.join(current_dir, "naclo4_olp_ab_ab.npy"))
+    occupations = np.load(os.path.join(current_dir, "naclo4_occupations.npy"))
+    ab_atom_indices = np.load(os.path.join(current_dir, "naclo4_ab_atom_indices.npy"))
+
+    assert np.allclose(
+        mulliken_populations_newbasis(
+            coeff_ab_mo, occupations, olp_ab_ab, 6, np.identity(124), ab_atom_indices
+        ),
+        mulliken_populations(coeff_ab_mo, occupations, olp_ab_ab, 6, ab_atom_indices),
+    )
+
+    coeff_ab_rand = np.linalg.svd(np.random.rand(124, 124))[0].T
+    rand_atom_indices = (np.random.rand(124) * 6 // 1).astype(int)
+    # normalize
+    olp_rand_rand = coeff_ab_rand.T.dot(olp_ab_ab).dot(coeff_ab_rand)
+    coeff_ab_rand *= np.diag(olp_rand_rand) ** (-0.5)
+    olp_rand_rand = coeff_ab_rand.T.dot(olp_ab_ab).dot(coeff_ab_rand)
+    coeff_rand_mo = project(olp_rand_rand, coeff_ab_rand.T.dot(olp_ab_ab).dot(coeff_ab_mo))
+    assert np.allclose(coeff_ab_rand.dot(coeff_rand_mo), coeff_ab_mo)
+    assert np.allclose(
+        mulliken_populations_newbasis(
+            coeff_ab_mo, occupations, olp_ab_ab, 6, coeff_ab_rand, rand_atom_indices
+        ),
+        mulliken_populations(coeff_rand_mo, occupations, olp_rand_rand, 6, rand_atom_indices),
     )

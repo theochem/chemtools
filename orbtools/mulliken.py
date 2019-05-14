@@ -1,5 +1,6 @@
 """Mulliken population analysis."""
 import numpy as np
+from orbtools.quasi import project
 
 
 # FIXME: bad name (since providing atom_weights will result in the population not being Mulliken)
@@ -276,3 +277,83 @@ def mulliken_populations(
         print("WARNING: Population does not match up with the number of electrons.")
 
     return output
+
+
+def mulliken_populations_newbasis(
+    coeff_ab_mo,
+    occupations,
+    olp_ab_ab,
+    num_atoms,
+    coeff_ab_new,
+    new_atom_indices,
+    new_atom_weights=None,
+):
+    r"""Return the Mulliken populations of the given system in a new basis set.
+
+    Parameters
+    ----------
+    coeff_ab_mo : np.ndarray(K, M)
+        Transformation matrix from the atomic basis to molecular orbitals.
+        Rows correspond to the atomic basis.
+        Columns correspond to the molecular orbitals.
+        The transformation matrix is applied to the right:
+        .. math::
+
+            \ket{\psi_i} = \sum_j \phi_i C_{ij}
+
+        Data type must be float.
+        `K` is the number of atomic orbitals and `M` is the number of molecular orbitals.
+    occupations : np.ndarray(M,)
+        Occupation numbers of each molecular orbital.
+        Data type must be integers or floats.
+        `M` is the number of molecular orbitals.
+    olp_ab_ab : np.ndarray(K, K)
+        Overlap between atomic basis functions.
+        Data type must be floats.
+        `K` is the number of atomic orbitals.
+    num_atoms : int
+        Number of atoms.
+        Must be an integer.
+    coeff_ab_new : np.ndarray(K, L)
+        Transformation matrix from the atomic basis to new basis functions.
+        Rows correspond to the atomic basis.
+        Columns correspond to the new basis functions.
+        The transformation matrix is applied to the right.
+        Data type must be float.
+        `K` is the number of atomic orbitals and `L` is the number of new basis functions.
+    new_atom_indices : np.ndarray(L,)
+        Index of the atom to which each of the new basis function belongs.
+        Data type must be integers.
+        `L` is the number of atomic orbitals.
+    new_atom_weights : np.ndarray(A, L, L)
+        Weights of the pair of new basis functions for the atoms. In other words, this weight
+        controls the amount of electrons associated with an new basis function pair that will be
+        attributed to an atom.
+        `A` is the number of atoms and `K` is the number of new basis functions.
+        Default is the Mulliken partitioning scheme where two basis functions that belong to the
+        given atom is 1, only one basis function that belong to the given atoms is 0.5, and no basis
+        functions is 0.
+
+    Returns
+    -------
+    population : np.ndarray(M,)
+        Number of electrons associated with each atom.
+        `M` is the number of atoms, which will be assumed to be the maximum index in
+        `ab_atom_indices`.
+
+    See Also
+    --------
+    orbtools.mulliken.mulliken_populations
+
+    """
+    olp_new_new = coeff_ab_new.T.dot(olp_ab_ab).dot(coeff_ab_new)
+    olp_new_mo = coeff_ab_new.T.dot(olp_ab_ab).dot(coeff_ab_mo)
+    coeff_new_mo = project(olp_new_new, olp_new_mo)
+    return mulliken_populations(
+        coeff_new_mo,
+        occupations,
+        olp_new_new,
+        num_atoms,
+        new_atom_indices,
+        atom_weights=new_atom_weights,
+    )
