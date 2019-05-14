@@ -28,7 +28,7 @@ import numpy as np
 
 from chemtools.utils.utils import doc_inherit
 from chemtools.wrappers.molecule import Molecule
-from chemtools.denstools.densbased import DensGradBasedTool
+from chemtools.denstools.densbased import DensGradTool
 
 
 __all__ = ["KED"]
@@ -60,7 +60,7 @@ class KED(object):
         grad = molecule.compute_gradient(self._points, spin, index)
         self._ke = molecule.compute_kinetic_energy_density(self._points, spin, index)
         # initialize dens- & grad-based tools class
-        self._denstools = DensGradBasedTool(dens, grad)
+        self._denstools = DensGradTool(dens, grad)
 
     @classmethod
     def from_file(cls, filename, points, spin="ab", index=None):
@@ -86,7 +86,7 @@ class KED(object):
         return self._points
 
     @property
-    @doc_inherit(DensGradBasedTool, 'density')
+    @doc_inherit(DensGradTool, 'density')
     def density(self):
         return self._denstools.density
 
@@ -101,11 +101,11 @@ class KED(object):
         return self._ke
 
     @property
-    @doc_inherit(DensGradBasedTool, 'ked_thomas_fermi')
+    @doc_inherit(DensGradTool, 'ked_thomas_fermi')
     def thomas_fermi(self):
         return self._denstools.ked_thomas_fermi
 
     @property
-    @doc_inherit(DensGradBasedTool, 'ked_weizsacker')
+    @doc_inherit(DensGradTool, 'ked_weizsacker')
     def weizsacker(self):
         return self._denstools.ked_weizsacker

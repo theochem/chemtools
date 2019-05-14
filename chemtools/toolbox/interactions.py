@@ -27,7 +27,7 @@
 import numpy as np
 
 from chemtools.wrappers.molecule import Molecule
-from chemtools.denstools.densbased import DensGradBasedTool
+from chemtools.denstools.densbased import DensGradTool
 from chemtools.utils.utils import doc_inherit
 from chemtools.utils.cube import CubeGen
 from chemtools.outputs.plot import plot_scatter
@@ -164,7 +164,7 @@ class NCI(BaseInteraction):
         grad = molecule.compute_gradient(grid.points, spin=spin, index=index)
         hess = molecule.compute_hessian(grid.points, spin=spin, index=index)
         # compute reduced gradient
-        rdgrad = DensGradBasedTool(dens, grad).reduced_density_gradient
+        rdgrad = DensGradTool(dens, grad).reduced_density_gradient
         return cls(dens, rdgrad, grid, hessian=hess)
 
     @property
@@ -296,7 +296,7 @@ class ELF(BaseInteraction):
         # if kin.shape != (grid.shape,):
         #     raise ValueError("Arguments kin should have the same size as grid.npoints!")
         self._grid = grid
-        self._denstool = DensGradBasedTool(dens, grad)
+        self._denstool = DensGradTool(dens, grad)
         # compute elf ratio & apply transformation
         self._ratio = kin - self._denstool.ked_weizsacker
         self._ratio /= masked_less(self._denstool.ked_thomas_fermi, 1.0e-30)
