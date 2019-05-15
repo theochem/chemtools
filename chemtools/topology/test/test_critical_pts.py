@@ -12,7 +12,7 @@ class TestCriticalPoints(TestCase):
     """Test critical point finder class."""
 
     def gauss_func(self, coors, centers=np.zeros(3), alphas=1):
-        """generate gaussian function value."""
+        """Generate gaussian function value."""
         return np.prod(np.exp((-alphas * (coors - centers) ** 2)), axis=-1)
 
     def gauss_deriv(self, coors, centers=np.zeros(3), alphas=1):
@@ -115,16 +115,19 @@ class TestCriticalPoints(TestCase):
         alf = 0.3
 
         def fun_v(coors):
+            """Generate value function."""
             return self.gauss_func(coors, atoms[0], alphas=alf) + self.gauss_func(
                 coors, atoms[1], alphas=alf
             )
 
         def fun_d(coors):
+            """Generate 1st order deriv function."""
             return self.gauss_deriv(coors, atoms[0], alphas=alf) + self.gauss_deriv(
                 coors, atoms[1], alphas=alf
             )
 
         def fun_d2(coors):
+            """Generate 2nd order deriv function."""
             return self.gauss_deriv2(coors, atoms[0], alphas=alf) + self.gauss_deriv2(
                 coors, atoms[1], alphas=alf
             )
@@ -173,3 +176,5 @@ class TestCriticalPoints(TestCase):
         tp_ins.find_critical_pts()
         assert len(tp_ins._crit_bond) == 3
         assert len(tp_ins._crit_ring) == 1
+        assert len(tp_ins._crit_max) == 0
+        assert len(tp_ins._crit_cage) == 0

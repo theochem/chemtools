@@ -41,7 +41,7 @@ class CriticalPoint(object):
     """
 
     def __init__(self, point, eigenvalues, eigenvectors):
-        """Initiate CriticalPoint data class.
+        """Initialize CriticalPoint data class.
 
         Parameters
         ----------
