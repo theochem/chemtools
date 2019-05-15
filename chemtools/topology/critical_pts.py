@@ -21,6 +21,7 @@
 #
 # --
 r"""This file contains functions for finding the critical points."""
+import warnings
 import numpy as np
 from scipy.optimize import root
 from scipy.spatial import KDTree
@@ -31,32 +32,69 @@ __all__ = ["find_critical_pts", "poincare_hopf_relation"]
 
 
 class CriticalPoint(object):
+    """Critical Point data class.
+
+    Attributes
+    ----------
+    eigenvalues : np.ndarray
+        eigenvalue of its hessian function
+    eigenvectors : TYPE
+        eigenfunction of its hessian function
+    point : np.ndarray(N,)
+        Coordinates of the critical point
+    """
+
     def __init__(self, point, eigenvalues, eigenvectors):
+        """Initiate CriticalPoint data class.
+
+        Parameters
+        ----------
+        eigenvalues : np.ndarray
+            eigenvalue of its hessian function
+        eigenvectors : TYPE
+            eigenfunction of its hessian function
+        point : np.ndarray(N,)
+            Coordinates of the critical point
+        """
         self.point = point
         self.eigenvalues = eigenvalues
         self.eigenvectors = eigenvectors
 
     def __repr__(self):
+        """str: Change the represendation of class instance."""
         return "{}".format(self.point)
 
 
 class Topo(object):
     def __init__(self,
-                 molecule,
+                 coors,
                  value_func,
                  gradian_func,
                  hess_func,
                  points=None):
-        self.molecule = molecule
+        self.coors = coors
         self.v_f = value_func
         self.g_f = gradian_func
         self.h_f = hess_func
         # num of the maximum equals to num of atoms
+        if points is None:
+            points = self._default_cube()
         self._kdtree = KDTree(points)
+        self._found_ct = np.zeros((0, 3))
+        self._found_ct_type = np.zeros(0, dtype=int)
         self._crit_max = []
         self._crit_bond = []
         self._crit_ring = []
         self._cirt_cage = []
+
+    def _default_cube(self, extra=5):
+        max_xyz = np.max(self.coors, axis=0)
+        min_xyz = np.min(self.coors, axis=0)
+        x = np.arange(min_xyz[0] - extra, max_xyz[0] + extra, 0.2)
+        y = np.arange(min_xyz[1] - extra, max_xyz[1] + extra, 0.2)
+        z = np.arange(min_xyz[2] - extra, max_xyz[2] + extra, 0.2)
+        g = np.meshgrid(x, y, z)
+        return np.vstack(np.ravel(i) for i in g).T
 
     def add_points(self, points):
         new_points = np.vstack((self._kdtree.data, points))
@@ -70,11 +108,11 @@ class Topo(object):
             tol=1e-15,
             method="hybr",
             options={'maxfev': 1000})
-        return sol.success, sol.x
+        return sol
 
-    def get_gradient(self, *points):
-        g_list = np.array([self.g_f(i) for i in points])
-        return np.linalg.norm(g_list, axis=1)
+    def get_gradient(self, points):
+        g_list = self.g_f(points)
+        return g_list
 
     @staticmethod
     def _construct_cage(point, length, n_points=4):
@@ -89,43 +127,73 @@ class Topo(object):
         else:
             raise NotADirectoryError(
                 "Given args n_point={} is not valid".format(n_points))
-        return p1, p2, p3, p4
+        return np.vstack((p1, p2, p3, p4))
 
     def find_critical_pts(self):
+
         for init_point in self._kdtree.data:
             length, _ = self._kdtree.query(init_point, 4)
             tetrahedral = self._construct_cage(init_point, length[-1])
             g_values = self.get_gradient(tetrahedral)
-            central_g = self.g_f(init_point)
+            central_g = self.get_gradient(init_point)
             # initial guess points
-            if np.linalg.norm(central_g) < min(g_values):
-                converge, point = self._root_find(init_point)
-                if converge:
-                    self._classify_critical_pt(point)
+            if np.all(np.linalg.norm(central_g) < np.linalg.norm(g_values, axis=-1)):
+                result = self._root_find(init_point)
+                # converge to critical pt
+                if result.success:
+                    point = result.x
+                    # if critical pt is maxima, skip.
+                    if self._is_coors_pt(point):
+                        continue
+                    ct_pt, ct_type = self._classify_critical_pt(point)
+                    if ct_type != 0 and self.check_not_same_pt(ct_pt, ct_type):
+                        self._add_critical_point(ct_pt, ct_type)
+        if self._satisfy_poincare_hopf() != 1:
+            warnings.warn("Poincare Hopf value is not 1", RuntimeWarning)
 
-    def _satisfy_poincare_hopf(self):
-        pre_hopf = len(self._crit_max) - len(self._crit_bond) + \
-                            len(self._crit_ring) - len(self._cirt_cage)
-        post_hopf = pre_hopf + len(self.molecule.numbers)
-        return post_hopf == 1
-
-    def _classify_critical_pt(self, point, eigen_cutoff=1e-4):
-        hess_crit = self.h_f(point)
-        eigenvals, eigenvecs = np.linalg.eigh(hess_crit)
-        signature = np.sum(np.sign(eigenvals))
+    def _add_critical_point(self, ct_pt, ct_type):
         signature_dict = {
             -3: self._crit_max,
             3: self._cirt_cage,
             -1: self._crit_bond,
             1: self._crit_ring,
         }
+        signature_dict[ct_type].append(ct_pt)
+        self._found_ct = np.vstack((self._found_ct, ct_pt.point))
+        self._found_ct_type = np.append(self._found_ct_type, int(ct_type))
+
+    def _is_coors_pt(self, pt, atom_eps=1e-3):
+        return np.any(np.linalg.norm(pt - self.coors, axis=-1) < atom_eps)
+
+    def _satisfy_poincare_hopf(self):
+        pre_hopf = len(self._crit_max) - len(self._crit_bond) + \
+                            len(self._crit_ring) - len(self._cirt_cage)
+        return pre_hopf + len(self.coors)
+
+    def _classify_critical_pt(self, point, eigen_cutoff=1e-4):
+        hess_crit = self.h_f(point)
+        eigenvals, eigenvecs = np.linalg.eigh(hess_crit)
         # Zero eigenvalues occur with points that are far away.
         # If eigenvalues too small, neglect this critical point
         if np.max(np.abs(eigenvals)) > eigen_cutoff:
+            signature = np.sum(np.sign(eigenvals))
+        else:
+            signature = 0
             # Add this critical point to it's list
-            crit_pt = CriticalPoint(point, eigenvals, eigenvecs)
-            signature_dict[signature].append(crit_pt)
-        self._satisfy_poincare_hopf()
+        crit_pt = CriticalPoint(point, eigenvals, eigenvecs)
+        return crit_pt, signature
+        # signature_dict[signature].append(crit_pt)
+        # self._satisfy_poincare_hopf()
+
+    def check_not_same_pt(self, pts, ct_type):
+        # return True if no existing critical pts.
+        # else False
+        dis = np.linalg.norm(pts.point - self._found_ct, axis=-1)
+        pos = np.where(dis < 1e-3)[0]
+        if len(pos) > 0:
+            if ct_type in self._found_ct_type[pos]:
+                return False
+        return True
 
 
 class TopologyInfo(object):
