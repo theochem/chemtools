@@ -111,31 +111,31 @@ def check_condensed_reactivity(model, energy_model, pop_0, pop_p, pop_m, n0):
 
 def test_condense_linear_from_file_fmr_h_ch4_fchk():
     # expected populations of CH4 computed with HORTON
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as filename:
-        model1 = CondensedConceptualDFT.from_file(filename, "linear", "FMR", "h")
-        model2 = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "h")
-        mol = Molecule.from_file(filename)
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fname:
+        model1 = CondensedConceptualDFT.from_file(fname, "linear", "FMR", "h")
+        model2 = CondensedConceptualDFT.from_file([fname], "linear", "FMR", "h")
+        mol = Molecule.from_file(fname)
         grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                             agspec="insane", random_rotate=False, mode="keep")
-        model3 = CondensedConceptualDFT.from_file(filename, "linear", "FMR", "h", grid=grid)
-        model4 = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "h", grid=grid)
+        model3 = CondensedConceptualDFT.from_file(fname, "linear", "FMR", "h", grid=grid)
+        model4 = CondensedConceptualDFT.from_file([fname], "linear", "FMR", "h", grid=grid)
     expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
-    # check using filename given as a string
+    # check using fname given as a string
     check_condensed_reactivity(model1, "linear", expected, None, None, 10)
-    # check using filename given as a list
+    # check using fname given as a list
     check_condensed_reactivity(model2, "linear", expected, None, None, 10)
-    # check using filename as a string & passing grid
+    # check using fname as a string & passing grid
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec="insane",
                         random_rotate=False, mode="keep")
     check_condensed_reactivity(model3, "linear", expected, None, None, 10)
-    # check using filename as a list & passing grid
+    # check using fname as a list & passing grid
     check_condensed_reactivity(model4, "linear", expected, None, None, 10)
 
 
 def test_condense_linear_from_molecule_fmr_h_ch4_fchk():
     # expected populations of CH4 computed with HORTON
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as filename:
-        molecule = Molecule.from_file(filename)
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fname:
+        molecule = Molecule.from_file(fname)
     expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
     # check from_molecule
     model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "h")
@@ -155,32 +155,32 @@ def test_condense_linear_from_molecule_fmr_h_ch4_fchk():
 
 def test_condense_linear_from_file_fmr_h_ch4_wfn():
     # expected populations of CH4 computed with HORTON
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as filename:
-        model1 = CondensedConceptualDFT.from_file(filename, "linear", "FMR", "h")
-        model2 = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "h")
-        mol = Molecule.from_file(filename)
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as fname:
+        model1 = CondensedConceptualDFT.from_file(fname, "linear", "FMR", "h")
+        model2 = CondensedConceptualDFT.from_file([fname], "linear", "FMR", "h")
+        mol = Molecule.from_file(fname)
         grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec="insane",
                             random_rotate=False, mode="keep")
-        model3 = CondensedConceptualDFT.from_file(filename, "linear", "FMR", "h", grid=grid)
-        model4 = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "h", grid=grid)
+        model3 = CondensedConceptualDFT.from_file(fname, "linear", "FMR", "h", grid=grid)
+        model4 = CondensedConceptualDFT.from_file([fname], "linear", "FMR", "h", grid=grid)
     expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
-    # check using filename given as a string
+    # check using fname given as a string
     check_condensed_reactivity(model1, "linear", expected, None, None, 10)
-    # check using filename given as a list
+    # check using fname given as a list
     check_condensed_reactivity(model2, "linear", expected, None, None, 10)
-    # check using filename as a string & passing grid
-    mol = Molecule.from_file(filename)
+    # check using fname as a string & passing grid
+    mol = Molecule.from_file(fname)
     grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec="insane",
                         random_rotate=False, mode="keep")
     check_condensed_reactivity(model3, "linear", expected, None, None, 10)
-    # check using filename as a list & passing grid
+    # check using fname as a list & passing grid
     check_condensed_reactivity(model4, "linear", expected, None, None, 10)
 
 
 def test_condense_linear_from_molecule_fmr_h_ch4_wfn():
     # expected populations of CH4 computed with HORTON
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as filename:
-        molecule = Molecule.from_file(filename)
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as fname:
+        molecule = Molecule.from_file(fname)
     expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
     # check from_molecule
     model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "h")
@@ -200,29 +200,29 @@ def test_condense_linear_from_molecule_fmr_h_ch4_wfn():
 
 def test_condense_linear_from_file_fmr_mbis_ch4_fchk():
     # expected populations of CH4 computed with HORTON
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as filename:
-        model1 = CondensedConceptualDFT.from_file(filename, "linear", "FMR", "mbis")
-        model2 = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "mbis")
-        mol = Molecule.from_file(filename)
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fname:
+        model1 = CondensedConceptualDFT.from_file(fname, "linear", "FMR", "mbis")
+        model2 = CondensedConceptualDFT.from_file([fname], "linear", "FMR", "mbis")
+        mol = Molecule.from_file(fname)
         grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec="insane",
                             random_rotate=False, mode="keep")
-        model3 = CondensedConceptualDFT.from_file(filename, "linear", "FMR", "mbis", grid=grid)
-        model4 = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "mbis", grid=grid)
+        model3 = CondensedConceptualDFT.from_file(fname, "linear", "FMR", "mbis", grid=grid)
+        model4 = CondensedConceptualDFT.from_file([fname], "linear", "FMR", "mbis", grid=grid)
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
-    # check using filename given as a string
+    # check using fname given as a string
     check_condensed_reactivity(model1, "linear", expected, None, None, 10)
-    # check using filename given as a list
+    # check using fname given as a list
     check_condensed_reactivity(model2, "linear", expected, None, None, 10)
-    # check using filename as a string & passing grid
+    # check using fname as a string & passing grid
     check_condensed_reactivity(model3, "linear", expected, None, None, 10)
-    # check using filename as a list & passing grid
+    # check using fname as a list & passing grid
     check_condensed_reactivity(model4, "linear", expected, None, None, 10)
 
 
 def test_condense_linear_from_molecule_fmr_mbis_ch4_fchk():
     # expected populations of CH4 computed with HORTON
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as filename:
-        molecule = Molecule.from_file(filename)
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fname:
+        molecule = Molecule.from_file(fname)
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
     # check from_molecule
     model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "mbis")
@@ -242,20 +242,20 @@ def test_condense_linear_from_molecule_fmr_mbis_ch4_fchk():
 
 def test_condense_linear_from_file_fmr_mbis_ch4_wfn():
     # expected populations of CH4 computed with HORTON
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as filename:
-        model1 = CondensedConceptualDFT.from_file(filename, "linear", "FMR", "mbis")
-        model2 = CondensedConceptualDFT.from_file([filename], "linear", "FMR", "mbis")
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as fname:
+        model1 = CondensedConceptualDFT.from_file(fname, "linear", "FMR", "mbis")
+        model2 = CondensedConceptualDFT.from_file([fname], "linear", "FMR", "mbis")
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
-    # check using filename given as a string
+    # check using fname given as a string
     check_condensed_reactivity(model1, "linear", expected, None, None, 10)
-    # check using filename given as a list
+    # check using fname given as a list
     check_condensed_reactivity(model2, "linear", expected, None, None, 10)
 
 
 def test_condense_linear_from_molecule_fmr_mbis_ch4_wfn():
     # expected populations of CH4 computed with HORTON
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as filename:
-        molecule = Molecule.from_file(filename)
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as fname:
+        molecule = Molecule.from_file(fname)
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
     # check from_molecule
     model = CondensedConceptualDFT.from_molecule(molecule, "linear", "FMR", "mbis")
@@ -275,29 +275,29 @@ def test_condense_linear_from_molecule_fmr_mbis_ch4_wfn():
 
 def test_condense_quadratic_from_file_fmr_mbis_ch4_fchk():
     # expected populations of CH4 computed with HORTON
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as filename:
-        model1 = CondensedConceptualDFT.from_file(filename, "quadratic", "FMR", "mbis")
-        model2 = CondensedConceptualDFT.from_file([filename], "quadratic", "FMR", "mbis")
-        mol = Molecule.from_file(filename)
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fname:
+        model1 = CondensedConceptualDFT.from_file(fname, "quadratic", "FMR", "mbis")
+        model2 = CondensedConceptualDFT.from_file([fname], "quadratic", "FMR", "mbis")
+        mol = Molecule.from_file(fname)
         grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, agspec="insane",
                             random_rotate=False, mode="keep")
-        model3 = CondensedConceptualDFT.from_file(filename, "quadratic", "FMR", "mbis", grid=grid)
-        model4 = CondensedConceptualDFT.from_file([filename], "quadratic", "FMR", "mbis", grid=grid)
+        model3 = CondensedConceptualDFT.from_file(fname, "quadratic", "FMR", "mbis", grid=grid)
+        model4 = CondensedConceptualDFT.from_file([fname], "quadratic", "FMR", "mbis", grid=grid)
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
-    # check using filename given as a string
+    # check using fname given as a string
     check_condensed_reactivity(model1, "quadratic", expected, None, None, 10)
-    # check using filename given as a list
+    # check using fname given as a list
     check_condensed_reactivity(model2, "quadratic", expected, None, None, 10)
-    # check using filename as a string & passing grid
+    # check using fname as a string & passing grid
     check_condensed_reactivity(model3, "quadratic", expected, None, None, 10)
-    # check using filename given as a list
+    # check using fname given as a list
     check_condensed_reactivity(model4, "quadratic", expected, None, None, 10)
 
 
 def test_condense_quadratic_from_molecule_fmr_mbis_ch4_fchk():
     # expected populations of CH4 computed with HORTON
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as filename:
-        molecule = Molecule.from_file(filename)
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fname:
+        molecule = Molecule.from_file(fname)
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
     # check from_molecule
     model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "FMR", "mbis")
@@ -317,20 +317,20 @@ def test_condense_quadratic_from_molecule_fmr_mbis_ch4_fchk():
 
 def test_condense_quadratic_from_file_fmr_mbis_ch4_wfn():
     # expected populations of CH4 computed with HORTON
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as filename:
-        model1 = CondensedConceptualDFT.from_file(filename, "quadratic", "FMR", "mbis")
-        model2 = CondensedConceptualDFT.from_file([filename], "quadratic", "FMR", "mbis")
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as fname:
+        model1 = CondensedConceptualDFT.from_file(fname, "quadratic", "FMR", "mbis")
+        model2 = CondensedConceptualDFT.from_file([fname], "quadratic", "FMR", "mbis")
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
-    # check using filename given as a string
+    # check using fname given as a string
     check_condensed_reactivity(model1, "quadratic", expected, None, None, 10)
-    # check using filename given as a list
+    # check using fname given as a list
     check_condensed_reactivity(model2, "quadratic", expected, None, None, 10)
 
 
 def test_condense_quadratic_from_molecule_fmr_mbis_ch4_wfn():
     # expected populations of CH4 computed with HORTON
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as filename:
-        molecule = Molecule.from_file(filename)
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as fname:
+        molecule = Molecule.from_file(fname)
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
     # check from_molecule given as a string
     model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "FMR", "mbis")
@@ -348,10 +348,10 @@ def test_condense_from_file_fd_rmf_esp_h2o_fchk():
     with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as file1:
         with path('chemtools.data', 'h2o_q-1_ub3lyp_ccpvtz.fchk') as file2:
             with path('chemtools.data', 'h2o_q+1_ub3lyp_ccpvtz.fchk') as file3:
-                filename = [file1, file2, file3]
+                fname = [file1, file2, file3]
                 # check from_file linear
-                model1 = CondensedConceptualDFT.from_file(filename, "linear", "RMF", "esp")
-                model2 = CondensedConceptualDFT.from_file(filename, "quadratic", "RMF", "esp")
+                model1 = CondensedConceptualDFT.from_file(fname, "linear", "RMF", "esp")
+                model2 = CondensedConceptualDFT.from_file(fname, "quadratic", "RMF", "esp")
     check_condensed_reactivity(model1, "linear", expected_0, expected_p, expected_m, 10)
     # check from_file quadratic
     check_condensed_reactivity(model2, "quadratic", expected_0, expected_p, expected_m, 10)
@@ -385,10 +385,10 @@ def test_condense_from_file_fd_rmf_npa_h2o_fchk():
     with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as file1:
         with path('chemtools.data', 'h2o_q-1_ub3lyp_ccpvtz.fchk') as file2:
             with path('chemtools.data', 'h2o_q+1_ub3lyp_ccpvtz.fchk') as file3:
-                filename = [file1, file2, file3]
+                fname = [file1, file2, file3]
                 # check from_file linear
-                model1 = CondensedConceptualDFT.from_file(filename, "linear", "RMF", "npa")
-                model2 = CondensedConceptualDFT.from_file(filename, "quadratic", "RMF", "npa")
+                model1 = CondensedConceptualDFT.from_file(fname, "linear", "RMF", "npa")
+                model2 = CondensedConceptualDFT.from_file(fname, "quadratic", "RMF", "npa")
     check_condensed_reactivity(model1, "linear", expected_0, expected_p, expected_m, 10)
     # check from_file quadratic
     check_condensed_reactivity(model2, "quadratic", expected_0, expected_p, expected_m, 10)
@@ -422,9 +422,9 @@ def test_condense_from_file_fd_rmf_mulliken_h2o_fchk():
     with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as file1:
         with path('chemtools.data', 'h2o_q-1_ub3lyp_ccpvtz.fchk') as file2:
             with path('chemtools.data', 'h2o_q+1_ub3lyp_ccpvtz.fchk') as file3:
-                filename = [file1, file2, file3]
-                model1 = CondensedConceptualDFT.from_file(filename, "linear", "RMF", "mulliken")
-                model2 = CondensedConceptualDFT.from_file(filename, "quadratic", "RMF", "mulliken")
+                fname = [file1, file2, file3]
+                model1 = CondensedConceptualDFT.from_file(fname, "linear", "RMF", "mulliken")
+                model2 = CondensedConceptualDFT.from_file(fname, "quadratic", "RMF", "mulliken")
     # check from_file linear
     check_condensed_reactivity(model1, "linear", expected_0, expected_p, expected_m, 10)
     # check from_file quadratic

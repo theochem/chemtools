@@ -52,17 +52,17 @@ class DensityLocalTool(DensGradLapTool):
         super(DensityLocalTool, self).__init__(*res)
 
     @classmethod
-    def from_file(cls, filename, spin='ab', index=None, points=None):
+    def from_file(cls, fname, spin='ab', index=None, points=None):
         """Initialize class from file.
 
         Parameters
         ----------
-        filename : str
+        fname : str
             Path to molecule's files.
         spin
         index
         points : np.ndarray, optional
             Grid points, given as a 2D array with 3 columns, used for calculating local properties.
         """
-        molecule = Molecule.from_file(filename)
+        molecule = Molecule.from_file(fname)
         return cls(molecule, spin, index, points)

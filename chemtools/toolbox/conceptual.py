@@ -131,24 +131,24 @@ class BaseConceptualDFT(object):
         # logging.info("Reference N0  : {0}".format(self._tool.n0))
 
     @staticmethod
-    def load_file(file_names):
-        """Return `Molecule` instances corresponding to file_names.
+    def load_file(fnames):
+        """Return `Molecule` instances corresponding to fnames.
 
         Parameters
         ----------
-        file_names : str or Sequence of str
+        fnames : str or Sequence of str
             Strings specifying the path to molecule's file, or sequence of strings specifying
             path to molecule files.
         """
-        if isinstance(file_names, (str, unicode, Path)):
+        if isinstance(fnames, (str, unicode, Path)):
             # case of one file not given as a list
-            molecule = Molecule.from_file(file_names)
-        elif len(file_names) == 1 and isinstance(file_names[0], (str, unicode)):
+            molecule = Molecule.from_file(fnames)
+        elif len(fnames) == 1 and isinstance(fnames[0], (str, unicode)):
             # case of one file given as a list
-            molecule = Molecule.from_file(file_names[0])
+            molecule = Molecule.from_file(fnames[0])
         else:
             # case of multiple files
-            molecule = [Molecule.from_file(filename) for filename in file_names]
+            molecule = [Molecule.from_file(fname) for fname in fnames]
         return molecule
 
 
@@ -217,19 +217,19 @@ class GlobalConceptualDFT(BaseConceptualDFT):
         return content
 
     @classmethod
-    def from_file(cls, file_name, model):
+    def from_file(cls, fname, model):
         r"""
         Initialize class from calculation output file(s).
 
         Parameters
         ----------
-        file_name : str, sequence of str
+        fname : str, sequence of str
             String specifying the path to a molecule's file, or sequence of strings specifying
             path to molecule files.
         model : str
             Energy model used to calculate global reactivity descriptors.
         """
-        molecules = cls.load_file(file_name)
+        molecules = cls.load_file(fname)
         return cls.from_molecule(molecules, model)
 
     @classmethod
@@ -316,13 +316,13 @@ class LocalConceptualDFT(BaseConceptualDFT):
         return content
 
     @classmethod
-    def from_file(cls, file_name, model, points):
+    def from_file(cls, fname, model, points):
         r"""
         Initialize class from calculation output file(s).
 
         Parameters
         ----------
-        file_name : str, sequence of str
+        fname : str, sequence of str
             String specifying the path to a molecule's file, or sequence of strings specifying
             path to molecule files.
         model : str
@@ -332,7 +332,7 @@ class LocalConceptualDFT(BaseConceptualDFT):
             Coordinates of points on which the local properties are evaluated given as a 2D
             array with 3 columns.
         """
-        molecules = cls.load_file(file_name)
+        molecules = cls.load_file(fname)
         return cls.from_molecule(molecules, model, points)
 
     @classmethod
@@ -417,13 +417,13 @@ class CondensedConceptualDFT(BaseConceptualDFT):
         return content
 
     @classmethod
-    def from_file(cls, file_name, model, approach="FMR", scheme="h", **kwargs):
+    def from_file(cls, fname, model, approach="FMR", scheme="h", **kwargs):
         r"""
         Initialize class from calculation output file(s).
 
         Parameters
         ----------
-        file_name : str, sequence of str
+        fname : str, sequence of str
             String specifying the path to a molecule's file, or sequence of strings specifying
             path to molecule files.
         model : str
@@ -437,7 +437,7 @@ class CondensedConceptualDFT(BaseConceptualDFT):
         kwargs : dict, optional
             Extra keyword arguments required for partitioning, like 'grid' and 'proatomdb'.
         """
-        molecules = cls.load_file(file_name)
+        molecules = cls.load_file(fname)
         return cls.from_molecule(molecules, model, approach, scheme, **kwargs)
 
     @classmethod

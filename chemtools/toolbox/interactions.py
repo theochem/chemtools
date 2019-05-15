@@ -49,7 +49,7 @@ class BaseInteraction(object):
         Parameters
         ----------
         fname : str
-            A string representing the path to a molecule's filename.
+            A string representing the path to a molecule's fname.
         spin : str, optional
             The type of occupied spin orbitals; options are 'a', 'b' & 'ab'.
         index : int or Sequence of int, optional

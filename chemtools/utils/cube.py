@@ -152,32 +152,32 @@ class CubeGen(object):
         return cls(numbers, pseudo_numbers, coordinates, origin, axes, shape)
 
     @classmethod
-    def from_cube(cls, filename):
+    def from_cube(cls, fname):
         r"""
         Initialize ``CubeGen`` class based on the grid specifications of a cube file.
 
         Parameters
         ----------
-        filename : str
+        fname : str
             Cube file name with \*.cube extension.
         """
-        filename = str(filename)
-        if not filename.endswith('.cube'):
-            raise ValueError('Argument filename should be a cube file with *.cube extension!')
+        fname = str(fname)
+        if not fname.endswith('.cube'):
+            raise ValueError('Argument fname should be a cube file with *.cube extension!')
 
         # Extract the specifications of the cubic grid from cube file's header
-        numbers, pseudo_numbers, coordinates, origin, axes, shape = cls._read_cube_header(filename)
+        numbers, pseudo_numbers, coordinates, origin, axes, shape = cls._read_cube_header(fname)
 
         return cls(numbers, pseudo_numbers, coordinates, origin, axes, shape)
 
     @classmethod
-    def from_file(cls, filename, spacing=0.2, threshold=5.0, rotate=True):
+    def from_file(cls, fname, spacing=0.2, threshold=5.0, rotate=True):
         """
         Initialize ``CubeGen`` class based on the grid specifications of a file.
 
         Parameters
         ----------
-        filename : str
+        fname : str
             file name with, readable with HORTON's IOData.
         spacing : float, default=0.2
             Increment between grid points along `x`, `y` and `z` direction.
@@ -190,12 +190,12 @@ class CubeGen(object):
         # Load file
         logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
         try:
-            mol = IOData.from_file(str(filename))
+            mol = IOData.from_file(str(fname))
         except IOError as _:
             try:
-                with path('chemtools.data.examples', str(filename)) as filename:
-                    logging.info('Loading {0}'.format(str(filename)))
-                    mol = IOData.from_file(str(filename))
+                with path('chemtools.data.examples', str(fname)) as fname:
+                    logging.info('Loading {0}'.format(str(fname)))
+                    mol = IOData.from_file(str(fname))
             except IOError as error:
                 logging.info(error)
         return cls.from_molecule(mol.numbers, mol.pseudo_numbers, mol.coordinates, spacing,
@@ -260,24 +260,24 @@ class CubeGen(object):
         logging.info("Axes 3 : {0}".format(self._axes[2]))
         logging.info("Shape  : {0}".format(self._shape))
 
-    def dump_cube(self, filename, data):
+    def dump_cube(self, fname, data):
         r"""Write the data evaluated on grid points into a cube file.
 
         Parameters
         ----------
-        filename : str
+        fname : str
             Cube file name with \*.cube extension.
         data : np.ndarray, shape=(npoints,)
             An array containing the evaluated scalar property on the grid points.
         """
-        if not filename.endswith('.cube'):
-            raise ValueError('Argument filename should be a cube file with `*.cube` extension!')
+        if not fname.endswith('.cube'):
+            raise ValueError('Argument fname should be a cube file with `*.cube` extension!')
         if data.size != self._npoints:
             raise ValueError('Argument data should have the same size as the grid. ' +
                              '{0}!={1}'.format(data.size, self._npoints))
 
         # Write data into the cube file
-        with open(filename, 'w') as f:
+        with open(fname, 'w') as f:
             # writing the cube header:
             f.write('Cubefile created with HORTON CHEMTOOLS\n')
             f.write('OUTER LOOP: X, MIDDLE LOOP: Y, INNER LOOP: Z\n')
@@ -354,16 +354,16 @@ class CubeGen(object):
         return value
 
     @staticmethod
-    def _read_cube_header(filename):
+    def _read_cube_header(fname):
         """
         Return specifications of the cubic grid from the given cube file.
 
         Parameters
         ----------
-        filename : str
+        fname : str
             Cube file name with *.cube extension.
         """
-        with open(filename) as f:
+        with open(fname) as f:
             # skip the title
             f.readline()
             # skip the second line

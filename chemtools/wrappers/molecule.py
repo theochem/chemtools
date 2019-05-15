@@ -71,24 +71,24 @@ class Molecule(object):
             self._exp_beta = self._iodata.exp_alpha
 
     @classmethod
-    def from_file(cls, filename):
+    def from_file(cls, fname):
         """
         Initialize class given a file.
 
         Parameters
         ----------
-        filename : str
+        fname : str
             Path to molecule's files.
         """
         # load molecule
         logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
         try:
-            iodata = IOData.from_file(str(filename))
+            iodata = IOData.from_file(str(fname))
         except IOError as _:
             try:
-                with path('chemtools.data.examples', str(filename)) as filename:
-                    logging.info('Loading {0}'.format(str(filename)))
-                    iodata = IOData.from_file(str(filename))
+                with path('chemtools.data.examples', str(fname)) as fname:
+                    logging.info('Loading {0}'.format(str(fname)))
+                    iodata = IOData.from_file(str(fname))
             except IOError as error:
                 logging.info(error)
         return cls(iodata)

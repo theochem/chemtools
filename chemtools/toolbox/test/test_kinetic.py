@@ -49,48 +49,48 @@ def check_kinetic_energy_density(tool, data):
 
 def test_kinetic_from_file_ch4_uhf_ccpvdz():
     # load data computed with Fortran code
-    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as filename:
-        data = np.load(str(filename))
+    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as fname:
+        data = np.load(str(fname))
     # test from_file initialization & check against Fortran code
-    with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as filename:
-        tool = KED.from_file(filename, data["points"])
+    with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
+        tool = KED.from_file(fname, data["points"])
     check_kinetic_energy_density(tool, data)
 
 
 def test_kinetic_from_molecule_ch4_uhf_ccpvdz():
     # load data computed with Fortran code
-    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as filename:
-        data = np.load(str(filename))
+    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as fname:
+        data = np.load(str(fname))
     # test from_molecule initialization with exp_beta & check against Fortran code
-    with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as filename:
-        molecule = Molecule.from_file(filename)
+    with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
+        molecule = Molecule.from_file(fname)
     tool = KED.from_molecule(molecule, data["points"])
     print('tool = ', tool)
     check_kinetic_energy_density(tool, data)
     # test from_molecule initialization without exp_beta & check against Fortran code
     del molecule._exp_beta
-    with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as filename:
-        molecule = Molecule.from_file(filename)
+    with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
+        molecule = Molecule.from_file(fname)
     tool = KED.from_molecule(molecule, data["points"])
     check_kinetic_energy_density(tool, data)
 
 
 def test_kinetic_from_file_ch4_rhf_ccpvdz():
     # load data computed with Fortran code
-    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as filename:
-        data = np.load(str(filename))
+    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as fname:
+        data = np.load(str(fname))
     # test from_file initialization & check against Fortran code
-    with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as filename:
-        tool = KED.from_file(filename, data["points"])
+    with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
+        tool = KED.from_file(fname, data["points"])
     check_kinetic_energy_density(tool, data)
 
 
 def test_kinetic_from_molecule_ch4_rhf_ccpvdz():
     # load data computed with Fortran code
-    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as filename:
-        data = np.load(str(filename))
+    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as fname:
+        data = np.load(str(fname))
     # test from_file initialization & check against Fortran code
-    with path("chemtools.data", "ch4_rhf_ccpvdz.fchk") as filename:
-        molecule = Molecule.from_file(filename)
+    with path("chemtools.data", "ch4_rhf_ccpvdz.fchk") as fname:
+        molecule = Molecule.from_file(fname)
     tool = KED.from_molecule(molecule, data["points"])
     check_kinetic_energy_density(tool, data)

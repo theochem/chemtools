@@ -39,9 +39,9 @@ def parse_args_nci(subparser):
     for visualizing non-covalent interactions (NCI) with VMD package.
 
     The generated files include:
-      filename_output.vmd             The VMD script.
-      filename_output-dens.cube       The signed density cube file.
-      filename_output-grad.cube       The reduced density gradient cube file.
+      fname_output.vmd             The VMD script.
+      fname_output-dens.cube       The signed density cube file.
+      fname_output-grad.cube       The reduced density gradient cube file.
 
     The values of signed density (density multiplied by the sign of 2nd eigenvalue of
     Hessian) are multiplied by 100.0 when being recorded in cube file. Similiar to NCIPlot
@@ -53,12 +53,12 @@ def parse_args_nci(subparser):
     region with density < denscut.
 
     If VMD is setup on your system, you can visualize NCI with the command below:
-        $ vmd -e filename_output.vmd
+        $ vmd -e fname_output.vmd
     For instruction on how to open the script from the VMD interactive environment,
     please refer to ChemTools website.
 
-    Note: The filename_output.vmd script requires filename_output-dens.cube &
-          filename_output-grad.cube to plot NCI in VMD software (they files should
+    Note: The fname_output.vmd script requires fname_output-dens.cube &
+          fname_output-grad.cube to plot NCI in VMD software (they files should
           be all in the same directory).
     Note: The generated VMD script is the same as the NCIPlot Software version 1.0.
     """

@@ -58,17 +58,17 @@ class OrbitalLocalTool(object):
         self._density = self._molecule.compute_density(self._points)
 
     @classmethod
-    def from_file(cls, filename, points):
+    def from_file(cls, fname, points):
         """Initialize class from file.
 
         Parameters
         ----------
-        filename : str
+        fname : str
             Path to molecule's files.
         points : np.ndarray
             Grid points, given as a 2D array with 3 columns, used for calculating local properties.
         """
-        molecule = Molecule.from_file(filename)
+        molecule = Molecule.from_file(fname)
         return cls(molecule, points)
 
     @property

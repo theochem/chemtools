@@ -37,9 +37,9 @@ except ImportError:
 
 def test_densbased_from_file_elf_h2o_dimer():
     # load data computed with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-    with path("chemtools.data", "data_elf_nciplot_h2o_dimer_pbe_sto3g.npz") as filename:
-        data = np.load(str(filename))
+    with path("chemtools.data", "data_elf_nciplot_h2o_dimer_pbe_sto3g.npz") as fname:
+        data = np.load(str(fname))
     # test from_file initialization & check ELF
-    with path("chemtools.data", "h2o_dimer_pbe_sto3g.fchk") as filename:
-        tool = DensityLocalTool.from_file(filename, spin='ab', index=None, points=data["points"])
+    with path("chemtools.data", "h2o_dimer_pbe_sto3g.fchk") as fname:
+        tool = DensityLocalTool.from_file(fname, spin='ab', index=None, points=data["points"])
     # assert_array_almost_equal(tool.electron_localization_function, data["elf"], decimal=5)

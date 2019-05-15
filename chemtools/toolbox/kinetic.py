@@ -85,12 +85,12 @@ class KED(object):
         return cls(*molecule.compute_megga(points, spin=spin, index=index))
 
     @classmethod
-    def from_file(cls, filename, points, spin="ab", index=None):
+    def from_file(cls, fname, points, spin="ab", index=None):
         """Initialize class from file.
 
         Parameters
         ----------
-        filename : str
+        fname : str
             Path to molecule's files.
         points : np.ndarray
             Cartesian coordinates, a 2D array with 3 columns, to calculate local properties.
@@ -99,7 +99,7 @@ class KED(object):
         index : sequence
             Sequence of integers representing the index of spin orbitals.
         """
-        molecule = Molecule.from_file(filename)
+        molecule = Molecule.from_file(fname)
         return cls.from_molecule(molecule, points, spin, index)
 
     @property
