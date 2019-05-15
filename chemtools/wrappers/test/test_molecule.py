@@ -43,7 +43,7 @@ def check_horton_molecule_raises(mol):
     assert_raises(ValueError, mol.compute_density, points, spin="alph")
     assert_raises(ValueError, mol.compute_gradient, points, spin="ba")
     assert_raises(ValueError, mol.compute_hessian, points, spin="betaalpha")
-    assert_raises(ValueError, mol.compute_kinetic_energy_density, points, spin="balpha")
+    assert_raises(ValueError, mol.compute_ked, points, spin="balpha")
     # check invalid points argument
     assert_raises(ValueError, mol.compute_molecular_orbital, [0.1, 0.5, 0.7], "a")
     assert_raises(ValueError, mol.compute_molecular_orbital, np.array([0.1, 0.5, 0.7]), "b")
@@ -65,10 +65,10 @@ def check_horton_molecule_raises(mol):
     assert_raises(ValueError, mol.compute_esp, np.array([1., .5, .25]))
     assert_raises(ValueError, mol.compute_esp, np.array([[1., .25]]))
     assert_raises(ValueError, mol.compute_esp, np.array([[1, 25, 10]]))
-    assert_raises(ValueError, mol.compute_kinetic_energy_density, [.5, 0., .2])
-    assert_raises(ValueError, mol.compute_kinetic_energy_density, np.array([.5, 0., .2]))
-    assert_raises(ValueError, mol.compute_kinetic_energy_density, np.array([[.5, 0., .2, .1, .3]]))
-    assert_raises(ValueError, mol.compute_kinetic_energy_density, np.array([[5, 0, 2]]))
+    assert_raises(ValueError, mol.compute_ked, [.5, 0., .2])
+    assert_raises(ValueError, mol.compute_ked, np.array([.5, 0., .2]))
+    assert_raises(ValueError, mol.compute_ked, np.array([[.5, 0., .2, .1, .3]]))
+    assert_raises(ValueError, mol.compute_ked, np.array([[5, 0, 2]]))
     # check invalid charges argument
     assert_raises(ValueError, mol.compute_esp, points, charges=np.array([6., 1., 1.]))
     assert_raises(ValueError, mol.compute_esp, points, charges=[6., 1., 1., 1., 1.])
@@ -87,14 +87,14 @@ def check_horton_molecule_raises(mol):
     assert_raises(ValueError, mol.compute_hessian, points, spin="ab", output=np.zeros((2, 3)))
     assert_raises(ValueError, mol.compute_esp, points, spin="ab", output=np.zeros(3))
     assert_raises(ValueError, mol.compute_esp, points, spin="b", output=np.zeros((2, 4)))
-    assert_raises(ValueError, mol.compute_kinetic_energy_density, points, "a", None, np.zeros(3))
+    assert_raises(ValueError, mol.compute_ked, points, "a", None, np.zeros(3))
     # check not implemented erros
     assert_raises(NotImplementedError, mol.compute_gradient, points, "ab", [0, 1], None)
     assert_raises(NotImplementedError, mol.compute_gradient, points, "a", [5, 7], None)
     assert_raises(NotImplementedError, mol.compute_gradient, points, "b", [20], None)
     assert_raises(NotImplementedError, mol.compute_hessian, points, "ab", [32, 33], None)
     assert_raises(NotImplementedError, mol.compute_esp, points, "a", [33], None)
-    assert_raises(NotImplementedError, mol.compute_kinetic_energy_density, points, "a", [30])
+    assert_raises(NotImplementedError, mol.compute_ked, points, "a", [30])
 
 
 def test_horton_molecule_check_raises_fchk_ch4_uhf_ccpvdz():
@@ -341,7 +341,7 @@ def check_horton_molecule_against_fortran_ch4_uhf_ccpvdz(mol):
     assert_almost_equal(mol.compute_molecular_orbital(points, "b", 9), exp9, decimal=6)
     assert_almost_equal(mol.compute_molecular_orbital(points, "beta", 9), exp9, decimal=6)
     # check positive definite ke
-    assert_almost_equal(mol.compute_kinetic_energy_density(points, "ab"), ke, decimal=6)
+    assert_almost_equal(mol.compute_ked(points, "ab"), ke, decimal=6)
 
 
 def test_horton_molecule_grid_fortran_fchk_ch4_uhf_ccpvdz():

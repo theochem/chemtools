@@ -326,7 +326,7 @@ class ELF(BaseInteraction):
         # compute density, gradient & kinetic energy density on grid
         dens = molecule.compute_density(grid.points, spin=spin, index=index)
         grad = molecule.compute_gradient(grid.points, spin=spin, index=index)
-        kin = molecule.compute_kinetic_energy_density(grid.points, spin=spin, index=index)
+        kin = molecule.compute_ked(grid.points, spin=spin, index=index)
         return cls(dens, grad, kin, grid, trans, k)
 
     @property
@@ -401,7 +401,7 @@ class LOL(BaseInteraction):
         # compute density, gradient & kinetic energy density on grid
         dens = molecule.compute_density(grid.points, spin=spin, index=index)
         grad = molecule.compute_gradient(grid.points, spin=spin, index=index)
-        kin = molecule.compute_kinetic_energy_density(grid.points, spin=spin, index=index)
+        kin = molecule.compute_ked(grid.points, spin=spin, index=index)
         return cls(dens, grad, kin, grid)
 
     @property

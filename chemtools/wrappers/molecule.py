@@ -488,7 +488,7 @@ class Molecule(object):
             raise NotImplementedError()
         return output
 
-    def compute_kinetic_energy_density(self, points, spin="ab", index=None, output=None):
+    def compute_ked(self, points, spin="ab", index=None, output=None):
         r"""
         Return positive definite kinetic energy density on the given points for the specified spin.
 
