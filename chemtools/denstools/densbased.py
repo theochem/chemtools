@@ -34,12 +34,12 @@ class DensTool(object):
     """Local descriptive tools based on density."""
 
     def __init__(self, dens):
-        """Initialize class.
+        r"""Initialize class.
 
         Parameters
         ----------
         dens : np.ndarray
-            Electron density evaluated on a set of grid points.
+            Electron density evaluated on a set of grid points, :math:`\rho(\mathbf{r})`.
 
         """
         if dens.ndim != 1:
@@ -63,7 +63,7 @@ class DensTool(object):
         r"""Thomas-Fermi kinetic energy density.
 
         .. math::
-           \tau_\text{TF} \left(\mathbf{r}\right) = \frac{3}{10} \left(6 \pi^2 \right)^{2/3}
+           \tau_\text{TF} \left(\mathbf{r}\right) = \tfrac{3}{10} \left(6 \pi^2 \right)^{2/3}
                   \left(\frac{\rho\left(\mathbf{r}\right)}{2}\right)^{5/3}
         """
         # compute Thomas-Fermi kinetic energy
@@ -76,14 +76,15 @@ class DensGradTool(DensTool):
     """Local descriptive tools based on density & gradient."""
 
     def __init__(self, dens, grad):
-        """Initialize class.
+        r"""Initialize class.
 
         Parameters
         ----------
         dens : np.ndarray
-            Electron density evaluated on a set of grid points.
+            Electron density evaluated on a set of grid points, :math:`\rho(\mathbf{r})`.
         grad : np.ndarray
-            Gradient vector of electron density evaluated on a set of grid points.
+            Gradient vector of electron density evaluated on a set of grid points,
+            :math:`\nabla \rho(\mathbf{r})`.
 
         """
         super(DensGradTool, self).__init__(dens)
@@ -139,8 +140,8 @@ class DensGradTool(DensTool):
         r"""Weizsacker kinetic energy density.
 
         .. math::
-           \tau_\text{W} \left(\mathbf{r}\right) =
-           \frac{\lvert \nabla\rho\left(\mathbf{r}\right) \rvert^2}{8 \rho\left(\mathbf{r}\right)}
+           \tau_\text{W} \left(\mathbf{r}\right) = \tfrac{1}{8}
+           \frac{\lvert \nabla\rho\left(\mathbf{r}\right) \rvert^2}{\rho\left(\mathbf{r}\right)}
         """
         # mask density values less than 1.0d-30 to avoid diving by zero
         mdens = np.ma.masked_less(self.density, 1.0e-30)
@@ -154,16 +155,18 @@ class DensGradLapTool(DensGradTool):
     """Local descriptive tools based on density, gradient & Laplacian."""
 
     def __init__(self, dens, grad, lap):
-        """Initialize class.
+        r"""Initialize class.
 
         Parameters
         ----------
         dens : np.ndarray
-            Electron density evaluated on a set of grid points.
+            Electron density evaluated on a set of grid points, :math:`\rho(\mathbf{r})`.
         grad : np.ndarray
-            Gradient vector of electron density evaluated on a set of grid points.
+            Gradient vector of electron density evaluated on a set of grid points,
+            :math:`\nabla \rho(\mathbf{r})`.
         lap : np.ndarray
-            Laplacian of electron density evaluated on a set of grid points.
+            Laplacian of electron density evaluated on a set of grid points,
+            :math:`\nabla^2 \rho(\mathbf{r})`.
 
         """
         super(DensGradLapTool, self).__init__(dens, grad)
@@ -234,18 +237,21 @@ class DensGradLapKedTool(DensGradLapTool):
     """Local descriptive tools based on density, gradient, Laplacian & kinetic energy density."""
 
     def __init__(self, dens, grad, lap, ked):
-        """Initialize class.
+        r"""Initialize class.
 
         Parameters
         ----------
         dens : np.ndarray
-            Electron density evaluated on a set of grid points.
+            Electron density evaluated on a set of grid points, :math:`\rho(\mathbf{r})`.
         grad : np.ndarray
-            Gradient vector of electron density evaluated on a set of grid points.
+            Gradient vector of electron density evaluated on a set of grid points,
+            :math:`\nabla \rho(\mathbf{r})`.
         lap : np.ndarray
-            Laplacian of electron density evaluated on a set of grid points.
+            Laplacian of electron density evaluated on a set of grid points,
+            :math:`\nabla^2 \rho(\mathbf{r})`.
         ked : np.ndarray
-            Kinetic energy density evaluated on a set of grid points.
+            Positive-definite or Lagrangian kinetic energy density evaluated on a set of grid
+            points; :math:`\tau_\text{PD} (\mathbf{r})` or :math:`G(\mathbf{r})`.
 
         """
         super(DensGradLapKedTool, self).__init__(dens, grad, lap)
@@ -255,16 +261,16 @@ class DensGradLapKedTool(DensGradLapTool):
 
     @property
     def ked_positive_definite(self):
-        r"""Positive definite kinetic energy density.
+        r"""Positive definite or Lagrangian kinetic energy density, :math:`G(\mathbf{r})`.
 
         .. math::
            \tau_\text{PD} \left(\mathbf{r}\right) =
-           \sum_i^N n_i \frac{1}{2} \rvert \nabla \phi_i \left(\mathbf{r}\right) \lvert^2
+           \tfrac{1}{2} \sum_i^N n_i \rvert \nabla \phi_i \left(\mathbf{r}\right) \lvert^2
         """
         return self._ked
 
     def ked_general(self, alpha):
-        r"""Return general(ish) kinetic energy density.
+        r"""Compute general(ish) kinetic energy density.
 
         .. math::
            \tau_\text{G} \left(\mathbf{r}, \alpha\right) =
