@@ -274,7 +274,7 @@ class DensGradLapKedTool(DensGradLapTool):
         r"""Hamiltonian kinetic energy density denoted by :math:`K(\mathbf{r})`.
 
         .. math::
-           \tau_\text{ham} \left(\mathbf{r}, \alpha\right) =
+           \tau_\text{ham} \left(\mathbf{r}) =
                \tau_\text{PD} \left(\mathbf{r}\right) -
                \tfrac{1}{4} \nabla^2 \rho\left(\mathbf{r}\right)
 
