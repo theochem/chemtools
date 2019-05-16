@@ -24,9 +24,10 @@
 """Test chemtools.denstools.densbased."""
 
 
-from numpy.testing import assert_raises
+from numpy.testing import assert_raises, assert_almost_equal
 import numpy as np
-from chemtools.denstools.densbased import DensTool, DensGradTool, DensGradLapTool
+from chemtools.denstools.densbased import DensTool, DensGradTool
+from chemtools.denstools.densbased import DensGradLapTool, DensGradLapKedTool
 try:
     from importlib_resources import path
 except ImportError:
@@ -122,3 +123,20 @@ def test_dens_grad_lap_based_fake():
     # check TF kinetic energy density
     expected = np.array([2.871234, 17.91722219, 41.97769574, 9.115599745, 73.5470608])
     np.testing.assert_almost_equal(model.ked_thomas_fermi, expected, decimal=6)
+
+
+def test_dens_grad_lap_ked_based_h2o_nuclei():
+    # test against multiwfn 3.6 dev src
+    with path('chemtools.data', 'data_multiwfn36_fchk_h2o_q+0_ub3lyp_ccpvtz.npz') as fname:
+        data = np.load(str(fname))
+    # check local properties at the position of nuclei
+    args = (data['nuc_dens'], data['nuc_grad'], data['nuc_lap'], data['nuc_ked_pd'])
+    model = DensGradLapKedTool(*args)
+    assert_almost_equal(model.density, data['nuc_dens'], decimal=6)
+    assert_almost_equal(model.gradient, data['nuc_grad'], decimal=6)
+    assert_almost_equal(model.laplacian, data['nuc_lap'], decimal=6)
+    assert_almost_equal(model.ked_positive_definite, data['nuc_ked_pd'], decimal=6)
+    assert_almost_equal(model.gradient_norm, data['nuc_grad_norm'], decimal=6)
+    # assert_almost_equal(model.reduced_density_gradient, data['nuc_rdg'], decimal=6)
+    assert_almost_equal(model.ked_hamiltonian, data['nuc_ked_ham'], decimal=4)
+    assert_almost_equal(model.ked_general(0.), data['nuc_ked_ham'], decimal=4)
