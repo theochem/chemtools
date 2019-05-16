@@ -384,8 +384,10 @@ class ELF(BaseInteraction):
         value = np.array(self.value, copy=True)
         value[self.density < denscut] = 0.
         # dump ELF cube file & generate vmd script
-        self._grid.dump_cube(fname + '-elf.cube', self.value)
-        print_vmd_script_isosurface(fname + '.vmd', fname + '-elf.cube', isosurf=isosurf)
+        vmdname = fname + '.vmd'
+        cubname = fname + '-elf.cube'
+        self._grid.dump_cube(cubname, value)
+        print_vmd_script_isosurface(vmdname, cubname, isosurf=isosurf, representation='Line')
 
 
 class LOL(BaseInteraction):
