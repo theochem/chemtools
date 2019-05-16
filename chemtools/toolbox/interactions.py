@@ -364,7 +364,7 @@ class ELF(BaseInteraction):
     def _compute_topology(self):
         raise NotImplementedError
 
-    def generate_scripts(self, fname, isosurf=0.8):
+    def generate_scripts(self, fname, isosurf=0.8, denscut=0.0005):
         """Generate VMD scripts & cube file to visualize ELF iso-surface.
 
         Parameters
@@ -372,12 +372,17 @@ class ELF(BaseInteraction):
         fname : str
             A string representing the path to a fname of generated files.
             The VMD script and cube file will be name fname.vmd and fname-elf.cube, respectively.
-        isosurf : float
+        isosurf : float, optional
             Value of ELF iso-surface used in VMD script.
+        denscut : float, optional
+            Value of density cut to set ELF value to zero.
 
         """
         if not isinstance(self._grid, CubeGen):
             raise ValueError("Only possible if argument grid is a cubic grid.")
+        # set elf value of low density points to zero
+        value = np.array(self.value, copy=True)
+        value[self.density < denscut] = 0.
         # dump ELF cube file & generate vmd script
         self._grid.dump_cube(fname + '-elf.cube', self.value)
         print_vmd_script_isosurface(fname + '.vmd', fname + '-elf.cube', isosurf=isosurf)
