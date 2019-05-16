@@ -20,9 +20,11 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Test chemtools.analysis.elf."""
+"""Test chemtools.toolbox.interactions."""
 
 
+import numpy as np
+from numpy.testing import assert_allclose
 from chemtools.toolbox.interactions import ELF
 try:
     from importlib_resources import path
@@ -34,3 +36,11 @@ def test_h2o_b3lyp_sto3g_elf():
     with path('chemtools.data', 'water_b3lyp_sto3g.fchk') as file_path:
         elf = ELF.from_file(file_path)
     elf.generate_scripts('h2o', isosurf=0.8)
+
+
+def test_elf_h2o_nuclei():
+    # test against multiwfn 3.6 dev src
+    with path('chemtools.data', 'data_multiwfn36_fchk_h2o_q+0_ub3lyp_ccpvtz.npz') as fname:
+        data = np.load(str(fname))
+    elf = ELF(data['nuc_dens'], data['nuc_grad'], data['nuc_ked_pd'])
+    assert_allclose(elf.value, data['nuc_elf'], rtol=1.e-6, atol=1.e-6)
