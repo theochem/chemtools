@@ -77,7 +77,7 @@ class KED(object):
         points : np.ndarray
             The (npoints, 3) array of cartesian coordinates of points.
         spin : str, optional
-            The type of occupied spin orbitals; options are 'a', 'b' & 'ab'
+            The type of occupied spin orbitals; options are 'a', 'b' & 'ab'.
         index : sequence, optional
             Sequence of integers representing the index of spin orbitals.
 
@@ -98,7 +98,7 @@ class KED(object):
         points : np.ndarray
             The (npoints, 3) array of cartesian coordinates of points.
         spin : str, optional
-            The type of occupied spin orbitals; options are 'a', 'b' & 'ab'
+            The type of occupied spin orbitals; options are 'a', 'b' & 'ab'.
         index : sequence, optional
             Sequence of integers representing the index of spin orbitals.
 
