@@ -28,6 +28,10 @@ import numpy as np
 from numpy.testing import assert_almost_equal, assert_raises, assert_equal
 
 from chemtools.topology.eigenvalues import EigenValueTool
+try:
+    from importlib_resources import path
+except ImportError:
+    from importlib.resources import path
 
 
 def test_raises():
@@ -37,11 +41,11 @@ def test_raises():
 
 
 def test_ellipticity():
-    eigenvalues = np.array([[10., 20., 30.], [20., 10., 20.],
+    eigenvalues = np.array([[10., 20., 30.], [10., 10., 20.],
                             [-10., -2., -5.], [-10., 0., 1.],
-                            [30., 10., 20.]])
+                            [30., 5., 20.]])
     result = EigenValueTool(eigenvalues).ellipticity
-    assert_almost_equal(result, [0.5, 0., -0.6, np.inf, 0.5])
+    assert_almost_equal(result, [-0.5, 0.0, 1.0, -np.inf, -0.75], decimal=6)
 
 
 def test_bond_descriptor():
@@ -82,3 +86,11 @@ def test_morse_critical_pt():
     assert_equal(result[1], (3, 3))
     assert_equal(result[2], (3, -3))
     assert_equal(result[5], (3., 3.))
+
+
+def test_ellipticity_h2o_nuclei():
+    # test against multiwfn 3.6 dev src
+    with path('chemtools.data', 'data_multiwfn36_fchk_h2o_q+0_ub3lyp_ccpvtz.npz') as fname:
+        data = np.load(str(fname))
+    result = EigenValueTool(data['nuc_hess_eigval']).ellipticity
+    assert_almost_equal(result, data['nuc_ellipticity'], decimal=5)

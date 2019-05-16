@@ -58,19 +58,19 @@ class EigenValueTool(object):
 
     @property
     def ellipticity(self):
-        r"""Ellipticity of point(s).
+        r"""Ellipticity of electron density.
 
         .. math::
-           \frac{\lambda_\text{max}}{\lambda_\text{max-1}} - 1
+           \frac{\lambda_\text{min}}{\lambda_\text{min-1}} - 1
         """
-        # get the two largest eigenvalues
-        index = np.argsort(self.eigenvalues, axis=1)[:, -2:]
-        max1 = self.eigenvalues[np.arange(self.eigenvalues.shape[0]), index[:, 1]]
-        max2 = self.eigenvalues[np.arange(self.eigenvalues.shape[0]), index[:, 0]]
+        # get the two smallest eigenvalues
+        index = np.argsort(self.eigenvalues, axis=1)[:, :2]
+        min1 = self.eigenvalues[np.arange(self.eigenvalues.shape[0]), index[:, 0]]
+        min2 = self.eigenvalues[np.arange(self.eigenvalues.shape[0]), index[:, 1]]
         # if np.abs(eigen2) < self._zero_eps:
         #    warnings.warn("Second largest eigenvalue is zero.")
         #     return np.inf
-        return (max1 / max2) - 1.
+        return (min1 / min2) - 1.
 
     @property
     def bond_descriptor(self):
