@@ -32,10 +32,10 @@ except ImportError:
     from importlib.resources import path
 
 
-def test_h2o_b3lyp_sto3g_elf():
-    with path('chemtools.data', 'water_b3lyp_sto3g.fchk') as file_path:
-        elf = ELF.from_file(file_path)
-    elf.generate_scripts('h2o', isosurf=0.8)
+# def test_h2o_b3lyp_sto3g_elf():
+#     with path('chemtools.data', 'water_b3lyp_sto3g.fchk') as file_path:
+#         elf = ELF.from_file(file_path)
+#     elf.generate_scripts('h2o', isosurf=0.8)
 
 
 def test_elf_h2o_nuclei():
