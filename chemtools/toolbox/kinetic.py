@@ -146,6 +146,13 @@ class KED(object):
             raise ValueError('Argument lap should be given when initializing the class.')
         return self._denstools.ked_gradient_expansion_empirical
 
+    @property
+    @doc_inherit(DensGradLapKedTool, 'ked_hamiltonian')
+    def ked_hamiltonian(self):
+        if not hasattr(self._denstools, 'ked_general'):
+            raise ValueError('Argument lap & kin should be given when initializing the class.')
+        return self._denstools.ked_hamiltonian
+
     @doc_inherit(DensGradLapTool, 'ked_gradient_expansion_general')
     def ked_gradient_expansion(self, alpha, beta):
         if not hasattr(self._denstools, 'ked_gradient_expansion_general'):
