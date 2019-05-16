@@ -118,7 +118,7 @@ class KED(object):
 
     @property
     @doc_inherit(DensGradLapTool, 'laplacian')
-    def laplacin(self):
+    def laplacian(self):
         if not hasattr(self._denstools, 'laplacian'):
             raise ValueError('Argument lap should be given when initializing the class.')
         return self._denstools.laplacian
@@ -157,18 +157,18 @@ class KED(object):
             raise ValueError('Argument lap should be given when initializing the class.')
         return self._denstools.ked_gradient_expansion_empirical
 
+    @doc_inherit(DensGradLapTool, 'ked_gradient_expansion_general')
+    def ked_gradient_expansion_general(self, alpha, beta):
+        if not hasattr(self._denstools, 'ked_gradient_expansion_general'):
+            raise ValueError('Argument lap should be given when initializing the class.')
+        return self._denstools.ked_gradient_expansion_general(alpha, beta)
+
     @property
     @doc_inherit(DensGradLapKedTool, 'ked_hamiltonian')
     def ked_hamiltonian(self):
         if not hasattr(self._denstools, 'ked_general'):
             raise ValueError('Argument lap & ked should be given when initializing the class.')
         return self._denstools.ked_hamiltonian
-
-    @doc_inherit(DensGradLapTool, 'ked_gradient_expansion_general')
-    def ked_gradient_expansion(self, alpha, beta):
-        if not hasattr(self._denstools, 'ked_gradient_expansion_general'):
-            raise ValueError('Argument lap should be given when initializing the class.')
-        return self._denstools.ked_gradient_expansion_general(alpha, beta)
 
     @doc_inherit(DensGradLapKedTool, 'ked_general')
     def ked_general(self, alpha):
