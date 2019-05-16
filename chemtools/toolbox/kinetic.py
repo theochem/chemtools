@@ -107,11 +107,6 @@ class KED(object):
         return cls.from_molecule(molecule, points, spin, index)
 
     @property
-    def points(self):
-        """Coordinates of grid points."""
-        return self._points
-
-    @property
     @doc_inherit(DensGradTool, 'density')
     def density(self):
         return self._denstools.density
