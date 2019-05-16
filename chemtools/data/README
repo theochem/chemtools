@@ -1,0 +1,24 @@
+Guidelines for storing data in compressed npz file
+--------------------------------------------------
+
+The keys in the first column have been used to denote stored properties in the second column.
+If the properties are evaluated at the position of nuclei, nuc_ prefix is added to the keys.
+
+nums   		Atomic numbers
+coords  	Atomic coordinates
+points		Grid points coordinate
+dens	    	Density
+grad		Gradient
+grad_norm	Gradient norm
+lap		Lapalcian
+hess	 	Hessian
+hess_eigval	Hessian eigenvalues
+ked_pd	 	Kinetic energy density positive definite (Lagrangian kinetic energy)
+ked_ham		Lagrangian kinetic energy
+elf	 	Electron localization function
+lol	 	Localized orbital locator
+lie	 	Local information entropy
+rdg		Reduced density gradient
+alie		Average local ionization energy
+esp		Total ESP
+ellipticity	Ellipticity
