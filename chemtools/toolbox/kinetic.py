@@ -37,34 +37,37 @@ __all__ = ["KED"]
 class KED(object):
     """Kinetic Energy Density Class."""
 
-    def __init__(self, dens, grad, lap=None, kin=None):
-        """Initialize class.
+    def __init__(self, dens, grad, lap=None, ked=None):
+        r"""Initialize class.
 
         Parameters
         ----------
         dens : np.ndarray
-            Electron density evaluated on a set of grid points.
+            Electron density evaluated on a set of grid points, :math:`\rho(\mathbf{r})`.
         grad : np.ndarray
-            Gradient vector of electron density evaluated on a set of grid points.
-        lap : np.ndarray
-            Laplacian of electron density evaluated on a set of grid points.
-        kin : np.ndarray
-            Positive-definite kinetic energy density evaluated on a set of grid points.
+            Gradient vector of electron density evaluated on a set of grid points,
+            :math:`\nabla \rho(\mathbf{r})`.
+        lap : np.ndarray, optional
+            Laplacian of electron density evaluated on a set of grid points,
+            :math:`\nabla^2 \rho(\mathbf{r})`.
+        ked : np.ndarray, optional
+            Positive-definite or Lagrangian kinetic energy density evaluated on a set of grid
+            points; :math:`\tau_\text{PD} (\mathbf{r})` or :math:`G(\mathbf{r})`.
 
         """
         # initialize dens-based tools class
-        if lap is None and kin is None:
+        if lap is None and ked is None:
             self._denstools = DensGradTool(dens, grad)
-        elif kin is None:
+        elif ked is None:
             self._denstools = DensGradLapTool(dens, grad, lap)
         elif lap is None:
             self._denstools = DensGradTool(dens, grad)
-            self._ked_pd = kin
+            self._ked_pd = ked
         else:
-            self._denstools = DensGradLapKedTool(dens, grad, lap, kin)
+            self._denstools = DensGradLapKedTool(dens, grad, lap, ked)
 
     @classmethod
-    def from_molecule(cls, molecule, points, spin="ab", index=None):
+    def from_molecule(cls, molecule, points, spin='ab', index=None):
         r"""Initialize class using instance of `Molecule` and grid points.
 
         Parameters
@@ -72,10 +75,10 @@ class KED(object):
         molecule : Molecule
             An instance of `Molecule` class.
         points : np.ndarray
-            Cartesian coordinates, a 2D array with 3 columns, to calculate local properties.
-        spin : str
-            The type of occupied spin orbitals.
-        index : sequence
+            The (npoints, 3) array of cartesian coordinates of points.
+        spin : str, optional
+            The type of occupied spin orbitals; options are 'a', 'b' & 'ab'
+        index : sequence, optional
             Sequence of integers representing the index of spin orbitals.
 
         """
@@ -85,19 +88,20 @@ class KED(object):
         return cls(*molecule.compute_megga(points, spin=spin, index=index))
 
     @classmethod
-    def from_file(cls, fname, points, spin="ab", index=None):
-        """Initialize class from file.
+    def from_file(cls, fname, points, spin='ab', index=None):
+        r"""Initialize class from file.
 
         Parameters
         ----------
         fname : str
             Path to molecule's files.
         points : np.ndarray
-            Cartesian coordinates, a 2D array with 3 columns, to calculate local properties.
-        spin : str
-            The type of occupied spin orbitals.
-        index : sequence
+            The (npoints, 3) array of cartesian coordinates of points.
+        spin : str, optional
+            The type of occupied spin orbitals; options are 'a', 'b' & 'ab'
+        index : sequence, optional
             Sequence of integers representing the index of spin orbitals.
+
         """
         molecule = Molecule.from_file(fname)
         return cls.from_molecule(molecule, points, spin, index)
@@ -113,6 +117,18 @@ class KED(object):
         return self._denstools.density
 
     @property
+    @doc_inherit(DensGradTool, 'gradient')
+    def gradient(self):
+        return self._denstools.gradient
+
+    @property
+    @doc_inherit(DensGradLapTool, 'laplacian')
+    def laplacin(self):
+        if not hasattr(self._denstools, 'laplacian'):
+            raise ValueError('Argument lap should be given when initializing the class.')
+        return self._denstools.laplacian
+
+    @property
     @doc_inherit(DensGradLapKedTool, 'ked_positive_definite')
     def ked_positive_definite(self):
         if hasattr(self._denstools, 'ked_positive_definite'):
@@ -120,7 +136,7 @@ class KED(object):
         elif hasattr(self, '_ked_pd'):
             return self._ked_pd
         else:
-            raise ValueError('Argument kin should be given when initializing the class.')
+            raise ValueError('Argument ked should be given when initializing the class.')
 
     @property
     @doc_inherit(DensGradTool, 'ked_thomas_fermi')
@@ -150,7 +166,7 @@ class KED(object):
     @doc_inherit(DensGradLapKedTool, 'ked_hamiltonian')
     def ked_hamiltonian(self):
         if not hasattr(self._denstools, 'ked_general'):
-            raise ValueError('Argument lap & kin should be given when initializing the class.')
+            raise ValueError('Argument lap & ked should be given when initializing the class.')
         return self._denstools.ked_hamiltonian
 
     @doc_inherit(DensGradLapTool, 'ked_gradient_expansion_general')
@@ -162,5 +178,5 @@ class KED(object):
     @doc_inherit(DensGradLapKedTool, 'ked_general')
     def ked_general(self, alpha):
         if not hasattr(self._denstools, 'ked_general'):
-            raise ValueError('Argument lap & kin should be given when initializing the class.')
+            raise ValueError('Argument lap & ked should be given when initializing the class.')
         return self._denstools.ked_general(alpha)
