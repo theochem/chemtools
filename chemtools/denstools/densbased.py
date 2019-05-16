@@ -269,6 +269,19 @@ class DensGradLapKedTool(DensGradLapTool):
         """
         return self._ked
 
+    @property
+    def ked_hamiltonian(self):
+        r"""Hamiltonian kinetic energy density denoted by :math:`K(\mathbf{r})`.
+
+        .. math::
+           \tau_\text{ham} \left(\mathbf{r}, \alpha\right) =
+               \tau_\text{PD} \left(\mathbf{r}\right) -
+               \tfrac{1}{4} \nabla^2 \rho\left(\mathbf{r}\right)
+
+        This is a special case of :func:`ked_general` with :math:`\alpha=0.`
+        """
+        return self.ked_general(alpha=0.)
+
     def ked_general(self, alpha):
         r"""Compute general(ish) kinetic energy density.
 
