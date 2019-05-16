@@ -26,7 +26,7 @@
 
 import numpy as np
 
-from numpy.testing import assert_array_almost_equal, assert_allclose
+from numpy.testing import assert_array_almost_equal, assert_allclose, assert_raises
 
 from chemtools.wrappers.molecule import Molecule
 from chemtools.toolbox.kinetic import KED
@@ -94,3 +94,97 @@ def test_kinetic_from_molecule_ch4_rhf_ccpvdz():
         molecule = Molecule.from_file(fname)
     tool = KED.from_molecule(molecule, data['points'])
     check_kinetic_energy_density(tool, data)
+
+
+def test_kinetic_raises_lap_ked_h2o_nuclei():
+    # test against multiwfn 3.6 dev src
+    with path('chemtools.data', 'data_multiwfn36_fchk_h2o_q+0_ub3lyp_ccpvtz.npz') as fname:
+        data = np.load(str(fname))
+    tool = KED(data['nuc_dens'], data['nuc_grad'], None, None)
+    # check attributes
+    assert_allclose(tool.density, data['nuc_dens'], rtol=1.e-6, atol=0.)
+    assert_allclose(tool.gradient, data['nuc_grad'], rtol=1.e-6, atol=0.)
+    assert_raises(ValueError, lambda: tool.laplacian)
+    assert_raises(ValueError, lambda: tool.ked_positive_definite)
+    assert_raises(ValueError, lambda: tool.ked_gradient_expansion)
+    assert_raises(ValueError, lambda: tool.ked_gradient_expansion_empirical)
+    assert_raises(ValueError, tool.ked_gradient_expansion_general, 1.0, 1.0)
+    assert_raises(ValueError, lambda: tool.ked_hamiltonian)
+    assert_raises(ValueError, tool.ked_general, 1.0)
+
+
+def test_kinetic_raises_lap_h2o_nuclei():
+    # test against multiwfn 3.6 dev src
+    with path('chemtools.data', 'data_multiwfn36_fchk_h2o_q+0_ub3lyp_ccpvtz.npz') as fname:
+        data = np.load(str(fname))
+    tool = KED(data['nuc_dens'], data['nuc_grad'], None, data['nuc_ked_pd'])
+    # check attributes
+    assert_allclose(tool.density, data['nuc_dens'], rtol=1.e-6, atol=0.)
+    assert_allclose(tool.gradient, data['nuc_grad'], rtol=1.e-6, atol=0.)
+    assert_raises(ValueError, lambda: tool.laplacian)
+    assert_raises(ValueError, lambda: tool.ked_gradient_expansion)
+    assert_raises(ValueError, lambda: tool.ked_gradient_expansion_empirical)
+    assert_raises(ValueError, tool.ked_gradient_expansion_general, 1.0, 1.0)
+    assert_raises(ValueError, lambda: tool.ked_hamiltonian)
+    assert_raises(ValueError, tool.ked_general, 1.0)
+
+
+def test_kinetic_raises_ked_h2o_nuclei():
+    # test against multiwfn 3.6 dev src
+    with path('chemtools.data', 'data_multiwfn36_fchk_h2o_q+0_ub3lyp_ccpvtz.npz') as fname:
+        data = np.load(str(fname))
+    tool = KED(data['nuc_dens'], data['nuc_grad'], data['nuc_lap'], None)
+    # check attributes
+    assert_allclose(tool.density, data['nuc_dens'], rtol=1.e-6, atol=0.)
+    assert_allclose(tool.gradient, data['nuc_grad'], rtol=1.e-6, atol=0.)
+    assert_raises(ValueError, lambda: tool.ked_positive_definite)
+    assert_raises(ValueError, lambda: tool.ked_hamiltonian)
+    assert_raises(ValueError, tool.ked_general, 1.0)
+
+
+def test_kinetic_h2o_nuclei():
+    # test against multiwfn 3.6 dev src
+    with path('chemtools.data', 'data_multiwfn36_fchk_h2o_q+0_ub3lyp_ccpvtz.npz') as fname:
+        data = np.load(str(fname))
+    tool = KED(data['nuc_dens'], data['nuc_grad'], data['nuc_lap'], data['nuc_ked_pd'])
+    # check attributes
+    assert_allclose(tool.density, data['nuc_dens'], rtol=1.e-6, atol=0.)
+    assert_allclose(tool.gradient, data['nuc_grad'], rtol=1.e-6, atol=0.)
+    assert_allclose(tool.laplacian, data['nuc_lap'], rtol=1.e-6, atol=0.)
+    # check ked at the position of nuclei
+    assert_allclose(tool.ked_positive_definite, data['nuc_ked_pd'], rtol=1.e-5, atol=0.)
+    assert_allclose(tool.ked_hamiltonian, data['nuc_ked_ham'], rtol=1.e-5, atol=0.)
+    assert_allclose(tool.ked_general(alpha=0.), data['nuc_ked_ham'], rtol=1.e-5, atol=0.)
+
+
+def test_kinetic_from_file_h2o_nuclei():
+    # test against multiwfn 3.6 dev src
+    with path('chemtools.data', 'data_multiwfn36_fchk_h2o_q+0_ub3lyp_ccpvtz.npz') as fname:
+        data = np.load(str(fname))
+    with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as fname:
+        tool = KED.from_file(fname, data['coords'])
+    # check attributes
+    assert_allclose(tool.density, data['nuc_dens'], rtol=1.e-6, atol=0.)
+    assert_allclose(tool.gradient, data['nuc_grad'], rtol=1.e-6, atol=0.)
+    assert_allclose(tool.laplacian, data['nuc_lap'], rtol=1.e-6, atol=0.)
+    # check ked at the position of nuclei
+    assert_allclose(tool.ked_positive_definite, data['nuc_ked_pd'], rtol=1.e-5, atol=0.)
+    assert_allclose(tool.ked_hamiltonian, data['nuc_ked_ham'], rtol=1.e-5, atol=0.)
+    assert_allclose(tool.ked_general(alpha=0.), data['nuc_ked_ham'], rtol=1.e-5, atol=0.)
+
+
+def test_kinetic_from_molecule_h2o_nuclei():
+    # test against multiwfn 3.6 dev src
+    with path('chemtools.data', 'data_multiwfn36_fchk_h2o_q+0_ub3lyp_ccpvtz.npz') as fname:
+        data = np.load(str(fname))
+    with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as fname:
+        molecule = Molecule.from_file(fname)
+    tool = KED.from_molecule(molecule, data['coords'])
+    # check attributes
+    assert_allclose(tool.density, data['nuc_dens'], rtol=1.e-6, atol=0.)
+    assert_allclose(tool.gradient, data['nuc_grad'], rtol=1.e-6, atol=0.)
+    assert_allclose(tool.laplacian, data['nuc_lap'], rtol=1.e-6, atol=0.)
+    # check ked at the position of nuclei
+    assert_allclose(tool.ked_positive_definite, data['nuc_ked_pd'], rtol=1.e-5, atol=0.)
+    assert_allclose(tool.ked_hamiltonian, data['nuc_ked_ham'], rtol=1.e-5, atol=0.)
+    assert_allclose(tool.ked_general(alpha=0.), data['nuc_ked_ham'], rtol=1.e-5, atol=0.)
