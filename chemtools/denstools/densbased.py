@@ -199,8 +199,11 @@ class DensGradLapTool(DensGradTool):
            \tau_\text{TF} \left(\mathbf{r}\right) +
            \tfrac{1}{9} \tau_\text{W} \left(\mathbf{r}\right) +
            \tfrac{1}{6} \nabla^2 \rho\left(\mathbf{r}\right)
+
+        This is a special case of :func:`ked_gradient_expansion_general` with
+        :math:`a=\tfrac{1}{9}` and :math:`b=\tfrac{1}{6}`.
         """
-        return self.ked_gradient_expansion_general(9., 6.)
+        return self.ked_gradient_expansion_general(1. / 9., 1. / 6.)
 
     @property
     def ked_gradient_expansion_empirical(self):
@@ -211,26 +214,28 @@ class DensGradLapTool(DensGradTool):
            \tau_\text{TF} \left(\mathbf{r}\right) +
            \tfrac{1}{5} \tau_\text{W} \left(\mathbf{r}\right) +
            \tfrac{1}{6} \nabla^2 \rho\left(\mathbf{r}\right)
-        """
-        return self.ked_gradient_expansion_general(5., 6.)
 
-    def ked_gradient_expansion_general(self, alpha, beta):
+        This is a special case of :func:`ked_gradient_expansion_general` with
+        :math:`a=\tfrac{1}{5}` and :math:`b=\tfrac{1}{6}`.
+        """
+        return self.ked_gradient_expansion_general(1. / 5., 1. / 6.)
+
+    def ked_gradient_expansion_general(self, a, b):
         r"""General gradient expansion approximation of kinetic energy density.
 
         .. math::
            \tau_\text{genGEA} \left(\mathbf{r}\right) =
            \tau_\text{TF} \left(\mathbf{r}\right) +
-           \tfrac{1}{\alpha} \tau_\text{W} \left(\mathbf{r}\right) +
-           \tfrac{1}{\beta} \nabla^2 \rho\left(\mathbf{r}\right)
+           a \, \tau_\text{W} \left(\mathbf{r}\right) + b \, \nabla^2 \rho\left(\mathbf{r}\right)
 
         Parameters
         ----------
-        alpha : float
-            Value of parameter :math:`\alpha`.
-        beta : float
-            Value of parameter :math:`\beta`.
+        a : float
+            Value of parameter :math:`a`.
+        b : float
+            Value of parameter :math:`b`.
         """
-        return self.ked_thomas_fermi + self.ked_weizsacker / alpha + self.laplacian / beta
+        return self.ked_thomas_fermi + a * self.ked_weizsacker + b * self.laplacian
 
 
 class DensGradLapKedTool(DensGradLapTool):
@@ -274,25 +279,25 @@ class DensGradLapKedTool(DensGradLapTool):
         r"""Hamiltonian kinetic energy density denoted by :math:`K(\mathbf{r})`.
 
         .. math::
-           \tau_\text{ham} \left(\mathbf{r}) =
+           \tau_\text{ham} \left(\mathbf{r}\right) =
                \tau_\text{PD} \left(\mathbf{r}\right) -
                \tfrac{1}{4} \nabla^2 \rho\left(\mathbf{r}\right)
 
-        This is a special case of :func:`ked_general` with :math:`\alpha=0.`
+        This is a special case of :func:`ked_general` with :math:`a=0`.
         """
-        return self.ked_general(alpha=0.)
+        return self.ked_general(a=0.)
 
-    def ked_general(self, alpha):
+    def ked_general(self, a):
         r"""Compute general(ish) kinetic energy density.
 
         .. math::
            \tau_\text{G} \left(\mathbf{r}, \alpha\right) =
                \tau_\text{PD} \left(\mathbf{r}\right) +
-               \tfrac{1}{4} (\alpha - 1) \nabla^2 \rho\left(\mathbf{r}\right)
+               \tfrac{1}{4} (a - 1) \nabla^2 \rho\left(\mathbf{r}\right)
 
         Parameters
         ----------
-        alpha : float
-            Value of parameter :math:`\alpha`.
+        a : float
+            Value of parameter :math:`a`.
         """
-        return self.ked_positive_definite + self.laplacian * (alpha - 1) / 4.
+        return self.ked_positive_definite + self.laplacian * (a - 1) / 4.
