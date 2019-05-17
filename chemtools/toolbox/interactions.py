@@ -272,13 +272,13 @@ class ELF(BaseInteraction):
 
     where :math:`\tau_\text{PD}(\mathbf{r})`, :math:`\tau_\text{W}(\mathbf{r})` and
     :math:`\tau_\text{TF}(\mathbf{r})` are positive-definite (Lagrangian), Weizsacker and
-    Thomas-Fermi kinetic energy densities defined in :class:`chemtools.toolbox.kinetic.Kinetic`.
+    Thomas-Fermi kinetic energy densities defined in :class:`chemtools.toolbox.kinetic.KED`.
 
     The ELF is computed by transforming the ratio:
 
     .. math:: \text{ELF}(\mathbf{r}) = f\left(\zeta_\text{ELF}(\mathbf{r})\right)
 
-    where the transformation can be:
+    where the transformation :math:`f` can be:
 
     .. math::
        \text{original  : } \, f(\zeta, k, a) &= \frac{1}{1 + a \, \zeta^k} \\
@@ -290,63 +290,115 @@ class ELF(BaseInteraction):
 
     """
 
-    def __init__(self, dens, grad, ked, grid=None, trans='original', k=2):
+    def __init__(self, dens, grad, ked, grid=None, trans='original', trans_k=2, trans_a=1):
         r"""Initialize class.
 
         Parameters
         ----------
         dens : np.ndarray
-            Electron density evaluated on a set of grid points.
+            Electron density of grid points, :math:`\rho(\mathbf{r})`.
         grad : np.ndarray
-            Gradient vector of electron density evaluated on a set of grid points.
+            Gradient of electron density of grid points, :math:`\nabla \rho(\mathbf{r})`.
         ked : np.ndarray
-            Kinetic energy density evaluated on a set of grid points.
+            Positive-definite or Lagrangian kinetic energy density of grid
+            points; :math:`\tau_\text{PD} (\mathbf{r})` or :math:`G(\mathbf{r})`.
         grid : instance of `Grid`, optional
-            Grid used for calculating and visualizing the property values.
+            Grid used for computation of ELF. Only if this a CubeGrid one can generate the scripts.
             If None, a cubic grid is constructed from molecule with spacing=0.1 & threshold=2.0.
         trans : str, optional
-            The approach for transforming the ELF ration to obtain ELF value.
-        k : float, optional
-            Value of parameter :math:`k`.
+            Type of transformation applied to ELF ratio; options are 'original' or 'hyperbolic'.
+        trans_k : float, optional
+            Parameter :math:`k` of transformation.
+        trans_a : float, optional
+            Parameter :math:`a` of transformation.
 
         """
-        # if dens.shape != (grid.npoints,):
-        #     raise ValueError("Arguments dens should have the same size as grid.npoints!")
-        # if grad.shape != (grid.npoints, 3):
-        #     raise ValueError("Arguments grad should have the same size as grid.npoints!")
-        # if kin.shape != (grid.shape,):
-        #     raise ValueError("Arguments kin should have the same size as grid.npoints!")
+        if dens.shape != ked.shape:
+            raise ValueError('Arguments dens and ked should have the same shape!')
+        if grad.ndim != 2:
+            raise ValueError('Argument grad should be a 2d-array!')
+        if grad.shape[0] != dens.shape[0]:
+            raise ValueError('Argument dens & grad should have the same length!')
+        if trans.lower() not in ['original' or 'hyperbolic']:
+            raise ValueError('Argument trans should be either "original" or "hyperbolic".')
+        if trans_k < 0:
+            raise ValueError('Argument trans_k should be positive! trans_k={0}'.format(trans_k))
+        if trans_a < 0:
+            raise ValueError('Argument trans_a should be positive! trans_a={0}'.format(trans_a))
         self._grid = grid
         self._denstool = DensGradTool(dens, grad)
         # compute elf ratio & apply transformation
         self._ratio = ked - self._denstool.ked_weizsacker
         self._ratio /= masked_less(self._denstool.ked_thomas_fermi, 1.0e-30)
-        self._value = self._transform(self._ratio, trans, k)
+        self._value = self._transform(self._ratio, trans, trans_k, trans_a)
 
     @classmethod
-    @doc_inherit(BaseInteraction, 'from_molecule')
-    def from_molecule(cls, molecule, spin='ab', index=None, grid=None, trans='original', k=2):
+    def from_molecule(cls, molecule, spin='ab', index=None, grid=None, trans='original',
+                      trans_k=2, trans_a=1):
+        """Initialize class from molecule.
+
+        Parameters
+        ----------
+        molecule : instance of `Molecule` class.
+            Instance of `Molecular` class.
+        spin : str, optional
+            Type of occupied spin orbitals; options are 'a', 'b' & 'ab'.
+        index : int or sequence of int, optional
+            Sequence of spin orbital indices to use. If None, all occupied spin orbitals are used.
+        grid : instance of `Grid`, optional
+            Grid used for computation of ELF. Only if this a CubeGrid one can generate the scripts.
+            If None, a cubic grid is constructed from molecule with spacing=0.1 & threshold=2.0.
+        trans : str, optional
+            Type of transformation applied to ELF ratio; options are 'original' or 'hyperbolic'.
+        trans_k : float, optional
+            Parameter :math:`k` of transformation.
+        trans_a : float, optional
+            Parameter :math:`a` of transformation.
+
+        """
         # generate cubic grid or check grid
         grid = BaseInteraction._check_grid(molecule, grid)
         # compute density, gradient & kinetic energy density on grid
         dens = molecule.compute_density(grid.points, spin=spin, index=index)
         grad = molecule.compute_gradient(grid.points, spin=spin, index=index)
         kin = molecule.compute_ked(grid.points, spin=spin, index=index)
-        return cls(dens, grad, kin, grid, trans, k)
+        return cls(dens, grad, kin, grid, trans, trans_k)
 
-    @property
-    def density(self):
-        r"""Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on grid points."""
-        return self._denstool.density
+    @classmethod
+    def from_file(cls, fname, spin='ab', index=None, grid=None, trans='original',
+                  trans_k=2, trans_a=1):
+        """Initialize class from file.
+
+        Parameters
+        ----------
+        fname : str
+            Path to a molecule's file.
+        spin : str, optional
+            Type of occupied spin orbitals; options are 'a', 'b' & 'ab'.
+        index : int or sequence of int, optional
+            Sequence of spin orbital indices to use. If None, all occupied spin orbitals are used.
+        grid : instance of `Grid`, optional
+            Grid used for computation of ELF. Only if this a CubeGrid one can generate the scripts.
+            If None, a cubic grid is constructed from molecule with spacing=0.1 & threshold=2.0.
+        trans : str, optional
+            Type of transformation applied to ELF ratio; options are 'original' or 'hyperbolic'.
+        trans_k : float, optional
+            Parameter :math:`k` of transformation.
+        trans_a : float, optional
+            Parameter :math:`a` of transformation.
+
+        """
+        molecule = Molecule.from_file(fname)
+        return cls.from_molecule(molecule, spin, index, grid, trans, trans_k, trans_a)
 
     @property
     def ratio(self):
-        r"""The ELF ratio evaluated on the grid points."""
+        r"""The ELF ratio evaluated on grid points."""
         return self._ratio
 
     @property
     def value(self):
-        r"""The :math:`ELF(\mathbf{r})` evaluated on grid points."""
+        r"""The :math:`\text{ELF}(\mathbf{r})` evaluated on grid points."""
         return self._value
 
     def generate_scripts(self, fname, isosurf=0.8, denscut=0.0005):
@@ -355,19 +407,21 @@ class ELF(BaseInteraction):
         Parameters
         ----------
         fname : str
-            A string representing the path to a fname of generated files.
-            The VMD script and cube file will be name fname.vmd and fname-elf.cube, respectively.
+            File name used for the generated files.
+            The VMD script and cube file will be named fname.vmd and fname-elf.cube, respectively.
         isosurf : float, optional
             Value of ELF iso-surface used in VMD script.
         denscut : float, optional
-            Value of density cut to set ELF value to zero.
+            Value of density cut to set the corresponding ELF values to zero.
 
         """
         if not isinstance(self._grid, CubeGen):
-            raise ValueError("Only possible if argument grid is a cubic grid.")
+            raise ValueError('Only possible if argument grid is a cubic grid.')
+        if self._denstool.shape[0] != self._grid.npoints.shape[0]:
+            raise ValueError('Number of grid points should match number of dens values!')
         # set elf value of low density points to zero
         value = np.array(self.value, copy=True)
-        value[self.density < denscut] = 0.
+        value[self._denstool.density < denscut] = 0.
         # dump ELF cube file & generate vmd script
         vmdname = fname + '.vmd'
         cubname = fname + '-elf.cube'
