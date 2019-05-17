@@ -93,7 +93,7 @@ class BaseInteraction(object):
 
     @staticmethod
     def _transform(ratio, trans, trans_k, trans_a):
-        if trans == 'original':
+        if trans == 'rational':
             return 1.0 / (1.0 + trans_a * ratio ** trans_k)
         elif trans == 'hyperbolic':
             return 0.5 * (1 + np.tanh(trans_a * (ratio ** -trans_k - ratio ** trans_k)))
@@ -281,16 +281,15 @@ class ELF(BaseInteraction):
     where the transformation :math:`f` can be:
 
     .. math::
-       \text{original  : } \, f(\zeta, k, a) &= \frac{1}{1 + a \, \zeta^k} \\
+       \text{rational  : } \, f(\zeta, k, a) &= \frac{1}{1 + a \, \zeta^k} \\
        \text{hyperbolic: } \, f(\zeta, k, a) &= \tfrac{1}{2}
               \left(1 + \tanh\left(a \left(\zeta^{-k} - \zeta^{k}\right)\right)\right)
 
-
-    Traditionally, the **'original'** transformation with :math:`k=2` and :math:`a=1` is used.
+    Traditionally, the **'rational'** transformation with :math:`k=2` and :math:`a=1` is used.
 
     """
 
-    def __init__(self, dens, grad, ked, grid=None, trans='original', trans_k=2, trans_a=1,
+    def __init__(self, dens, grad, ked, grid=None, trans='rational', trans_k=2, trans_a=1,
                  denscut=0.0005):
         r"""Initialize class from arrays.
 
@@ -307,7 +306,7 @@ class ELF(BaseInteraction):
             Grid used for computation of ELF. Only if this a CubeGrid one can generate the scripts.
             If None, a cubic grid is constructed from molecule with spacing=0.1 & threshold=2.0.
         trans : str, optional
-            Type of transformation applied to ELF ratio; options are 'original' or 'hyperbolic'.
+            Type of transformation applied to ELF ratio; options are 'rational' or 'hyperbolic'.
         trans_k : float, optional
             Parameter :math:`k` of transformation.
         trans_a : float, optional
@@ -322,8 +321,8 @@ class ELF(BaseInteraction):
             raise ValueError('Argument grad should be a 2d-array!')
         if grad.shape[0] != dens.shape[0]:
             raise ValueError('Argument dens & grad should have the same length!')
-        if trans.lower() not in ['original', 'hyperbolic']:
-            raise ValueError('Argument trans should be either "original" or "hyperbolic".')
+        if trans.lower() not in ['rational', 'hyperbolic']:
+            raise ValueError('Argument trans should be either "rational" or "hyperbolic".')
         if trans_k < 0:
             raise ValueError('Argument trans_k should be positive! trans_k={0}'.format(trans_k))
         if trans_a < 0:
@@ -338,7 +337,7 @@ class ELF(BaseInteraction):
         self._value[self._denstool.density < denscut] = 0.
 
     @classmethod
-    def from_molecule(cls, molecule, spin='ab', index=None, grid=None, trans='original',
+    def from_molecule(cls, molecule, spin='ab', index=None, grid=None, trans='rational',
                       trans_k=2, trans_a=1, denscut=0.0005):
         """Initialize class from molecule.
 
@@ -354,7 +353,7 @@ class ELF(BaseInteraction):
             Grid used for computation of ELF. Only if this a CubeGrid one can generate the scripts.
             If None, a cubic grid is constructed from molecule with spacing=0.1 & threshold=2.0.
         trans : str, optional
-            Type of transformation applied to ELF ratio; options are 'original' or 'hyperbolic'.
+            Type of transformation applied to ELF ratio; options are 'rational' or 'hyperbolic'.
         trans_k : float, optional
             Parameter :math:`k` of transformation.
         trans_a : float, optional
@@ -372,7 +371,7 @@ class ELF(BaseInteraction):
         return cls(dens, grad, kin, grid, trans, trans_k, trans_a, denscut)
 
     @classmethod
-    def from_file(cls, fname, spin='ab', index=None, grid=None, trans='original',
+    def from_file(cls, fname, spin='ab', index=None, grid=None, trans='rational',
                   trans_k=2, trans_a=1, denscut=0.0005):
         """Initialize class from wave-function file.
 
@@ -388,7 +387,7 @@ class ELF(BaseInteraction):
             Grid used for computation of ELF. Only if this a CubeGrid one can generate the scripts.
             If None, a cubic grid is constructed from molecule with spacing=0.1 & threshold=2.0.
         trans : str, optional
-            Type of transformation applied to ELF ratio; options are 'original' or 'hyperbolic'.
+            Type of transformation applied to ELF ratio; options are 'rational' or 'hyperbolic'.
         trans_k : float, optional
             Parameter :math:`k` of transformation.
         trans_a : float, optional
