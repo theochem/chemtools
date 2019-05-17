@@ -264,22 +264,30 @@ class NCI(BaseInteraction):
 class ELF(BaseInteraction):
     r"""Electron Localization Function (ELF) introduced by Becke and Edgecombe.
 
-    .. math::
-       \text{ELF} (\mathbf{r}) =
-            \frac{1}{\left( 1 + \left(\frac{D_{\sigma}(\mathbf{r})}
-            {D_{\sigma}^0 (\mathbf{r})} \right)^2\right)}
-
-    with XXX, XXX, and positive definite kinetic energy density defined as, respectively,
+    The ELF ratio is defined as:
 
     .. math::
-        D_{\sigma} (\mathbf{r}) &= \tau_{\sigma} (\mathbf{r}) -
-           \frac{1}{4} \frac{(\nabla \rho_{\sigma})^2}{\rho_{\sigma}}
+       \zeta_\text{ELF}(\mathbf{r}) = \frac{\tau_\text{PD}(\mathbf{r}) -
+       \tau_\text{W}(\mathbf{r})}{\tau_\text{TF}(\mathbf{r})}
 
-       D_{\sigma}^0 (\mathbf{r}) &=
-          \frac{3}{5} (6 \pi^2)^{2/3} \rho_{\sigma}^{5/3} (\mathbf{r})
+    where :math:`\tau_\text{PD}(\mathbf{r})`, :math:`\tau_\text{W}(\mathbf{r})` and
+    :math:`\tau_\text{TF}(\mathbf{r})` are positive-definite (Lagrangian), Weizsacker and
+    Thomas-Fermi kinetic energy densities defined in :class:`chemtools.toolbox.kinetic.Kinetic`.
 
-       \tau_{\sigma} (\mathbf{r}) &=
-             \sum_i^{\sigma} \lvert \nabla \phi_i (\mathbf{r}) \rvert^2
+    The ELF is computed by transforming the ratio:
+
+    .. math:: \text{ELF}(\mathbf{r}) = f\left(\zeta_\text{ELF}(\mathbf{r})\right)
+
+    where the transformation can be:
+
+    .. math::
+       \text{original  : } \, f(\zeta, k, a) &= \frac{1}{1 + a \, \zeta^k} \\
+       \text{hyperbolic: } \, f(\zeta, k, a) &= \tfrac{1}{2}
+              \left(1 + \tanh\left(a \left(\zeta^{-k} - \zeta^{k}\right)\right)\right)
+
+
+    Traditionally, the **'original'** transformation with :math:`k=2` and :math:`a=1` is used.
+
     """
 
     def __init__(self, dens, grad, ked, grid=None, trans='original', k=2):
