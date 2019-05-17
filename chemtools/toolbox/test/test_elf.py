@@ -24,8 +24,8 @@
 
 
 import numpy as np
-from numpy.testing import assert_allclose
-from chemtools.toolbox.interactions import ELF
+from numpy.testing import assert_allclose, assert_raises
+from chemtools.toolbox.interactions import ELF, LOL
 try:
     from importlib_resources import path
 except ImportError:
@@ -44,3 +44,18 @@ def test_elf_h2o_nuclei():
         data = np.load(str(fname))
     elf = ELF(data['nuc_dens'], data['nuc_grad'], data['nuc_ked_pd'])
     assert_allclose(elf.value, data['nuc_elf'], rtol=1.e-6, atol=1.e-6)
+
+
+def test_lol_h2o_nuclei():
+    # test against multiwfn 3.6 dev src
+    with path('chemtools.data', 'data_multiwfn36_fchk_h2o_q+0_ub3lyp_ccpvtz.npz') as fname:
+        data = np.load(str(fname))
+    lol = LOL(data['nuc_dens'], data['nuc_grad'], data['nuc_ked_pd'])
+    assert_allclose(lol.value, data['nuc_lol'], rtol=1.e-6, atol=1.e-6)
+    # check raises
+    dens, grad, ked = data['nuc_dens'], data['nuc_grad'], data['nuc_ked_pd']
+    assert_raises(ValueError, LOL, dens, grad, ked, trans_k=-1)
+    assert_raises(ValueError, LOL, dens, grad, ked, trans_a=2, trans_k=-1)
+    assert_raises(ValueError, LOL, dens, grad, ked, trans_k=0)
+    assert_raises(ValueError, LOL, dens, grad, ked, trans_a=0)
+    assert_raises(ValueError, LOL, dens, grad, ked, trans='rational')
