@@ -8,14 +8,14 @@ frontier molecular orbital (FMO) approach, and generate visualization scripts.
 
 """
 
-from chemtools import LocalConceptualDFT, CubeGen, print_vmd_script_isosurface
+from chemtools import LocalConceptualDFT, UniformGrid, print_vmd_script_isosurface
 
 file_path = 'ch2o_q+0.fchk'
 
 # 1. Make a Cubic grid for plotting Fukui functions.
 #    The cubic grid points are spaced by 0.2 a.u. & extending 5.0 a.u. on each side.
 
-cube = CubeGen.from_file(file_path, spacing=0.2, threshold=5.0)
+cube = UniformGrid.from_file(file_path, spacing=0.2, threshold=5.0)
 
 # 2. Build linear energy model for Formaldehyde using frontier molecular orbital (FMO) theory.
 

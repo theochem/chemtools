@@ -30,7 +30,7 @@ from numpy.testing import assert_raises
 import numpy as np
 from horton import IOData
 from chemtools.toolbox.conceptual import LocalConceptualDFT
-from chemtools.utils.cube import CubeGen
+from chemtools.utils.cube import UniformGrid
 try:
     from importlib_resources import path
 except ImportError:
@@ -52,7 +52,7 @@ def test_cubegen_o2_uhf():
         mol = IOData.from_file(str(path_file))
 
     # create cube file from file:
-    cube = CubeGen.from_file(path_file, spacing=0.5, threshold=6.0, rotate=False)
+    cube = UniformGrid.from_file(path_file, spacing=0.5, threshold=6.0, rotate=False)
 
     # test the cube gives the right result:
     origin_result = [-6.0, -6.0, -7.25]
@@ -73,7 +73,7 @@ def test_cubegen_o2_uhf():
     np.testing.assert_array_almost_equal(cube.weights(method='R'), weight_result, decimal=7)
 
     # create cube file from molecule:
-    cube = CubeGen.from_molecule(mol.numbers, mol.pseudo_numbers, mol.coordinates)
+    cube = UniformGrid.from_molecule(mol.numbers, mol.pseudo_numbers, mol.coordinates)
 
     # test the cube gives the right result:
     origin_result = [-5.0, -5.0, -6.1]
@@ -110,13 +110,13 @@ def test_cubegen_o2_uhf():
                   [0.0,  0.0,  2.0]])
     s = np.array([ 3,    3,    3])
     # check ValueError
-    assert_raises(ValueError, CubeGen, mol.numbers, mol.pseudo_numbers, mol.coordinates,
+    assert_raises(ValueError, UniformGrid, mol.numbers, mol.pseudo_numbers, mol.coordinates,
                   np.array([0.]), a, s)
-    assert_raises(ValueError, CubeGen, mol.numbers, mol.pseudo_numbers, mol.coordinates,
+    assert_raises(ValueError, UniformGrid, mol.numbers, mol.pseudo_numbers, mol.coordinates,
                   o, np.array([0.]), s)
-    assert_raises(ValueError, CubeGen, mol.numbers, mol.pseudo_numbers, mol.coordinates,
+    assert_raises(ValueError, UniformGrid, mol.numbers, mol.pseudo_numbers, mol.coordinates,
                   o, a, np.array([0.]))
-    assert_raises(ValueError, CubeGen.from_cube, 'test.wrong_end')
+    assert_raises(ValueError, UniformGrid.from_cube, 'test.wrong_end')
     assert_raises(ValueError, cube.dump_cube, 'test.wrong_end', tool.ff_minus)
     assert_raises(ValueError, cube.dump_cube, 'test.cube', np.array([0.]))
     assert_raises(ValueError, cube.weights, method='erroneous')
@@ -127,7 +127,7 @@ def test_cube_h2o_dimer():
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g-dens.cube') as file_path:
     # Build the cube
     # Check against previous generated .cube files
-        cube = CubeGen.from_cube(file_path)
+        cube = UniformGrid.from_cube(file_path)
         mol1 = IOData.from_file(str(file_path))
 
     with tmpdir('chemtools.test.test_base.test_cube_h2o_dimer') as dn:

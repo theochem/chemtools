@@ -33,14 +33,14 @@ except ImportError:
     from importlib.resources import path
 
 
-__all__ = ['CubeGen']
+__all__ = ['UniformGrid']
 
 
-class CubeGen(object):
+class UniformGrid(object):
     """Class for generating a cubic grid and writing cube files."""
 
     def __init__(self, numbers, pseudo_numbers, coordinates, origin, axes, shape):
-        """Initialize ``CubeGen`` class based on the origin, axes and shape of the cube.
+        """Initialize ``UniformGrid`` class based on the origin, axes and shape of the cube.
 
         Parameters
         ----------
@@ -97,7 +97,7 @@ class CubeGen(object):
     def from_molecule(cls, numbers, pseudo_numbers, coordinates, spacing=0.2,
                       threshold=5.0, rotate=True):
         """
-        Initialize ``CubeGen`` class based on the Cartesian coordinates of the molecule.
+        Initialize ``UniformGrid`` class based on the Cartesian coordinates of the molecule.
 
         Parameters
         ----------
@@ -154,7 +154,7 @@ class CubeGen(object):
     @classmethod
     def from_cube(cls, fname):
         r"""
-        Initialize ``CubeGen`` class based on the grid specifications of a cube file.
+        Initialize ``UniformGrid`` class based on the grid specifications of a cube file.
 
         Parameters
         ----------
@@ -173,7 +173,7 @@ class CubeGen(object):
     @classmethod
     def from_file(cls, fname, spacing=0.2, threshold=5.0, rotate=True):
         """
-        Initialize ``CubeGen`` class based on the grid specifications of a file.
+        Initialize ``UniformGrid`` class based on the grid specifications of a file.
 
         Parameters
         ----------

@@ -32,7 +32,7 @@ import numpy as np
 from numpy.testing import assert_raises, assert_equal, assert_almost_equal
 
 from horton import IOData
-from chemtools.utils import CubeGen
+from chemtools.utils import UniformGrid
 from chemtools.toolbox.interactions import NCI
 from chemtools.wrappers.molecule import Molecule
 try:
@@ -60,7 +60,7 @@ def test_toolbox_nci_raises():
 
 def test_analyze_nci_h2o_dimer_wfn():
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g-dens.cube') as dens_cube1_path:
-        cube = CubeGen.from_cube(dens_cube1_path)
+        cube = UniformGrid.from_cube(dens_cube1_path)
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g.wfn') as file_path:
         desp = NCI.from_file(file_path, grid=cube)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
@@ -109,7 +109,7 @@ def test_analyze_nci_h2o_dimer_fchk():
         mol = Molecule.from_file(file_path)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g-dens.cube') as dens_cube1_path:
-        cube = CubeGen.from_cube(dens_cube1_path)
+        cube = UniformGrid.from_cube(dens_cube1_path)
     # Build the NCI tool
     desp = NCI.from_molecule(mol, grid=cube)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
@@ -154,7 +154,7 @@ def test_analyze_nci_h2o_dimer_fchk():
 def test_analyze_nci_assert_errors():
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g.fchk') as file_path:
         mol = Molecule.from_file(file_path)
-        cube = CubeGen.from_file(file_path, spacing=2., threshold=0.0)
+        cube = UniformGrid.from_file(file_path, spacing=2., threshold=0.0)
 
     dens = np.array([2.10160232e-04, 1.11307672e-05, 3.01244062e-04, 2.31768360e-05,
                      6.56282686e-03, 2.62815892e-04, 2.46559574e-02, 1.82760928e-03,

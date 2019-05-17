@@ -29,7 +29,7 @@ import numpy as np
 from chemtools.wrappers.molecule import Molecule
 from chemtools.denstools.densbased import DensGradTool
 from chemtools.utils.utils import doc_inherit
-from chemtools.utils.cube import CubeGen
+from chemtools.utils.cube import UniformGrid
 from chemtools.outputs.plot import plot_scatter
 from chemtools.outputs.vmd import print_vmd_script_nci, print_vmd_script_isosurface
 
@@ -84,8 +84,8 @@ class BaseInteraction(object):
     @staticmethod
     def _check_grid(molecule, grid):
         if grid is None:
-            grid = CubeGen.from_molecule(molecule.numbers, molecule.pseudo_numbers,
-                                         molecule.coordinates, spacing=0.1, threshold=5.0)
+            grid = UniformGrid.from_molecule(molecule.numbers, molecule.pseudo_numbers,
+                                             molecule.coordinates, spacing=0.1, threshold=5.0)
         elif not hasattr(grid, 'points'):
             raise ValueError('Argument grid should have "points" attribute!')
 
@@ -109,7 +109,7 @@ class NCI(BaseInteraction):
     """Non-Covalent Interactions (NCI) Class."""
 
     def __init__(self, density, rdgradient, grid, hessian=None):
-        """Initialize class using density, reduced density gradient and `CubeGen` instance.
+        """Initialize class using density, reduced density gradient and `UniformGrid` instance.
 
         Parameters
         ----------
@@ -117,7 +117,7 @@ class NCI(BaseInteraction):
             Density evaluated on grid points of `cube`.
         rdgradient : np.array
             Reduced density gradient evaluated on grid points of `cube`
-        grid : instance of `CubeGen`, optional
+        grid : instance of `UniformGrid`, optional
             Cubic grid used for calculating and visualizing the NCI.
             If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
         hessian : np.array, optional
@@ -235,7 +235,7 @@ class NCI(BaseInteraction):
         ----
         The generated cube files and script imitate the NCIPlot software version 1.0.
         """
-        if not isinstance(self._grid, CubeGen):
+        if not isinstance(self._grid, UniformGrid):
             raise ValueError("Only possible if argument grid is a cubic grid.")
         # similar to NCIPlot program, reduced density gradient of points with
         # density > cutoff will be set to 100.0 before generating cube file to
@@ -422,7 +422,7 @@ class ELF(BaseInteraction):
             Value of ELF iso-surface used in VMD script.
 
         """
-        if not isinstance(self._grid, CubeGen):
+        if not isinstance(self._grid, UniformGrid):
             raise ValueError('Only possible if argument grid is a cubic grid.')
         if self._denstool.density.shape[0] != self._grid.points.shape[0]:
             raise ValueError('Number of grid points should match number of dens values!')
@@ -595,7 +595,7 @@ class LOL(BaseInteraction):
             Value of LOL iso-surface used in VMD script.
 
         """
-        if not isinstance(self._grid, CubeGen):
+        if not isinstance(self._grid, UniformGrid):
             raise ValueError("Only possible if argument grid is a cubic grid.")
         # dump LOL cube files
         fname_vmd = fname + '.vmd'

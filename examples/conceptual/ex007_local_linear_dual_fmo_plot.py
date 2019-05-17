@@ -8,13 +8,13 @@ frontier molecular orbital (FMO) approach, and generate visualization scripts.
 
 """
 
-from chemtools import LocalConceptualDFT, CubeGen, print_vmd_script_isosurface
+from chemtools import LocalConceptualDFT, UniformGrid, print_vmd_script_isosurface
 
 # 1. Make cubic grid for plotting dual descriptor.
 #    The cubic grid points are spaced by 0.2 a.u. & extending 5.0 a.u. on each side.
 
 file_path = 'ch2o_q+0.fchk'
-cube = CubeGen.from_file(file_path, spacing=0.2, threshold=5.0)
+cube = UniformGrid.from_file(file_path, spacing=0.2, threshold=5.0)
 
 # 2. Build quadratic energy model for Formaldehyde using FMO approach.
 

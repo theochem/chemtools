@@ -26,7 +26,7 @@ import numpy as np
 
 from numpy.testing import assert_raises
 
-from chemtools import CubeGen
+from chemtools import UniformGrid
 from chemtools.wrappers.molecule import Molecule
 from chemtools.toolbox.utils import get_matching_attr, get_molecular_grid
 from chemtools.toolbox.utils import get_dict_energy, get_dict_density, get_dict_population
@@ -56,7 +56,7 @@ def test_get_molecular_grid_raises():
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fname:
         molecule = Molecule.from_file(fname)
     with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as fname:
-        grid = CubeGen.from_file(fname)
+        grid = UniformGrid.from_file(fname)
     assert_raises(ValueError, get_molecular_grid, molecule, grid)
     assert_raises(ValueError, get_molecular_grid, [molecule], grid)
     assert_raises(ValueError, get_molecular_grid, [molecule, molecule], grid)
@@ -70,7 +70,7 @@ def test_get_molecular_grid_raises():
     with path('chemtools.data', 'water_b3lyp_sto3g.fchk') as fname:
         molecule = Molecule.from_file(fname)
     with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as fname:
-        grid = CubeGen.from_file(fname)
+        grid = UniformGrid.from_file(fname)
     assert_raises(ValueError, get_molecular_grid, molecule, grid)
     assert_raises(ValueError, get_molecular_grid, molecule, grid)
     assert_raises(ValueError, get_molecular_grid, [molecule], grid)

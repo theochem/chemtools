@@ -8,7 +8,7 @@ finite difference (FD) approach, and generate visualization scripts.
 
 """
 
-from chemtools import LocalConceptualDFT, CubeGen, print_vmd_script_isosurface
+from chemtools import LocalConceptualDFT, UniformGrid, print_vmd_script_isosurface
 
 file_path = ['ch2o_q+0.fchk', 'ch2o_q+1.fchk', 'ch2o_q-1.fchk']
 
@@ -17,7 +17,7 @@ file_path = ['ch2o_q+0.fchk', 'ch2o_q+1.fchk', 'ch2o_q-1.fchk']
 #    All 3 molecules have the same geometry (they just differ in the number of electrons
 #    and multiplicity), so the cubic grid based on the first molecule works for all.
 
-cube = CubeGen.from_file(file_path[0], spacing=0.2, threshold=5.0)
+cube = UniformGrid.from_file(file_path[0], spacing=0.2, threshold=5.0)
 
 # 2. Build linear energy model for Formaldehyde using finite difference (FD) approach.
 

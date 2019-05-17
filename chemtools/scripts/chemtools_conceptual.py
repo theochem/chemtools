@@ -27,7 +27,7 @@
 from __future__ import print_function
 
 from chemtools import Molecule
-from chemtools import CubeGen, print_vmd_script_isosurface
+from chemtools import UniformGrid, print_vmd_script_isosurface
 from chemtools import GlobalConceptualDFT, LocalConceptualDFT
 
 __all__ = [
@@ -127,12 +127,12 @@ def main_conceptual_local(args):
     # make cubic grid
     if args.cube.endswith('.cube'):
         # load cube file
-        cube = CubeGen.from_cube(args.cube)
+        cube = UniformGrid.from_cube(args.cube)
     elif len(args.cube.split(',')) == 2:
         # make a cubic grid
         spacing, threshold = [float(item) for item in args.cube.split(',')]
-        cube = CubeGen.from_molecule(mol.numbers, mol.pseudo_numbers,
-                                     mol.coordinates, spacing, threshold)
+        cube = UniformGrid.from_molecule(mol.numbers, mol.pseudo_numbers,
+                                         mol.coordinates, spacing, threshold)
     else:
         raise ValueError('Argument cube={0} is not recognized!'.format(
             args.cube))
