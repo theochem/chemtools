@@ -257,8 +257,8 @@ class NCI(BaseInteraction):
         rdgfile = fname + '-grad.cube'     # reduced density gradient cube file
         vmdfile = fname + '.vmd'           # vmd script file
         # dump density & reduced density gradient cube files
-        self._grid.dump_cube(densfile, dens)
-        self._grid.dump_cube(rdgfile, cutrdg)
+        self._grid.generate_cube(densfile, dens)
+        self._grid.generate_cube(rdgfile, cutrdg)
         # write VMD scripts
         print_vmd_script_nci(vmdfile, densfile, rdgfile, isosurf, denscut * 100.0)
 
@@ -429,7 +429,7 @@ class ELF(BaseInteraction):
         # dump ELF cube file & generate vmd script
         vmdname = fname + '.vmd'
         cubname = fname + '-elf.cube'
-        self._grid.dump_cube(cubname, self.value)
+        self._grid.generate_cube(cubname, self.value)
         print_vmd_script_isosurface(vmdname, cubname, isosurf=isosurf, representation='Line')
 
 
@@ -600,6 +600,6 @@ class LOL(BaseInteraction):
         # dump LOL cube files
         fname_vmd = fname + '.vmd'
         fname_lol = fname + '-lol.cube'
-        self._grid.dump_cube(fname_lol, self.value)
+        self._grid.generate_cube(fname_lol, self.value)
         # write VMD script for visualization
         print_vmd_script_isosurface(fname_vmd, fname_lol, isosurf=isosurf, representation='Line')

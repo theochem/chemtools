@@ -260,7 +260,7 @@ class UniformGrid(object):
         logging.info("Axes 3 : {0}".format(self._axes[2]))
         logging.info("Shape  : {0}".format(self._shape))
 
-    def dump_cube(self, fname, data):
+    def generate_cube(self, fname, data):
         r"""Write the data evaluated on grid points into a cube file.
 
         Parameters

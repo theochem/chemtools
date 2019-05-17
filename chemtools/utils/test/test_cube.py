@@ -117,8 +117,8 @@ def test_cubegen_o2_uhf():
     assert_raises(ValueError, UniformGrid, mol.numbers, mol.pseudo_numbers, mol.coordinates,
                   o, a, np.array([0.]))
     assert_raises(ValueError, UniformGrid.from_cube, 'test.wrong_end')
-    assert_raises(ValueError, cube.dump_cube, 'test.wrong_end', tool.ff_minus)
-    assert_raises(ValueError, cube.dump_cube, 'test.cube', np.array([0.]))
+    assert_raises(ValueError, cube.generate_cube, 'test.wrong_end', tool.ff_minus)
+    assert_raises(ValueError, cube.generate_cube, 'test.cube', np.array([0.]))
     assert_raises(ValueError, cube.weights, method='erroneous')
     assert_raises(ValueError, cube.integrate, np.array([0.]))
 
@@ -132,7 +132,7 @@ def test_cube_h2o_dimer():
 
     with tmpdir('chemtools.test.test_base.test_cube_h2o_dimer') as dn:
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')
-        cube.dump_cube(cube2, mol1.cube_data)
+        cube.generate_cube(cube2, mol1.cube_data)
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')
         mol2 = IOData.from_file(cube2)
         # Check coordinates

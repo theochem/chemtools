@@ -153,6 +153,6 @@ def main_conceptual_local(args):
     cubefile = '{0}.cube'.format(args.output_name)
     vmdfile = '{0}.vmd'.format(args.output_name)
     # dump cube file of local property
-    cube.dump_cube(cubefile, getattr(model, args.prop))
+    cube.generate_cube(cubefile, getattr(model, args.prop))
     # generate VMD scripts for visualizing iso-surface with VMD
     print_vmd_script_isosurface(vmdfile, cubefile, isosurf=args.isosurface)

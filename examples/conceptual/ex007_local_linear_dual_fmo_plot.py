@@ -22,7 +22,7 @@ tool = LocalConceptualDFT.from_file(file_path, model='quadratic', points=cube.po
 
 # 3. Dump dual descriptor evaluated on cubic grid.
 
-cube.dump_cube('coh2_dual_fmo.cube', tool.dual_descriptor)
+cube.generate_cube('coh2_dual_fmo.cube', tool.dual_descriptor)
 
 # 4. Generate VMD scripts to plot dual-descriptor iso-surface.
 #    To visualize the iso-surface, use command: $ vmd -e coh2_dual_fmo.vmd

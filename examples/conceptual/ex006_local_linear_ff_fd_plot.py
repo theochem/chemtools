@@ -25,9 +25,9 @@ tool = LocalConceptualDFT.from_file(file_path, model='linear', points=cube.point
 
 # 3. Dump Fukui functions (f+, f- and f0) evaluated on cubic grid.
 
-cube.dump_cube('coh2_ffp_fd.cube', tool.ff_plus)
-cube.dump_cube('coh2_ff0_fd.cube', tool.ff_zero)
-cube.dump_cube('coh2_ffm_fd.cube', tool.ff_minus)
+cube.generate_cube('coh2_ffp_fd.cube', tool.ff_plus)
+cube.generate_cube('coh2_ff0_fd.cube', tool.ff_zero)
+cube.generate_cube('coh2_ffm_fd.cube', tool.ff_minus)
 
 # 4. Generate VMD scripts to plot dual-descriptor iso-surface.
 #    To visualize the iso-surface, use command: $ vmd -e coh2_ffp_fd.vmd
