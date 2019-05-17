@@ -314,9 +314,6 @@ class ELF(BaseInteraction):
         self._ratio = ked - self._denstool.ked_weizsacker
         self._ratio /= masked_less(self._denstool.ked_thomas_fermi, 1.0e-30)
         self._value = self._transform(self._ratio, trans, k)
-        # assign basins and topology attributes
-        self._basins = None
-        self._topology = None
 
     @classmethod
     @doc_inherit(BaseInteraction, 'from_molecule')
@@ -343,26 +340,6 @@ class ELF(BaseInteraction):
     def value(self):
         r"""The :math:`ELF(\mathbf{r})` evaluated on grid points."""
         return self._value
-
-    @property
-    def basins(self):
-        """Electron localization function basin values of grid points."""
-        if not self._basins:
-            self._basins = self._compute_basins()
-        return self._basins
-
-    @property
-    def topology(self):
-        """Electron localization function topology."""
-        if not self._topology:
-            self._topology = self._compute_topology()
-        return self._topology
-
-    def _compute_basins(self):
-        raise NotImplementedError
-
-    def _compute_topology(self):
-        raise NotImplementedError
 
     def generate_scripts(self, fname, isosurf=0.8, denscut=0.0005):
         """Generate VMD scripts & cube file to visualize ELF iso-surface.
