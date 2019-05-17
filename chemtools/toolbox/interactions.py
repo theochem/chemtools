@@ -99,6 +99,8 @@ class BaseInteraction(object):
             return 0.5 * (1 + np.tanh(trans_a * (ratio ** -trans_k - ratio ** trans_k)))
         elif trans == 'inverse_rational':
             return 1.0 - 1.0 / (1.0 + trans_a * ratio ** trans_k)
+        elif trans == 'inverse_hyperbolic':
+            return 0.5 * (1 + np.tanh(-trans_a * (ratio ** -trans_k - ratio ** trans_k)))
         else:
             raise ValueError('Argument trans={0} not recognized!'.format(trans))
 
