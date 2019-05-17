@@ -290,7 +290,8 @@ class ELF(BaseInteraction):
 
     """
 
-    def __init__(self, dens, grad, ked, grid=None, trans='original', trans_k=2, trans_a=1):
+    def __init__(self, dens, grad, ked, grid=None, trans='original', trans_k=2, trans_a=1,
+                 denscut=0.0005):
         r"""Initialize class.
 
         Parameters
@@ -311,6 +312,8 @@ class ELF(BaseInteraction):
             Parameter :math:`k` of transformation.
         trans_a : float, optional
             Parameter :math:`a` of transformation.
+        denscut : float, optional
+            Value of density cut. ELF value of points with density < denscut is set to zero.
 
         """
         if dens.shape != ked.shape:
@@ -327,14 +330,16 @@ class ELF(BaseInteraction):
             raise ValueError('Argument trans_a should be positive! trans_a={0}'.format(trans_a))
         self._grid = grid
         self._denstool = DensGradTool(dens, grad)
-        # compute elf ratio & apply transformation
+        # compute elf ratio
         self._ratio = ked - self._denstool.ked_weizsacker
         self._ratio /= masked_less(self._denstool.ked_thomas_fermi, 1.0e-30)
+        # compute elf value & set low density points to zero
         self._value = self._transform(self._ratio, trans, trans_k, trans_a)
+        self._value[self._denstool.density < denscut] = 0.
 
     @classmethod
     def from_molecule(cls, molecule, spin='ab', index=None, grid=None, trans='original',
-                      trans_k=2, trans_a=1):
+                      trans_k=2, trans_a=1, denscut=0.0005):
         """Initialize class from molecule.
 
         Parameters
@@ -354,6 +359,8 @@ class ELF(BaseInteraction):
             Parameter :math:`k` of transformation.
         trans_a : float, optional
             Parameter :math:`a` of transformation.
+        denscut : float, optional
+            Value of density cut. ELF value of points with density < denscut is set to zero.
 
         """
         # generate cubic grid or check grid
@@ -362,11 +369,11 @@ class ELF(BaseInteraction):
         dens = molecule.compute_density(grid.points, spin=spin, index=index)
         grad = molecule.compute_gradient(grid.points, spin=spin, index=index)
         kin = molecule.compute_ked(grid.points, spin=spin, index=index)
-        return cls(dens, grad, kin, grid, trans, trans_k)
+        return cls(dens, grad, kin, grid, trans, trans_k, denscut)
 
     @classmethod
     def from_file(cls, fname, spin='ab', index=None, grid=None, trans='original',
-                  trans_k=2, trans_a=1):
+                  trans_k=2, trans_a=1, denscut=0.0005):
         """Initialize class from file.
 
         Parameters
@@ -386,10 +393,12 @@ class ELF(BaseInteraction):
             Parameter :math:`k` of transformation.
         trans_a : float, optional
             Parameter :math:`a` of transformation.
+        denscut : float, optional
+            Value of density cut. ELF value of points with density < denscut is set to zero.
 
         """
         molecule = Molecule.from_file(fname)
-        return cls.from_molecule(molecule, spin, index, grid, trans, trans_k, trans_a)
+        return cls.from_molecule(molecule, spin, index, grid, trans, trans_k, trans_a, denscut)
 
     @property
     def ratio(self):
@@ -401,7 +410,7 @@ class ELF(BaseInteraction):
         r"""The :math:`\text{ELF}(\mathbf{r})` evaluated on grid points."""
         return self._value
 
-    def generate_scripts(self, fname, isosurf=0.8, denscut=0.0005):
+    def generate_scripts(self, fname, isosurf=0.8):
         """Generate VMD scripts & cube file to visualize ELF iso-surface.
 
         Parameters
@@ -411,21 +420,16 @@ class ELF(BaseInteraction):
             The VMD script and cube file will be named fname.vmd and fname-elf.cube, respectively.
         isosurf : float, optional
             Value of ELF iso-surface used in VMD script.
-        denscut : float, optional
-            Value of density cut to set the corresponding ELF values to zero.
 
         """
         if not isinstance(self._grid, CubeGen):
             raise ValueError('Only possible if argument grid is a cubic grid.')
         if self._denstool.shape[0] != self._grid.npoints.shape[0]:
             raise ValueError('Number of grid points should match number of dens values!')
-        # set elf value of low density points to zero
-        value = np.array(self.value, copy=True)
-        value[self._denstool.density < denscut] = 0.
         # dump ELF cube file & generate vmd script
         vmdname = fname + '.vmd'
         cubname = fname + '-elf.cube'
-        self._grid.dump_cube(cubname, value)
+        self._grid.dump_cube(cubname, self.value)
         print_vmd_script_isosurface(vmdname, cubname, isosurf=isosurf, representation='Line')
 
 
