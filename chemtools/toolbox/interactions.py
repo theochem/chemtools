@@ -424,7 +424,7 @@ class ELF(BaseInteraction):
         """
         if not isinstance(self._grid, CubeGen):
             raise ValueError('Only possible if argument grid is a cubic grid.')
-        if self._denstool.shape[0] != self._grid.npoints.shape[0]:
+        if self._denstool.density.shape[0] != self._grid.npoints.shape[0]:
             raise ValueError('Number of grid points should match number of dens values!')
         # dump ELF cube file & generate vmd script
         vmdname = fname + '.vmd'
