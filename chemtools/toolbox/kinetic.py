@@ -43,15 +43,15 @@ class KED(object):
         Parameters
         ----------
         dens : np.ndarray
-            Electron density evaluated on a set of grid points, :math:`\rho(\mathbf{r})`.
+            Electron density evaluated on a set of points, :math:`\rho(\mathbf{r})`.
         grad : np.ndarray
-            Gradient vector of electron density evaluated on a set of grid points,
+            Gradient vector of electron density evaluated on a set of points,
             :math:`\nabla \rho(\mathbf{r})`.
         lap : np.ndarray, optional
-            Laplacian of electron density evaluated on a set of grid points,
+            Laplacian of electron density evaluated on a set of points,
             :math:`\nabla^2 \rho(\mathbf{r})`.
         ked : np.ndarray, optional
-            Positive-definite or Lagrangian kinetic energy density evaluated on a set of grid
+            Positive-definite or Lagrangian kinetic energy density evaluated on a set of
             points; :math:`\tau_\text{PD} (\mathbf{r})` or :math:`G(\mathbf{r})`.
 
         """
@@ -68,7 +68,7 @@ class KED(object):
 
     @classmethod
     def from_molecule(cls, molecule, points, spin='ab', index=None):
-        r"""Initialize class using instance of `Molecule` and grid points.
+        r"""Initialize class using instance of `Molecule` and points.
 
         Parameters
         ----------
@@ -77,13 +77,13 @@ class KED(object):
         points : np.ndarray
             The (npoints, 3) array of cartesian coordinates of points.
         spin : str, optional
-            The type of occupied spin orbitals; options are 'a', 'b' & 'ab'.
+            Type of occupied spin orbitals; options are 'a', 'b' & 'ab'.
         index : sequence, optional
             Sequence of integers representing the index of spin orbitals.
 
         """
         if points.ndim != 2 or points.shape[1] != 3:
-            raise ValueError("Argument points should be a 2D array with 3 columns.")
+            raise ValueError("Argument points should be a 2D-array with 3 columns.")
         # compute density, gradient, & kinetic energy density on grid
         return cls(*molecule.compute_megga(points, spin=spin, index=index))
 
@@ -98,7 +98,7 @@ class KED(object):
         points : np.ndarray
             The (npoints, 3) array of cartesian coordinates of points.
         spin : str, optional
-            The type of occupied spin orbitals; options are 'a', 'b' & 'ab'.
+            Type of occupied spin orbitals; options are 'a', 'b' & 'ab'.
         index : sequence, optional
             Sequence of integers representing the index of spin orbitals.
 
