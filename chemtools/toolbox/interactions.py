@@ -92,15 +92,15 @@ class BaseInteraction(object):
         return grid
 
     @staticmethod
-    def _transform(ratio, transformation, k):
-        if transformation == 'original':
-            return 1.0 / (1.0 + ratio**k)
-        elif transformation == 'hyperbolic':
-            return NotImplementedError
-        elif transformation == 'inverse':
-            return NotImplementedError
+    def _transform(ratio, trans, tran_k, tran_a):
+        if trans == 'original':
+            return 1.0 / (1.0 + tran_a * ratio ** tran_k)
+        elif trans == 'hyperbolic':
+            return 0.5 * (1 + np.tanh(tran_a * (ratio ** -tran_k - ratio ** tran_k)))
+        elif trans == 'inverse':
+            return 1.0 - 1.0 / (1.0 + tran_a * ratio ** tran_k)
         else:
-            raise ValueError('Argument trans={0} not recognized!'.format(transformation))
+            raise ValueError('Argument trans={0} not recognized!'.format(trans))
 
 
 class NCI(BaseInteraction):
