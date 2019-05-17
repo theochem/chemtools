@@ -304,7 +304,6 @@ class ELF(BaseInteraction):
             points; :math:`\tau_\text{PD} (\mathbf{r})` or :math:`G(\mathbf{r})`.
         grid : instance of `Grid`, optional
             Grid used for computation of ELF. Only if this a CubeGrid one can generate the scripts.
-            If None, a cubic grid is constructed from molecule with spacing=0.1 & threshold=2.0.
         trans : str, optional
             Type of transformation applied to ELF ratio; options are 'rational' or 'hyperbolic'.
         trans_k : float, optional
@@ -323,9 +322,9 @@ class ELF(BaseInteraction):
             raise ValueError('Argument dens & grad should have the same length!')
         if trans.lower() not in ['rational', 'hyperbolic']:
             raise ValueError('Argument trans should be either "rational" or "hyperbolic".')
-        if trans_k < 0:
+        if not trans_k > 0:
             raise ValueError('Argument trans_k should be positive! trans_k={0}'.format(trans_k))
-        if trans_a < 0:
+        if not trans_a > 0:
             raise ValueError('Argument trans_a should be positive! trans_a={0}'.format(trans_a))
         self._grid = grid
         self._denstool = DensGradTool(dens, grad)
@@ -460,7 +459,7 @@ class LOL(BaseInteraction):
 
     """
 
-    def __init__(self, dens, grad, ked, grid, trans='inverse_rational', trans_k=1, trans_a=1,
+    def __init__(self, dens, grad, ked, grid=None, trans='inverse_rational', trans_k=1, trans_a=1,
                  denscut=0.0005):
         r"""Initialize class from arrays.
 
@@ -475,7 +474,6 @@ class LOL(BaseInteraction):
             points; :math:`\tau_\text{PD} (\mathbf{r})` or :math:`G(\mathbf{r})`.
         grid : instance of `Grid`, optional
             Grid used for computation of LOL. Only if this a CubeGrid one can generate the scripts.
-            If None, a cubic grid is constructed from molecule with spacing=0.1 & threshold=2.0.
         trans : str, optional
             Type of transformation applied to LOL ratio; options are 'inverse_rational' or
             'inverse_hyperbolic'.
@@ -496,9 +494,9 @@ class LOL(BaseInteraction):
         if trans.lower() not in ['inverse_rational', 'inverse_hyperbolic']:
             raise ValueError('Argument trans should be either "inverse_rational" or '
                              '"inverse_hyperbolic".')
-        if trans_k < 0:
+        if not trans_k > 0:
             raise ValueError('Argument trans_k should be positive! trans_k={0}'.format(trans_k))
-        if trans_a < 0:
+        if not trans_a > 0:
             raise ValueError('Argument trans_a should be positive! trans_a={0}'.format(trans_a))
         self._denstool = DensGradTool(dens, grad)
         self._grid = grid
