@@ -24,7 +24,7 @@
 
 
 import numpy as np
-from numpy.testing import assert_allclose
+from numpy.testing import assert_allclose, assert_raises
 from chemtools.toolbox.interactions import ELF
 try:
     from importlib_resources import path
@@ -44,3 +44,5 @@ def test_elf_h2o_nuclei():
         data = np.load(str(fname))
     elf = ELF(data['nuc_dens'], data['nuc_grad'], data['nuc_ked_pd'])
     assert_allclose(elf.value, data['nuc_elf'], rtol=1.e-6, atol=1.e-6)
+    assert_raises(NotImplementedError, lambda: elf.basins)
+    assert_raises(NotImplementedError, lambda: elf.topology)
