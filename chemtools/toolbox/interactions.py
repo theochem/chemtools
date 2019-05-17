@@ -282,7 +282,7 @@ class ELF(BaseInteraction):
              \sum_i^{\sigma} \lvert \nabla \phi_i (\mathbf{r}) \rvert^2
     """
 
-    def __init__(self, dens, grad, kin, grid=None, trans='original', k=2):
+    def __init__(self, dens, grad, ked, grid=None, trans='original', k=2):
         r"""Initialize class.
 
         Parameters
@@ -311,7 +311,7 @@ class ELF(BaseInteraction):
         self._grid = grid
         self._denstool = DensGradTool(dens, grad)
         # compute elf ratio & apply transformation
-        self._ratio = kin - self._denstool.ked_weizsacker
+        self._ratio = ked - self._denstool.ked_weizsacker
         self._ratio /= masked_less(self._denstool.ked_thomas_fermi, 1.0e-30)
         self._value = self._transform(self._ratio, trans, k)
         # assign basins and topology attributes
