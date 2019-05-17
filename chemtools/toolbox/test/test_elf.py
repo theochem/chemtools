@@ -44,6 +44,13 @@ def test_elf_h2o_nuclei():
         data = np.load(str(fname))
     elf = ELF(data['nuc_dens'], data['nuc_grad'], data['nuc_ked_pd'])
     assert_allclose(elf.value, data['nuc_elf'], rtol=1.e-6, atol=1.e-6)
+    # check raises
+    dens, grad, ked = data['nuc_dens'], data['nuc_grad'], data['nuc_ked_pd']
+    assert_raises(ValueError, ELF, dens, grad, ked, trans_k=-1)
+    assert_raises(ValueError, ELF, dens, grad, ked, trans_a=2, trans_k=-1)
+    assert_raises(ValueError, ELF, dens, grad, ked, trans_k=0)
+    assert_raises(ValueError, ELF, dens, grad, ked, trans_a=0)
+    assert_raises(ValueError, ELF, dens, grad, ked, trans='inverse_rational')
 
 
 def test_lol_h2o_nuclei():
