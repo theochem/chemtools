@@ -292,7 +292,7 @@ class ELF(BaseInteraction):
 
     def __init__(self, dens, grad, ked, grid=None, trans='original', trans_k=2, trans_a=1,
                  denscut=0.0005):
-        r"""Initialize class.
+        r"""Initialize class from arrays.
 
         Parameters
         ----------
@@ -374,7 +374,7 @@ class ELF(BaseInteraction):
     @classmethod
     def from_file(cls, fname, spin='ab', index=None, grid=None, trans='original',
                   trans_k=2, trans_a=1, denscut=0.0005):
-        """Initialize class from file.
+        """Initialize class from wave-function file.
 
         Parameters
         ----------
