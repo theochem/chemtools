@@ -322,7 +322,7 @@ class ELF(BaseInteraction):
             raise ValueError('Argument grad should be a 2d-array!')
         if grad.shape[0] != dens.shape[0]:
             raise ValueError('Argument dens & grad should have the same length!')
-        if trans.lower() not in ['original' or 'hyperbolic']:
+        if trans.lower() not in ['original', 'hyperbolic']:
             raise ValueError('Argument trans should be either "original" or "hyperbolic".')
         if trans_k < 0:
             raise ValueError('Argument trans_k should be positive! trans_k={0}'.format(trans_k))
@@ -369,7 +369,7 @@ class ELF(BaseInteraction):
         dens = molecule.compute_density(grid.points, spin=spin, index=index)
         grad = molecule.compute_gradient(grid.points, spin=spin, index=index)
         kin = molecule.compute_ked(grid.points, spin=spin, index=index)
-        return cls(dens, grad, kin, grid, trans, trans_k, denscut)
+        return cls(dens, grad, kin, grid, trans, trans_k, trans_a, denscut)
 
     @classmethod
     def from_file(cls, fname, spin='ab', index=None, grid=None, trans='original',
@@ -424,7 +424,7 @@ class ELF(BaseInteraction):
         """
         if not isinstance(self._grid, CubeGen):
             raise ValueError('Only possible if argument grid is a cubic grid.')
-        if self._denstool.density.shape[0] != self._grid.npoints.shape[0]:
+        if self._denstool.density.shape[0] != self._grid.points.shape[0]:
             raise ValueError('Number of grid points should match number of dens values!')
         # dump ELF cube file & generate vmd script
         vmdname = fname + '.vmd'
