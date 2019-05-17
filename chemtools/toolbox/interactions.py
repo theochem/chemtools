@@ -97,7 +97,7 @@ class BaseInteraction(object):
             return 1.0 / (1.0 + trans_a * ratio ** trans_k)
         elif trans == 'hyperbolic':
             return 0.5 * (1 + np.tanh(trans_a * (ratio ** -trans_k - ratio ** trans_k)))
-        elif trans == 'inverse':
+        elif trans == 'inverse_rational':
             return 1.0 - 1.0 / (1.0 + trans_a * ratio ** trans_k)
         else:
             raise ValueError('Argument trans={0} not recognized!'.format(trans))
@@ -433,25 +433,145 @@ class ELF(BaseInteraction):
 
 
 class LOL(BaseInteraction):
-    r"""Localized orbital Locator (LOL) Class."""
+    r"""Localized Orbital Locator (LOL) introduced by Becke and Schmider.
 
-    def __init__(self, dens, grad, kin, grid, trans='original', k=2):
-        self._tool = DensGradTool(dens, grad)
-        self._dens = dens
+    The LOL ratio is defined as:
+
+    .. math::
+       \zeta_\text{LOL}(\mathbf{r}) = \frac{\tau_\text{TF}(\mathbf{r})}{\tau_\text{PD}(\mathbf{r})}
+
+    where :math:`\tau_\text{TF}(\mathbf{r})` and :math:`\tau_\text{PD}(\mathbf{r})` are
+    Thomas-Fermi and positive-definite (Lagrangian) kinetic energy densities defined in
+    :class:`chemtools.toolbox.kinetic.KED`.
+
+    The LOL is computed by transforming the ratio:
+
+    .. math:: \text{LOL}(\mathbf{r}) = f\left(\zeta_\text{LOL}(\mathbf{r})\right)
+
+    where the transformation :math:`f` can be:
+
+    .. math::
+       \text{inverse_rational  : } \, f(\zeta, k, a) &= 1 - \frac{1}{1 + a \, \zeta^k} \\
+       \text{inverse_hyperbolic: } \, f(\zeta, k, a) &= \tfrac{1}{2}
+              \left(1 + \tanh\left(-a \left(\zeta^{-k} - \zeta^{k}\right)\right)\right)
+
+    Traditionally, the **'inverse_rational'** transformation with :math:`k=1` and :math:`a=1`
+    is used.
+
+    """
+
+    def __init__(self, dens, grad, ked, grid, trans='inverse_rational', trans_k=1, trans_a=1,
+                 denscut=0.0005):
+        r"""Initialize class from arrays.
+
+        Parameters
+        ----------
+        dens : np.ndarray
+            Electron density of grid points, :math:`\rho(\mathbf{r})`.
+        grad : np.ndarray
+            Gradient of electron density of grid points, :math:`\nabla \rho(\mathbf{r})`.
+        ked : np.ndarray
+            Positive-definite or Lagrangian kinetic energy density of grid
+            points; :math:`\tau_\text{PD} (\mathbf{r})` or :math:`G(\mathbf{r})`.
+        grid : instance of `Grid`, optional
+            Grid used for computation of LOL. Only if this a CubeGrid one can generate the scripts.
+            If None, a cubic grid is constructed from molecule with spacing=0.1 & threshold=2.0.
+        trans : str, optional
+            Type of transformation applied to LOL ratio; options are 'inverse_rational' or
+            'inverse_hyperbolic'.
+        trans_k : float, optional
+            Parameter :math:`k` of transformation.
+        trans_a : float, optional
+            Parameter :math:`a` of transformation.
+        denscut : float, optional
+            Value of density cut. LOL value of points with density < denscut is set to zero.
+
+        """
+        if dens.shape != ked.shape:
+            raise ValueError('Arguments dens and ked should have the same shape!')
+        if grad.ndim != 2:
+            raise ValueError('Argument grad should be a 2d-array!')
+        if grad.shape[0] != dens.shape[0]:
+            raise ValueError('Argument dens & grad should have the same length!')
+        if trans.lower() not in ['inverse_rational', 'inverse_hyperbolic']:
+            raise ValueError('Argument trans should be either "inverse_rational" or '
+                             '"inverse_hyperbolic".')
+        if trans_k < 0:
+            raise ValueError('Argument trans_k should be positive! trans_k={0}'.format(trans_k))
+        if trans_a < 0:
+            raise ValueError('Argument trans_a should be positive! trans_a={0}'.format(trans_a))
+        self._denstool = DensGradTool(dens, grad)
         self._grid = grid
-        self._ratio = self._tool.ked_thomas_fermi / kin
-        self._value = self._transform(self._ratio, trans, k)
+        # compute elf ratio
+        self._ratio = self._denstool.ked_thomas_fermi / masked_less(ked, 1.0e-30)
+        # compute elf value & set low density points to zero
+        self._value = self._transform(self._ratio, trans, trans_k, trans_a)
+        self._value[self._denstool.density < denscut] = 0
 
     @classmethod
-    @doc_inherit(BaseInteraction, 'from_molecule')
-    def from_molecule(cls, molecule, spin='ab', index=None, grid=None, trans='original', k=2):
+    def from_molecule(cls, molecule, spin='ab', index=None, grid=None, trans='inverse_rational',
+                      trans_k=1, trans_a=1, denscut=0.0005):
+        """Initialize class from molecule.
+
+        Parameters
+        ----------
+        molecule : instance of `Molecule` class.
+            Instance of `Molecular` class.
+        spin : str, optional
+            Type of occupied spin orbitals; options are 'a', 'b' & 'ab'.
+        index : int or sequence of int, optional
+            Sequence of spin orbital indices to use. If None, all occupied spin orbitals are used.
+        grid : instance of `Grid`, optional
+            Grid used for computation of LOL. Only if this a CubeGrid one can generate the scripts.
+            If None, a cubic grid is constructed from molecule with spacing=0.1 & threshold=2.0.
+        trans : str, optional
+            Type of transformation applied to ELF ratio; options are 'inverse_rational' or
+            'inverse_hyperbolic'.
+        trans_k : float, optional
+            Parameter :math:`k` of transformation.
+        trans_a : float, optional
+            Parameter :math:`a` of transformation.
+        denscut : float, optional
+            Value of density cut. LOL value of points with density < denscut is set to zero.
+
+        """
         # generate cubic grid or check grid
         grid = BaseInteraction._check_grid(molecule, grid)
         # compute density, gradient & kinetic energy density on grid
         dens = molecule.compute_density(grid.points, spin=spin, index=index)
         grad = molecule.compute_gradient(grid.points, spin=spin, index=index)
-        kin = molecule.compute_ked(grid.points, spin=spin, index=index)
-        return cls(dens, grad, kin, grid)
+        ked = molecule.compute_ked(grid.points, spin=spin, index=index)
+        return cls(dens, grad, ked, grid, trans, trans_k, trans_a, denscut)
+
+    @classmethod
+    def from_file(cls, fname, spin='ab', index=None, grid=None, trans='inverse_rational',
+                  trans_k=1, trans_a=1, denscut=0.0005):
+        """Initialize class from wave-function file.
+
+        Parameters
+        ----------
+        fname : str
+            Path to a molecule's file.
+        spin : str, optional
+            Type of occupied spin orbitals; options are 'a', 'b' & 'ab'.
+        index : int or sequence of int, optional
+            Sequence of spin orbital indices to use. If None, all occupied spin orbitals are used.
+        grid : instance of `Grid`, optional
+            Grid used for computation of LOL. Only if this a CubeGrid one can generate the scripts.
+            If None, a cubic grid is constructed from molecule with spacing=0.1 & threshold=2.0.
+        trans : str, optional
+            Type of transformation applied to LOL ratio; options are 'inverse_rational' or
+            'inverse_hyperbolic'.
+        trans_k : float, optional
+            Parameter :math:`k` of transformation.
+        trans_a : float, optional
+            Parameter :math:`a` of transformation.
+        denscut : float, optional
+            Value of density cut. LOL value of points with density < denscut is set to zero.
+
+        """
+        molecule = Molecule.from_file(fname)
+        return cls.from_molecule(molecule, spin, index, grid, trans, trans_k, trans_a, denscut)
 
     @property
     def ratio(self):
@@ -460,7 +580,7 @@ class LOL(BaseInteraction):
 
     @property
     def value(self):
-        r"""The :math:`LOL(\mathbf{r})` evaluated on grid points."""
+        r"""The :math:`\text{LOL}(\mathbf{r})` evaluated on grid points."""
         return self._value
 
     def generate_scripts(self, fname, isosurf=0.5):
@@ -470,13 +590,16 @@ class LOL(BaseInteraction):
         ----------
         fname : str
             A string representing the path to a fname of generated files.
-            The VMD script and cube file will be name fname.vmd and fname-lol.cube, respectively.
+            The VMD script and cube file will be named fname.vmd and fname-lol.cube, respectively.
         isosurf : float
             Value of LOL iso-surface used in VMD script.
+
         """
         if not isinstance(self._grid, CubeGen):
             raise ValueError("Only possible if argument grid is a cubic grid.")
         # dump LOL cube files
-        self._grid.dump_cube(fname + '-lol.cube', self.value)
+        fname_vmd = fname + '.vmd'
+        fname_lol = fname + '-lol.cube'
+        self._grid.dump_cube(fname_lol, self.value)
         # write VMD script for visualization
-        print_vmd_script_isosurface(fname + '.vmd', fname + '-lol.cube', isosurf=isosurf)
+        print_vmd_script_isosurface(fname_vmd, fname_lol, isosurf=isosurf, representation='Line')
