@@ -334,7 +334,7 @@ class ELF(BaseInteraction):
         self._ratio = ked - self._denstool.ked_weizsacker
         self._ratio /= masked_less(self._denstool.ked_thomas_fermi, 1.0e-30)
         # compute elf value & set low density points to zero
-        self._value = self._transform(self._ratio, trans, trans_k, trans_a)
+        self._value = self._transform(self._ratio, trans.lower(), trans_k, trans_a)
         self._value[self._denstool.density < denscut] = 0.
 
     @classmethod
@@ -505,7 +505,7 @@ class LOL(BaseInteraction):
         # compute elf ratio
         self._ratio = self._denstool.ked_thomas_fermi / masked_less(ked, 1.0e-30)
         # compute elf value & set low density points to zero
-        self._value = self._transform(self._ratio, trans, trans_k, trans_a)
+        self._value = self._transform(self._ratio, trans.lower(), trans_k, trans_a)
         self._value[self._denstool.density < denscut] = 0
 
     @classmethod
