@@ -26,7 +26,7 @@
 import shutil
 import tempfile
 from contextlib import contextmanager
-from numpy.testing import assert_raises
+from numpy.testing import assert_raises, assert_allclose
 import numpy as np
 from horton import IOData
 from chemtools.toolbox.conceptual import LocalConceptualDFT
@@ -147,3 +147,29 @@ def test_cube_h2o_dimer():
         data2 = mol2.cube_data / mol1.cube_data
         np.testing.assert_array_almost_equal(data1, data2, decimal=4)
         np.testing.assert_equal(mol1.pseudo_numbers, mol2.pseudo_numbers)
+
+
+def test_h2o_simple():
+    # replace this test with a better one later
+    with path('chemtools.data', 'h2o_dimer_pbe_sto3g.fchk') as path_file:
+        mol = IOData.from_file(str(path_file))
+
+    # create cube file from file:
+    cube = UniformGrid.from_file(path_file, spacing=2.0, threshold=0.0, rotate=True)
+    expected = np.array([[-2.31329824e+00, -2.00000000e+00, 3.82735565e+00],
+                         [-2.31329824e+00, -4.99999997e-09, 3.82735565e+00],
+                         [-3.19696330e-01, -2.00000000e+00, 3.98720381e+00],
+                         [-3.19696330e-01, -4.99999997e-09, 3.98720381e+00],
+                         [-2.15345008e+00, -2.00000000e+00, 1.83375375e+00],
+                         [-2.15345008e+00, -4.99999997e-09, 1.83375375e+00],
+                         [-1.59848169e-01, -2.00000000e+00, 1.99360191e+00],
+                         [-1.59848169e-01, -4.99999997e-09, 1.99360191e+00],
+                         [-1.99360191e+00, -2.00000000e+00, -1.59848162e-01],
+                         [-1.99360191e+00, -4.99999997e-09, -1.59848162e-01],
+                         [-6.77400003e-09, -2.00000000e+00, 0.00000000e+00],
+                         [-6.77400003e-09, -4.99999997e-09, 0.00000000e+00],
+                         [-1.83375375e+00, -2.00000000e+00, -2.15345007e+00],
+                         [-1.83375375e+00, -4.99999997e-09, -2.15345007e+00],
+                         [ 1.59848155e-01, -2.00000000e+00, -1.99360191e+00],
+                         [ 1.59848155e-01, -4.99999997e-09, -1.99360191e+00]])
+    assert_allclose(cube.points, expected, rtol=1.e-7, atol=1.e-7)
