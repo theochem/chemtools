@@ -1,5 +1,5 @@
-.. _examples_density_tools:
+.. _examples_nci:
 
-Density-Based Local Descriptors
+Non-Covalent Interactions (NCI)
 -------------------------------
 
