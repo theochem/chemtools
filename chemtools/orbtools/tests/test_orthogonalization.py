@@ -1,25 +1,19 @@
 """Tests for orbtools.orthogonalization."""
+import chemtools.orbtools.orthogonalization as orth
 import numpy as np
-import orbtools.orthogonalization as orth
-import pytest
+from numpy.testing import assert_raises
 
 
 def test_eigh():
     """Test orbtools.orthogonalization.eigh."""
-    with pytest.raises(TypeError):
-        orth.eigh(np.random.rand(3, 3).tolist())
-    with pytest.raises(TypeError):
-        orth.eigh(np.random.rand(3, 3, 3))
-    with pytest.raises(ValueError):
-        orth.eigh(np.random.rand(3, 5))
-    with pytest.raises(ValueError):
-        orth.eigh(np.random.rand(3, 3))
-    with pytest.raises(TypeError):
-        matrix = np.random.rand(3, 3)
-        orth.eigh(matrix + matrix.T, threshold=None)
-    with pytest.raises(ValueError):
-        matrix = np.random.rand(3, 3)
-        orth.eigh(matrix + matrix.T, threshold=-2)
+    assert_raises(TypeError, orth.eigh, np.random.rand(3, 3).tolist())
+    assert_raises(TypeError, orth.eigh, np.random.rand(3, 3, 3))
+    assert_raises(ValueError, orth.eigh, np.random.rand(3, 5))
+    assert_raises(ValueError, orth.eigh, np.random.rand(3, 3))
+    matrix = np.random.rand(3, 3)
+    assert_raises(TypeError, orth.eigh, matrix + matrix.T, threshold=None)
+    matrix = np.random.rand(3, 3)
+    assert_raises(ValueError, orth.eigh, matrix + matrix.T, threshold=-2)
     # positive semidefinite
     matrix = np.arange(9).reshape(3, 3)
     matrix = matrix.dot(matrix.T)
@@ -45,10 +39,8 @@ def test_eigh():
 
 def test_svd():
     """Test orbtools.orthogonalization.svd."""
-    with pytest.raises(TypeError):
-        orth.svd(np.random.rand(3, 3).tolist())
-    with pytest.raises(TypeError):
-        orth.svd(np.random.rand(3, 3, 3))
+    assert_raises(TypeError, orth.svd, np.random.rand(3, 3).tolist())
+    assert_raises(TypeError, orth.svd, np.random.rand(3, 3, 3))
     matrix = np.array(
         [
             [0.20090975, 0.97054546, 0.28661335, 0.07573257, 0.3917035, 0.75842177],
@@ -103,5 +95,4 @@ def test_power_symmetric():
     # following crashes because it has negative eigenvalues
     matrix = np.random.rand(100, 100)
     matrix = matrix + matrix.T
-    with pytest.raises(ValueError):
-        orth.power_symmetric(matrix, 0.5)
+    assert_raises(ValueError, orth.power_symmetric, matrix, 0.5)

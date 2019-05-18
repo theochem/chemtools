@@ -1,10 +1,13 @@
 """Tests for orbtools.quasi."""
-import os
+try:
+    from importlib_resources import path
+except ImportError:
+    from importlib.resources import path
 
+from chemtools.orbtools.mulliken import mulliken_populations
+from chemtools.orbtools.quasi import _check_input, make_mmo, project, quambo, quao
 import numpy as np
-from orbtools.mulliken import mulliken_populations
-from orbtools.quasi import _check_input, make_mmo, project, quambo, quao
-import pytest
+from numpy.testing import assert_raises
 
 
 def test_project():
@@ -34,18 +37,12 @@ def test_project():
     olp_1_2 = np.hstack([np.identity(10)] * 2)
     assert np.allclose(project(olp_1, olp_1_2), np.hstack([np.identity(10)] * 2))
     # errors
-    with pytest.raises(TypeError):
-        project(olp_1.tolist(), olp_1_2)
-    with pytest.raises(TypeError):
-        project(olp_1.reshape(10, 10, 1), olp_1_2)
-    with pytest.raises(TypeError):
-        project(olp_1.reshape(4, 25), olp_1_2)
-    with pytest.raises(TypeError):
-        project(olp_1, olp_1_2.tolist())
-    with pytest.raises(TypeError):
-        project(olp_1, olp_1_2.reshape(10, 20, 1))
-    with pytest.raises(ValueError):
-        project(olp_1, olp_1_2.T)
+    assert_raises(TypeError, project, olp_1.tolist(), olp_1_2)
+    assert_raises(TypeError, project, olp_1.reshape(10, 10, 1), olp_1_2)
+    assert_raises(TypeError, project, olp_1.reshape(4, 25), olp_1_2)
+    assert_raises(TypeError, project, olp_1, olp_1_2.tolist())
+    assert_raises(TypeError, project, olp_1, olp_1_2.reshape(10, 20, 1))
+    assert_raises(ValueError, project, olp_1, olp_1_2.T)
 
 
 def normalize(olp, coeff):
@@ -73,79 +70,58 @@ def test_check_input():
     # indices_span
     indices_span = np.array([True] * 2 + [False] * 8)
 
-    with pytest.raises(TypeError):
-        _check_input(coeff_ab_mo=coeff_ab_mo.tolist())
-    with pytest.raises(TypeError):
-        _check_input(coeff_ab_mo=coeff_ab_mo.reshape(10, 10, 1))
+    assert_raises(TypeError, _check_input, coeff_ab_mo=coeff_ab_mo.tolist())
+    assert_raises(TypeError, _check_input, coeff_ab_mo=coeff_ab_mo.reshape(10, 10, 1))
     _check_input(coeff_ab_mo=coeff_ab_mo)
 
-    with pytest.raises(TypeError):
-        _check_input(olp_ab_ab=olp_ab_ab.tolist())
-    with pytest.raises(TypeError):
-        _check_input(olp_ab_ab=olp_ab_ab.reshape(10, 10, 1))
-    with pytest.raises(TypeError):
-        _check_input(olp_ab_ab=olp_ab_ab.reshape(4, 25))
-    with pytest.raises(ValueError):
-        _check_input(olp_ab_ab=olp_ab_ab * np.random.rand(10))
-    with pytest.raises(ValueError):
-        _check_input(olp_ab_ab=np.random.rand(10, 10))
-    with pytest.raises(ValueError):
-        bad_olp_ab_ab = np.random.rand(10, 10)
-        _check_input(olp_ab_ab=bad_olp_ab_ab + bad_olp_ab_ab.T)
+    assert_raises(TypeError, _check_input, olp_ab_ab=olp_ab_ab.tolist())
+    assert_raises(TypeError, _check_input, olp_ab_ab=olp_ab_ab.reshape(10, 10, 1))
+    assert_raises(TypeError, _check_input, olp_ab_ab=olp_ab_ab.reshape(4, 25))
+    assert_raises(ValueError, _check_input, olp_ab_ab=olp_ab_ab * np.random.rand(10))
+    assert_raises(ValueError, _check_input, olp_ab_ab=np.random.rand(10, 10))
+    bad_olp_ab_ab = np.random.rand(10, 10)
+    assert_raises(ValueError, _check_input, olp_ab_ab=bad_olp_ab_ab + bad_olp_ab_ab.T)
     _check_input(olp_ab_ab=olp_ab_ab)
 
-    with pytest.raises(TypeError):
-        _check_input(olp_aao_ab=olp_aao_ab.tolist())
-    with pytest.raises(TypeError):
-        _check_input(olp_aao_ab=olp_aao_ab.reshape(5, 10, 1))
+    assert_raises(TypeError, _check_input, olp_aao_ab=olp_aao_ab.tolist())
+    assert_raises(TypeError, _check_input, olp_aao_ab=olp_aao_ab.reshape(5, 10, 1))
     _check_input(olp_aao_ab=olp_aao_ab)
 
-    with pytest.raises(TypeError):
-        _check_input(olp_aao_aao=olp_aao_aao.tolist())
-    with pytest.raises(TypeError):
-        _check_input(olp_aao_aao=olp_aao_aao.reshape(5, 5, 1))
-    with pytest.raises(TypeError):
-        _check_input(olp_aao_aao=np.random.rand(4, 5))
-    with pytest.raises(ValueError):
-        _check_input(olp_aao_aao=olp_aao_aao * np.random.rand(5))
-    with pytest.raises(ValueError):
-        _check_input(olp_aao_aao=np.random.rand(5, 5))
-    with pytest.raises(ValueError):
-        bad_olp_aao_aao = np.random.rand(5, 5)
-        _check_input(olp_aao_aao=bad_olp_aao_aao + bad_olp_aao_aao.T)
+    assert_raises(TypeError, _check_input, olp_aao_aao=olp_aao_aao.tolist())
+    assert_raises(TypeError, _check_input, olp_aao_aao=olp_aao_aao.reshape(5, 5, 1))
+    assert_raises(TypeError, _check_input, olp_aao_aao=np.random.rand(4, 5))
+    assert_raises(ValueError, _check_input, olp_aao_aao=olp_aao_aao * np.random.rand(5))
+    assert_raises(ValueError, _check_input, olp_aao_aao=np.random.rand(5, 5))
+    bad_olp_aao_aao = np.random.rand(5, 5)
+    assert_raises(ValueError, _check_input, olp_aao_aao=bad_olp_aao_aao + bad_olp_aao_aao.T)
     _check_input(olp_aao_aao=olp_aao_aao)
 
-    with pytest.raises(ValueError):
-        _check_input(coeff_ab_mo=np.random.rand(9, 10), olp_aao_ab=olp_aao_ab)
+    assert_raises(
+        ValueError, _check_input, coeff_ab_mo=np.random.rand(9, 10), olp_aao_ab=olp_aao_ab
+    )
     _check_input(coeff_ab_mo=coeff_ab_mo, olp_aao_ab=olp_aao_ab)
 
-    with pytest.raises(ValueError):
-        _check_input(olp_ab_ab=olp_ab_ab, olp_aao_ab=np.random.rand(5, 9))
+    assert_raises(ValueError, _check_input, olp_ab_ab=olp_ab_ab, olp_aao_ab=np.random.rand(5, 9))
     _check_input(olp_ab_ab=olp_ab_ab, olp_aao_ab=olp_aao_ab)
 
-    with pytest.raises(ValueError):
-        _check_input(coeff_ab_mo=np.random.rand(9, 10), olp_ab_ab=olp_ab_ab)
+    assert_raises(ValueError, _check_input, coeff_ab_mo=np.random.rand(9, 10), olp_ab_ab=olp_ab_ab)
     _check_input(coeff_ab_mo=coeff_ab_mo, olp_ab_ab=olp_ab_ab)
 
-    with pytest.raises(ValueError):
-        _check_input(olp_aao_ab=np.random.rand(4, 10), olp_aao_aao=olp_aao_aao)
+    assert_raises(
+        ValueError, _check_input, olp_aao_ab=np.random.rand(4, 10), olp_aao_aao=olp_aao_aao
+    )
     _check_input(olp_aao_ab=olp_aao_ab, olp_aao_aao=olp_aao_aao)
 
-    with pytest.raises(ValueError):
-        _check_input(coeff_ab_mo=np.random.rand(10, 10), olp_ab_ab=olp_ab_ab)
+    assert_raises(ValueError, _check_input, coeff_ab_mo=np.random.rand(10, 10), olp_ab_ab=olp_ab_ab)
     _check_input(coeff_ab_mo=coeff_ab_mo, olp_ab_ab=olp_ab_ab)
 
-    with pytest.raises(TypeError):
-        _check_input(indices_span=indices_span.tolist())
-    with pytest.raises(TypeError):
-        _check_input(indices_span=indices_span.reshape(10, 1))
-    with pytest.raises(TypeError):
-        _check_input(indices_span=indices_span.astype(int))
+    assert_raises(TypeError, _check_input, indices_span=indices_span.tolist())
+    assert_raises(TypeError, _check_input, indices_span=indices_span.reshape(10, 1))
+    assert_raises(TypeError, _check_input, indices_span=indices_span.astype(int))
     _check_input(indices_span=indices_span)
 
-    with pytest.raises(ValueError):
-        bad_indices_span = np.random.rand(9) < 0.5
-        _check_input(indices_span=bad_indices_span, coeff_ab_mo=coeff_ab_mo)
+    bad_indices_span = np.random.rand(9) < 0.5
+    assert_raises(ValueError, _check_input, indices_span=bad_indices_span, coeff_ab_mo=coeff_ab_mo)
     _check_input(indices_span=indices_span, coeff_ab_mo=coeff_ab_mo)
 
 
@@ -154,7 +130,7 @@ def test_make_mmo():
     # olp_aao_ab
     olp_aao_ab = np.random.rand(5, 10)
     # coeff_ab_mo
-    olp_ab_ab, *_ = np.linalg.svd(np.random.rand(10, 10))
+    olp_ab_ab, _, _ = np.linalg.svd(np.random.rand(10, 10))
     olp_ab_ab = (olp_ab_ab * np.random.rand(10)).dot(olp_ab_ab.T)
     norm_ab = np.diag(olp_ab_ab) ** (-0.5)
     olp_ab_ab *= norm_ab[:, None] * norm_ab[None, :]
@@ -163,12 +139,9 @@ def test_make_mmo():
     # indices_span
     indices_span = np.array([True] * 5 + [False] * 5)
 
-    with pytest.raises(TypeError):
-        make_mmo(olp_aao_ab, coeff_ab_mo, indices_span, dim_mmo=8.0)
-    with pytest.raises(ValueError):
-        make_mmo(olp_aao_ab, coeff_ab_mo, indices_span, dim_mmo=11)
-    with pytest.raises(ValueError):
-        make_mmo(olp_aao_ab, coeff_ab_mo, indices_span, dim_mmo=4)
+    assert_raises(TypeError, make_mmo, olp_aao_ab, coeff_ab_mo, indices_span, dim_mmo=8.0)
+    assert_raises(ValueError, make_mmo, olp_aao_ab, coeff_ab_mo, indices_span, dim_mmo=11)
+    assert_raises(ValueError, make_mmo, olp_aao_ab, coeff_ab_mo, indices_span, dim_mmo=4)
 
     coeff_ab_mmo = make_mmo(olp_aao_ab, coeff_ab_mo, indices_span, dim_mmo=6)
     # check that occupied mo's are spanned exactly
@@ -192,13 +165,16 @@ def test_make_mmo_old_code():
 
     """
     # compare against reference generated using old code
-    current_dir = os.path.dirname(__file__)
-    olp_aao_ab = np.load(os.path.join(current_dir, "naclo4_olp_aao_ab.npy"))
-    coeff_ab_mo = np.load(os.path.join(current_dir, "naclo4_coeff_ab_mo.npy"))
-    occupations = np.load(os.path.join(current_dir, "naclo4_occupations.npy"))
+    with path("chemtools.data", "naclo4_olp_aao_ab.npy") as fname:
+        olp_aao_ab = np.load(str(fname))
+    with path("chemtools.data", "naclo4_coeff_ab_mo.npy") as fname:
+        coeff_ab_mo = np.load(str(fname))
+    with path("chemtools.data", "naclo4_occupations.npy") as fname:
+        occupations = np.load(str(fname))
     indices_span = occupations > 0
 
-    coeff_ab_mmo = np.load(os.path.join(current_dir, "naclo4_coeff_ab_mmo.npy"))
+    with path("chemtools.data", "naclo4_coeff_ab_mmo.npy") as fname:
+        coeff_ab_mmo = np.load(str(fname))
     assert np.allclose(coeff_ab_mmo, make_mmo(olp_aao_ab, coeff_ab_mo, indices_span))
 
 
@@ -208,15 +184,20 @@ def test_quambo_old_code():
     Old code can be found in https://github.com/QuantumElephant/dumbo/tree/master/quasibasis.
 
     """
-    current_dir = os.path.dirname(__file__)
-    coeff_ab_mo = np.load(os.path.join(current_dir, "naclo4_coeff_ab_mo.npy"))
-    olp_ab_ab = np.load(os.path.join(current_dir, "naclo4_olp_ab_ab.npy"))
-    olp_aao_ab = np.load(os.path.join(current_dir, "naclo4_olp_aao_ab.npy"))
-    occupations = np.load(os.path.join(current_dir, "naclo4_occupations.npy"))
+    with path("chemtools.data", "naclo4_coeff_ab_mo.npy") as fname:
+        coeff_ab_mo = np.load(str(fname))
+    with path("chemtools.data", "naclo4_olp_ab_ab.npy") as fname:
+        olp_ab_ab = np.load(str(fname))
+    with path("chemtools.data", "naclo4_olp_aao_ab.npy") as fname:
+        olp_aao_ab = np.load(str(fname))
+    with path("chemtools.data", "naclo4_occupations.npy") as fname:
+        occupations = np.load(str(fname))
     indices_span = occupations > 0
 
-    coeff_ab_quambo = np.load(os.path.join(current_dir, "naclo4_coeff_ab_quambo.npy"))
-    olp_aao_ab = np.load(os.path.join(current_dir, "naclo4_olp_aao_ab.npy"))
+    with path("chemtools.data", "naclo4_coeff_ab_quambo.npy") as fname:
+        coeff_ab_quambo = np.load(str(fname))
+    with path("chemtools.data", "naclo4_olp_aao_ab.npy") as fname:
+        olp_aao_ab = np.load(str(fname))
     assert np.allclose(coeff_ab_quambo, quambo(olp_ab_ab, olp_aao_ab, coeff_ab_mo, indices_span))
 
 
@@ -226,16 +207,22 @@ def test_quao_old_code():
     Old code can be found in https://github.com/QuantumElephant/dumbo/tree/master/quasibasis.
 
     """
-    current_dir = os.path.dirname(__file__)
-    coeff_ab_mo = np.load(os.path.join(current_dir, "naclo4_coeff_ab_mo.npy"))
-    olp_ab_ab = np.load(os.path.join(current_dir, "naclo4_olp_ab_ab.npy"))
-    olp_aao_ab = np.load(os.path.join(current_dir, "naclo4_olp_aao_ab.npy"))
-    olp_aao_aao = np.load(os.path.join(current_dir, "naclo4_olp_aao_aao.npy"))
-    occupations = np.load(os.path.join(current_dir, "naclo4_occupations.npy"))
+    with path("chemtools.data", "naclo4_coeff_ab_mo.npy") as fname:
+        coeff_ab_mo = np.load(str(fname))
+    with path("chemtools.data", "naclo4_olp_ab_ab.npy") as fname:
+        olp_ab_ab = np.load(str(fname))
+    with path("chemtools.data", "naclo4_olp_aao_ab.npy") as fname:
+        olp_aao_ab = np.load(str(fname))
+    with path("chemtools.data", "naclo4_olp_aao_aao.npy") as fname:
+        olp_aao_aao = np.load(str(fname))
+    with path("chemtools.data", "naclo4_occupations.npy") as fname:
+        occupations = np.load(str(fname))
     indices_span = occupations > 0
 
-    coeff_ab_quao = np.load(os.path.join(current_dir, "naclo4_coeff_ab_quao.npy"))
-    olp_aao_ab = np.load(os.path.join(current_dir, "naclo4_olp_aao_ab.npy"))
+    with path("chemtools.data", "naclo4_coeff_ab_quao.npy") as fname:
+        coeff_ab_quao = np.load(str(fname))
+    with path("chemtools.data", "naclo4_olp_aao_ab.npy") as fname:
+        olp_aao_ab = np.load(str(fname))
     assert np.allclose(
         coeff_ab_quao, quao(olp_ab_ab, olp_aao_ab, olp_aao_aao, coeff_ab_mo, indices_span)
     )
@@ -250,13 +237,17 @@ def test_quambo():
         JCTC, 2014, 10, 3085-3091.
 
     """
-    current_dir = os.path.dirname(__file__)
-    coeff_ab_mo = np.load(os.path.join(current_dir, "naclo4_coeff_ab_mo.npy"))
-    olp_ab_ab = np.load(os.path.join(current_dir, "naclo4_olp_ab_ab.npy"))
-    olp_aao_ab = np.load(os.path.join(current_dir, "naclo4_olp_aao_ab.npy"))
-    occupations = np.load(os.path.join(current_dir, "naclo4_occupations.npy"))
+    with path("chemtools.data", "naclo4_coeff_ab_mo.npy") as fname:
+        coeff_ab_mo = np.load(str(fname))
+    with path("chemtools.data", "naclo4_olp_ab_ab.npy") as fname:
+        olp_ab_ab = np.load(str(fname))
+    with path("chemtools.data", "naclo4_olp_aao_ab.npy") as fname:
+        olp_aao_ab = np.load(str(fname))
+    with path("chemtools.data", "naclo4_occupations.npy") as fname:
+        occupations = np.load(str(fname))
     indices_span = occupations > 0
-    ab_atom_indices = np.load(os.path.join(current_dir, "naclo4_qab_atom_indices.npy"))
+    with path("chemtools.data", "naclo4_qab_atom_indices.npy") as fname:
+        ab_atom_indices = np.load(str(fname))
 
     olp_ab_omo = olp_ab_ab.dot(coeff_ab_mo[:, indices_span])
 
@@ -283,14 +274,19 @@ def test_quao():
         JCTC, 2014, 10, 3085-3091.
 
     """
-    current_dir = os.path.dirname(__file__)
-    coeff_ab_mo = np.load(os.path.join(current_dir, "naclo4_coeff_ab_mo.npy"))
-    olp_ab_ab = np.load(os.path.join(current_dir, "naclo4_olp_ab_ab.npy"))
-    olp_aao_ab = np.load(os.path.join(current_dir, "naclo4_olp_aao_ab.npy"))
-    olp_aao_aao = np.load(os.path.join(current_dir, "naclo4_olp_aao_aao.npy"))
-    occupations = np.load(os.path.join(current_dir, "naclo4_occupations.npy"))
+    with path("chemtools.data", "naclo4_coeff_ab_mo.npy") as fname:
+        coeff_ab_mo = np.load(str(fname))
+    with path("chemtools.data", "naclo4_olp_ab_ab.npy") as fname:
+        olp_ab_ab = np.load(str(fname))
+    with path("chemtools.data", "naclo4_olp_aao_ab.npy") as fname:
+        olp_aao_ab = np.load(str(fname))
+    with path("chemtools.data", "naclo4_olp_aao_aao.npy") as fname:
+        olp_aao_aao = np.load(str(fname))
+    with path("chemtools.data", "naclo4_occupations.npy") as fname:
+        occupations = np.load(str(fname))
     indices_span = occupations > 0
-    ab_atom_indices = np.load(os.path.join(current_dir, "naclo4_qab_atom_indices.npy"))
+    with path("chemtools.data", "naclo4_qab_atom_indices.npy") as fname:
+        ab_atom_indices = np.load(str(fname))
 
     olp_ab_omo = olp_ab_ab.dot(coeff_ab_mo[:, indices_span])
 

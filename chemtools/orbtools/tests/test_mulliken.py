@@ -1,15 +1,18 @@
 """Test orbtools.mulliken."""
-import os
+try:
+    from importlib_resources import path
+except ImportError:
+    from importlib.resources import path
 
-import numpy as np
-from orbtools.mulliken import (
+from chemtools.orbtools.mulliken import (
     lowdin_populations,
     mulliken_populations,
     mulliken_populations_newbasis,
 )
-from orbtools.orthogonalization import power_symmetric
-from orbtools.quasi import project
-import pytest
+from chemtools.orbtools.orthogonalization import power_symmetric
+from chemtools.orbtools.quasi import project
+import numpy as np
+from numpy.testing import assert_raises
 
 
 def test_mulliken_populations_input():
@@ -31,143 +34,254 @@ def test_mulliken_populations_input():
     atom_weights += np.swapaxes(atom_weights, 1, 2)
     atom_weights /= np.sum(atom_weights, axis=0)[None, :, :]
 
-    with pytest.raises(TypeError):
-        mulliken_populations(
-            coeff_ab_mo.tolist(), occupations, olp_ab_ab, num_atoms, ab_atom_indices
-        )
-    with pytest.raises(TypeError):
-        mulliken_populations(
-            coeff_ab_mo.ravel(), occupations, olp_ab_ab, num_atoms, ab_atom_indices
-        )
-    with pytest.raises(TypeError):
-        mulliken_populations(
-            coeff_ab_mo.astype(int), occupations, olp_ab_ab, num_atoms, ab_atom_indices
-        )
+    assert_raises(
+        TypeError,
+        mulliken_populations,
+        coeff_ab_mo.tolist(),
+        occupations,
+        olp_ab_ab,
+        num_atoms,
+        ab_atom_indices,
+    )
+    assert_raises(
+        TypeError,
+        mulliken_populations,
+        coeff_ab_mo.ravel(),
+        occupations,
+        olp_ab_ab,
+        num_atoms,
+        ab_atom_indices,
+    )
+    assert_raises(
+        TypeError,
+        mulliken_populations,
+        coeff_ab_mo.astype(int),
+        occupations,
+        olp_ab_ab,
+        num_atoms,
+        ab_atom_indices,
+    )
 
-    with pytest.raises(TypeError):
-        mulliken_populations(
-            coeff_ab_mo, occupations.tolist(), olp_ab_ab, num_atoms, ab_atom_indices
-        )
-    with pytest.raises(TypeError):
-        mulliken_populations(
-            coeff_ab_mo, occupations[:, None], olp_ab_ab, num_atoms, ab_atom_indices
-        )
-    with pytest.raises(TypeError):
-        mulliken_populations(
-            coeff_ab_mo, occupations.astype(bool), olp_ab_ab, num_atoms, ab_atom_indices
-        )
+    assert_raises(
+        TypeError,
+        mulliken_populations,
+        coeff_ab_mo,
+        occupations.tolist(),
+        olp_ab_ab,
+        num_atoms,
+        ab_atom_indices,
+    )
+    assert_raises(
+        TypeError,
+        mulliken_populations,
+        coeff_ab_mo,
+        occupations[:, None],
+        olp_ab_ab,
+        num_atoms,
+        ab_atom_indices,
+    )
+    assert_raises(
+        TypeError,
+        mulliken_populations,
+        coeff_ab_mo,
+        occupations.astype(bool),
+        olp_ab_ab,
+        num_atoms,
+        ab_atom_indices,
+    )
 
-    with pytest.raises(TypeError):
-        mulliken_populations(
-            coeff_ab_mo, occupations, olp_ab_ab.tolist(), num_atoms, ab_atom_indices
-        )
-    with pytest.raises(TypeError):
-        mulliken_populations(
-            coeff_ab_mo, occupations, olp_ab_ab.ravel(), num_atoms, ab_atom_indices
-        )
-    with pytest.raises(TypeError):
-        mulliken_populations(
-            coeff_ab_mo, occupations, olp_ab_ab.astype(int), num_atoms, ab_atom_indices
-        )
+    assert_raises(
+        TypeError,
+        mulliken_populations,
+        coeff_ab_mo,
+        occupations,
+        olp_ab_ab.tolist(),
+        num_atoms,
+        ab_atom_indices,
+    )
+    assert_raises(
+        TypeError,
+        mulliken_populations,
+        coeff_ab_mo,
+        occupations,
+        olp_ab_ab.ravel(),
+        num_atoms,
+        ab_atom_indices,
+    )
+    assert_raises(
+        TypeError,
+        mulliken_populations,
+        coeff_ab_mo,
+        occupations,
+        olp_ab_ab.astype(int),
+        num_atoms,
+        ab_atom_indices,
+    )
 
-    with pytest.raises(TypeError):
-        mulliken_populations(coeff_ab_mo, occupations, olp_ab_ab, float(num_atoms), ab_atom_indices)
+    assert_raises(
+        TypeError,
+        mulliken_populations,
+        coeff_ab_mo,
+        occupations,
+        olp_ab_ab,
+        float(num_atoms),
+        ab_atom_indices,
+    )
 
-    with pytest.raises(TypeError):
-        mulliken_populations(
-            coeff_ab_mo, occupations, olp_ab_ab, num_atoms, ab_atom_indices.tolist()
-        )
-    with pytest.raises(TypeError):
-        mulliken_populations(
-            coeff_ab_mo, occupations, olp_ab_ab, num_atoms, ab_atom_indices[:, None]
-        )
-    with pytest.raises(TypeError):
-        mulliken_populations(
-            coeff_ab_mo, occupations, olp_ab_ab, num_atoms, ab_atom_indices.astype(float)
-        )
+    assert_raises(
+        TypeError,
+        mulliken_populations,
+        coeff_ab_mo,
+        occupations,
+        olp_ab_ab,
+        num_atoms,
+        ab_atom_indices.tolist(),
+    )
+    assert_raises(
+        TypeError,
+        mulliken_populations,
+        coeff_ab_mo,
+        occupations,
+        olp_ab_ab,
+        num_atoms,
+        ab_atom_indices[:, None],
+    )
+    assert_raises(
+        TypeError,
+        mulliken_populations,
+        coeff_ab_mo,
+        occupations,
+        olp_ab_ab,
+        num_atoms,
+        ab_atom_indices.astype(float),
+    )
 
-    with pytest.raises(ValueError):
-        mulliken_populations(
-            coeff_ab_mo, occupations, olp_ab_ab.reshape(10, 40), num_atoms, ab_atom_indices
-        )
-    with pytest.raises(ValueError):
-        mulliken_populations(
-            coeff_ab_mo.reshape(15, 20), occupations, olp_ab_ab, num_atoms, ab_atom_indices
-        )
-    with pytest.raises(ValueError):
-        mulliken_populations(coeff_ab_mo, np.random.rand(20), olp_ab_ab, num_atoms, ab_atom_indices)
+    assert_raises(
+        ValueError,
+        mulliken_populations,
+        coeff_ab_mo,
+        occupations,
+        olp_ab_ab.reshape(10, 40),
+        num_atoms,
+        ab_atom_indices,
+    )
+    assert_raises(
+        ValueError,
+        mulliken_populations,
+        coeff_ab_mo.reshape(15, 20),
+        occupations,
+        olp_ab_ab,
+        num_atoms,
+        ab_atom_indices,
+    )
+    assert_raises(
+        ValueError,
+        mulliken_populations,
+        coeff_ab_mo,
+        np.random.rand(20),
+        olp_ab_ab,
+        num_atoms,
+        ab_atom_indices,
+    )
+    assert_raises(
+        TypeError,
+        mulliken_populations,
+        coeff_ab_mo,
+        occupations,
+        np.random.rand(20, 20),
+        num_atoms,
+        ab_atom_indices.tolist(),
+    )
 
-    with pytest.raises(TypeError):
-        mulliken_populations(
-            coeff_ab_mo, occupations, np.random.rand(20, 20), num_atoms, ab_atom_indices.tolist()
-        )
-    with pytest.raises(TypeError):
-        rand_olp_ab_ab = np.random.rand(20, 20)
-        rand_olp_ab_ab += rand_olp_ab_ab.T
-        mulliken_populations(
-            coeff_ab_mo, occupations, rand_olp_ab_ab, num_atoms, ab_atom_indices.tolist()
-        )
-    with pytest.raises(TypeError):
-        rand_olp_ab_ab = np.random.rand(20, 20)
-        rand_olp_ab_ab += rand_olp_ab_ab.T
-        rand_norm = np.diag(rand_olp_ab_ab) ** (-0.5)
-        rand_olp_ab_ab *= rand_norm[:, None]
-        rand_olp_ab_ab *= rand_norm[None, :]
-        mulliken_populations(
-            coeff_ab_mo, occupations, rand_olp_ab_ab, num_atoms, ab_atom_indices.tolist()
-        )
+    rand_olp_ab_ab = np.random.rand(20, 20)
+    rand_olp_ab_ab += rand_olp_ab_ab.T
+    assert_raises(
+        TypeError,
+        mulliken_populations,
+        coeff_ab_mo,
+        occupations,
+        rand_olp_ab_ab,
+        num_atoms,
+        ab_atom_indices.tolist(),
+    )
 
-    with pytest.raises(ValueError):
-        rand_occupations = np.random.rand(15)
-        rand_occupations[6] = -1
-        mulliken_populations(coeff_ab_mo, rand_occupations, olp_ab_ab, num_atoms, ab_atom_indices)
+    rand_olp_ab_ab = np.random.rand(20, 20)
+    rand_olp_ab_ab += rand_olp_ab_ab.T
+    rand_norm = np.diag(rand_olp_ab_ab) ** (-0.5)
+    rand_olp_ab_ab *= rand_norm[:, None]
+    rand_olp_ab_ab *= rand_norm[None, :]
+    assert_raises(
+        TypeError,
+        mulliken_populations,
+        coeff_ab_mo,
+        occupations,
+        rand_olp_ab_ab,
+        num_atoms,
+        ab_atom_indices.tolist(),
+    )
+
+    rand_occupations = np.random.rand(15)
+    rand_occupations[6] = -1
+    assert_raises(
+        ValueError,
+        mulliken_populations,
+        coeff_ab_mo,
+        rand_occupations,
+        olp_ab_ab,
+        num_atoms,
+        ab_atom_indices,
+    )
 
     # not sure how to check that the warning is raised but the following code prints the warning
     rand_occupations = np.random.rand(15)
     rand_occupations[6] = 2
     mulliken_populations(coeff_ab_mo, rand_occupations, olp_ab_ab, num_atoms, ab_atom_indices)
 
-    with pytest.raises(ValueError):
-        rand_weights = np.random.rand(3, 20, 20)
-        mulliken_populations(
-            coeff_ab_mo,
-            rand_occupations,
-            olp_ab_ab,
-            num_atoms,
-            ab_atom_indices,
-            atom_weights=rand_weights,
-        )
-    with pytest.raises(ValueError):
-        rand_weights = np.random.rand(4, 20, 19)
-        mulliken_populations(
-            coeff_ab_mo,
-            rand_occupations,
-            olp_ab_ab,
-            num_atoms,
-            ab_atom_indices,
-            atom_weights=rand_weights,
-        )
-    with pytest.raises(ValueError):
-        rand_weights = np.random.rand(4, 20, 20)
-        mulliken_populations(
-            coeff_ab_mo,
-            rand_occupations,
-            olp_ab_ab,
-            num_atoms,
-            ab_atom_indices,
-            atom_weights=rand_weights,
-        )
-    with pytest.raises(ValueError):
-        rand_weights = np.random.rand(4, 20, 20)
-        rand_weights += np.swapaxes(rand_weights, 1, 2)
-        mulliken_populations(
-            coeff_ab_mo,
-            rand_occupations,
-            olp_ab_ab,
-            num_atoms,
-            ab_atom_indices,
-            atom_weights=rand_weights,
-        )
+    rand_weights = np.random.rand(3, 20, 20)
+    assert_raises(
+        ValueError,
+        mulliken_populations,
+        coeff_ab_mo,
+        rand_occupations,
+        olp_ab_ab,
+        num_atoms,
+        ab_atom_indices,
+        atom_weights=rand_weights,
+    )
+    rand_weights = np.random.rand(4, 20, 19)
+    assert_raises(
+        ValueError,
+        mulliken_populations,
+        coeff_ab_mo,
+        rand_occupations,
+        olp_ab_ab,
+        num_atoms,
+        ab_atom_indices,
+        atom_weights=rand_weights,
+    )
+    rand_weights = np.random.rand(4, 20, 20)
+    assert_raises(
+        ValueError,
+        mulliken_populations,
+        coeff_ab_mo,
+        rand_occupations,
+        olp_ab_ab,
+        num_atoms,
+        ab_atom_indices,
+        atom_weights=rand_weights,
+    )
+    rand_weights = np.random.rand(4, 20, 20)
+    rand_weights += np.swapaxes(rand_weights, 1, 2)
+    assert_raises(
+        ValueError,
+        mulliken_populations,
+        coeff_ab_mo,
+        rand_occupations,
+        olp_ab_ab,
+        num_atoms,
+        ab_atom_indices,
+        atom_weights=rand_weights,
+    )
 
 
 def test_mulliken_populations():
@@ -273,11 +387,14 @@ def test_mulliken_populations():
 
 def test_mulliken_populations_newbasis():
     """Test orbtools.mulliken.mulliken_populations_newabasis."""
-    current_dir = os.path.dirname(__file__)
-    coeff_ab_mo = np.load(os.path.join(current_dir, "naclo4_coeff_ab_mo.npy"))
-    olp_ab_ab = np.load(os.path.join(current_dir, "naclo4_olp_ab_ab.npy"))
-    occupations = np.load(os.path.join(current_dir, "naclo4_occupations.npy"))
-    ab_atom_indices = np.load(os.path.join(current_dir, "naclo4_ab_atom_indices.npy"))
+    with path("chemtools.data", "naclo4_coeff_ab_mo.npy") as fname:
+        coeff_ab_mo = np.load(str(fname))
+    with path("chemtools.data", "naclo4_olp_ab_ab.npy") as fname:
+        olp_ab_ab = np.load(str(fname))
+    with path("chemtools.data", "naclo4_occupations.npy") as fname:
+        occupations = np.load(str(fname))
+    with path("chemtools.data", "naclo4_ab_atom_indices.npy") as fname:
+        ab_atom_indices = np.load(str(fname))
 
     assert np.allclose(
         mulliken_populations_newbasis(
@@ -304,11 +421,14 @@ def test_mulliken_populations_newbasis():
 
 def test_lowdin_populations():
     """Test orbtools.mulliken.lowdin_populations."""
-    current_dir = os.path.dirname(__file__)
-    coeff_ab_mo = np.load(os.path.join(current_dir, "naclo4_coeff_ab_mo.npy"))
-    olp_ab_ab = np.load(os.path.join(current_dir, "naclo4_olp_ab_ab.npy"))
-    occupations = np.load(os.path.join(current_dir, "naclo4_occupations.npy"))
-    ab_atom_indices = np.load(os.path.join(current_dir, "naclo4_ab_atom_indices.npy"))
+    with path("chemtools.data", "naclo4_coeff_ab_mo.npy") as fname:
+        coeff_ab_mo = np.load(str(fname))
+    with path("chemtools.data", "naclo4_olp_ab_ab.npy") as fname:
+        olp_ab_ab = np.load(str(fname))
+    with path("chemtools.data", "naclo4_occupations.npy") as fname:
+        occupations = np.load(str(fname))
+    with path("chemtools.data", "naclo4_ab_atom_indices.npy") as fname:
+        ab_atom_indices = np.load(str(fname))
 
     coeff_ab_oab = power_symmetric(olp_ab_ab, -0.5)
     assert np.allclose(coeff_ab_oab.T.dot(olp_ab_ab).dot(coeff_ab_oab), np.identity(124))

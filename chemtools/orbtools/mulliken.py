@@ -1,7 +1,7 @@
 """Mulliken population analysis."""
 import numpy as np
-from orbtools.orthogonalization import power_symmetric
-from orbtools.quasi import project
+from chemtools.orbtools.orthogonalization import power_symmetric
+from chemtools.orbtools.quasi import project
 
 
 # FIXME: bad name (since providing atom_weights will result in the population not being Mulliken)
