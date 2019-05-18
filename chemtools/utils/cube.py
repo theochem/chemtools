@@ -86,7 +86,7 @@ class UniformGrid(object):
         coords = np.swapaxes(coords, 1, 2)
         coords = coords.reshape(3, -1)
         coords = coords.T
-        self._points = coords.dot(self._axes.T)
+        self._points = coords.dot(self._axes)
         # Compute coordinates of grid points relative to the origin
         self._points += self._origin
 
