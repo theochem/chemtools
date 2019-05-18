@@ -85,7 +85,7 @@ class BaseInteraction(object):
     def _check_grid(molecule, grid):
         if grid is None:
             grid = UniformGrid.from_molecule(molecule.numbers, molecule.pseudo_numbers,
-                                             molecule.coordinates, spacing=0.1, threshold=5.0)
+                                             molecule.coordinates, spacing=0.1, threshold=2.0)
         elif not hasattr(grid, 'points'):
             raise ValueError('Argument grid should have "points" attribute!')
 
