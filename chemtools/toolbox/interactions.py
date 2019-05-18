@@ -188,7 +188,7 @@ class NCI(BaseInteraction):
         r"""Eigenvalues of Hessian."""
         return self._eigvalues
 
-    def plot(self, fname, color='b'):
+    def generate_plot(self, fname, color='b'):
         r"""Plot reduced density gradient.
 
         Reduced density gradient vs.

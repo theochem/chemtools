@@ -192,5 +192,5 @@ def test_analyze_nci_assert_errors():
 
     with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_assert_errors') as dn:
         test = '%s/%s' % (dn, 'test.png')
-        desp.plot(test)
+        desp.generate_plot(test)
         assert os.path.isfile(test) and os.access(test, os.R_OK)

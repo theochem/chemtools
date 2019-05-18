@@ -149,5 +149,5 @@ def main_nci(args):
     nci.generate_scripts(args.output_name, args.isosurface, args.denscut)
 
     # plot reduced density gradient vs. signed density
-    if args.plot:
-        nci.plot(args.output_name, color=args.color)
+    if args.generate_plot:
+        nci.generate_plot(args.output_name, color=args.color)
