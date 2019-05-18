@@ -80,15 +80,15 @@ class UniformGrid(object):
         self._npoints = npoints_x * npoints_y * npoints_z
         # Make an array to store coordinates of grid points
         self._points = np.zeros((self._npoints, 3))
+        coords = np.array(
+            np.meshgrid(np.arange(npoints_x), np.arange(npoints_y), np.arange(npoints_z))
+        )
+        coords = np.swapaxes(coords, 1, 2)
+        coords = coords.reshape(3, -1)
+        coords = coords.T
+        self._points = coords.dot(self._axes.T)
         # Compute coordinates of grid points relative to the origin
         self._points += self._origin
-        count = 0
-        for nx in range(npoints_x):
-            for ny in range(npoints_y):
-                for nz in range(npoints_z):
-                    coordinate = np.dot(np.array([nx, ny, nz]), self._axes)
-                    self._points[count, :] += coordinate
-                    count += 1
 
         # log information
         self._log_init()
