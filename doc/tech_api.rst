@@ -100,6 +100,8 @@ Wrappers Module
 ===============
 
 * :class:`Molecule <wrappers.molecule.Molecule>`
+* :class:`BeckeGrid <wrappers.beckegrid.BeckeGrid>`
+* :class:`UniformGrid <utils.cube.UniformGrid>`
 
 
 Output Module
@@ -115,12 +117,6 @@ Output Module
 * 2-D Plots
 
   * :func:`plot_scatter <outputs.plot.plot_scatter>`
-
-
-Utility Module
-==============
-
-* :class:`CubeGen <utils.cube.CubeGen>`
 
 
 
@@ -158,10 +154,11 @@ Utility Module
       conceptual.mixed.MixedCondensedTool
       topology.eigenvalues.EigenValueTool
       wrappers.molecule.Molecule
+      wrappers.beckegrid.BeckeGrid
       outputs.vmd.print_vmd_script_nci
       outputs.vmd.print_vmd_script_isosurface
       outputs.vmd.print_vmd_script_multiple_cube
       outputs.vmd.print_vmd_script_vector_field
       outputs.plot.plot_scatter
-      utils.cube.CubeGen
+      utils.cube.UniformGrid
 
