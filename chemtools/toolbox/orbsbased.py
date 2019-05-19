@@ -31,7 +31,7 @@ from scipy.optimize import bisect
 from chemtools.wrappers.molecule import Molecule
 
 
-__all__ = ["OrbitalLocalTool"]
+__all__ = ['OrbitalLocalTool']
 
 
 class OrbitalLocalTool(object):
@@ -48,7 +48,7 @@ class OrbitalLocalTool(object):
             Grid points, given as a 2D array with 3 columns, used for calculating local properties.
         """
         if points.ndim != 2 or points.shape[1] != 3:
-            raise ValueError("Argument points should be a 2D array with 3 columns.")
+            raise ValueError('Argument points should be a 2D array with 3 columns.')
 
         self._molecule = molecule
         self._points = points
@@ -82,7 +82,7 @@ class OrbitalLocalTool(object):
         """
         return self._molecule.compute_esp(self._points)
 
-    def compute_orbital_expression(self, index, spin="alpha"):
+    def compute_orbital_expression(self, index, spin='a'):
         r"""Compute molecular orbital expression of the specified orbitals on the grid.
 
         Parameters
@@ -109,8 +109,8 @@ class OrbitalLocalTool(object):
         energy_a, energy_b = self._molecule.orbital_energy
         # compute density of each alpha and beta orbital on grid points
         index = np.arange(1, self._molecule.nbasis + 1)
-        ip_a = self.compute_orbital_expression(index, spin="alpha")**2
-        ip_b = self.compute_orbital_expression(index, spin="beta")**2
+        ip_a = self.compute_orbital_expression(index, spin='a')**2
+        ip_b = self.compute_orbital_expression(index, spin='b')**2
         # compute local ionization potential of alpha and beta orbitals
         ip_a = np.dot(occ_a * energy_a, ip_a.T) / self._density
         ip_b = np.dot(occ_b * energy_b, ip_b.T) / self._density
@@ -201,8 +201,8 @@ class OrbitalLocalTool(object):
         energy_a, energy_b = self._molecule.orbital_energy
         # compute density of each alpha and beta orbital on grid points
         index = np.arange(1, self._molecule.nbasis + 1)
-        dens_a = self.compute_orbital_expression(index, spin="alpha")**2
-        dens_b = self.compute_orbital_expression(index, spin="beta")**2
+        dens_a = self.compute_orbital_expression(index, spin='a')**2
+        dens_b = self.compute_orbital_expression(index, spin='b')**2
         # compute temperature-dependent density of alpha and beta orbitals
         dens_a /= (1. + np.exp(bt * (energy_a - spin_mu_a)))
         dens_b /= (1. + np.exp(bt * (energy_b - spin_mu_b)))
@@ -246,8 +246,8 @@ class OrbitalLocalTool(object):
         energy_a, energy_b = self._molecule.orbital_energy
         # compute density of each alpha and beta orbital on grid points
         index = np.arange(1, self._molecule.nbasis + 1)
-        dens_a = self.compute_orbital_expression(index, spin="a")**2
-        dens_b = self.compute_orbital_expression(index, spin="b")**2
+        dens_a = self.compute_orbital_expression(index, spin='a')**2
+        dens_b = self.compute_orbital_expression(index, spin='b')**2
         # compute temperature-dependent density of alpha and beta orbitals
         factor_a = np.exp(bt * (energy_a - spin_mu_a))
         factor_b = np.exp(bt * (energy_b - spin_mu_b))
