@@ -46,6 +46,7 @@ def test_wrapper_grid_raises():
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fpath:
         grid = BeckeGrid.from_file(fpath)
     assert_raises(ValueError, grid.integrate, np.array([[1., 2., 3.]]))
+    assert_raises(NotImplementedError, grid.compute_spherical_average, None)
 
 
 def test_wrapper_grid_ch4():

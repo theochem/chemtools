@@ -167,3 +167,22 @@ class BeckeGrid(object):
         if value.shape != (self.npoints,):
             raise ValueError('Argument value should have ({0},) shape!'.format(self.npoints))
         return self._grid.integrate(value)
+
+    def compute_spherical_average(self, value):
+        """Compute spherical average of given value evaluated on the grid points.
+
+        Note: This method only works for atomic systems with one nuclear center.
+
+        Parameters
+        ----------
+        value : np.ndarray
+           Property value evaluated on the grid points.
+
+        """
+        if len(self.numbers) != 1:
+            raise NotImplementedError('This method only works for systems with one atom!')
+        if value.ndim != 1:
+            raise ValueError('Argument value should be a 1D array.')
+        if value.shape != (self.npoints,):
+            raise ValueError('Argument value should have ({0},) shape!'.format(self.npoints))
+        return self._grid.get_spherical_average(value)

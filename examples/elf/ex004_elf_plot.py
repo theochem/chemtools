@@ -20,6 +20,7 @@ from horton import AtomicGrid
 mol = Molecule.from_file('atom_kr.fchk')
 grid = AtomicGrid(mol.numbers[0], mol.pseudo_numbers[0], mol.coordinates[0],
                   agspec='exp:0.005:10.0:200:194', random_rotate=False)
+
 elf_r = ELF.from_molecule(mol, grid=grid, trans='rational', trans_k=2, trans_a=1)
 elf_h = ELF.from_molecule(mol, grid=grid, trans='hyperbolic', trans_k=1, trans_a=1)
 
