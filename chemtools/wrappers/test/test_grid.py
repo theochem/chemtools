@@ -31,7 +31,7 @@ except ImportError:
 
 from numpy.testing import assert_raises, assert_allclose
 
-from chemtools.wrappers.beckegrid import BeckeGrid
+from chemtools.wrappers.grid import BeckeGrid
 from chemtools.wrappers.molecule import Molecule
 
 
