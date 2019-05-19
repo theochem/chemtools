@@ -24,3 +24,4 @@
 
 
 from chemtools.wrappers.molecule import *
+from chemtools.wrappers.beckegrid import *
