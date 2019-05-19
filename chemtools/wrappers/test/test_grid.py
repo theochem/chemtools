@@ -41,8 +41,7 @@ class TestGrid(TestCase):
         """Set up function for all tests."""
         with path('chemtools.data', 'water_b3lyp_sto3g.fchk') as file_path:
             self.mol = Molecule.from_file(file_path)
-        self.grid_mol = BeckeGrid(self.mol.coordinates, self.mol.numbers, self.mol.pseudo_numbers, random_rotate=False,
-                                  random_rotate=False)
+        self.grid_mol = BeckeGrid(self.mol.coordinates, self.mol.numbers, self.mol.pseudo_numbers)
 
     def test_string_init(self):
         """Test Grid object initialization."""

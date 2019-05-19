@@ -275,7 +275,7 @@ class BeckeGrid(object):
             mol.coordinates,
             mol.numbers,
             mol.pseudo_numbers,
-            grid_type=grid_type,
+            specification=grid_type,
             k=k,
             random_rotate=random_rotate,
             mode=mode)
