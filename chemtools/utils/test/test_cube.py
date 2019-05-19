@@ -53,7 +53,7 @@ def test_uniformgrid_from_file_o2_uhf():
         mol = Molecule.from_file(str(fpath))
 
     # create cube file from file:
-    cube = UniformGrid.from_file(fpath, spacing=0.5, threshold=6.0, rotate=False)
+    cube = UniformGrid.from_file(fpath, spacing=0.5, extension=6.0, rotate=False)
 
     # test the cube gives the right result:
     origin_result = [-6.0, -6.0, -7.25]
@@ -159,7 +159,7 @@ def test_cube_h2o_dimer():
 def test_uniformgrid_points_h2o():
     # replace this test with a better one later
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g.fchk') as fpath:
-        cube = UniformGrid.from_file(fpath, spacing=2.0, threshold=0.0, rotate=True)
+        cube = UniformGrid.from_file(fpath, spacing=2.0, extension=0.0, rotate=True)
     expected = np.array([[-2.31329824e+00, -2.00000000e+00, 3.82735565e+00],
                          [-2.31329824e+00, -4.99999997e-09, 3.82735565e+00],
                          [-3.19696330e-01, -2.00000000e+00, 3.98720381e+00],

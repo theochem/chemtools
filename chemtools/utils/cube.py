@@ -94,7 +94,7 @@ class UniformGrid(object):
         self._log_init()
 
     @classmethod
-    def from_molecule(cls, molecule, spacing=0.2, threshold=5.0, rotate=True):
+    def from_molecule(cls, molecule, spacing=0.2, extension=5.0, rotate=True):
         """Initialize ``UniformGrid`` class from Molecule object.
 
         Parameters
@@ -103,7 +103,7 @@ class UniformGrid(object):
             Instance of Molecule class.
         spacing : float, default=0.2
             Increment between grid points along `x`, `y` and `z` direction.
-        threshold : float, default=5.0
+        extension : float, default=5.0
             The extension of the cube on each side of the molecule.
         rotate : bool, default=True
             When True, the molecule is rotated so the axes of the cube file are
@@ -140,7 +140,7 @@ class UniformGrid(object):
         max_coordinate = np.amax(new_coordinates, axis=0)
         min_coordinate = np.amin(new_coordinates, axis=0)
         # Compute the required number of points along x, y, and z axis
-        shape = (max_coordinate - min_coordinate + 2.0 * threshold) / spacing
+        shape = (max_coordinate - min_coordinate + 2.0 * extension) / spacing
         shape = np.ceil(shape)
         shape = np.array(shape, int)
         # Compute origin
@@ -167,7 +167,7 @@ class UniformGrid(object):
         return cls(numbers, pseudo_numbers, coordinates, origin, axes, shape)
 
     @classmethod
-    def from_file(cls, fname, spacing=0.2, threshold=5.0, rotate=True):
+    def from_file(cls, fname, spacing=0.2, extension=5.0, rotate=True):
         """
         Initialize ``UniformGrid`` class based on the grid specifications of a file.
 
@@ -177,7 +177,7 @@ class UniformGrid(object):
             file name with, readable with HORTON's IOData.
         spacing : float, default=0.2
             Increment between grid points along `x`, `y` and `z` direction.
-        threshold : float, default=5.0
+        extension : float, default=5.0
             The extension of the cube on each side of the molecule.
         rotate : bool, default=True
             When True, the molecule is rotated so the axes of the cube file are
@@ -194,7 +194,7 @@ class UniformGrid(object):
                     mol = IOData.from_file(str(fname))
             except IOError as error:
                 logging.info(error)
-        return cls.from_molecule(mol, spacing, threshold, rotate)
+        return cls.from_molecule(mol, spacing, extension, rotate)
 
     @property
     def numbers(self):

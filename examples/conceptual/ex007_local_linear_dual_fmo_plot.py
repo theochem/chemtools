@@ -14,7 +14,7 @@ from chemtools import LocalConceptualDFT, UniformGrid, print_vmd_script_isosurfa
 #    The cubic grid points are spaced by 0.2 a.u. & extending 5.0 a.u. on each side.
 
 file_path = 'ch2o_q+0.fchk'
-cube = UniformGrid.from_file(file_path, spacing=0.2, threshold=5.0)
+cube = UniformGrid.from_file(file_path, spacing=0.2, extension=5.0)
 
 # 2. Build quadratic energy model for Formaldehyde using FMO approach.
 

@@ -12,7 +12,7 @@ from chemtools import ELF, UniformGrid, Molecule
 # 1. Build Molecule, UnifromGrid and ELF model
 
 mol = Molecule.from_file('chonh2.fchk')
-cub = UniformGrid.from_molecule(mol, spacing=0.1, threshold=5.0)
+cub = UniformGrid.from_molecule(mol, spacing=0.1, extension=5.0)
 elf = ELF.from_molecule(mol, grid=cub, trans='hyperbolic', trans_k=1, trans_a=1)
 
 # 2. Generate cube file(s) and script for visualizing ELF
