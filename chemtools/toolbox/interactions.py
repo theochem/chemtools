@@ -188,7 +188,7 @@ class NCI(BaseInteraction):
         r"""Eigenvalues of Hessian."""
         return self._eigvalues
 
-    def generate_plot(self, fname, color='b', denslim=(-0.2,0.2), rdglim=(0.,2.)):
+    def generate_plot(self, fname, color='b', denslim=(-0.2, 0.2), rdglim=(0., 2.)):
         r"""Plot reduced density gradient.
 
         Reduced density gradient vs.
@@ -203,9 +203,9 @@ class NCI(BaseInteraction):
         color : str, optional
             Color of plot. To customize color, see http://matplotlib.org/users/colors.html
         denslim: tuple, optional
-            The minimum anf maximum of the (signed) density in the plot.
+            The minimum and maximum of the (signed) density in the plot.
         rdglim: tuple, optional
-            The minimum anf maximum of the reduced density gradient in the plot.
+            The minimum and maximum of the reduced density gradient in the plot.
 
         """
         # scatter plot
