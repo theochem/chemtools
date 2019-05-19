@@ -136,11 +136,12 @@ class NCI(BaseInteraction):
                                  ' shape.'.format(hessian.shape, len(grid.points)))
 
             # convert the (n, 6) shape to (n, 3, 3) to calculate eigenvalues.
-            hestri = np.zeros((len(grid.points), 3, 3))
-            tmp = np.zeros((3, 3))
-            for i in range(0, len(grid.points)):
-                tmp[np.triu_indices(3)] = hessian[i, :]
-                hestri[i, :] = tmp
+            hestri = np.zeros((len(grid.points), 9))
+            # NOTE: hard coded in the indices of the upper triangular matrix in the flattened form
+            # in C ordering. Maybe there is a numpy function that does this. This might fail if the
+            # hessian is not in c-ordering
+            hestri[:, [0, 1, 2, 4, 5, 8]] = hessian
+            hestri = hestri.reshape(len(grid.points), 3, 3)
 
             # compute hessian and its eigenvalues on cubic grid
             eigvalues = np.linalg.eigvalsh(hestri, UPLO='U')
