@@ -148,4 +148,19 @@ class BeckeGrid(object):
     @property
     def npoints(self):
         """Number of grid points."""
-        return self._grid.points
+        return self._grid.points.shape[0]
+
+    def integrate(self, value):
+        """Integrate the property evaluated on the grid points.
+
+        Parameters
+        ----------
+        value : np.ndarray
+           Property value evaluated on the grid points.
+
+        """
+        if value.ndim != 1:
+            raise ValueError('Argument value should be a 1D array.')
+        if value.shape != (self.npoints,):
+            raise ValueError('Argument value should have ({0},) shape!'.format(self.npoints))
+        return self._grid.integrate(value)
