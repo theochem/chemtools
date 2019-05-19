@@ -112,7 +112,7 @@ class Molecule(object):
 
     @property
     def numbers(self):
-        """Aomic number of atomic centers."""
+        """Atomic number of atomic centers."""
         return self._numbers
 
     @property
@@ -229,7 +229,7 @@ class Molecule(object):
         index : sequence, default=None
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
-           If ``None``, all occupied spin orbtails are included.
+           If ``None``, all occupied spin orbitals are included.
         output : np.ndarray, default=None
            Array with shape (n, m) to store the output, where n in the number of points and m
            is the number of molecular orbitals. When ``None`` the array is allocated.
@@ -285,7 +285,7 @@ class Molecule(object):
         index : sequence
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
-           If ``None``, all occupied spin orbtails are included.
+           If ``None``, all occupied spin orbitals are included.
         output : np.ndarray
            Array with shape (n,) to store the output, where n in the number of points.
            When ``None`` the array is allocated.
@@ -344,7 +344,7 @@ class Molecule(object):
         index : sequence
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
-           If ``None``, all occupied spin orbtails are included.
+           If ``None``, all occupied spin orbitals are included.
         output : np.ndarray
            Array with shape (n, 3) to store the output, where n in the number of points.
            When ``None`` the array is allocated.
@@ -392,7 +392,7 @@ class Molecule(object):
         index : sequence
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
-           If ``None``, all occupied spin orbtails are included.
+           If ``None``, all occupied spin orbitals are included.
         output : np.ndarray
            Array with shape (n, 6) to store the output, where n in the number of points.
            When ``None`` the array is allocated.
@@ -450,7 +450,7 @@ class Molecule(object):
         index : sequence, default=None
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
-           If ``None``, all occupied spin orbtails are included.
+           If ``None``, all occupied spin orbitals are included.
         output : np.ndarray, default=None
            Array with shape (n,) to store the output, where n in the number of points.
            When ``None`` the array is allocated.
@@ -514,7 +514,7 @@ class Molecule(object):
         index : sequence
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
-           If ``None``, all occupied spin orbtails are included.
+           If ``None``, all occupied spin orbitals are included.
         output : np.ndarray
            Array with shape (n,) to store the output, where n in the number of points.
            When ``None`` the array is allocated.
@@ -559,7 +559,7 @@ class Molecule(object):
         index : sequence
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
-           If ``None``, all occupied spin orbtails are included.
+           If ``None``, all occupied spin orbitals are included.
         """
         # check points
         if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
