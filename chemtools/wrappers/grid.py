@@ -27,11 +27,11 @@ from horton import BeckeMolGrid
 from chemtools.wrappers.molecule import Molecule
 
 
-__all__ = ['BeckeGrid']
+__all__ = ['MolecularGrid']
 
 
-class BeckeGrid(object):
-    """Grid class for wrapping grid module from HORTON package."""
+class MolecularGrid(object):
+    """Becke-Lebedev molecular grid for numerical integrations."""
 
     def __init__(self, coordinates, numbers, pseudo_numbers, specification='medium', k=3, rotate=False):
         """Initialize class.
