@@ -31,7 +31,6 @@ from contextlib import contextmanager
 import numpy as np
 from numpy.testing import assert_raises, assert_equal, assert_almost_equal
 
-from horton import IOData
 from chemtools.utils import UniformGrid
 from chemtools.toolbox.interactions import NCI
 from chemtools.wrappers.molecule import Molecule
@@ -67,14 +66,14 @@ def test_analyze_nci_h2o_dimer_wfn():
     # Build the NCI tool
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g-grad.cube') as grad_cube1_path:
-        dmol1 = IOData.from_file(str(dens_cube1_path))
-        gmol1 = IOData.from_file(str(grad_cube1_path))
+        dmol1 = Molecule.from_file(str(dens_cube1_path))
+        gmol1 = Molecule.from_file(str(grad_cube1_path))
 
     with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_h2o_dimer_fchk') as dn:
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g')
         desp.generate_scripts(cube2)
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')
-        mol2 = IOData.from_file(cube2)
+        mol2 = Molecule.from_file(cube2)
         # Check coordinates
         assert_almost_equal(dmol1.coordinates, mol2.coordinates, decimal=6)
         assert_equal(dmol1.numbers, mol2.numbers)
@@ -89,7 +88,7 @@ def test_analyze_nci_h2o_dimer_wfn():
         assert_equal(dmol1.pseudo_numbers, mol2.pseudo_numbers)
 
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-grad.cube')
-        mol2 = IOData.from_file(cube2)
+        mol2 = Molecule.from_file(cube2)
         # Check coordinates
         assert_almost_equal(gmol1.coordinates, mol2.coordinates, decimal=6)
         assert_equal(gmol1.numbers, mol2.numbers)
@@ -114,14 +113,14 @@ def test_analyze_nci_h2o_dimer_fchk():
     desp = NCI.from_molecule(mol, grid=cube)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g-grad.cube') as grad_cube1_path:
-        dmol1 = IOData.from_file(str(dens_cube1_path))
-        gmol1 = IOData.from_file(str(grad_cube1_path))
+        dmol1 = Molecule.from_file(str(dens_cube1_path))
+        gmol1 = Molecule.from_file(str(grad_cube1_path))
 
     with tmpdir('chemtools.analysis.test.test_base.test_analyze_nci_h2o_dimer_fchk') as dn:
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g')
         desp.generate_scripts(cube2)
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')
-        mol2 = IOData.from_file(cube2)
+        mol2 = Molecule.from_file(cube2)
         # Check coordinates
         assert_almost_equal(dmol1.coordinates, mol2.coordinates, decimal=6)
         assert_equal(dmol1.numbers, mol2.numbers)
@@ -136,7 +135,7 @@ def test_analyze_nci_h2o_dimer_fchk():
         assert_equal(dmol1.pseudo_numbers, mol2.pseudo_numbers)
 
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-grad.cube')
-        mol2 = IOData.from_file(cube2)
+        mol2 = Molecule.from_file(cube2)
         # Check coordinates
         assert_almost_equal(gmol1.coordinates, mol2.coordinates, decimal=6)
         assert_equal(gmol1.numbers, mol2.numbers)
