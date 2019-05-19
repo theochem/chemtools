@@ -33,8 +33,7 @@ __all__ = ['BeckeGrid']
 class BeckeGrid(object):
     """Grid class for wrapping grid module from HORTON package."""
 
-    def __init__(self, coordinates, numbers, pseudo_numbers, specification='medium', k=3,
-                 random_rotate=False):
+    def __init__(self, coordinates, numbers, pseudo_numbers, specification='medium', k=3, rotate=False):
         """Initialize class.
 
         Parameters
@@ -56,23 +55,23 @@ class BeckeGrid(object):
             2354, 2702, 3074, 3470, 3890, 4334, 4802, 5294, 5810).
         k : int, optional
             The order of the switching function in Becke's weighting scheme.
-        random_rotate : bool, optional
-            Flag to control random rotation of spherical grids.
+        rotate : bool, optional
+            Whether to randomly rotate spherical grids.
 
         """
         self._coordinates = coordinates
         self._numbers = numbers
         self._pseudo_numbers = pseudo_numbers
         self._k = k
-        self._random_rotate = random_rotate
+        self._rotate = rotate
         self.specification = specification
 
         self._grid = BeckeMolGrid(self.coordinates, self.numbers, self.pseudo_numbers,
                                   agspec=self.specification, k=k,
-                                  random_rotate=random_rotate, mode='discard')
+                                  random_rotate=rotate, mode='discard')
 
     @classmethod
-    def from_molecule(cls, mol, specification='medium', k=3, random_rotate=False):
+    def from_molecule(cls, mol, specification='medium', k=3, rotate=False):
         """Initialize the class given an instance of Molecule.
 
         Parameters
@@ -90,17 +89,16 @@ class BeckeGrid(object):
             2354, 2702, 3074, 3470, 3890, 4334, 4802, 5294, 5810).
         k : int, optional
             The order of the switching function in Becke's weighting scheme.
-        random_rotate : bool, optional
-            Flag to control random rotation of spherical grids.
+        rotate : bool, optional
+            Whether to randomly rotate spherical grids.
 
         """
         if not isinstance(mol, Molecule):
             raise TypeError('Argument mole should be an instance of Molecule class.')
-        return cls(mol.coordinates, mol.numbers, mol.pseudo_numbers, specification=specification,
-                   k=k, random_rotate=random_rotate)
+        return cls(mol.coordinates, mol.numbers, mol.pseudo_numbers, specification, k, rotate)
 
     @classmethod
-    def from_file(cls, fname, specification='medium', k=3, random_rotate=False):
+    def from_file(cls, fname, specification='medium', k=3, rotate=False):
         """Initialize the class given an instance of Molecule.
 
         Parameters
@@ -118,12 +116,12 @@ class BeckeGrid(object):
             2354, 2702, 3074, 3470, 3890, 4334, 4802, 5294, 5810).
         k : int, optional
             The order of the switching function in Becke's weighting scheme.
-        random_rotate : bool, optional
-            Flag to control random rotation of spherical grids.
+        rotate : bool, optional
+            Whether to randomly rotate spherical grids.
 
         """
         mol = Molecule.from_file(fname)
-        return cls.from_molecule(mol, specification, k, random_rotate)
+        return cls.from_molecule(mol, specification, k, rotate)
 
     @property
     def coordinates(self):
