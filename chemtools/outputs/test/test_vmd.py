@@ -49,9 +49,14 @@ header = ('#!/usr/local/bin/vmd\n'
           'set fixedlist\n'
           '#\n'
           '# Display settings\n'
-          'display projection Orthographic\n'
+          'display projection Perspective\n'
           'display nearclip set 0.000000\n'
+          'display shadow off\n'
+          'display rendermode GLSL\n'
           'color Name {C} gray\n'
+          'axes location Off\n'
+          'light 2 on\n'
+          'light 3 on\n'
           '#\n')
 
 
@@ -60,43 +65,44 @@ def test_vmd_script_start():
 
 
 def test_vmd_script_molecule():
-    assert_raises(ValueError, vmd._vmd_script_molecule)
-    assert_raises(TypeError, vmd._vmd_script_molecule, 'example.log')
-    assert vmd._vmd_script_molecule('test.xyz') == \
+    assert_raises(ValueError, vmd._vmd_script_molecule, 'bond')
+    assert_raises(ValueError, vmd._vmd_script_molecule, 'Line')
+    assert_raises(TypeError, vmd._vmd_script_molecule, 'CPK', 'example.log')
+    assert vmd._vmd_script_molecule('CPK', 'test.xyz') == \
         ('# load new molecule\n'
          'mol new test.xyz type {xyz} first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all\n'
          '#\n'
          '# representation of the atoms\n'
-         'mol delrep 0 top\n'
          'mol representation CPK 1.000000 0.300000 118.000000 131.000000\n'
+         'mol delrep 0 top\n'
          'mol color Name\n'
          'mol selection {{all}}\n'
          'mol material Opaque\n'
          'mol addrep top\n'
          '#\n')
-    assert vmd._vmd_script_molecule('test.xyz', 'test.xyz') == \
+    assert vmd._vmd_script_molecule('CPK', 'test.xyz', 'test.xyz') == \
         ('# load new molecule\n'
          'mol new test.xyz type {xyz} first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all\n'
          'mol addfile test.xyz type {xyz} first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor '
          'all\n'
          '#\n'
          '# representation of the atoms\n'
-         'mol delrep 0 top\n'
          'mol representation CPK 1.000000 0.300000 118.000000 131.000000\n'
+         'mol delrep 0 top\n'
          'mol color Name\n'
          'mol selection {{all}}\n'
          'mol material Opaque\n'
          'mol addrep top\n'
          '#\n')
-    assert vmd._vmd_script_molecule('test.cube', 'test.xyz') == \
+    assert vmd._vmd_script_molecule('CPK', 'test.cube', 'test.xyz') == \
         ('# load new molecule\n'
          'mol new test.cube type cube first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all\n'
          'mol addfile test.xyz type {xyz} first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor '
          'all\n'
          '#\n'
          '# representation of the atoms\n'
-         'mol delrep 0 top\n'
          'mol representation CPK 1.000000 0.300000 118.000000 131.000000\n'
+         'mol delrep 0 top\n'
          'mol color Name\n'
          'mol selection {{all}}\n'
          'mol material Opaque\n'
@@ -104,7 +110,7 @@ def test_vmd_script_molecule():
          '#\n')
 
 
-def test_vmd_script_isosurface():
+def test_vmd_script_isosurface_raises():
     assert_raises(TypeError, vmd._vmd_script_isosurface, isosurf=None)
     assert_raises(TypeError, vmd._vmd_script_isosurface, isosurf=1)
     assert_raises(TypeError, vmd._vmd_script_isosurface, index=1.0)
@@ -124,19 +130,22 @@ def test_vmd_script_isosurface():
     assert_raises(TypeError, vmd._vmd_script_isosurface, colorscheme='asdfasdf')
     assert_raises(TypeError, vmd._vmd_script_isosurface, colorscheme=None)
 
+
+def test_vmd_script_isosurface_script():
     assert vmd._vmd_script_isosurface() == ('# add representation of the surface\n'
-                                               'mol representation Isosurface 0.50000 0 0 0 1 1\n'
-                                               'mol color Volume 0\n'
-                                               'mol selection {all}\n'
-                                               'mol material Opaque\n'
-                                               'mol addrep top\n'
-                                               'mol selupdate 1 top 0\n'
-                                               'mol colupdate 1 top 0\n'
-                                               'mol scaleminmax top 1 -0.050000 0.050000\n'
-                                               'mol smoothrep top 1 0\n'
-                                               'mol drawframes top 1 {now}\n'
-                                               'color scale method RGB\n'
-                                               '#\n')
+                                            'mol representation Isosurface 0.50000 0 0 0 1 1\n'
+                                            'mol color Volume 0\n'
+                                            'mol selection {all}\n'
+                                            'mol material Opaque\n'
+                                            'mol addrep top\n'
+                                            'mol selupdate 1 top 0\n'
+                                            'mol colupdate 1 top 0\n'
+                                            'mol scaleminmax top 1 -0.050000 0.050000\n'
+                                            'mol smoothrep top 1 0\n'
+                                            'mol drawframes top 1 {now}\n'
+                                            'color scale method RGB\n'
+                                            'color Display Background silver\n'
+                                            '#\n')
     assert vmd._vmd_script_isosurface(colorscheme=1) == \
         ('# add representation of the surface\n'
          'mol representation Isosurface 0.50000 0 0 0 1 1\n'
@@ -150,10 +159,11 @@ def test_vmd_script_isosurface():
          'mol smoothrep top 1 0\n'
          'mol drawframes top 1 {now}\n'
          'color scale method RGB\n'
+         'color Display Background silver\n'
          '#\n')
 
 
-def test_vmd_script_vector_field():
+def test_vmd_script_vector_field_raises():
     centers = np.array([[1, 2, 3]])
     unit_vecs = np.array([[1, 0, 0]])
     weights = np.array([1])
@@ -179,6 +189,14 @@ def test_vmd_script_vector_field():
     assert_raises(TypeError, method, centers, unit_vecs, weights, material=None)
     assert_raises(TypeError, method, centers, unit_vecs, weights, color=-1)
     assert_raises(TypeError, method, centers, unit_vecs, weights, color=1057)
+
+
+def test_vmd_script_vector_field_script():
+    centers = np.array([[1, 2, 3]])
+    unit_vecs = np.array([[1, 0, 0]])
+    weights = np.array([1])
+    # check output_vmd._vmd_script_vector_field
+    method = vmd._vmd_script_vector_field
     assert method(centers, unit_vecs, weights) == \
         ('# Add function for vector field\n'
          'proc vmd_draw_arrow {mol center unit_dir cyl_radius cone_radius length} {\n'
@@ -225,11 +243,13 @@ def test_vmd_script_vector_field():
          '#\n')
 
 
-def test_print_vmd_script_isosurface():
+def test_print_vmd_script_isosurface_raises():
     # check TypeError:
     assert_raises(TypeError, vmd.print_vmd_script_isosurface, 'test.vmd', 'iso.cube',
                   colorscheme=[1], negative=True)
 
+
+def test_print_vmd_script_isosurface():
     with tmpdir('chemtools.utils.test.test_base.test_vmd_script_isosurface') as dn:
         fname = '%s/%s' % (dn, 'test.vmd')
 
@@ -243,8 +263,8 @@ def test_print_vmd_script_isosurface():
                  'waitfor all\n'
                  '#\n'
                  '# representation of the atoms\n'
-                 'mol delrep 0 top\n'
                  'mol representation CPK 1.000000 0.300000 118.000000 131.000000\n'
+                 'mol delrep 0 top\n'
                  'mol color Name\n'
                  'mol selection {{all}}\n'
                  'mol material Opaque\n'
@@ -262,6 +282,7 @@ def test_print_vmd_script_isosurface():
                  'mol smoothrep top 1 0\n'
                  'mol drawframes top 1 {now}\n'
                  'color scale method RGB\n'
+                 'color Display Background silver\n'
                  '#\n')
 
         vmd.print_vmd_script_isosurface(fname, 'iso.cube', colorfile='col.cube',
@@ -278,8 +299,8 @@ def test_print_vmd_script_isosurface():
                  'waitfor all\n'
                  '#\n'
                  '# representation of the atoms\n'
-                 'mol delrep 0 top\n'
                  'mol representation CPK 1.000000 0.300000 118.000000 131.000000\n'
+                 'mol delrep 0 top\n'
                  'mol color Name\n'
                  'mol selection {{all}}\n'
                  'mol material Opaque\n'
@@ -297,6 +318,7 @@ def test_print_vmd_script_isosurface():
                  'mol smoothrep top 1 0\n'
                  'mol drawframes top 1 {now}\n'
                  'color scale method RGB\n'
+                 'color Display Background silver\n'
                  '#\n')
 
         vmd.print_vmd_script_isosurface(fname, 'iso.cube', colorscheme=[0, 1], negative=True)
@@ -309,8 +331,8 @@ def test_print_vmd_script_isosurface():
                  'waitfor all\n'
                  '#\n'
                  '# representation of the atoms\n'
-                 'mol delrep 0 top\n'
                  'mol representation CPK 1.000000 0.300000 118.000000 131.000000\n'
+                 'mol delrep 0 top\n'
                  'mol color Name\n'
                  'mol selection {{all}}\n'
                  'mol material Opaque\n'
@@ -328,6 +350,7 @@ def test_print_vmd_script_isosurface():
                  'mol smoothrep top 1 0\n'
                  'mol drawframes top 1 {now}\n'
                  'color scale method RGB\n'
+                 'color Display Background silver\n'
                  '#\n'
                  '# add representation of the surface\n'
                  'mol representation Isosurface -0.50000 0 0 0 1 1\n'
@@ -341,6 +364,7 @@ def test_print_vmd_script_isosurface():
                  'mol smoothrep top 1 0\n'
                  'mol drawframes top 1 {now}\n'
                  'color scale method RGB\n'
+                 'color Display Background silver\n'
                  '#\n')
 
 
@@ -351,8 +375,8 @@ def test_print_vmd_script_multiple_cube():
                   ['iso.cube', 'iso.wrong_end'])
 
     ratom = ('# representation of the atoms\n'
-             'mol delrep 0 top\n'
              'mol representation CPK 1.000000 0.300000 118.000000 131.000000\n'
+             'mol delrep 0 top\n'
              'mol color Name\n'
              'mol selection {{all}}\n'
              'mol material Opaque\n'
@@ -373,6 +397,7 @@ def test_print_vmd_script_multiple_cube():
                 'mol smoothrep top 1 0\n'
                 'mol drawframes top 1 {now}\n'
                 'color scale method RGB\n'
+                'color Display Background silver\n'
                 '#\n')
 
     with tmpdir('chemtools.utils.test.test_base.test_vmd_script_multiple_cube') as dn:
@@ -443,8 +468,8 @@ def test_print_vmd_script_vector_field():
                  'waitfor all\n'
                  '#\n'
                  '# representation of the atoms\n'
-                 'mol delrep 0 top\n'
                  'mol representation CPK 1.000000 0.300000 118.000000 131.000000\n'
+                 'mol delrep 0 top\n'
                  'mol color Name\n'
                  'mol selection {{all}}\n'
                  'mol material Opaque\n'

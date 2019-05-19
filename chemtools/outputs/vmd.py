@@ -102,9 +102,9 @@ def _vmd_script_molecule(representation, *mol_files):
                    '\n'.format(mol_type, mol, file_type))
     output += ('#\n'
                '# representation of the atoms\n')
-    if representation == 'CPK':
+    if representation.lower() == 'cpk':
         output += 'mol representation CPK 1.000000 0.300000 118.000000 131.000000\n'
-    elif representation == 'Line':
+    elif representation.lower() == 'line':
         output += 'mol representation Lines 4.000000\n'
     else:
         raise ValueError('Argument representation is not recognized.')
@@ -533,7 +533,8 @@ def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5
 
 
 def print_vmd_script_multiple_cube(scriptfile, cubes, isosurfs=None, material='Opaque',
-                                   scalemin=-0.05, scalemax=0.05, colors=None):
+                                   scalemin=-0.05, scalemax=0.05, colors=None,
+                                   representation='CPK'):
     """Generate VMD (Visual Molecular Dynamics) script for visualizing multiple cube files.
 
     Visualize multiple cube files simultaneously where data from each cube file is colored
@@ -605,7 +606,7 @@ def print_vmd_script_multiple_cube(scriptfile, cubes, isosurfs=None, material='O
         raise ValueError('Each color must be given as an integer between 0 and 1056')
 
     output = _vmd_script_start()
-    output += _vmd_script_molecule(*cubes)
+    output += _vmd_script_molecule(representation, *cubes)
     for i, (isosurf, color) in enumerate(zip(isosurfs, colors)):
         output += _vmd_script_isosurface(isosurf=isosurf, index=i, material=material,
                                          scalemin=scalemin, scalemax=scalemax, colorscheme=color)
@@ -614,7 +615,8 @@ def print_vmd_script_multiple_cube(scriptfile, cubes, isosurfs=None, material='O
         f.write(output)
 
 
-def print_vmd_script_vector_field(scriptfile, xyz, vector_centers, vector_directions):
+def print_vmd_script_vector_field(scriptfile, xyz, vector_centers, vector_directions,
+                                  representation='CPK'):
     """Generate VMD (Visual Molecular Dynamics) script for visualizing xyz file as a vector field.
 
     Parameters
@@ -632,7 +634,7 @@ def print_vmd_script_vector_field(scriptfile, xyz, vector_centers, vector_direct
     # NOTE: might have weight behaviour if weights is noisy (very small)
     unit_vecs = vector_directions/weights[:, np.newaxis]
     output = _vmd_script_start()
-    output += _vmd_script_molecule(xyz)
+    output += _vmd_script_molecule(representation, xyz)
     output += _vmd_script_vector_field(vector_centers, unit_vecs, weights)
     with open(scriptfile, 'w') as f:
         f.write(output)
