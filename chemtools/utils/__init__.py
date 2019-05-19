@@ -25,3 +25,4 @@
 
 from chemtools.utils.cube import *
 from chemtools.utils.utils import *
+from chemtools.utils.mesh import plane_mesh
