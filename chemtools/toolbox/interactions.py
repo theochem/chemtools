@@ -187,7 +187,7 @@ class NCI(BaseInteraction):
         r"""Eigenvalues of Hessian."""
         return self._eigvalues
 
-    def generate_plot(self, fname, color='b'):
+    def generate_plot(self, fname, color='b', denslim=(-0.2,0.2), rdglim=(0.,2.)):
         r"""Plot reduced density gradient.
 
         Reduced density gradient vs.
@@ -201,12 +201,16 @@ class NCI(BaseInteraction):
             by default, i.e. plot is saved as fname.png.
         color : str, optional
             Color of plot. To customize color, see http://matplotlib.org/users/colors.html
+        denslim: tuple, optional
+            The minimum anf maximum of the (signed) density in the plot.
+        rdglim: tuple, optional
+            The minimum anf maximum of the reduced density gradient in the plot.
 
         """
         # scatter plot
         kwargs = {'color': color,
-                  'xlim': (-0.2, 0.2),
-                  'ylim': (0., 2.),
+                  'xlim': denslim,
+                  'ylim': rdglim,
                   'xlabel': r'sgn$\mathbf{(\lambda_2)}$ $\times$ $\mathbf{\rho(r)}$ (a.u)',
                   'ylabel': 'Reduced Density Gradient'}
         plot_scatter(self._signed_density, self._rdgrad, fname, **kwargs)
