@@ -73,7 +73,7 @@ def test_cubegen_o2_uhf():
     np.testing.assert_array_almost_equal(cube.weights(method='R'), weight_result, decimal=7)
 
     # create cube file from molecule:
-    cube = UniformGrid.from_molecule(mol.numbers, mol.pseudo_numbers, mol.coordinates)
+    cube = UniformGrid.from_molecule(mol)
 
     # test the cube gives the right result:
     origin_result = [-5.0, -5.0, -6.1]

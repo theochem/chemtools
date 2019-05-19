@@ -94,19 +94,13 @@ class UniformGrid(object):
         self._log_init()
 
     @classmethod
-    def from_molecule(cls, numbers, pseudo_numbers, coordinates, spacing=0.2,
-                      threshold=5.0, rotate=True):
-        """
-        Initialize ``UniformGrid`` class based on the Cartesian coordinates of the molecule.
+    def from_molecule(cls, molecule, spacing=0.2, threshold=5.0, rotate=True):
+        """Initialize ``UniformGrid`` class from Molecule object.
 
         Parameters
         ----------
-        numbers : np.ndarray, shape=(M,)
-            Atomic number of `M` atoms in the molecule.
-        pseudo_numbers : np.ndarray, shape=(M,)
-            Pseudo-number of `M` atoms in the molecule.
-        coordinates : np.ndarray, shape=(M, 3)
-            Cartesian coordinates of `M` atoms in the molecule.
+        molecule: instance of `Molecule`
+            Instance of Molecule class.
         spacing : float, default=0.2
             Increment between grid points along `x`, `y` and `z` direction.
         threshold : float, default=5.0
@@ -115,6 +109,9 @@ class UniformGrid(object):
             When True, the molecule is rotated so the axes of the cube file are
             aligned with the principle axes of rotation of the molecule.
         """
+        numbers = molecule.numbers
+        pseudo_numbers = molecule.pseudo_numbers
+        coordinates = molecule.coordinates
         # calculate center of mass of the nuclear charges:
         totz = np.sum(pseudo_numbers)
         com = np.dot(pseudo_numbers, coordinates) / totz
@@ -153,8 +150,7 @@ class UniformGrid(object):
 
     @classmethod
     def from_cube(cls, fname):
-        r"""
-        Initialize ``UniformGrid`` class based on the grid specifications of a cube file.
+        r"""Initialize ``UniformGrid`` class based on the grid specifications of a cube file.
 
         Parameters
         ----------
@@ -198,8 +194,7 @@ class UniformGrid(object):
                     mol = IOData.from_file(str(fname))
             except IOError as error:
                 logging.info(error)
-        return cls.from_molecule(mol.numbers, mol.pseudo_numbers, mol.coordinates, spacing,
-                                 threshold, rotate)
+        return cls.from_molecule(mol, spacing, threshold, rotate)
 
     @property
     def numbers(self):
