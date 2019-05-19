@@ -71,12 +71,12 @@ class MolecularGrid(object):
                                   random_rotate=rotate, mode='discard')
 
     @classmethod
-    def from_molecule(cls, mol, specification='medium', k=3, rotate=False):
+    def from_molecule(cls, molecule, specification='medium', k=3, rotate=False):
         """Initialize the class given an instance of Molecule.
 
         Parameters
         ----------
-        mol : instance of Molecule
+        molecule : instance of Molecule
             Instance of Molecule class.
         specification : str, optional
             Specification of grid. Either choose from ['coarse', 'medium', 'fine', 'veryfine',
@@ -93,9 +93,10 @@ class MolecularGrid(object):
             Whether to randomly rotate spherical grids.
 
         """
-        if not isinstance(mol, Molecule):
-            raise TypeError('Argument mole should be an instance of Molecule class.')
-        return cls(mol.coordinates, mol.numbers, mol.pseudo_numbers, specification, k, rotate)
+        if not isinstance(molecule, Molecule):
+            raise TypeError('Argument molecule should be an instance of Molecule class.')
+        coords, nums, pnums = molecule.coordinates, molecule.numbers, molecule.pseudo_numbers
+        return cls(coords, nums, pnums, specification, k, rotate)
 
     @classmethod
     def from_file(cls, fname, specification='medium', k=3, rotate=False):
