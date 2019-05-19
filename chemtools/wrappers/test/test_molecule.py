@@ -417,3 +417,28 @@ def test_horton_molecule_basic_fchk_o2_uhf():
     # check orbital coefficients
     assert_almost_equal(mol.orbital_coefficient[0][:3, 0],
                         np.array([0.389497609, 0.333421243, 0.]), decimal=6)
+
+
+def test_horton_molecule_get_density_matrix_index_fchk_ch4_uhf_ccpvdz():
+    """Test Molecule_get_density_matrix using fchk for CH4 UHF/ccPVDZ.
+
+    This test checks for the behaviour of Molecule._get_density_matrix for different values of the
+    parameter, `index`.
+
+    """
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fname:
+        mol = Molecule.from_file(fname)
+    dm_full = mol._get_density_matrix("a")._array
+    # errors
+    assert_raises(ValueError, mol._get_density_matrix, "a", [[1]])
+    assert_raises(ValueError, mol._get_density_matrix, "a", [0])
+    # one index
+    for i in range(1, mol.nbasis + 1):
+        assert np.allclose(dm_full[i - 1, i - 1], mol._get_density_matrix("a", i)._array)
+    # multiple indices
+    for i in range(1, mol.nbasis + 1):
+        for j in range(1, mol.nbasis + 1):
+            # NOTE: indices can be repeated
+            indices = np.array([i -1 , j - 1])
+            assert np.allclose(dm_full[indices[:, None], indices[None, :]],
+                               mol._get_density_matrix("a", [i, j])._array)

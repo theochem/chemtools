@@ -221,7 +221,7 @@ class Molecule(object):
         dm = self._get_density_matrix(spin)
         return dm._array
 
-    def _get_density_matrix(self, spin):
+    def _get_density_matrix(self, spin, index=None):
         """
         Return HORTON density matrix object corresponding to the specified spin.
 
@@ -234,6 +234,12 @@ class Molecule(object):
            - "a" or "alpha": consider alpha electrons
            - "b" or "beta": consider beta electrons
            - "ab": consider alpha and beta electrons
+
+        index : sequence, default=None
+           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
+           orbitals are each indexed from 1 to :attr:`nbasis`.
+           If ``None``, all orbitals of the given spin(s) are included.
+
         """
         # check orbital spin
         if spin not in ["a", "b", "alpha", "beta", "ab"]:
@@ -248,6 +254,24 @@ class Molecule(object):
             exp = getattr(self, "_exp_" + spin_type[spin])
             # get density matrix of specified spin
             dm = exp.to_dm()
+
+        if index is not None:
+            # convert to numpy array
+            index = np.asarray(index)
+            # check
+            if index.ndim == 0:
+                index = index.reshape(1)
+            if index.ndim >= 2:
+                raise ValueError("Indices should be given as a one-dimensional numpy array.")
+            # FIXME: indexing here starts from 1 for some reason
+            index -= 1
+            if np.any(index < 0):
+                raise ValueError(
+                    "Indices cannot be less than 1. Note that indices start from 1."
+                )
+            # select the appropriate indices by hard-coding it into the HORTON's DenseTwoIndex
+            # object.
+            dm._array = dm._array[index[:, np.newaxis], index[np.newaxis, :]]
         return dm
 
     def compute_molecular_orbital(self, points, spin, index=None, output=None):
