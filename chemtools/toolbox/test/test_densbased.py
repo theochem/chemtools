@@ -26,7 +26,7 @@
 
 import numpy as np
 
-from numpy.testing import assert_array_almost_equal
+from numpy.testing import assert_allclose
 
 from chemtools.toolbox.densbased import DensityLocalTool
 try:
@@ -35,11 +35,15 @@ except ImportError:
     from importlib.resources import path
 
 
-def test_densbased_from_file_elf_h2o_dimer():
-    # load data computed with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-    with path("chemtools.data", "data_elf_nciplot_h2o_dimer_pbe_sto3g.npz") as fname:
+def test_densbased_from_file_h2o():
+    # test against multiwfn
+    with path('chemtools.data', 'data_multiwfn36_fchk_h2o_q+0_ub3lyp_ccpvtz.npz') as fname:
         data = np.load(str(fname))
-    # test from_file initialization & check ELF
-    with path("chemtools.data", "h2o_dimer_pbe_sto3g.fchk") as fname:
-        tool = DensityLocalTool.from_file(fname, spin='ab', index=None, points=data["points"])
-    # assert_array_almost_equal(tool.electron_localization_function, data["elf"], decimal=5)
+    with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as fname:
+        tool = DensityLocalTool.from_file(fname, spin='ab', index=None, points=data['coords'])
+    assert_allclose(tool.density, data['nuc_dens'], rtol=1.e-7, atol=0.)
+    assert_allclose(tool.gradient, data['nuc_grad'], rtol=1.e-7, atol=0.)
+    assert_allclose(tool.gradient_norm, data['nuc_grad_norm'], rtol=1.e-7, atol=0.)
+    assert_allclose(tool.laplacian, data['nuc_lap'], rtol=1.e-7, atol=0.)
+    ked_tf = 0.3 * (3.0 * np.pi**2.0)**(2.0 / 3.0) * data['nuc_dens'] ** (5. / 3.)
+    assert_allclose(tool.ked_thomas_fermi, ked_tf, rtol=1.e-7, atol=0.)
