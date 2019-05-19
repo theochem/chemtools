@@ -23,7 +23,7 @@
 # --
 # pragma pylint: disable=superfluous-parens
 
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 setup(
     name='chemtools',
@@ -32,23 +32,7 @@ setup(
     author='ChemTools Dev Team',
     author_email='horton.chemtools@gmail.com',
     package_dir={'chemtools': 'chemtools'},
-    packages=[
-        'chemtools',
-        'chemtools.toolbox',
-        'chemtools.conceptual',
-        'chemtools.denstools',
-        'chemtools.utils',
-        'chemtools.wrappers',
-        'chemtools.outputs',
-        'chemtools.data',
-        'chemtools.scripts',
-        'chemtools.toolbox.test',
-        'chemtools.conceptual.test',
-        'chemtools.denstools.test',
-        'chemtools.utils.test',
-        'chemtools.wrappers.test',
-        'chemtools.outputs.test',
-    ],
+    packages=find_packages(),
     package_data={'chemtools.data': ['*.fchk', '*.cube', '*.wfn', '*.npz'],
                   'chemtools.data.examples': ['*.fchk', '*.cube', '*.wfn', '*.npz']},
     entry_points={
@@ -60,6 +44,6 @@ setup(
         'Topic :: Science/Engineering :: Molecular Science'
     ],
     install_requires=[
-        'numpy', 'matplotlib', 'Pillow', 'Image', 'sympy',
+        'numpy>=1.15', 'matplotlib', 'Pillow', 'Image', 'sympy',
         'scipy', 'importlib_resources; python_version < "3.7"',
     ])
