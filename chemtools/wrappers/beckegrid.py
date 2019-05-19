@@ -20,24 +20,26 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Wrapper Module."""
+"""Grid Wrapper Module."""
+
 
 from horton import BeckeMolGrid
 from chemtools.wrappers.molecule import Molecule
 
-__all__ = ["Grid"]
+
+__all__ = ['BeckeGrid']
 
 
-class Grid(object):
+class BeckeGrid(object):
     """Grid class for wrapping grid module from HORTON package.
 
     Usage
     -----
     Initialization:
-    >>> grid_model = Grid.from_molecule(mol, 'fine')
+    >>> grid_model = BeckeGrid.from_molecule(mol, 'fine')
     >>> my_grid = grid_model.grid
     Or
-    >>> grid_model = Grid(mol.coordinates, mol.numbers, mol.pseudo_numbers, 'fine')
+    >>> grid_model = BeckeGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, 'fine')
     >>> my_grid = grid_model.grid
 
     Change grid:
@@ -50,48 +52,42 @@ class Grid(object):
     Attributes
     ----------
     grid_type : str
-        Information about current grid properties
+        Information about current grid properties.
     rname : str
-        Type of customized radial grid
+        Type of customized radial grid.
     rpoint : int
-        The number of points for the angular Lebedev-Laikov grid
+        The number of points for the angular Lebedev-Laikov grid.
     rrad : int
-        The number of radial grid points
+        The number of radial grid points.
     rrange : tuple(float, float)
-        The first and the last radial grid point in angstroms
+        The first and the last radial grid point in angstroms.
     grid : BeckeMolGrid, read-only
-        Generated Becke integration grid for given parameters
+        Generated Becke integration grid for given parameters.
+
     """
 
-    def __init__(self,
-                 coordinates,
-                 numbers,
-                 pseudo_numbers,
-                 grid_type='medium',
-                 k=3,
-                 random_rotate=False,
+    def __init__(self, coordinates, numbers, pseudo_numbers, specification='medium', k=3, random_rotate=False,
                  mode='discard'):
         """Initialize Grid object.
 
         Parameters
         ----------
         coordinates : np.ndarray(N, 3)
-            Coordinates of given molecule
+            Coordinates of given molecule.
         numbers : np.ndarray(N,)
-            Atomic numbers of given molecule
+            Atomic numbers of given molecule.
         pseudo_numbers : np.ndarray(N,)
-            Pseudo-potential core charges
-        grid_type : str, optional
-            A specification of Grid property. Defaults to 'medium'
+            Pseudo-potential core charges.
+        specification : str, optional
+            A specification of Grid property.
         k : int, optional
             The order of the switching function in Becke's weighting scheme.
-            Defaults to 3
         random_rotate : bool, optional
             Flag to control random rotation of spherical grids.
-            Defaults to False
         mode : str, optional
             Select one of the following options regarding atomic subgrids.
-            Avail choices: ['discard', 'keep', 'only'], defaults to 'discard'.
+            Avail choices: ['discard', 'keep', 'only'].
+
         """
         self._coordinates = coordinates
         self._numbers = numbers
@@ -102,11 +98,10 @@ class Grid(object):
         if mode in ['discard', 'keep', 'only']:
             self._mode = mode
         else:
-            raise ValueError(
-                'Given mode: {} is not a valid choice'.format(mode))
+            raise ValueError('Argument mode={0} is not valid!'.format(mode))
         # grid type specification
         self._custom_type = [None] * 5
-        self.grid_type = grid_type
+        self.grid_type = specification
 
     @property
     def grid_type(self):
@@ -115,7 +110,7 @@ class Grid(object):
         Returns
         -------
         str
-            Specific preset types or a string of properties
+            Specific preset types or a string of properties.
         """
         if self._grid_type:
             return self._grid_type
@@ -137,8 +132,7 @@ class Grid(object):
         ValueError
             Invalid input type name
         """
-        valid_types = ('coarse', 'medium', 'fine', 'veryfine', 'ultrafine',
-                       'insane')
+        valid_types = ('coarse', 'medium', 'fine', 'veryfine', 'ultrafine', 'insane')
         if value in valid_types:
             # set custom to None
             self._custom_type = [None] * 5
@@ -148,8 +142,7 @@ class Grid(object):
             # split input str
             ind_set = value.split(':')
             if len(ind_set) != 5:
-                raise ValueError(
-                    'Input grid_type: {} is not valid'.format(value))
+                raise ValueError('Input grid_type: {} is not valid'.format(value))
             ind_set[1:3] = map(float, ind_set[1:3])
             ind_set[3:] = map(int, ind_set[3:])
             self.rname = ind_set[0]
@@ -214,7 +207,7 @@ class Grid(object):
         Raises
         ------
         TypeError
-            A tuple of two positive numbers in the increasing sequence
+            A tuple of two positive numbers in the increasing sequence.
         """
         start, stop = value[:]
         if isinstance(start, (int, float)) and isinstance(stop, (int, float)):
@@ -326,23 +319,20 @@ class Grid(object):
 
         Parameters
         ----------
-        mol : Molecule
-            ChemTools molecule object
+        mol : instance of Molecule
+            Instance of Molecule class.
         grid_type : str, optional
-            Information about current grid properties. Defaults to 'medium'
+            Information about current grid properties.
         k : int, optional
             The order of the switching function in Becke's weighting scheme.
-            Defaults to 3
         random_rotate : bool, optional
             Flag to control random rotation of spherical grids.
-            Defaults to False
         mode : str, optional
-            Select one of the following options regarding atomic subgrids
-            Defaults to 'discard'
+            Select one of the following options regarding atomic subgrids.
 
         Returns
         -------
-        Grid
+        BeckeGrid
             The Grid object for constructing integral grid
 
         Raises

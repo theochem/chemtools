@@ -28,8 +28,10 @@ import numpy as np
 from horton import BeckeMolGrid
 from importlib_resources import path
 
-from chemtools.wrappers.grid import Grid
+from chemtools.wrappers.beckegrid import BeckeGrid
 from chemtools.wrappers.molecule import Molecule
+
+
 
 
 class TestGrid(TestCase):
@@ -39,26 +41,20 @@ class TestGrid(TestCase):
         """Set up function for all tests."""
         with path('chemtools.data', 'water_b3lyp_sto3g.fchk') as file_path:
             self.mol = Molecule.from_file(file_path)
-        self.grid_mol = Grid(
-            self.mol.coordinates,
-            self.mol.numbers,
-            self.mol.pseudo_numbers,
-            random_rotate=False)
+        self.grid_mol = BeckeGrid(self.mol.coordinates, self.mol.numbers, self.mol.pseudo_numbers, random_rotate=False,
+                                  random_rotate=False)
 
     def test_string_init(self):
         """Test Grid object initialization."""
-        grid = Grid(
-            self.mol.coordinates,
-            self.mol.numbers,
-            self.mol.pseudo_numbers,
-            grid_type='exp:1e-5:20:40:50')
+        grid = BeckeGrid(self.mol.coordinates, self.mol.numbers, self.mol.pseudo_numbers,
+                         specification='exp:1e-5:20:40:50')
         # assert grid._grid_type is None
         assert grid.rrad == 40
         assert grid.rpoint == 50
 
     def test_init(self):
         """Check initial values and attributs."""
-        assert isinstance(self.grid_mol, Grid)
+        assert isinstance(self.grid_mol, BeckeGrid)
         assert np.allclose(self.grid_mol._coordinates, self.mol.coordinates)
         assert np.allclose(self.grid_mol._numbers, self.mol.numbers)
         assert np.allclose(self.grid_mol._pseudo_n, self.mol.pseudo_numbers)
@@ -120,7 +116,7 @@ class TestGrid(TestCase):
 
         # compare two grids
         grid = self.grid_mol.grid
-        ref_grid = Grid.from_molecule(self.mol, 'exp:5e-4:2e1:40:50').grid
+        ref_grid = BeckeGrid.from_molecule(self.mol, 'exp:5e-4:2e1:40:50').grid
         assert np.array_equal(grid.points, ref_grid.points)
         assert np.array_equal(grid.weights, ref_grid.weights)
         # assert self.grid_mol._grid_type is None
@@ -177,13 +173,13 @@ class TestGrid(TestCase):
 
     def test_grid_from_molecule(self):
         """Test from_molecule generate the same grid."""
-        ref_grid = Grid.from_molecule(self.mol).grid
+        ref_grid = BeckeGrid.from_molecule(self.mol).grid
         gene_grid = self.grid_mol.grid
         assert np.array_equal(gene_grid.points, ref_grid.points)
         assert np.array_equal(gene_grid.weights, ref_grid.weights)
 
         # set to wrong mode
         with self.assertRaises(ValueError):
-            Grid.from_molecule(self.mol, mode='random')
+            BeckeGrid.from_molecule(self.mol, mode='random')
         with self.assertRaises(TypeError):
-            Grid.from_molecule('random')
+            BeckeGrid.from_molecule('random')
