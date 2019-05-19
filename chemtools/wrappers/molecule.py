@@ -61,9 +61,6 @@ class Molecule(object):
 
         self._coordinates = self._iodata.coordinates
         self._numbers = self._iodata.numbers
-
-        print(self._iodata)
-        print(dir(self._iodata))
         if hasattr(self._iodata, 'exp_alpha'):
             # assign alpha orbital expression
             self._exp_alpha = self._iodata.exp_alpha
