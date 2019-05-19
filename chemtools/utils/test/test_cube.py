@@ -28,7 +28,8 @@ import tempfile
 from contextlib import contextmanager
 from numpy.testing import assert_raises, assert_allclose
 import numpy as np
-from horton import IOData
+
+from chemtools.wrappers.molecule import Molecule
 from chemtools.toolbox.conceptual import LocalConceptualDFT
 from chemtools.utils.cube import UniformGrid
 try:
@@ -47,12 +48,12 @@ def tmpdir(name):
         shutil.rmtree(dn)
 
 
-def test_cubegen_o2_uhf():
-    with path('chemtools.data', 'o2_uhf.fchk') as path_file:
-        mol = IOData.from_file(str(path_file))
+def test_uniformgrid_from_file_o2_uhf():
+    with path('chemtools.data', 'o2_uhf.fchk') as fpath:
+        mol = Molecule.from_file(str(fpath))
 
     # create cube file from file:
-    cube = UniformGrid.from_file(path_file, spacing=0.5, threshold=6.0, rotate=False)
+    cube = UniformGrid.from_file(fpath, spacing=0.5, threshold=6.0, rotate=False)
 
     # test the cube gives the right result:
     origin_result = [-6.0, -6.0, -7.25]
@@ -72,14 +73,17 @@ def test_cubegen_o2_uhf():
     np.testing.assert_array_almost_equal(cube.weights(method='R0'), weight_result, decimal=7)
     np.testing.assert_array_almost_equal(cube.weights(method='R'), weight_result, decimal=7)
 
+
+def test_uniformgrid_from_molecule_o2_uhf():
+    with path('chemtools.data', 'o2_uhf.fchk') as fpath:
+        mol = Molecule.from_file(str(fpath))
+
     # create cube file from molecule:
     cube = UniformGrid.from_molecule(mol)
 
     # test the cube gives the right result:
     origin_result = [-5.0, -5.0, -6.1]
-    axes_result = [[0.0, 0.0, 0.2],
-                   [0.0, 0.2, 0.0],
-                   [0.2, 0.0, 0.0]]
+    axes_result = [[0.0, 0.0, 0.2], [0.0, 0.2, 0.0], [0.2, 0.0, 0.0]]
     shape_result = [61, 50, 50]
     weight_result = np.full(cube.npoints, 0.0080)
 
@@ -92,7 +96,7 @@ def test_cubegen_o2_uhf():
 
     # test integration of Fukui functions:
 
-    tool = LocalConceptualDFT.from_file(str(path_file), model='linear', points=cube.points)
+    tool = LocalConceptualDFT.from_file(str(fpath), model='linear', points=cube.points)
 
     ffm_default = cube.integrate(tool.ff_minus)
     ffm_r = cube.integrate(tool.ff_minus, method='R')
@@ -104,11 +108,15 @@ def test_cubegen_o2_uhf():
     np.testing.assert_almost_equal(ffm_default, 1.000, decimal=2)
     np.testing.assert_almost_equal(ffm_default, 1.000, decimal=2)
 
+
+def test_uniformgrid_o2_raises():
+    with path('chemtools.data', 'o2_uhf.fchk') as fpath:
+        mol = Molecule.from_file(str(fpath))
+        cube = UniformGrid.from_molecule(mol)
+        tool = LocalConceptualDFT.from_file(str(fpath), model='linear', points=cube.points)
     o = np.array([-3.0, -3.0, -3.0])
-    a = np.array([[2.0,  0.0,  0.0],
-                  [0.0,  2.0,  0.0],
-                  [0.0,  0.0,  2.0]])
-    s = np.array([ 3,    3,    3])
+    a = np.array([[2.0, 0.0, 0.0], [0.0, 2.0, 0.0], [0.0, 0.0, 2.0]])
+    s = np.array([3, 3, 3])
     # check ValueError
     assert_raises(ValueError, UniformGrid, mol.numbers, mol.pseudo_numbers, mol.coordinates,
                   np.array([0.]), a, s)
@@ -124,17 +132,16 @@ def test_cubegen_o2_uhf():
 
 
 def test_cube_h2o_dimer():
+    # test against previous generated .cube files
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g-dens.cube') as file_path:
-    # Build the cube
-    # Check against previous generated .cube files
         cube = UniformGrid.from_cube(file_path)
-        mol1 = IOData.from_file(str(file_path))
+        mol1 = Molecule.from_file(str(file_path))
 
     with tmpdir('chemtools.test.test_base.test_cube_h2o_dimer') as dn:
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')
         cube.generate_cube(cube2, mol1.cube_data)
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')
-        mol2 = IOData.from_file(cube2)
+        mol2 = Molecule.from_file(cube2)
         # Check coordinates
         np.testing.assert_array_almost_equal(mol1.coordinates, mol2.coordinates, decimal=6)
         np.testing.assert_equal(mol1.numbers, mol2.numbers)
@@ -149,13 +156,10 @@ def test_cube_h2o_dimer():
         np.testing.assert_equal(mol1.pseudo_numbers, mol2.pseudo_numbers)
 
 
-def test_h2o_simple():
+def test_uniformgrid_points_h2o():
     # replace this test with a better one later
-    with path('chemtools.data', 'h2o_dimer_pbe_sto3g.fchk') as path_file:
-        mol = IOData.from_file(str(path_file))
-
-    # create cube file from file:
-    cube = UniformGrid.from_file(path_file, spacing=2.0, threshold=0.0, rotate=True)
+    with path('chemtools.data', 'h2o_dimer_pbe_sto3g.fchk') as fpath:
+        cube = UniformGrid.from_file(fpath, spacing=2.0, threshold=0.0, rotate=True)
     expected = np.array([[-2.31329824e+00, -2.00000000e+00, 3.82735565e+00],
                          [-2.31329824e+00, -4.99999997e-09, 3.82735565e+00],
                          [-3.19696330e-01, -2.00000000e+00, 3.98720381e+00],
