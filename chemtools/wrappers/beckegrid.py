@@ -66,20 +66,25 @@ class BeckeGrid(object):
 
     """
 
-    def __init__(self, coordinates, numbers, pseudo_numbers, specification='medium', k=3, random_rotate=False,
-                 mode='discard'):
-        """Initialize Grid object.
+    def __init__(self, coordinates, numbers, pseudo_numbers, specification='medium', k=3,
+                 random_rotate=False, mode='discard'):
+        """Initialize class.
 
         Parameters
         ----------
-        coordinates : np.ndarray(N, 3)
-            Coordinates of given molecule.
-        numbers : np.ndarray(N,)
-            Atomic numbers of given molecule.
-        pseudo_numbers : np.ndarray(N,)
-            Pseudo-potential core charges.
+        coordinates : np.ndarray, shape=(M, 3)
+            Cartesian coordinates of `M` atoms in the molecule.
+        numbers : np.ndarray, shape=(M,)
+            Atomic number of `M` atoms in the molecule.
+        pseudo_numbers : np.ndarray, shape=(M,)
+            Pseudo-number of `M` atoms in the molecule.
         specification : str, optional
-            A specification of Grid property.
+            Specification of grid. Either choose from ['coarse', 'medium', 'fine', 'veryfine',
+            'ultrafine', 'insane'] or provide a string of 'rname:rmin:rmax:nrad:nang' format.
+            Here 'rname' denotes the type of radial grid and can be chosen from ['linear', 'exp',
+            'power'], 'rmin' and 'rmax' specify the first and last radial grid points in angstrom,
+            'nrad' specify the number of radial grid points, and 'nang' specify the number of
+            angular Lebedev-Laikov grid.
         k : int, optional
             The order of the switching function in Becke's weighting scheme.
         random_rotate : bool, optional
@@ -105,13 +110,7 @@ class BeckeGrid(object):
 
     @property
     def grid_type(self):
-        """Type of current grid.
-
-        Returns
-        -------
-        str
-            Specific preset types or a string of properties.
-        """
+        """Type of current grid."""
         if self._grid_type:
             return self._grid_type
         else:
@@ -126,11 +125,6 @@ class BeckeGrid(object):
         value : str
             One of preset types from ('coarse', 'medium', 'fine', 'veryfine',
             'ultrafine', 'insane') or a string of five properties split by ':'
-
-        Raises
-        ------
-        ValueError
-            Invalid input type name
         """
         valid_types = ('coarse', 'medium', 'fine', 'veryfine', 'ultrafine', 'insane')
         if value in valid_types:
@@ -153,13 +147,7 @@ class BeckeGrid(object):
 
     @property
     def rname(self):
-        """Type of the radial grid.
-
-        Returns
-        -------
-        str
-            the name of the grid type.
-        """
+        """Type of the radial grid."""
         return self._custom_type[0]
 
     @rname.setter
@@ -171,11 +159,6 @@ class BeckeGrid(object):
         value : str
             The value of radial grid name,
             valid choices are ['linear', 'exp', 'power'].
-
-        Raises
-        ------
-        ValueError
-            If the given value is not one of the above
         """
         valid_inputs = ('linear', 'exp', 'power')
         if value not in valid_inputs:
@@ -185,30 +168,12 @@ class BeckeGrid(object):
 
     @property
     def rrange(self):
-        """Specify the first and the last radial grid point in angstroms.
-
-        Returns
-        -------
-        tuple(float, float)
-            the start and stop grid point
-        """
+        """Specify the first and the last radial grid point in angstroms."""
         return self._custom_type[1:3]
 
     @rrange.setter
     def rrange(self, value):
-        """Specify the first and the last radial grid point in angstroms.
-
-        Parameters
-        ----------
-        value : TYPE
-            Description
-        value : tuple(float, float)
-
-        Raises
-        ------
-        TypeError
-            A tuple of two positive numbers in the increasing sequence.
-        """
+        """Specify the first and the last radial grid point in angstroms."""
         start, stop = value[:]
         if isinstance(start, (int, float)) and isinstance(stop, (int, float)):
             self._custom_type[1:3] = start, stop
@@ -218,29 +183,12 @@ class BeckeGrid(object):
 
     @property
     def rrad(self):
-        """Return the number of radial grid points.
-
-        Returns
-        -------
-        int
-            Number of radial grid points
-        """
+        """Return the number of radial grid points."""
         return self._custom_type[3]
 
     @rrad.setter
     def rrad(self, value):
-        """Return the number of radial grid points.
-
-        Parameters
-        ----------
-        value : int
-            Number of radial points
-
-        Raises
-        ------
-        TypeError
-            The input need to be an integer
-        """
+        """Return the number of radial grid points."""
         if not isinstance(value, int):
             raise TypeError('Given value is not an int')
         self._custom_type[3] = value
@@ -248,13 +196,7 @@ class BeckeGrid(object):
 
     @property
     def rpoint(self):
-        """Return the number of points for the angular Lebedev-Laikov grid.
-
-        Returns
-        -------
-        int
-            The number of points on the angular grid
-        """
+        """Return the number of points for the angular Lebedev-Laikov grid."""
         return self._custom_type[4]
 
     @rpoint.setter
@@ -268,13 +210,6 @@ class BeckeGrid(object):
             (6, 14, 26, 38, 50, 74, 86, 110, 146, 170, 194, 230, 266,
              302, 350, 434, 590, 770, 974, 1202, 1454, 1730, 2030,
              2354, 2702, 3074, 3470, 3890, 4334, 4802, 5294, 5810)
-
-        Raises
-        ------
-        TypeError
-            The value needs to be an integer
-        ValueError
-            The value needs to be one from the above tuple.
         """
         if not isinstance(value, int):
             raise TypeError('Given value is not an int')
@@ -290,13 +225,7 @@ class BeckeGrid(object):
 
     @property
     def grid(self):
-        """Return a grid object based on set property.
-
-        Returns
-        -------
-        BeckeMolGrid
-            The BeckeMolGrid object generated by all the given properties.
-        """
+        """Return a grid object based on set property."""
         if None in self._custom_type and self._grid_type is None:
             raise ValueError("Don't have enough info to generate a grid")
         return BeckeMolGrid(
