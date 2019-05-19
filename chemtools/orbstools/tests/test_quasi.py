@@ -4,14 +4,14 @@ try:
 except ImportError:
     from importlib.resources import path
 
-from chemtools.orbtools.mulliken import mulliken_populations
-from chemtools.orbtools.quasi import _check_input, make_mmo, project, quambo, quao
+from chemtools.orbstools.mulliken import mulliken_populations
+from chemtools.orbstools.quasi import _check_input, make_mmo, project, quambo, quao
 import numpy as np
 from numpy.testing import assert_raises
 
 
 def test_project():
-    """Test the orbtools.quasi.project."""
+    """Test the orbstools.quasi.project."""
     olp_1 = np.identity(10)
     # (trivial) projecting onto same space
     olp_1_2 = np.identity(10)
@@ -51,7 +51,7 @@ def normalize(olp, coeff):
 
 
 def test_check_input():
-    """Test the orbtools.quasi._check_input."""
+    """Test the orbstools.quasi._check_input."""
     # olp_ab_ab
     coeff_prim_ab = np.random.rand(10, 10)
     olp_ab_ab = coeff_prim_ab.T.dot(np.identity(10)).dot(coeff_prim_ab)
@@ -126,7 +126,7 @@ def test_check_input():
 
 
 def test_make_mmo():
-    """Test orbtools.quasi.make_mmo."""
+    """Test orbstools.quasi.make_mmo."""
     # olp_aao_ab
     olp_aao_ab = np.random.rand(5, 10)
     # coeff_ab_mo
@@ -159,7 +159,7 @@ def test_make_mmo():
 
 
 def test_make_mmo_old_code():
-    """Test orbtools.quasi.make_mmo against output from old code.
+    """Test orbstools.quasi.make_mmo against output from old code.
 
     Old code can be found in https://github.com/QuantumElephant/dumbo/tree/master/quasibasis.
 
@@ -179,7 +179,7 @@ def test_make_mmo_old_code():
 
 
 def test_quambo_old_code():
-    """Test orbtools.quasi.quambo against output from old code.
+    """Test orbstools.quasi.quambo against output from old code.
 
     Old code can be found in https://github.com/QuantumElephant/dumbo/tree/master/quasibasis.
 
@@ -202,7 +202,7 @@ def test_quambo_old_code():
 
 
 def test_quao_old_code():
-    """Test orbtools.quasi.quao against output from old code.
+    """Test orbstools.quasi.quao against output from old code.
 
     Old code can be found in https://github.com/QuantumElephant/dumbo/tree/master/quasibasis.
 
@@ -229,7 +229,7 @@ def test_quao_old_code():
 
 
 def test_quambo():
-    """Test orbtools.quasi.quambo against literature value for Mulliken populations.
+    """Test orbstools.quasi.quambo against literature value for Mulliken populations.
 
     References
     ----------
@@ -265,7 +265,7 @@ def test_quambo():
 
 
 def test_quao():
-    """Test orbtools.quasi.quambo against literature value for Mulliken populations.
+    """Test orbstools.quasi.quambo against literature value for Mulliken populations.
 
 
     References

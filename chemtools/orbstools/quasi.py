@@ -1,6 +1,6 @@
 """Module for making Quasiatomic orbitals."""
 import numpy as np
-from chemtools.orbtools import orthogonalization as orth
+from chemtools.orbstools import orthogonalization as orth
 
 
 def _check_input(

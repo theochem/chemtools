@@ -4,19 +4,19 @@ try:
 except ImportError:
     from importlib.resources import path
 
-from chemtools.orbtools.mulliken import (
+from chemtools.orbstools.mulliken import (
     lowdin_populations,
     mulliken_populations,
     mulliken_populations_newbasis,
 )
-from chemtools.orbtools.orthogonalization import power_symmetric
-from chemtools.orbtools.quasi import project
+from chemtools.orbstools.orthogonalization import power_symmetric
+from chemtools.orbstools.quasi import project
 import numpy as np
 from numpy.testing import assert_raises
 
 
 def test_mulliken_populations_input():
-    """Test input checks in the orbtools.mulliken.mulliken_populations."""
+    """Test input checks in the orbstools.mulliken.mulliken_populations."""
     # get random unitary matrix
     unitary = np.linalg.svd(np.random.rand(20, 20))[0]
     # get random olp_ab_ab
@@ -285,7 +285,7 @@ def test_mulliken_populations_input():
 
 
 def test_mulliken_populations():
-    """Test orbtools.mulliken.mulliken_populations."""
+    """Test orbstools.mulliken.mulliken_populations."""
     # Model system
     coeff_ab_mo = np.identity(10)
     occupations = np.array([2] * 4 + [0] * 6)
@@ -386,7 +386,7 @@ def test_mulliken_populations():
 
 
 def test_mulliken_populations_newbasis():
-    """Test orbtools.mulliken.mulliken_populations_newabasis."""
+    """Test orbstools.mulliken.mulliken_populations_newabasis."""
     with path("chemtools.data", "naclo4_coeff_ab_mo.npy") as fname:
         coeff_ab_mo = np.load(str(fname))
     with path("chemtools.data", "naclo4_olp_ab_ab.npy") as fname:
@@ -420,7 +420,7 @@ def test_mulliken_populations_newbasis():
 
 
 def test_lowdin_populations():
-    """Test orbtools.mulliken.lowdin_populations."""
+    """Test orbstools.mulliken.lowdin_populations."""
     with path("chemtools.data", "naclo4_coeff_ab_mo.npy") as fname:
         coeff_ab_mo = np.load(str(fname))
     with path("chemtools.data", "naclo4_olp_ab_ab.npy") as fname:

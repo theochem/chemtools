@@ -1,11 +1,11 @@
 """Tests for orbtools.orthogonalization."""
-import chemtools.orbtools.orthogonalization as orth
+import chemtools.orbstools.orthogonalization as orth
 import numpy as np
 from numpy.testing import assert_raises
 
 
 def test_eigh():
-    """Test orbtools.orthogonalization.eigh."""
+    """Test orbstools.orthogonalization.eigh."""
     assert_raises(TypeError, orth.eigh, np.random.rand(3, 3).tolist())
     assert_raises(TypeError, orth.eigh, np.random.rand(3, 3, 3))
     assert_raises(ValueError, orth.eigh, np.random.rand(3, 5))
@@ -38,7 +38,7 @@ def test_eigh():
 
 
 def test_svd():
-    """Test orbtools.orthogonalization.svd."""
+    """Test orbstools.orthogonalization.svd."""
     assert_raises(TypeError, orth.svd, np.random.rand(3, 3).tolist())
     assert_raises(TypeError, orth.svd, np.random.rand(3, 3, 3))
     matrix = np.random.rand(10, 10)
@@ -60,7 +60,7 @@ def test_svd():
 
 
 def test_power_symmetric():
-    """Test orbtools.orthogonalization.power_symmetric."""
+    """Test orbstools.orthogonalization.power_symmetric."""
     matrix = np.random.rand(5, 5)
     # positive semidefinite
     matrix = matrix.dot(matrix.T)

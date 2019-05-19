@@ -1,7 +1,7 @@
 """Mulliken population analysis."""
 import numpy as np
-from chemtools.orbtools.orthogonalization import power_symmetric
-from chemtools.orbtools.quasi import project
+from chemtools.orbstools.orthogonalization import power_symmetric
+from chemtools.orbstools.quasi import project
 
 
 # FIXME: bad name (since providing atom_weights will result in the population not being Mulliken)
@@ -344,7 +344,7 @@ def mulliken_populations_newbasis(
 
     See Also
     --------
-    orbtools.mulliken.mulliken_populations
+    orbstools.mulliken.mulliken_populations
 
     """
     olp_new_new = coeff_ab_new.T.dot(olp_ab_ab).dot(coeff_ab_new)
