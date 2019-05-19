@@ -28,6 +28,7 @@ import numpy as np
 
 from numpy.testing import assert_allclose
 
+from chemtools.wrappers.molecule import Molecule
 from chemtools.toolbox.densbased import DensityLocalTool
 try:
     from importlib_resources import path
@@ -40,7 +41,22 @@ def test_densbased_from_file_h2o():
     with path('chemtools.data', 'data_multiwfn36_fchk_h2o_q+0_ub3lyp_ccpvtz.npz') as fname:
         data = np.load(str(fname))
     with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as fname:
-        tool = DensityLocalTool.from_file(fname, spin='ab', index=None, points=data['coords'])
+        tool = DensityLocalTool.from_file(fname, data['coords'], spin='ab', index=None)
+    assert_allclose(tool.density, data['nuc_dens'], rtol=1.e-7, atol=0.)
+    assert_allclose(tool.gradient, data['nuc_grad'], rtol=1.e-7, atol=0.)
+    assert_allclose(tool.gradient_norm, data['nuc_grad_norm'], rtol=1.e-7, atol=0.)
+    assert_allclose(tool.laplacian, data['nuc_lap'], rtol=1.e-7, atol=0.)
+    ked_tf = 0.3 * (3.0 * np.pi**2.0)**(2.0 / 3.0) * data['nuc_dens'] ** (5. / 3.)
+    assert_allclose(tool.ked_thomas_fermi, ked_tf, rtol=1.e-7, atol=0.)
+
+
+def test_densbased_from_molecule_h2o():
+    # test against multiwfn
+    with path('chemtools.data', 'data_multiwfn36_fchk_h2o_q+0_ub3lyp_ccpvtz.npz') as fname:
+        data = np.load(str(fname))
+    with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as fname:
+        mol = Molecule.from_file(fname)
+        tool = DensityLocalTool.from_molecule(mol, data['coords'])
     assert_allclose(tool.density, data['nuc_dens'], rtol=1.e-7, atol=0.)
     assert_allclose(tool.gradient, data['nuc_grad'], rtol=1.e-7, atol=0.)
     assert_allclose(tool.gradient_norm, data['nuc_grad_norm'], rtol=1.e-7, atol=0.)

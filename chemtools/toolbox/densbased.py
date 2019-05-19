@@ -24,45 +24,69 @@
 """Density-Based Local Tools."""
 
 
-from chemtools.denstools.densbased import DensGradLapTool
 from chemtools.wrappers.molecule import Molecule
+from chemtools.denstools.densbased import DensGradLapKedTool
 
 
 __all__ = ['DensityLocalTool']
 
 
-class DensityLocalTool(DensGradLapTool):
+class DensityLocalTool(DensGradLapKedTool):
     """Density Local Tool Class."""
 
-    def __init__(self, molecule, spin='ab', index=None, points=None):
-        r"""Initialize class using instance of `Molecule` and grid points.
+    def __init__(self, dens, grad, lap, ked):
+        r"""Initialize class from arrays.
+
+        Parameters
+        ----------
+        dens : np.ndarray
+            Electron density evaluated on a set of points, :math:`\rho(\mathbf{r})`.
+        grad : np.ndarray
+            Gradient vector of electron density evaluated on a set of points,
+            :math:`\nabla \rho(\mathbf{r})`.
+        lap : np.ndarray
+            Laplacian of electron density evaluated on a set of points,
+            :math:`\nabla^2 \rho(\mathbf{r})`.
+        ked : np.ndarray
+            Positive-definite or Lagrangian kinetic energy density evaluated on a set of
+            points; :math:`\tau_\text{PD} (\mathbf{r})` or :math:`G(\mathbf{r})`.
+
+        """
+        super(DensityLocalTool, self).__init__(dens, grad, lap, ked)
+
+    @classmethod
+    def from_molecule(cls, molecule, points, spin='ab', index=None):
+        r"""Initialize class using instance of `Molecule` and points.
 
         Parameters
         ----------
         molecule : Molecule
             An instance of `Molecule` class.
-        spin
-        index
-        points : np.ndarray, optional
-            Grid points, given as a 2D array with 3 columns, used for calculating local properties.
+        points : np.ndarray
+            The (npoints, 3) array of cartesian coordinates of points.
+        spin : str, optional
+            Type of occupied spin orbitals; options are 'a', 'b' & 'ab'.
+        index : sequence, optional
+            Sequence of integers representing the index of spin orbitals.
+
         """
-        if points is None:
-            raise NotImplementedError()
-        res = molecule.compute_megga(points, spin, index)[:-1]
-        super(DensityLocalTool, self).__init__(*res)
+        return cls(*molecule.compute_megga(points, spin, index))
 
     @classmethod
-    def from_file(cls, fname, spin='ab', index=None, points=None):
-        """Initialize class from file.
+    def from_file(cls, fname, points, spin='ab', index=None):
+        r"""Initialize class from file.
 
         Parameters
         ----------
         fname : str
-            Path to molecule's files.
-        spin
-        index
-        points : np.ndarray, optional
-            Grid points, given as a 2D array with 3 columns, used for calculating local properties.
+            Path to molecule's file.
+        points : np.ndarray
+            The (npoints, 3) array of cartesian coordinates of points.
+        spin : str, optional
+            Type of occupied spin orbitals; options are 'a', 'b' & 'ab'.
+        index : sequence, optional
+            Sequence of integers representing the index of spin orbitals.
+
         """
         molecule = Molecule.from_file(fname)
-        return cls(molecule, spin, index, points)
+        return cls.from_molecule(molecule, points, spin, index)
