@@ -139,14 +139,19 @@ class BeckeGrid(object):
         return self._pseudo_numbers
 
     @property
+    def npoints(self):
+        """Number of grid points."""
+        return self._grid.points.shape[0]
+
+    @property
     def points(self):
         """Cartesian coordinates of grid points."""
         return self._grid.points
 
     @property
-    def npoints(self):
-        """Number of grid points."""
-        return self._grid.points.shape[0]
+    def weights(self):
+        """Integration weight of grid points."""
+        return self._grid.weights
 
     def integrate(self, value):
         """Integrate the property evaluated on the grid points.

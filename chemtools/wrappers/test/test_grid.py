@@ -52,6 +52,9 @@ def test_wrapper_grid_ch4():
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fpath:
         mol = Molecule.from_file(fpath)
     grid = BeckeGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, 'exp:1e-5:25:80:230')
+    assert grid.weights.ndim == 1
+    assert grid.points.shape[0] == grid.weights.shape[0]
+    assert grid.points.shape == (grid.npoints, 3)
     # check grid basics
     assert_allclose(mol.coordinates, grid.coordinates, rtol=0., atol=1.e-7)
     assert_allclose(mol.numbers, grid.numbers, rtol=0., atol=1.e-7)
@@ -64,5 +67,8 @@ def test_wrapper_grid_from_file_o2():
     with path('chemtools.data', 'o2_uhf.wfn') as fpath:
         grid = BeckeGrid.from_file(fpath, 'veryfine')
         mol = Molecule.from_file(fpath)
+    assert grid.weights.ndim == 1
+    assert grid.points.shape[0] == grid.weights.shape[0]
+    assert grid.points.shape == (grid.npoints, 3)
     # check integrate
     assert_allclose(16., grid.integrate(mol.compute_density(grid.points)), rtol=0., atol=1.e-4)
