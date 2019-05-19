@@ -40,6 +40,7 @@ Toolbox Module
 
 * Density Based Tools
 
+  * :class:`Density Local Tool <toolbox.densbased.DensityLocalTool>`
   * :class:`Noncovalent Interaction (NCI) <toolbox.interactions.NCI>`
   * :class:`Electron Localization Function (ELF) <toolbox.interactions.ELF>`
   * :class:`Localized orbital Locator (LOL) <toolbox.interactions.LOL>`
@@ -47,7 +48,7 @@ Toolbox Module
 
 * Orbital Based Tools
 
-  * :class:`Orbital Local Tool <toolbox.orbbased.OrbitalLocalTool>`
+  * :class:`Orbital Local Tool <toolbox.orbsbased.OrbitalLocalTool>`
 
 
 Conceptual Module
@@ -100,7 +101,7 @@ Wrappers Module
 ===============
 
 * :class:`Molecule <wrappers.molecule.Molecule>`
-* :class:`BeckeGrid <wrappers.beckegrid.BeckeGrid>`
+* :class:`BeckeGrid <wrappers.grid.BeckeGrid>`
 * :class:`UniformGrid <utils.cube.UniformGrid>`
 
 
@@ -127,11 +128,12 @@ Output Module
       toolbox.conceptual.GlobalConceptualDFT
       toolbox.conceptual.LocalConceptualDFT
       toolbox.conceptual.CondensedConceptualDFT
+      toolbox.densbased.DensityLocalTool
       toolbox.interactions.NCI
       toolbox.interactions.ELF
       toolbox.interactions.LOL
       toolbox.kinetic.KED
-      toolbox.orbbased.OrbitalLocalTool
+      toolbox.orbsbased.OrbitalLocalTool
       denstools.densbased.DensTool
       denstools.densbased.DensGradTool
       denstools.densbased.DensGradLapTool
@@ -154,7 +156,7 @@ Output Module
       conceptual.mixed.MixedCondensedTool
       topology.eigenvalues.EigenValueTool
       wrappers.molecule.Molecule
-      wrappers.beckegrid.BeckeGrid
+      wrappers.grid.BeckeGrid
       outputs.vmd.print_vmd_script_nci
       outputs.vmd.print_vmd_script_isosurface
       outputs.vmd.print_vmd_script_multiple_cube
