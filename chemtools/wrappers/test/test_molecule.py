@@ -88,13 +88,6 @@ def check_horton_molecule_raises(mol):
     assert_raises(ValueError, mol.compute_esp, points, spin="ab", output=np.zeros(3))
     assert_raises(ValueError, mol.compute_esp, points, spin="b", output=np.zeros((2, 4)))
     assert_raises(ValueError, mol.compute_ked, points, "a", None, np.zeros(3))
-    # check not implemented erros
-    assert_raises(NotImplementedError, mol.compute_gradient, points, "ab", [0, 1], None)
-    assert_raises(NotImplementedError, mol.compute_gradient, points, "a", [5, 7], None)
-    assert_raises(NotImplementedError, mol.compute_gradient, points, "b", [20], None)
-    assert_raises(NotImplementedError, mol.compute_hessian, points, "ab", [32, 33], None)
-    assert_raises(NotImplementedError, mol.compute_esp, points, "a", [33], None)
-    assert_raises(NotImplementedError, mol.compute_ked, points, "a", [30])
 
 
 def test_horton_molecule_check_raises_fchk_ch4_uhf_ccpvdz():
