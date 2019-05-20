@@ -101,11 +101,11 @@ class UniformGrid(object):
         ----------
         molecule: instance of `Molecule`
             Instance of Molecule class.
-        spacing : float, default=0.2
+        spacing : float, optional
             Increment between grid points along `x`, `y` and `z` direction.
-        extension : float, default=5.0
+        extension : float, optional
             The extension of the cube on each side of the molecule.
-        rotate : bool, default=True
+        rotate : bool, optional
             When True, the molecule is rotated so the axes of the cube file are
             aligned with the principle axes of rotation of the molecule.
         """
@@ -174,12 +174,12 @@ class UniformGrid(object):
         Parameters
         ----------
         fname : str
-            file name with, readable with HORTON's IOData.
-        spacing : float, default=0.2
+            Path to molecule's file.
+        spacing : float, optional
             Increment between grid points along `x`, `y` and `z` direction.
-        extension : float, default=5.0
+        extension : float, optional
             The extension of the cube on each side of the molecule.
-        rotate : bool, default=True
+        rotate : bool, optional
             When True, the molecule is rotated so the axes of the cube file are
             aligned with the principle axes of rotation of the molecule.
         """
@@ -297,7 +297,7 @@ class UniformGrid(object):
 
         Parameters
         ----------
-        method : str, default='R0'
+        method : str, optional
             The method for computing the integration weights at every point on the grid. Options:
 
                 - 'R' method perfors rectangle/trapezoidal rule, without assuming that the function
