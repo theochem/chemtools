@@ -166,15 +166,16 @@ class MOTBasedTool(object):
             Value of MO iso-surface used in VMD script.
         grid : UniformGrid, optional
            Instance of UniformGrid used for computation and generating cube file(s).
+           If None, a cubic grid is constructed from molecule with spacing=0.2 & extension=5.0.
 
         """
         if spin not in ['a', 'b']:
             raise ValueError('Argument spin can only be "a" or "b".')
         if index is not None and not isinstance(index, int):
-            raise ValueError('Argument index is either None or be an integer for visualization.'
+            raise ValueError('Argument index is either None or an integer for visualization. '
                              'Given index={0}'.format(index))
         if grid is None:
-            grid = UniformGrid.from_molecule(self._molecule, spacing=0.2, extension=7.0, rotate=True)
+            grid = UniformGrid.from_molecule(self._molecule, spacing=0.2, extension=5.0, rotate=True)
         elif not isinstance(grid, UniformGrid):
             raise ValueError('Argument grid should be a UniformGrid to generate cube files.')
 
@@ -183,6 +184,7 @@ class MOTBasedTool(object):
             index = range(1, self.homo_index[spin_index[spin]] + 1)
         else:
             index = [index]
+
         for mo_index in index:
             vmdname = fname + '_mo{0}.vmd'.format(mo_index)
             cubname = fname + '_mo{0}.cube'.format(mo_index)
