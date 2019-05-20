@@ -244,10 +244,11 @@ def test_vmd_script_vector_field_script():
          '#\n')
 
 
-def test_print_vmd_script_isosurface_raises():
-    # check TypeError:
-    assert_raises(TypeError, vmd.print_vmd_script_isosurface, 'test.vmd', 'iso.cube',
-                  colorscheme=[1], negative=True)
+# should be removed because default values were set for colorsheme if negative=True
+# def test_print_vmd_script_isosurface_raises():
+#     # check TypeError:
+#     assert_raises(TypeError, vmd.print_vmd_script_isosurface, 'test.vmd', 'iso.cube',
+#                   colorscheme=[1], negative=True)
 
 
 def test_print_vmd_script_isosurface():
