@@ -505,12 +505,13 @@ def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5
     elif negative and hasattr(colorscheme, '__iter__') and len(colorscheme) == 2:
         pos_color, neg_color = colorscheme
     else:
-        raise TypeError('To plot the negative of the isosurface with integer color scheme, '
-                        'two integers must be given. The first integer corresponds to the '
-                        'ColorID for the positive surface, and the second for the negative '
-                        'surface.'
-                        'If the negative is not plotted, then colorscheme must be given as an '
-                        'integer or a string')
+        pos_color, neg_color = [0, 1]
+        # raise TypeError('To plot the negative of the isosurface with integer color scheme, '
+        #                 'two integers must be given. The first integer corresponds to the '
+        #                 'ColorID for the positive surface, and the second for the negative '
+        #                 'surface.'
+        #                 'If the negative is not plotted, then colorscheme must be given as an '
+        #                 'integer or a string')
 
     output = _vmd_script_start()
     if colorfile is not None:
