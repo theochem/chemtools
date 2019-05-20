@@ -32,6 +32,7 @@ from chemtools.scripts.chemtools_conceptual import (
     parse_args_local)
 from chemtools.scripts.chemtools_nci import main_nci, parse_args_nci
 from chemtools.scripts.chemtools_elf import main_elf, parse_args_elf
+from chemtools.scripts.chemtools_lol import main_lol, parse_args_lol
 
 
 __all__ = ['main']
@@ -41,6 +42,7 @@ __all__ = ['main']
 SCRIPT_MAIN = {
     'nci': main_nci,
     'elf': main_elf,
+    'lol': main_lol,
     'lcdft': main_conceptual_local,
     'gcdft': main_conceptual_global,
 }
@@ -70,6 +72,10 @@ def parse_args_chemtools():
     parser_elf = subparser.add_parser(
         'elf', help='Electron Localization Function (ELF).')
     parse_args_elf(parser_elf)
+
+    parser_lol = subparser.add_parser(
+        'lol', help='Localized Orbital Locator (LOL).')
+    parse_args_lol(parser_lol)
 
     # sub parser for lcdft functions
     parser_nci = subparser.add_parser(
