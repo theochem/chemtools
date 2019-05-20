@@ -31,12 +31,16 @@ from chemtools.scripts.chemtools_conceptual import (
     main_conceptual_global, main_conceptual_local, parse_args_global,
     parse_args_local)
 from chemtools.scripts.chemtools_nci import main_nci, parse_args_nci
+from chemtools.scripts.chemtools_elf import main_elf, parse_args_elf
+
 
 __all__ = ['main']
+
 
 # basic swtich dictionary for storing all main callable function and subparser
 SCRIPT_MAIN = {
     'nci': main_nci,
+    'elf': main_elf,
     'lcdft': main_conceptual_local,
     'gcdft': main_conceptual_global,
 }
@@ -62,6 +66,10 @@ def parse_args_chemtools():
     parser_nci = subparser.add_parser(
         'nci', help='visualize non-covalent interactions')
     parse_args_nci(parser_nci)
+
+    parser_elf = subparser.add_parser(
+        'elf', help='Electron Localization Function (ELF).')
+    parse_args_elf(parser_elf)
 
     # sub parser for lcdft functions
     parser_nci = subparser.add_parser(
