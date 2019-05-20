@@ -1,5 +1,5 @@
-.. _examples_orbital_tools:
+.. _examples_mot:
 
-Orbital-Based Local Descriptors
--------------------------------
+Molecular Orbital Theory Based Local Tools
+------------------------------------------
 
