@@ -186,7 +186,7 @@ class MOTBasedTool(object):
         for mo_index in index:
             vmdname = fname + '_mo{0}.vmd'.format(mo_index)
             cubname = fname + '_mo{0}.cube'.format(mo_index)
-            mo_value = self.compute_molecular_orbital(grid.points, spin=spin, index=mo_index)
+            mo_value = self.compute_orbital_expression(grid.points, spin=spin, index=mo_index)
             grid.generate_cube(cubname, mo_value)
             print_vmd_script_isosurface(vmdname, cubname, isosurf=isosurf, negative=True,
                                         material='BlownGlass')
