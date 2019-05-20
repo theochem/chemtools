@@ -68,7 +68,7 @@ Conda
 ~~~~~
 For ``Linux`` and ``MacOS`` users, you can download
 `miniconda <https://docs.conda.io/en/latest/miniconda.html>`_ to manage the
-dependencies. Either version (2.7 or 3.7) will be fine.
+dependencies. Either version (2.7 or 3.7) will work.
 
 To activate conda base in system:
 
@@ -88,11 +88,12 @@ To activate ``ChemTools`` virtual environment:
 
     conda activate chemtools
 
-To install HORTON:
+To install HORTON and Git-LFS:
 
 .. code-block:: bash
 
     conda install -c theochem horton
+    conda install git-lfs
 
 To deactivate the virtual environment:
 
@@ -139,3 +140,32 @@ To remove ChemTools from your system, run:
 .. code-block:: bash
 
     pip uninstall chemtools
+
+Intro to VMD
+============
+
+Go to `VMD <https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=VMD>`_ ,
+select the link based on your system OS. Then you will be brought to the registration
+page. Shortly after it's done, install the download file to the proper position on your laptop.
+
+For ``macOS`` and ``Linux`` user, you can add the path to your bash profile
+(``.bashrc`` on **Linux**, or ``.bash_profile`` on **macOS**) at your home directory
+for quick access if it's not on your path.
+
+.. code-block:: bash
+
+    alias vmd="The/path/to/vmd/command/in/your/system"
+
+Usages
+~~~~~~
+
+* To visualize in ``VMD``:
+
+.. code-block:: bash
+
+    vmd -e script.vmd
+
+* To save the state, you can click ``File`` > ``Save Visualizaiton State``.
+
+* If you'd like to save the picture during the visualization, you
+can click ``File`` > ``Render`` > ``Filename`` > ``Start Rendering``.
