@@ -120,6 +120,12 @@ Output Module
   * :func:`plot_scatter <outputs.plot.plot_scatter>`
 
 
+Utilities
+=========
+
+* :func:`plane_mesh <utils.mesh.plane_mesh>`
+
+
 
 .. Silent api generation
     .. autosummary::
@@ -163,4 +169,5 @@ Output Module
       outputs.vmd.print_vmd_script_vector_field
       outputs.plot.plot_scatter
       utils.cube.UniformGrid
+      utils.mesh.plane_mesh
 
