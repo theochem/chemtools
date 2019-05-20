@@ -50,7 +50,8 @@ def _vmd_script_start():
             'display nearclip set 0.000000\n'
             'display shadow off\n'
             'display rendermode GLSL\n'
-            'color Name {C} gray\n'
+            'color Element {C} gray\n'
+            'color Element {Cl} green\n'
             'axes location Off\n'
             'light 2 on\n'
             'light 3 on\n'
@@ -109,7 +110,7 @@ def _vmd_script_molecule(representation, *mol_files):
     else:
         raise ValueError('Argument representation is not recognized.')
     output += ('mol delrep 0 top\n'
-               'mol color Name\n'
+               'mol color Element\n'
                'mol selection {{all}}\n'
                'mol material Opaque\n'
                'mol addrep top\n'
