@@ -255,6 +255,8 @@ class Molecule(object):
             index = np.copy(np.asarray(index)) - 1
             if index.ndim == 0:
                 index = np.array([index])
+            if np.any(index < 0):
+                raise ValueError('Argument index={0} cannot be less than one!'.format(index + 1))
 
         # allocate output array
         if output is None:
