@@ -147,11 +147,31 @@ class MOTBasedTool(object):
         raise NotImplementedError
 
     def generate_scripts(self, fname, spin='a', index=None, isosurf=0.05, grid=None):
+        """Generate VMD script(s) and cube file(s) to visualize MO iso-surface of given orbitals.
 
+        Parameters
+        ----------
+        fname : str
+            A string representing the path to a fname of generated files.
+            The VMD script and cube file will be named fname_mo{index}.vmd and
+            fname_mo{index}.cube, respectively.
+        spin : str, optional
+           The type of occupied spin orbitals. Choose either 'a' or 'b'.
+        index : int, optional
+           Integer representing the index of spin orbital to visualize. Spin orbitals are each
+           indexed from 1 to :attr:`nbasis`. If None, files for visualizing all orbitals are
+           generated.
+        isosurf : float, optional
+            Value of MO iso-surface used in VMD script.
+        grid : UniformGrid, optional
+           Instance of UniformGrid used for computation and generating cube file(s).
+
+        """
         if spin not in ['a', 'b']:
             raise ValueError('Argument spin can only be "a" or "b".')
         if index is not None and not isinstance(index, int):
-            raise ValueError('Argument index is either None or be an integer for visualization.')
+            raise ValueError('Argument index is either None or be an integer for visualization.'
+                             'Given index={0}'.format(index))
         if grid is None:
             grid = UniformGrid.from_molecule(self._molecule, spacing=0.2, extension=7.0, rotate=True)
         elif not isinstance(grid, UniformGrid):
