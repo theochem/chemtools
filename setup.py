@@ -46,4 +46,19 @@ setup(
     install_requires=[
         'numpy>=1.15', 'matplotlib', 'Pillow', 'Image', 'sympy',
         'scipy', 'importlib_resources; python_version < "3.7"',
-    ])
+        'nose',
+    ],
+    extras_require={
+        'doc': [
+            'sphinx',
+            'sphinxcontrib-bibtex',
+            'ipython',
+        ],
+        'dev': [
+            'pylint',
+            'pycodestyle',
+            'pydocstyle',
+            'coverage',
+        ]
+    }
+)

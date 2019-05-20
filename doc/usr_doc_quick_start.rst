@@ -77,8 +77,7 @@ It is more convenient to make the script executable (which only needs to be done
      $ chmod +x script.py
      $ ./script.py
 
-Please see :ref:`Tutorials <tutorials>` to learn more about various functionality of ChemTools library
-and :ref:`Examples Gallery <examples gallery>` for specific examples and scripts.
+Please see :ref:`Examples Gallery <examples gallery>` to learn more about various functionality of ChemTools library
 
 
 ChemTools as Python Scripts

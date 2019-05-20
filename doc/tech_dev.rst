@@ -51,13 +51,8 @@ You can build ChemTools with the commands:
 
 .. code-block:: bash
 
-   pip install -e chemtools
+   pip install -e .[dev]
 
-If you'd like to remove ChemTools from your path but keep your ChemTools repo,
-
-.. code-block:: bash
-
-   pip uninstall chemtools
 
 Running Tests
 =============
@@ -138,25 +133,10 @@ packages are also needed:
 
 To install these dependencies,
 
-* **Ubuntu Linux 16.04**
+.. code-block:: bash
 
-  .. code-block:: bash
+   pip install -e .[doc]
 
-     sudo apt-get install python-sphinx ipython
-     pip install --user --upgrade sphinxcontrib-bibtex
-
-* **Ubuntu Linux 15.04 & 14.04**
-
-  .. code-block:: bash
-
-     pip install --user --upgrade sphinx sphinxcontrib-bibtex ipython
-
-* **Mac OS**
-
-  .. code-block:: bash
-
-     sudo port install py27-sphinx py27-ipython
-     pip install --user --upgrade sphinxcontrib-bibtex
 
 
 The Sphinx Read-The-Docs theme as well as Sphinx Gallery customized for ChemTools can be
@@ -164,10 +144,10 @@ obtained by cloning the repository as a submodule from ChemTools parent director
 
 .. code-block:: bash
 
-   git submodule update --init doc/_themes/sphinx_rtd_theme
-   git submodule update --init doc/sphinxext/sphinx-gallery
+    git submodule update --init --recursive
 
-Also, make sure that the :ref:`examples files are downloaded <usr_lfs_installation>`.
+
+.. Also, make sure that the :ref:`examples files are downloaded <usr_lfs_installation>`.
 
 To automatically generate API documentation and generate HTML:
 
