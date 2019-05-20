@@ -68,7 +68,7 @@ class MolecularGrid(object):
 
         self._grid = BeckeMolGrid(self.coordinates, self.numbers, self.pseudo_numbers,
                                   agspec=self.specification, k=k,
-                                  random_rotate=rotate, mode='discard')
+                                  random_rotate=rotate, mode='keep')
 
     @classmethod
     def from_molecule(cls, molecule, specification='medium', k=3, rotate=False):
@@ -123,6 +123,9 @@ class MolecularGrid(object):
         """
         mol = Molecule.from_file(fname)
         return cls.from_molecule(mol, specification, k, rotate)
+
+    def __getattr__(self, item):
+        return getattr(self._grid, item)
 
     @property
     def coordinates(self):

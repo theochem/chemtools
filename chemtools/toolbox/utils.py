@@ -26,9 +26,10 @@
 
 import numpy as np
 
-from horton import BeckeMolGrid, ProAtomDB
+from horton import ProAtomDB
 from horton.scripts.wpart import wpart_schemes
 
+from chemtools.wrappers.grid import MolecularGrid
 from chemtools.wrappers.molecule import Molecule
 
 
@@ -115,8 +116,8 @@ def get_molecular_grid(molecule, grid=None):
     ----------
     molecule : Molecule or Sequence of Molecule
         Instance of Molecule class, or sequence of Molecule class instances.
-    grid : BeckeMolGrid, optional
-        Instance or BeckeMolGrid. If `None`, a default `BeckeMolGrid` is returned.
+    grid : MolecularGrid, optional
+        Instance or MolecularGrid. If `None`, a default `MolecularGrid` is returned.
     """
     # check grid or make grid
     if grid is not None and isinstance(molecule, Molecule):
@@ -142,8 +143,7 @@ def get_molecular_grid(molecule, grid=None):
         number = get_matching_attr(molecule, "numbers", 1.e-8)
         pseudo = get_matching_attr(molecule, "pseudo_numbers", 1.e-8)
         coords = get_matching_attr(molecule, "coordinates", 1.e-4)
-        grid = BeckeMolGrid(coords, number, pseudo, agspec="insane", random_rotate=False,
-                            mode="keep")
+        grid = MolecularGrid(coords, number, pseudo, specification="insane", rotate=False)
     return grid
 
 

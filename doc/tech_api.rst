@@ -108,7 +108,7 @@ Wrappers Module
 ===============
 
 * :class:`Molecule <wrappers.molecule.Molecule>`
-* :class:`BeckeGrid <wrappers.grid.BeckeGrid>`
+* :class:`MolecularGrid <wrappers.grid.MolecularGrid>`
 * :class:`UniformGrid <utils.cube.UniformGrid>`
 
 
@@ -170,7 +170,7 @@ Utilities
       conceptual.mixed.MixedCondensedTool
       topology.eigenvalues.EigenValueTool
       wrappers.molecule.Molecule
-      wrappers.grid.BeckeGrid
+      wrappers.grid.MolecularGrid
       outputs.vmd.print_vmd_script_nci
       outputs.vmd.print_vmd_script_isosurface
       outputs.vmd.print_vmd_script_multiple_cube

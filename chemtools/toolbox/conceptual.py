@@ -30,9 +30,8 @@ compute various conceptual density functional theory (DFT) descriptive tools.
 
 import logging
 
-from horton import BeckeMolGrid
-
 from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers.grid import MolecularGrid
 from chemtools.toolbox.utils import check_arg_molecule, get_matching_attr
 from chemtools.toolbox.utils import get_dict_energy, get_dict_density, get_dict_population
 from chemtools.conceptual.linear import LinearGlobalTool, LinearLocalTool, LinearCondensedTool
@@ -463,8 +462,8 @@ class CondensedConceptualDFT(BaseConceptualDFT):
         # check molecule
         molecule = check_arg_molecule(molecule)
         # check type of grid
-        if "grid" in kwargs.keys() and not isinstance(kwargs["grid"], BeckeMolGrid):
-            raise ValueError("Currently, only 'BeckeMolGrid' is supported for condensing!")
+        if "grid" in kwargs.keys() and not isinstance(kwargs["grid"], MolecularGrid):
+            raise ValueError("Currently, only 'MolecularGrid' is supported for condensing!")
         # get atomic number & coordinates
         numbers = get_matching_attr(molecule, "numbers", 1.e-8)
         coords = get_matching_attr(molecule, "coordinates", 1.e-4)
