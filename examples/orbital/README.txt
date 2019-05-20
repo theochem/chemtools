@@ -1,5 +1,5 @@
 .. _examples_mot:
 
-Molecular Orbital Theory Based Local Tools
-------------------------------------------
+Molecular Orbital (MO) Theory Based Local Tools
+-----------------------------------------------
 
