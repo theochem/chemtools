@@ -43,10 +43,14 @@ The following dependencies will be necessary for ChemTools to build properly,
 Installation
 ------------
 
-To install ChemTools :
-
+To install HORTON with conda:
 ```bash
-python ./setup install --user
+conda install -c theochem horton=2.1.0
+```
+
+To install chemtools:
+```bash
+pip install .
 ```
 
 Check our website for more detailed

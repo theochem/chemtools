@@ -27,8 +27,14 @@
 Installation
 ############
 
-Downloading Code
+Supported System
 ================
+ChemTools is available on ``Linux`` and ``MacOS`` with ``Python 2.7``.
+In the future release, we will support ``Windows 10`` and ``Python 3.6+``.
+
+
+Source Code
+===========
 
 The latest code can be obtained through Github (private at present),
 
@@ -52,137 +58,63 @@ The following dependencies will be necessary for ChemTools to build properly,
 * Matplotlib >= 1.0: http://matplotlib.org/
 * Nosetests >= 1.1.2: http://readthedocs.org/docs/nose/en/latest/
 * HORTON >= 2.0.1: http://theochem.github.io/horton/2.0.1/index.html
-* :ref:`Git LFS <usr_lfs_installation>` >= 2.0.1: https://git-lfs.github.com/
+* Git-LFS >= 2.0.1: https://git-lfs.github.com/
 
 See :ref:`Documentation Dependencies <usr_doc>` for the dependencies
 required for building the documentations.
+All dependencies are recommanded to install through Conda.
 
+Conda
+~~~~~
+For ``Linux`` and ``MacOS`` users, you can download
+`miniconda <https://docs.conda.io/en/latest/miniconda.html>`_ to manage the
+dependencies. Either version (2.7 or 3.7) will be fine.
 
-Python Dependencies
-~~~~~~~~~~~~~~~~~~~
-
-To install the first seven dependencies (Python related dependencies):
-
-* **Ubuntu Linux 16.04**
-
-  .. code-block:: bash
-
-     sudo apt-get install python-dev python-pip python-numpy python-scipy python-sympy \
-                  python-matplotlib python-nose
-
-* **Ubuntu Linux 15.04 & 14.04**
-
-  .. code-block:: bash
-
-     sudo apt-get install python-dev python-pip python-numpy python-scipy python-sympy \
-                  python-matplotlib python-nose
-     pip install --user --upgrade numpy scipy sympy matplotlib nose
-
-* **Mac OS (using MacPorts)**
-
-  .. code-block:: bash
-
-     sudo port install python27; sudo port select --set python python27
-     sudo port install py27-nose; sudo port select --set nosetests nosetests27
-     sudo port install py27-numpy py27-scipy py27-sympy py27-matplotlib
-     sudo port install py27-pip; sudo port select --set pip pip27
-
-* **All other systems**
-
-  All the systems compatible with `Docker <https://www.docker.com/>`_ can run
-  ChemTools in the pre-build container. Refer `this page <https://www.docker.com/community-edition>`_
-  for Docker installation guide. To install ChemTools container, you can run
-
-  .. code-block:: bash
-
-     docker pull tczorro/chemtools:0.9.0  # normal 0.9.0 version
-     docker run -it tczorro/chemtools:0.9.0  # enter linux bash environment
-
-  Or, if you prefer using Jupyter, you can download Jupyter version Chemtools and have the
-  notebook webpage forwarded to your local machine,
-
-  .. code-block:: bash
-
-     docker pull tczorro/chemtools:0.9.0_jupyter  # 0.9.0 version with jupyter
-     docker run -p 8888:8888 tczorro/chemtools:0.9.0_jupyter # forward jupyter notebook to host machine
-
-  Then copy the ``http`` link to your browser.
-
-HORTON
-~~~~~~
-
-To install HORTON, **Linux** users can follow the instructions from `Download and Install
-<http://theochem.github.io/horton/2.0.1/user_download_and_install_linux.html>`_ of HORTON's documentation.
-**Mac OS** users can install HORTON with MacPorts directly:
+To activate conda base in system:
 
 .. code-block:: bash
 
-   sudo port install horton
+    conda activate
 
+To create a virtual environment for ChemTools:
 
-.. _usr_lfs_installation:
+.. code-block:: bash
 
-Git LFS
-~~~~~~~
+    conda create -n chemtools python=2.7
 
-`Git Large File Storage (LFS) <https://git-lfs.github.com/>`_ is used to store files that are not
-part of the ChemTools code, but are used in some ways, such as generating the examples in the
-documentation.
-These files need to be downloaded separately, for example, if you would like to run the example
-scripts, go through tutorials (using exactly the same files used) or make Chemtools HTML with
-sphinx.
+To activate ``ChemTools`` virtual environment:
 
-To install Git LFS,
+.. code-block:: bash
 
-* **Mac OS**
+    conda activate chemtools
 
-  You can install LFS with MacPorts
+To install HORTON:
 
-  .. code-block:: bash
+.. code-block:: bash
 
-     sudo port install git-lfs
+    conda install -c theochem horton
 
-  Or Homebrew
+To deactivate the virtual environment:
 
-  .. code-block:: bash
+.. code-block:: bash
 
-     brew install git-lfs
-
-* **Linux OS**
-
-  .. code-block:: bash
-
-     cd your_download_directory
-     wget https://github.com/git-lfs/git-lfs/releases/download/v2.0.1/git-lfs-linux-amd64-2.0.1.tar.gz
-     tar -zxvf git-lfs-linux-amd64-2.0.1.tar.gz
-     cd git-lfs-2.0.1
-     ./install.sh
-
-.. _usr_lfs_files:
-
-  To download the examples files,
-
-  .. code-block:: bash
-
-     git lfs pull
-
-
-  To get a list of all the files tracked with Git LFS,
-
-  .. code-block:: bash
-
-     git lfs ls-files
+    conda deactivate
 
 
 Installation
 ============
-
-To install ChemTools run:
+Before installing ChemTools, make sure you are in the ``chemtools`` conda
+environment. To install ChemTools to your system, run:
 
 .. code-block:: bash
 
-  ./setup.py install --user
+    pip install .
 
+Or, to install ChemTools inplace as an editable package, run:
+
+.. code-block:: bash
+
+    pip install -e .
 
 .. _usr_testing:
 
@@ -198,3 +130,12 @@ automatic tests:
 
 At this stage, some ``UserWarning`` messages are printed in between tests which is expected.
 However, no test should fail.
+
+Uninstallation
+==============
+
+To remove ChemTools from your system, run:
+
+.. code-block:: bash
+
+    pip uninstall chemtools
