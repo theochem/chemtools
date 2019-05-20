@@ -40,7 +40,7 @@ The latest code can be obtained through Github (private at present),
 
 .. code-block:: bash
 
-  git clone https://github.com/QuantumElephant/chemtools.git chemtools
+  $ git clone https://github.com/theochem/chemtools.git chemtools
 
 
 .. _usr_py_depend:
@@ -74,32 +74,32 @@ To activate conda base in system:
 
 .. code-block:: bash
 
-    conda activate
+    $ conda activate
 
 To create a virtual environment for ChemTools:
 
 .. code-block:: bash
 
-    conda create -n chemtools python=2.7
+    $ conda create -n chemtools python=2.7
 
 To activate ``ChemTools`` virtual environment:
 
 .. code-block:: bash
 
-    conda activate chemtools
+    $ conda activate chemtools
 
 To install HORTON and Git-LFS:
 
 .. code-block:: bash
 
-    conda install -c theochem horton
-    conda install git-lfs
+    $ conda install -c theochem horton
+    $ conda install git-lfs
 
 To deactivate the virtual environment:
 
 .. code-block:: bash
 
-    conda deactivate
+    $ conda deactivate
 
 
 Installation
@@ -109,13 +109,13 @@ environment. To install ChemTools to your system, run:
 
 .. code-block:: bash
 
-    pip install .
+    $ pip install .
 
 Or, to install ChemTools inplace as an editable package, run:
 
 .. code-block:: bash
 
-    pip install -e .
+    $ pip install -e .
 
 .. _usr_testing:
 
@@ -127,7 +127,7 @@ automatic tests:
 
 .. code-block:: bash
 
-  nosetests -v chemtools
+  $ nosetests -v chemtools
 
 At this stage, some ``UserWarning`` messages are printed in between tests which is expected.
 However, no test should fail.
@@ -139,7 +139,7 @@ To remove ChemTools from your system, run:
 
 .. code-block:: bash
 
-    pip uninstall chemtools
+    $ pip uninstall chemtools
 
 Intro to VMD
 ============
@@ -163,9 +163,8 @@ Usages
 
 .. code-block:: bash
 
-    vmd -e script.vmd
+    $ vmd -e script.vmd
 
 * To save the state, you can click ``File`` > ``Save Visualizaiton State``.
-
-* If you'd like to save the picture during the visualization, you
-can click ``File`` > ``Render`` > ``Filename`` > ``Start Rendering``.
+* If you'd like to save the picture during the visualization,
+  you can click ``File`` > ``Render`` > ``Filename`` > ``Start Rendering``

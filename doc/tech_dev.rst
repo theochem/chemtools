@@ -43,7 +43,7 @@ We use github to host our repository. You can download our
 
 .. code-block:: bash
 
-   git clone https://github.com/QuantumElephant/chemtools.git chemtools
+   $ git clone https://github.com/QuantumElephant/chemtools.git chemtools
 
 For developer, it is more convenient to build ChemTools in place. Before you build
 ChemTools, ensure you have all the required :ref:`dependencies <usr_py_depend>` installed.
@@ -51,7 +51,7 @@ You can build ChemTools with the commands:
 
 .. code-block:: bash
 
-   pip install -e .[dev]
+   $ pip install -e .[dev]
 
 
 Running Tests
@@ -62,7 +62,7 @@ working properly:
 
 .. code-block:: bash
 
-   nosetests -v chemtools
+   $ nosetests -v chemtools
 
 At this stage, some ``UserWarning`` messages are printed in between tests which is expected.
 However, no test should fail.
@@ -81,13 +81,13 @@ on github, make some changes, and then make a `Pull request`:
 
   .. code-block:: bash
 
-     git remote add your_remote_name git@github.com:YourAccount/chemtools.git
+     $ git remote add your_remote_name git@github.com:YourAccount/chemtools.git
 
 * Create a branch to hold your changes:
 
   .. code-block:: bash
 
-     git checkout -b your_feature_branch_name
+     $ git checkout -b your_feature_branch_name
 
 * Include your name and email in the ``AUTHORS`` file at the root directory of ChemTools.
   Ensure the name and email are the same as your git config. You can check your
@@ -95,16 +95,16 @@ on github, make some changes, and then make a `Pull request`:
 
   .. code-block:: bash
 
-     git config user.name
-     git config user.email
+     $ git config user.name
+     $ git config user.email
 
 * Work on this branch locally and make some changes. When you've done editing,
   use the command:
 
   .. code-block:: bash
 
-     git add files_you_modified
-     git commit
+     $ git add files_you_modified
+     $ git commit
 
   to write down the changes your made and save it.
 
@@ -112,7 +112,7 @@ on github, make some changes, and then make a `Pull request`:
 
   .. code-block:: bash
 
-     git push your_remote_name your_feature_branch_name
+     $ git push your_remote_name your_feature_branch_name
 
 * Finally, go to your forked github repo page, click ``Pull request`` to send your
   changes. All the changes need to pass the automatic quality test before your
@@ -135,7 +135,7 @@ To install these dependencies,
 
 .. code-block:: bash
 
-   pip install -e .[doc]
+   $ pip install -e .[doc]
 
 
 
@@ -144,7 +144,7 @@ obtained by cloning the repository as a submodule from ChemTools parent director
 
 .. code-block:: bash
 
-    git submodule update --init --recursive
+    $ git submodule update --init --recursive
 
 
 .. Also, make sure that the :ref:`examples files are downloaded <usr_lfs_installation>`.
@@ -153,23 +153,23 @@ To automatically generate API documentation and generate HTML:
 
 .. code-block:: bash
 
-   cd doc
-   make clean
-   make html
+   $ cd doc
+   $ make clean
+   $ make html
 
 To open the documentation in your default browser, either click on ``_build/html/index.html``
 file directly, or run the command below from terminal:
 
 .. code-block:: bash
 
-   open _build/html/index.html
+   $ open _build/html/index.html
 
 In case this command did not work, for example on Ubuntu 16.04 you may get a message like **"Couldn't get a
 file descriptor referring to the console"**, try:
 
 .. code-block:: bash
 
-   see _build/html/index.html
+   $ see _build/html/index.html
 
 
 Quality Assurance
@@ -191,7 +191,7 @@ Then, download the quality assurance code by cloning the corresponding submodule
 
 .. code-block:: bash
 
-   git submodule update --init tools/inspector
+   $ git submodule update --init tools/inspector
 
 And, run the module's bash script to setup some pre-commit hooks and copy files to run the quality assurance
 scripts individually:
@@ -199,9 +199,9 @@ scripts individually:
 .. code-block:: bash
 
    # it is installed in the relative path
-   cd tools/inspector
-   ./install.sh
-   cd ../..
+   $ cd tools/inspector
+   $ ./install.sh
+   $ cd ../..
 
 At this stage, the quality assurance tests can be simulated from the ChemTools parent directory.
 For example to run ``pylint`` check,
@@ -209,14 +209,14 @@ For example to run ``pylint`` check,
 .. code-block:: bash
 
    # from ChemTools parent directory
-   ./tools/inspector/qa/simulate_trapdoor_pr.py tools/inspector/qa/trapdoor_pylint.py
+   $ ./tools/inspector/qa/simulate_trapdoor_pr.py tools/inspector/qa/trapdoor_pylint.py
 
 To run all of the quality assurance scripts,
 
 .. code-block:: bash
 
    # from ChemTools parent directory
-   for i in tools/inspector/qa/trapdoor_*; do tools/inspector/qa/simulate_trapdoor_pr.py $i; done
+   $ for i in tools/inspector/qa/trapdoor_*; do tools/inspector/qa/simulate_trapdoor_pr.py $i; done
 
 Note that you should be developing on a feature (not master) branch and merging/rebasing to the
 updated master when complete. There should be also no uncommitted changes when running these scripts.
