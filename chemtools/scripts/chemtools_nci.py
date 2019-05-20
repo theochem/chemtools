@@ -135,8 +135,9 @@ def main_nci(args):
         cube = UniformGrid.from_cube(args.cube)
     elif len(args.cube.split(',')) == 2:
         # make a cubic grid
-        spacing, threshold = [float(item) for item in args.cube.split(',')]
-        cube = UniformGrid.from_molecule(mol.numbers, mol.pseudo_numbers, mol.coordinates, spacing, threshold)
+        spacing, extension = [float(item) for item in args.cube.split(',')]
+        cube = UniformGrid.from_molecule(mol, spacing=spacing, extension=extension, rotate=True)
+
     else:
         raise ValueError('Argument cube={0} is not recognized!'.format(
             args.cube))
