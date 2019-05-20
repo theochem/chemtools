@@ -11,8 +11,8 @@ from chemtools import LOL, UniformGrid
 
 # 1. Build UniformGrid and LOL model
 
-cub = UniformGrid.from_file('chonh2.fchk', spacing=0.1, extension=2.0)
-lol = LOL.from_file('chonh2.fchk', grid=cub, trans='inverse_rational', trans_k=1, trans_a=1)
+cub = UniformGrid.from_file('formamide_q+0.fchk', spacing=0.1, extension=2.0)
+lol = LOL.from_file('formamide_q+0.fchk', grid=cub, trans='inverse_rational', trans_k=1, trans_a=1)
 
 # 2. Generate cube file(s) and script for visualizing LOL
 #    Files generated are chonh2-lol.cube & chonh2.vmd

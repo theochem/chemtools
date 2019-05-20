@@ -11,7 +11,7 @@ from chemtools import LOL, UniformGrid, Molecule
 
 # 1. Build Molecule, UnifromGrid and LOL model
 
-mol = Molecule.from_file('chonh2.fchk')
+mol = Molecule.from_file('formamide_q+0.fchk')
 cub = UniformGrid.from_molecule(mol, spacing=0.1, extension=2.0)
 lol = LOL.from_molecule(mol, grid=cub, trans='inverse_hyperbolic', trans_k=1, trans_a=1)
 
