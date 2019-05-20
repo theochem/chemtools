@@ -38,7 +38,7 @@ __all__ = ["Molecule"]
 class Molecule(object):
     """Molecule class from HORTON package."""
 
-    def __init__(self, iodata):
+    def __init__(self, iodata, wavefunction=False):
         """
         Initialize class.
 
@@ -72,9 +72,11 @@ class Molecule(object):
         else:
             self._exp_alpha = None
             self._exp_beta = None
+            if wavefunction:
+                raise ValueError('There is no wave-function information!')
 
     @classmethod
-    def from_file(cls, fname):
+    def from_file(cls, fname, wavefunction=False):
         """
         Initialize class given a file.
 
@@ -94,7 +96,7 @@ class Molecule(object):
                     iodata = IOData.from_file(str(fname))
             except IOError as error:
                 logging.info(error)
-        return cls(iodata)
+        return cls(iodata, wavefunction)
 
     def __getattr__(self, attr):
         """
