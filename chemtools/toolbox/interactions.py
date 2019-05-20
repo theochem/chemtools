@@ -57,7 +57,7 @@ class BaseInteraction(object):
             If None, all occupied spin orbitals are included.
         grid : instance of `Grid`, optional
             Grid used for calculating and visualizing the property values.
-            If None, a cubic grid is constructed from molecule with spacing=0.1 & threshold=2.0.
+            If None, a cubic grid is constructed from molecule with spacing=0.1 & extension=2.0.
         """
         molecule = Molecule.from_file(fname)
         return cls.from_molecule(molecule, spin=spin, index=index, grid=grid)
@@ -77,7 +77,7 @@ class BaseInteraction(object):
             If None, all occupied spin orbitals are included.
         grid : instance of `Grid`, optional
             Grid used for calculating and visualizing the property values.
-            If None, a cubic grid is constructed from molecule with spacing=0.1 & threshold=2.0.
+            If None, a cubic grid is constructed from molecule with spacing=0.1 & extension=2.0.
         """
         pass
 
@@ -118,7 +118,7 @@ class NCI(BaseInteraction):
             Reduced density gradient evaluated on grid points of `cube`
         grid : instance of `UniformGrid`, optional
             Cubic grid used for calculating and visualizing the NCI.
-            If None, it is constructed from molecule with spacing=0.1 and threshold=2.0
+            If None, it is constructed from molecule with spacing=0.1 and extension=2.0.
         hessian : np.array, optional
             Hessian of density evaluated on grid points of `cube`. This is a array with shape
             (n, 6) where n is the number of grid points of `cube`.
@@ -234,7 +234,7 @@ class NCI(BaseInteraction):
             density > denscut will be set to 100.0 to display reduced density gradient
             iso-surface subject to the constraint of low density.
             To visualize all reduced density gradient iso-surfaces, disregarding of the
-            corresponding density value, set this argument equal to infity using `float('inf')`.
+            corresponding density value, set this argument equal to infinity using `float('inf')`.
         Note
         ----
         The generated cube files and script imitate the NCIPlot software version 1.0.
@@ -356,7 +356,7 @@ class ELF(BaseInteraction):
             Sequence of spin orbital indices to use. If None, all occupied spin orbitals are used.
         grid : instance of `Grid`, optional
             Grid used for computation of ELF. Only if this a CubeGrid one can generate the scripts.
-            If None, a cubic grid is constructed from molecule with spacing=0.1 & threshold=2.0.
+            If None, a cubic grid is constructed from molecule with spacing=0.1 & extension=2.0.
         trans : str, optional
             Type of transformation applied to ELF ratio; options are 'rational' or 'hyperbolic'.
         trans_k : float, optional
@@ -390,7 +390,7 @@ class ELF(BaseInteraction):
             Sequence of spin orbital indices to use. If None, all occupied spin orbitals are used.
         grid : instance of `Grid`, optional
             Grid used for computation of ELF. Only if this a CubeGrid one can generate the scripts.
-            If None, a cubic grid is constructed from molecule with spacing=0.1 & threshold=2.0.
+            If None, a cubic grid is constructed from molecule with spacing=0.1 & extension=2.0.
         trans : str, optional
             Type of transformation applied to ELF ratio; options are 'rational' or 'hyperbolic'.
         trans_k : float, optional
@@ -527,7 +527,7 @@ class LOL(BaseInteraction):
             Sequence of spin orbital indices to use. If None, all occupied spin orbitals are used.
         grid : instance of `Grid`, optional
             Grid used for computation of LOL. Only if this a CubeGrid one can generate the scripts.
-            If None, a cubic grid is constructed from molecule with spacing=0.1 & threshold=2.0.
+            If None, a cubic grid is constructed from molecule with spacing=0.1 & extension=2.0.
         trans : str, optional
             Type of transformation applied to ELF ratio; options are 'inverse_rational' or
             'inverse_hyperbolic'.
@@ -562,7 +562,7 @@ class LOL(BaseInteraction):
             Sequence of spin orbital indices to use. If None, all occupied spin orbitals are used.
         grid : instance of `Grid`, optional
             Grid used for computation of LOL. Only if this a CubeGrid one can generate the scripts.
-            If None, a cubic grid is constructed from molecule with spacing=0.1 & threshold=2.0.
+            If None, a cubic grid is constructed from molecule with spacing=0.1 & extension=2.0.
         trans : str, optional
             Type of transformation applied to LOL ratio; options are 'inverse_rational' or
             'inverse_hyperbolic'.
