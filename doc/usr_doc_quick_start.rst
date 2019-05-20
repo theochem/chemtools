@@ -83,14 +83,24 @@ Please see :ref:`Examples Gallery <examples gallery>` to learn more about variou
 ChemTools as Python Scripts
 ---------------------------
 
-The built-in scripts allow ChemTools to be run on the command-line, without any programming.
-requiring any programming. We have tried to make these scripts as versatile as possible, however, not every
-feature of ChemTools is accessible through scripts. These built-in scripts all have the ``chemtools-*.py``
-filename format, and ``--help`` or ``-h`` flag can be used to learn the arguments required to perform the desired
-computations. For example:
+The built-in tools allow ChemTools to be run on the command-line, without any programming.
+We have tried to make these scripts as versatile as possible, however,
+not every feature of ChemTools is accessible through scripts.
+You can access these functionalities by ``chemtools`` in terminal with ``--help`` or ``-h``. For example:
 
   .. code-block:: bash
 
-     $ chemtools-analysis.py --help
+     $ chemtools --help
 
-Currently, the scripts below are available in ChemTools:
+Currently, the keywards below are available in ChemTools:
+* ``mot``: Molecular Orbital Theory (MOT)
+
+* ``nci``: Non-Covalent Interactions (NCI).
+
+* ``elf``: Electron Localization Function (ELF).
+
+* ``lol``: Localized Orbital Locator (LOL).
+
+* ``lcdft``: Local Conceptual DFT.
+
+* ``gcdft``: Global Conceptual DFT.
