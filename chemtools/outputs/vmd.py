@@ -125,34 +125,29 @@ def _vmd_script_isosurface(isosurf=0.5, index=0, show_type='isosurface', draw_ty
     Parameters
     ----------
     isosurf : float
-        Isovalue at which the isosurface is plotted
-        Default is 0.5
-    index : int
-        Index of the file that contains the isosurface data (in the order loaded by
+        Iso-surface value to plot.
+    index : int, optional
+        Index of the file that contains the iso-surface data (in the order loaded by
         `_vmd_script_molecule`)
-        Default is 0
-    show_type : str
+    show_type : str, optional
         Option that controls what will be shown
         One of 'isosurface', 'box', and 'box+isosurface'
-    draw_type : str
-        Option that controls how the isosurface will be drawn
+    draw_type : str, optional
+        Option that controls how the iso-surface will be drawn
         One of 'solid surface', 'wireframe', 'points', 'shaded points'
-    material : str
-        The material setting of the isosurface
+    material : str, optional
+        The material setting of the iso-surface
         One of 'Opaque', 'Transparent', 'BrushedMetal', 'Diffuse', 'Ghost', 'Glass1', 'Glass2',
         'Glass3', 'Glossy', 'HardPlastic', 'MetallicPastel', 'Steel', 'Translucent', 'Edgy',
         'EdgyShiny', 'EdgyGlass', 'Goodsell', 'AOShiny', 'AOChalky', 'AOEdgy', 'BlownGlass',
         'GlassBubble', 'RTChrome'.
-        Default is 'Opaque'
-    scalemin : float
-        Smallest value to color on the isosurface
-        Default is -0.05
-    scalemax : float
-        Largest value to color on the isosurface
-        Default is 0.05
-    colorscheme : str, int
+    scalemin : float, optional
+        Smallest value to color on the iso-surface.
+    scalemax : float, optional
+        Largest value to color on the iso-surface.
+    colorscheme : str or int, optional
         Color scheme used for the isosurface.
-        If str, then appropriate gradient is used to color the isosurface. It must be one of the
+        If str, then appropriate gradient is used to color the iso-surface. It must be one of the
         following options
             =======  =====================================
             Options  Description
@@ -170,7 +165,6 @@ def _vmd_script_isosurface(isosurf=0.5, index=0, show_type='isosurface', draw_ty
             =======  =====================================
         If int, isosurface is colored with just one color. There are 1057 colors are available in
         VMD, check the program or website for more details.
-        Default is 'RGB'
 
     Returns
     -------
@@ -412,13 +406,13 @@ def print_vmd_script_nci(scriptfile, densfile, rdgfile, isosurf=0.5, denscut=0.0
         Name of density cube file.
     rdgfile : str
         Name of reduced density gradient cube file.
-    isosurf : float, default=0.5
-        Reduced density gradient isosurface to visualize.
-    denscut : float, default=0.05
+    isosurf : float, optional
+        Reduced density gradient iso-surface to visualize.
+    denscut : float, optional
         Density cutoff used in creating reduced density gradient cube file.
         Similar to NCIPlot program, reduced density gradient of points with
         density > denscut will be set to 100.0 to display reduced density gradient
-        isosurface subject to the constraint of low density.
+        iso-surface subject to the constraint of low density.
 
     Note
     ----
@@ -446,12 +440,12 @@ def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5
         Name of VMD script file to generate.
     isofile : str
         Name of cube file used in VMD script for visualizing the isosurface.
-    colorfile : str, default=None
+    colorfile : str, optional
         Name of cube file used in VMD script for coloring the isosurface.
         If None, the isofile is used for coloring.
-    isosurf : float, default=0.5
+    isosurf : float, optional
         The value of the isosurface to visualize used in VMD script.
-    material : str, default='Opaque'
+    material : str, optional
         The material setting of the isosurface used in VMD script.
 
             Options: 'Opaque', 'Transparent', 'BrushedMetal', 'Diffuse', 'Ghost',
@@ -459,20 +453,18 @@ def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5
             'Steel', 'Translucent', 'Edgy', 'EdgyShiny', 'EdgyGlass', 'Goodsell',
             'AOShiny', 'AOChalky', 'AOEdgy', 'BlownGlass', 'GlassBubble', 'RTChrome'.
 
-    scalemin : float, default=-0.05
-        Smallest value to color on the isosurface used in VMD script.
-    scalemax : float, default=0.05
-        Largest value to color on the isosurface used in VMD script.
-    colorscheme : str or int, default='RGB'
-        Color scheme used in VMD script for coloring the isosurface.
+    scalemin : float, optional
+        Smallest value to color on the iso-surface used in VMD script.
+    scalemax : float, optional
+        Largest value to color on the iso-surface used in VMD script.
+    colorscheme : str or int, optional
+        Color scheme used in VMD script for coloring the iso-surface.
 
             For color-scale, a sting is needed specifying the color scheme. The default is 'RGB',
             ans more options are available in table below.
-            Alternatively, the isosurface can be colored with just one color.
+            Alternatively, the iso-surface can be colored with just one color.
             For this option, an integer is needed specifying the color.
             1057 colors are available in VMD, check the program or website for more details.
-            If you want to plot the negative isosurface as well, a list of two colors can be given
-            to specify the color of positive and negative iso-surfaces. e.g. [0, 1]
 
             =======  =====================================
             Options  Description
@@ -488,8 +480,8 @@ def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5
             'BlkW'   small=black, large=white
             'WBlk'   small=white, large=black
             =======  =====================================
-    negative : bool, default=False
-        Determines if you want to plot the negative of the isosurface as well. The default is false.
+    negative : bool, optional
+        Determines if you want to plot the negative of the iso-surface as well.
     representation: str, optional
         Representation of a molecule.
 
@@ -507,7 +499,7 @@ def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5
         pos_color, neg_color = colorscheme
     else:
         pos_color, neg_color = [0, 1]
-        # raise TypeError('To plot the negative of the isosurface with integer color scheme, '
+        # raise TypeError('To plot the negative of the iso-surface with integer color scheme, '
         #                 'two integers must be given. The first integer corresponds to the '
         #                 'ColorID for the positive surface, and the second for the negative '
         #                 'surface.'
@@ -549,21 +541,21 @@ def print_vmd_script_multiple_cube(scriptfile, cubes, isosurfs=None, material='O
     cubes : list of str
         Names of cube files to plot
     isosurfs : float, list of float
-        Isovalue at which the plot (isosurface) is generated
-        If a float is given, then this is the value of isosurface for all cube files
-        Default value is 0.5 for all isosurfaces
+        Isovalue at which the plot (iso-surface) is generated
+        If a float is given, then this is the value of iso-surface for all cube files
+        Default value is 0.5 for all iso-surfaces
     material : str
-        The material setting of the isosurface used in VMD script.
+        The material setting of the iso-surface used in VMD script.
         One of 'Opaque', 'Transparent', 'BrushedMetal', 'Diffuse', 'Ghost',
         'Glass1', 'Glass2', 'Glass3', 'Glossy', 'HardPlastic', 'MetallicPastel',
         'Steel', 'Translucent', 'Edgy', 'EdgyShiny', 'EdgyGlass', 'Goodsell',
         'AOShiny', 'AOChalky', 'AOEdgy', 'BlownGlass', 'GlassBubble', 'RTChrome'.
         Default is 'Opaque'
     scalemin : float
-        Smallest value to color on the isosurface used in VMD script.
+        Smallest value to color on the iso-surface used in VMD script.
         Default is -0.05
     scalemax : float
-        Largest value to color on the isosurface used in VMD script.
+        Largest value to color on the iso-surface used in VMD script.
         Default is 0.05
     colors : list of int
         Colors of each cube file data
@@ -597,7 +589,7 @@ def print_vmd_script_multiple_cube(scriptfile, cubes, isosurfs=None, material='O
         raise TypeError('The isosurfs must be provided as a list or tuple of same length as the '
                         'number of cube files')
     elif not all(isinstance(isosurf, float) for isosurf in isosurfs):
-        raise TypeError('Each isosurface value must be a float')
+        raise TypeError('Each iso-surface value must be a float')
 
     if colors is None:
         colors = range(len(cubes))
