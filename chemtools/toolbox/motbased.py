@@ -127,8 +127,9 @@ class MOTBasedTool(object):
     def orbital_coefficient(self):
         return self._molecule.orbital_coefficient
 
+    @property
     @doc_inherit(Molecule, 'compute_orbital_overlap')
-    def compute_orbital_overlap(self):
+    def orbital_overlap(self):
         return self._molecule.compute_orbital_overlap()
 
     @doc_inherit(Molecule, 'compute_density_matrix')
@@ -136,7 +137,7 @@ class MOTBasedTool(object):
         return self._molecule.compute_density_matrix(spin=spin)
 
     @doc_inherit(Molecule, 'compute_molecular_orbital')
-    def compute_molecular_orbital(self, points, spin='ab', index=None):
+    def compute_orbital_expression(self, points, spin='ab', index=None):
         return self._molecule.compute_molecular_orbital(points, spin, index)
 
     @doc_inherit(Molecule, 'compute_density')
