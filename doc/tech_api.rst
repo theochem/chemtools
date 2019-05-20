@@ -51,6 +51,13 @@ Toolbox Module
   * :class:`Orbital Local Tool <toolbox.orbsbased.OrbitalLocalTool>`
 
 
+Molecular Orbital (MO) Theory Module
+====================================
+
+* :class:`Molecular Orbtital Theory Based Tool <toolbox.motbased.MOTBasedTool>`
+
+
+
 Conceptual Module
 =================
 
@@ -135,6 +142,7 @@ Utilities
       toolbox.conceptual.LocalConceptualDFT
       toolbox.conceptual.CondensedConceptualDFT
       toolbox.densbased.DensityLocalTool
+      toolbox.motbased.MOTBasedTool
       toolbox.interactions.NCI
       toolbox.interactions.ELF
       toolbox.interactions.LOL
