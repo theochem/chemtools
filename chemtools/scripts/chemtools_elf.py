@@ -63,7 +63,7 @@ def parse_args_elf(subparser):
     subparser.add_argument(
         '--trans',
         default='rational',
-        choices=['rationa', 'hyperbolic'],
+        choices=['rational', 'hyperbolic'],
         type=str,
         help='type of transformation applied to ELF ratio. [default=%(default)s]')
 
@@ -107,7 +107,7 @@ def parse_args_elf(subparser):
 
 
 def main_elf(args):
-    """Build ELF model and dump VMD script and cube files for visualizing ELF with VMD."""
+    """Build ELF model and dump VMD script and cube files for visualizing ELF."""
     # load molecule
     mol = Molecule.from_file(args.file_wfn)
 
