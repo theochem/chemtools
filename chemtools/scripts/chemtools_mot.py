@@ -25,7 +25,11 @@
 """Molecular Orbital Theory (MOT) Script."""
 
 
+import logging
+
 from chemtools import Molecule, UniformGrid, MOTBasedTool
+
+logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
 
 __all__ = ['parse_args_mot', 'main_mot']
@@ -120,6 +124,19 @@ def main_mot(args):
 
     # build MOT model
     mot = MOTBasedTool.from_molecule(mol)
+
+    # print logging message
+    logging.info('')
+    logging.info('Initialized : {0}'.format(mot))
+    logging.info('# of basis           : {0}'.format(mot.nbasis))
+    logging.info('# of a & b electrons : {0}'.format(mot.nelectrons))
+    logging.info('')
+    logging.info('Index  of a & b LUMO : {0}'.format(mot.lumo_index))
+    logging.info('Energy of a & b LUMO : {0}'.format(mot.lumo_energy))
+    logging.info('')
+    logging.info('Index  of a & b HOMO : {0}'.format(mot.homo_index))
+    logging.info('Energy of a & b HOMO : {0}'.format(mot.homo_energy))
+    logging.info('')
 
     # dump file/script for visualizing MOT
     mot.generate_scripts(args.output_name, spin=args.spin, index=index, grid=cube,
