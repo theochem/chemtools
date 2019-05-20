@@ -34,26 +34,27 @@ logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
 __all__ = ['parse_args_mot', 'main_mot']
 
+mot_desp = """
+Generate a VMD (Visual Molecular Dynamics) script as well as cube file required
+for visualizing molecular orbitals with VMD package.
+
+The generated files include:
+fname_output.vmd                 The VMD script.
+  fname_output_mo{index}.cube    The MO cube file.
+
+If VMD is setup on your system, you can visualize MO with the command below:
+    $ vmd -e fname_output.vmd
+For instruction on how to open the script from the VMD interactive environment,
+please refer to ChemTools website.
+
+Note: The fname_output.vmd script requires fname_output_mo{index}.cube to plot MO
+      in VMD software (they files should be all in the same directory).
+"""
+
 
 def parse_args_mot(subparser):
     """Parse command-line arguments for computing MO."""
     # description message
-    description = """
-    Generate a VMD (Visual Molecular Dynamics) script as well as cube file required
-    for visualizing molecular orbitals with VMD package.
-
-    The generated files include:
-    fname_output.vmd                 The VMD script.
-      fname_output_mo{index}.cube    The MO cube file.
-
-    If VMD is setup on your system, you can visualize MO with the command below:
-        $ vmd -e fname_output.vmd
-    For instruction on how to open the script from the VMD interactive environment,
-    please refer to ChemTools website.
-
-    Note: The fname_output.vmd script requires fname_output_mo{index}.cube to plot MO
-          in VMD software (they files should be all in the same directory).
-    """
 
     # required arguments
     subparser.add_argument(

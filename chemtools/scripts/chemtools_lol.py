@@ -30,26 +30,27 @@ from chemtools import Molecule, UniformGrid, LOL
 
 __all__ = ['parse_args_lol', 'main_lol']
 
+# description message
+lol_dest = """
+Generate a VMD (Visual Molecular Dynamics) script as well as cube file required
+for visualizing Localized Orbital Locator (LOL) with VMD package.
+
+The generated files include:
+  fname_output.vmd             The VMD script.
+  fname_output-lol.cube        The LOL cube file.
+
+If VMD is setup on your system, you can visualize LOL with the command below:
+    $ vmd -e fname_output.vmd
+For instruction on how to open the script from the VMD interactive environment,
+please refer to ChemTools website.
+
+Note: The fname_output.vmd script requires fname_output-lol.cube to plot LOL
+      in VMD software (they files should be all in the same directory).
+"""
+
 
 def parse_args_lol(subparser):
     """Parse command-line arguments for computing LOL."""
-    # description message
-    description = """
-    Generate a VMD (Visual Molecular Dynamics) script as well as cube file required
-    for visualizing Localized Orbital Locator (LOL) with VMD package.
-
-    The generated files include:
-      fname_output.vmd             The VMD script.
-      fname_output-lol.cube        The LOL cube file.
-
-    If VMD is setup on your system, you can visualize LOL with the command below:
-        $ vmd -e fname_output.vmd
-    For instruction on how to open the script from the VMD interactive environment,
-    please refer to ChemTools website.
-
-    Note: The fname_output.vmd script requires fname_output-lol.cube to plot LOL
-          in VMD software (they files should be all in the same directory).
-    """
 
     # required arguments
     subparser.add_argument(

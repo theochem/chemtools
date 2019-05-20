@@ -30,38 +30,39 @@ from chemtools import Molecule, UniformGrid, NCI
 
 __all__ = ['parse_args_nci', 'main_nci']
 
+# description message
+nci_desp = """
+Generate a VMD (Visual Molecular Dynamics) script as well as cube files required
+for visualizing non-covalent interactions (NCI) with VMD package.
+
+The generated files include:
+  fname_output.vmd             The VMD script.
+  fname_output-dens.cube       The signed density cube file.
+  fname_output-grad.cube       The reduced density gradient cube file.
+
+The values of signed density (density multiplied by the sign of 2nd eigenvalue of
+Hessian) are multiplied by 100.0 when being recorded in cube file. Similiar to NCIPlot
+program, this is used for coloring reduced density gradient iso-surface(s).
+The values of reduced density gradient are masked using the given denscut argument
+before being recorded in cube file. More specifically, similar to NCIPlot program,
+the reduced density gradient value of points for which density > denscut will be
+set to 100.0 to have VMD only display reduced density gradient iso-surface(s) for
+region with density < denscut.
+
+If VMD is setup on your system, you can visualize NCI with the command below:
+    $ vmd -e fname_output.vmd
+For instruction on how to open the script from the VMD interactive environment,
+please refer to ChemTools website.
+
+Note: The fname_output.vmd script requires fname_output-dens.cube &
+      fname_output-grad.cube to plot NCI in VMD software (they files should
+      be all in the same directory).
+Note: The generated VMD script is the same as the NCIPlot Software version 1.0.
+"""
+
 
 def parse_args_nci(subparser):
     """Parse command-line arguments for computing NCI."""
-    # description message
-    description = """
-    Generate a VMD (Visual Molecular Dynamics) script as well as cube files required
-    for visualizing non-covalent interactions (NCI) with VMD package.
-
-    The generated files include:
-      fname_output.vmd             The VMD script.
-      fname_output-dens.cube       The signed density cube file.
-      fname_output-grad.cube       The reduced density gradient cube file.
-
-    The values of signed density (density multiplied by the sign of 2nd eigenvalue of
-    Hessian) are multiplied by 100.0 when being recorded in cube file. Similiar to NCIPlot
-    program, this is used for coloring reduced density gradient iso-surface(s).
-    The values of reduced density gradient are masked using the given denscut argument
-    before being recorded in cube file. More specifically, similar to NCIPlot program,
-    the reduced density gradient value of points for which density > denscut will be
-    set to 100.0 to have VMD only display reduced density gradient iso-surface(s) for
-    region with density < denscut.
-
-    If VMD is setup on your system, you can visualize NCI with the command below:
-        $ vmd -e fname_output.vmd
-    For instruction on how to open the script from the VMD interactive environment,
-    please refer to ChemTools website.
-
-    Note: The fname_output.vmd script requires fname_output-dens.cube &
-          fname_output-grad.cube to plot NCI in VMD software (they files should
-          be all in the same directory).
-    Note: The generated VMD script is the same as the NCIPlot Software version 1.0.
-    """
 
     # required arguments
     subparser.add_argument(

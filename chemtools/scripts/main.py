@@ -30,10 +30,10 @@ from chemtools import __version__
 from chemtools.scripts.chemtools_conceptual import (
     main_conceptual_global, main_conceptual_local, parse_args_global,
     parse_args_local)
-from chemtools.scripts.chemtools_nci import main_nci, parse_args_nci
-from chemtools.scripts.chemtools_elf import main_elf, parse_args_elf
-from chemtools.scripts.chemtools_lol import main_lol, parse_args_lol
-from chemtools.scripts.chemtools_mot import main_mot, parse_args_mot
+from chemtools.scripts.chemtools_nci import main_nci, parse_args_nci, nci_desp
+from chemtools.scripts.chemtools_elf import main_elf, parse_args_elf, elf_dest
+from chemtools.scripts.chemtools_lol import main_lol, parse_args_lol, lol_dest
+from chemtools.scripts.chemtools_mot import main_mot, parse_args_mot, mot_desp
 
 
 __all__ = ['main']
@@ -68,19 +68,19 @@ def parse_args_chemtools():
 
     # sub parser for nci functions
     parser_mot = subparser.add_parser(
-        'mot', help='Molecular Orbital Theory (MOT).')
+        'mot', help='Molecular Orbital Theory (MOT).', description=mot_desp)
     parse_args_mot(parser_mot)
 
     parser_nci = subparser.add_parser(
-        'nci', help='Non-Covalent Interactions (NCI).')
+        'nci', help='Non-Covalent Interactions (NCI).', description=nci_desp)
     parse_args_nci(parser_nci)
 
     parser_elf = subparser.add_parser(
-        'elf', help='Electron Localization Function (ELF).')
+        'elf', help='Electron Localization Function (ELF).', description=elf_dest)
     parse_args_elf(parser_elf)
 
     parser_lol = subparser.add_parser(
-        'lol', help='Localized Orbital Locator (LOL).')
+        'lol', help='Localized Orbital Locator (LOL).', description=lol_dest)
     parse_args_lol(parser_lol)
 
     # sub parser for lcdft functions

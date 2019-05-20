@@ -30,26 +30,27 @@ from chemtools import Molecule, UniformGrid, ELF
 
 __all__ = ['parse_args_elf', 'main_elf']
 
+# description message
+elf_dest = """
+Generate a VMD (Visual Molecular Dynamics) script as well as cube file required
+for visualizing Electron Localization Function (ELF) with VMD package.
+
+The generated files include:
+  fname_output.vmd             The VMD script.
+  fname_output-elf.cube        The ELF cube file.
+
+If VMD is setup on your system, you can visualize ELF with the command below:
+    $ vmd -e fname_output.vmd
+For instruction on how to open the script from the VMD interactive environment,
+please refer to ChemTools website.
+
+Note: The fname_output.vmd script requires fname_output-elf.cube to plot ELF
+      in VMD software (they files should be all in the same directory).
+"""
+
 
 def parse_args_elf(subparser):
     """Parse command-line arguments for computing ELF."""
-    # description message
-    description = """
-    Generate a VMD (Visual Molecular Dynamics) script as well as cube file required
-    for visualizing Electron Localization Function (ELF) with VMD package.
-
-    The generated files include:
-      fname_output.vmd             The VMD script.
-      fname_output-elf.cube        The ELF cube file.
-
-    If VMD is setup on your system, you can visualize ELF with the command below:
-        $ vmd -e fname_output.vmd
-    For instruction on how to open the script from the VMD interactive environment,
-    please refer to ChemTools website.
-
-    Note: The fname_output.vmd script requires fname_output-elf.cube to plot ELF
-          in VMD software (they files should be all in the same directory).
-    """
 
     # required arguments
     subparser.add_argument(
