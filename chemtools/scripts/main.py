@@ -66,7 +66,7 @@ def parse_args_chemtools():
 
     # sub parser for nci functions
     parser_nci = subparser.add_parser(
-        'nci', help='visualize non-covalent interactions')
+        'nci', help='Non-Covalent Interactions (NCI).')
     parse_args_nci(parser_nci)
 
     parser_elf = subparser.add_parser(
@@ -79,12 +79,12 @@ def parse_args_chemtools():
 
     # sub parser for lcdft functions
     parser_nci = subparser.add_parser(
-        'lcdft', help='compute local conceptual DFT indicators')
+        'lcdft', help='Local Conceptual DFT.')
     parse_args_local(parser_nci)
 
     # sub parser for gcdft functions
     parser_nci = subparser.add_parser(
-        'gcdft', help='compute global conceptual DFT indicators')
+        'gcdft', help='Global Conceptual DFT.')
     parse_args_global(parser_nci)
 
     return parser.parse_args()
