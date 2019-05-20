@@ -28,4 +28,4 @@ mo.generate_scripts(fname, spin='a', index=mo.lumo_index[0], isosurf=0.025, grid
 # when running the script on your machine.
 from tools.rug import plot_existing_image
 
-# plot_existing_image('mo0045_h2o.png')
+plot_existing_image('mo0037_38_dichloropyridine.jpg')
