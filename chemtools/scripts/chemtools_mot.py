@@ -39,15 +39,15 @@ Generate a VMD (Visual Molecular Dynamics) script as well as cube file required
 for visualizing molecular orbitals with VMD package.
 
 The generated files include:
-fname_output.vmd                 The VMD script.
-  fname_output_mo{index}.cube    The MO cube file.
+  output.vmd                 The VMD script.
+  output_mo{index}.cube      The MO cube file.
 
 If VMD is setup on your system, you can visualize MO with the command below:
-    $ vmd -e fname_output.vmd
+    $ vmd -e output.vmd
 For instruction on how to open the script from the VMD interactive environment,
 please refer to ChemTools website.
 
-Note: The fname_output.vmd script requires fname_output_mo{index}.cube to plot MO
+Note: The output.vmd script requires output_mo{index}.cube to plot MO
       in VMD software (they files should be all in the same directory).
 """
 
@@ -58,11 +58,11 @@ def parse_args_mot(subparser):
 
     # required arguments
     subparser.add_argument(
-        'file_wfn',
+        'fname',
         help='wave-function file. Supported formats: fchk, mkl, molden.input, wfn.')
 
     subparser.add_argument(
-        'output_name', help='name of generated cube file and vmd script.')
+        'output', help='name of generated cube file and vmd script.')
 
     # optional arguments
     subparser.add_argument(
@@ -103,7 +103,7 @@ def parse_args_mot(subparser):
 def main_mot(args):
     """Build MOTBasedTool model and dump VMD script and cube files for visualizing MO."""
     # load molecule
-    mol = Molecule.from_file(args.file_wfn)
+    mol = Molecule.from_file(args.fname)
 
     # make cubic grid
     if args.cube.endswith('.cube'):
@@ -140,5 +140,5 @@ def main_mot(args):
     logging.info('')
 
     # dump file/script for visualizing MOT
-    mot.generate_scripts(args.output_name, spin=args.spin, index=index, grid=cube,
+    mot.generate_scripts(args.output, spin=args.spin, index=index, grid=cube,
                          isosurf=args.isosurface)
