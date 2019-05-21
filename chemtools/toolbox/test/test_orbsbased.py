@@ -67,7 +67,7 @@ def check_orbital_based_properties(tool, data):
     assert_array_almost_equal(result[0], 0.5 * data["density_states_temp_25000"], decimal=6)
     assert_array_almost_equal(result[1], 0.5 * data["density_states_temp_25000"], decimal=6)
     # check local ionization potential
-    result = tool.average_local_ionization_energy()
+    result = tool.average_local_ionization_energy
     assert_array_almost_equal(result[0], 0.5 * data["local_ip"], decimal=4)
     assert_array_almost_equal(result[1], 0.5 * data["local_ip"], decimal=4)
 
