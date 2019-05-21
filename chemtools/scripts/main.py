@@ -28,69 +28,90 @@ import argparse
 
 from chemtools import __version__
 from chemtools.scripts.chemtools_conceptual import (
-    main_conceptual_global, main_conceptual_local, parse_args_global,
-    parse_args_local)
+    main_conceptual_global,
+    main_conceptual_local,
+    parse_args_global,
+    parse_args_local,
+)
 from chemtools.scripts.chemtools_nci import main_nci, parse_args_nci, nci_desp
 from chemtools.scripts.chemtools_elf import main_elf, parse_args_elf, elf_dest
 from chemtools.scripts.chemtools_lol import main_lol, parse_args_lol, lol_dest
 from chemtools.scripts.chemtools_mot import main_mot, parse_args_mot, mot_desp
 
+from argparse import RawDescriptionHelpFormatter
 
-__all__ = ['main']
+
+__all__ = ["main"]
 
 
 # basic swtich dictionary for storing all main callable function and subparser
 SCRIPT_MAIN = {
-    'mot': main_mot,
-    'nci': main_nci,
-    'elf': main_elf,
-    'lol': main_lol,
-    'lcdft': main_conceptual_local,
-    'gcdft': main_conceptual_global,
+    "mot": main_mot,
+    "nci": main_nci,
+    "elf": main_elf,
+    "lol": main_lol,
+    "lcdft": main_conceptual_local,
+    "gcdft": main_conceptual_global,
 }
 
 
 def parse_args_chemtools():
     """Parse entry points arguments for chemtools functionality."""
     description = """ChemTools command-line tools"""
-    parser = argparse.ArgumentParser(prog='chemtools', description=description)
+    parser = argparse.ArgumentParser(prog="chemtools", description=description)
 
     # main parser to handle basic command and hel function
     parser.add_argument(
-        '-v',
-        '--version',
-        action='version',
-        version="{} (ChemTools version {})".format(parser.prog, __version__))
+        "-v",
+        "--version",
+        action="version",
+        version="{} (ChemTools version {})".format(parser.prog, __version__),
+    )
 
     # command parser, stored in parser.command
     subparser = parser.add_subparsers(
-        metavar="<Commands>", help='<Functions>', dest='command')
+        metavar="<Commands>", help="<Functions>", dest="command"
+    )
 
     # sub parser for nci functions
     parser_mot = subparser.add_parser(
-        'mot', help='Molecular Orbital Theory (MOT).', description=mot_desp)
+        "mot",
+        help="Molecular Orbital Theory (MOT).",
+        description=mot_desp,
+        formatter_class=RawDescriptionHelpFormatter,
+    )
     parse_args_mot(parser_mot)
 
     parser_nci = subparser.add_parser(
-        'nci', help='Non-Covalent Interactions (NCI).', description=nci_desp)
+        "nci",
+        help="Non-Covalent Interactions (NCI).",
+        description=nci_desp,
+        formatter_class=RawDescriptionHelpFormatter,
+    )
     parse_args_nci(parser_nci)
 
     parser_elf = subparser.add_parser(
-        'elf', help='Electron Localization Function (ELF).', description=elf_dest)
+        "elf",
+        help="Electron Localization Function (ELF).",
+        description=elf_dest,
+        formatter_class=RawDescriptionHelpFormatter,
+    )
     parse_args_elf(parser_elf)
 
     parser_lol = subparser.add_parser(
-        'lol', help='Localized Orbital Locator (LOL).', description=lol_dest)
+        "lol",
+        help="Localized Orbital Locator (LOL).",
+        description=lol_dest,
+        formatter_class=RawDescriptionHelpFormatter,
+    )
     parse_args_lol(parser_lol)
 
     # sub parser for lcdft functions
-    parser_nci = subparser.add_parser(
-        'lcdft', help='Local Conceptual DFT.')
+    parser_nci = subparser.add_parser("lcdft", help="Local Conceptual DFT.")
     parse_args_local(parser_nci)
 
     # sub parser for gcdft functions
-    parser_nci = subparser.add_parser(
-        'gcdft', help='Global Conceptual DFT.')
+    parser_nci = subparser.add_parser("gcdft", help="Global Conceptual DFT.")
     parse_args_global(parser_nci)
 
     return parser.parse_args()
@@ -103,13 +124,16 @@ def main():
     main_fun(arg)  # run the function
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import logging
+
     try:
         import gooey
+
         # this is command is equivalent to use decorator
         gooey.Gooey(main)()
     except ImportError:
         logging.warning(
-            "Package \'gooey\' is needed for GUI command-line tools. Please"
-            " install\nit with your package manager.")
+            "Package 'gooey' is needed for GUI command-line tools. Please"
+            " install\nit with your package manager."
+        )
