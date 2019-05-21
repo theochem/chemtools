@@ -12,7 +12,7 @@ from chemtools import NCI, UniformGrid
 
 # 1. Build UniformGrid and NCI model
 
-cub = UniformGrid.from_file('formic_acid_dimer.fchk', spacing=0.1, extension=1.0)
+cub = UniformGrid.from_file('formic_acid_dimer.fchk', spacing=0.1, extension=2.0)
 nci = NCI.from_file('formic_acid_dimer.fchk', grid=cub)
 
 # 2. Generate plot, cube file(s) and script for visualizing NCI
