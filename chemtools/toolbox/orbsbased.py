@@ -58,6 +58,20 @@ class OrbitalLocalTool(object):
         self._density = self._molecule.compute_density(self._points)
 
     @classmethod
+    def from_molecule(cls, molecule, points):
+        r"""Initialize class using instance of `Molecule` and points.
+
+        Parameters
+        ----------
+        molecule : Molecule
+            An instance of `Molecule` class.
+        points : np.ndarray
+            The (npoints, 3) array of cartesian coordinates of points.
+
+        """
+        return cls(molecule, points)
+
+    @classmethod
     def from_file(cls, fname, points):
         """Initialize class from file.
 
