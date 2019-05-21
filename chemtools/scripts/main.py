@@ -37,6 +37,7 @@ from chemtools.scripts.chemtools_nci import main_nci, parse_args_nci, nci_desp
 from chemtools.scripts.chemtools_elf import main_elf, parse_args_elf, elf_dest
 from chemtools.scripts.chemtools_lol import main_lol, parse_args_lol, lol_dest
 from chemtools.scripts.chemtools_mot import main_mot, parse_args_mot, mot_desp
+from chemtools.scripts.chemtools_esp import main_esp, parse_args_esp, esp_desp
 
 from argparse import RawDescriptionHelpFormatter
 
@@ -47,6 +48,7 @@ __all__ = ["main"]
 # basic swtich dictionary for storing all main callable function and subparser
 SCRIPT_MAIN = {
     "mot": main_mot,
+    "esp": main_esp,
     "nci": main_nci,
     "elf": main_elf,
     "lol": main_lol,
@@ -73,7 +75,6 @@ def parse_args_chemtools():
         metavar="<Commands>", help="<Functions>", dest="command"
     )
 
-    # sub parser for nci functions
     parser_mot = subparser.add_parser(
         "mot",
         help="Molecular Orbital Theory (MOT).",
@@ -81,6 +82,14 @@ def parse_args_chemtools():
         formatter_class=RawDescriptionHelpFormatter,
     )
     parse_args_mot(parser_mot)
+
+    parser_esp = subparser.add_parser(
+        "esp",
+        help="Electrostatic Potential (ESP).",
+        description=esp_desp,
+        formatter_class=RawDescriptionHelpFormatter,
+    )
+    parse_args_esp(parser_esp)
 
     parser_nci = subparser.add_parser(
         "nci",
