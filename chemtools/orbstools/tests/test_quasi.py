@@ -4,7 +4,7 @@ try:
 except ImportError:
     from importlib.resources import path
 
-from chemtools.orbstools.mulliken import mulliken_populations
+from chemtools.orbstools.mulliken import OrbitalPartitionTools
 from chemtools.orbstools.quasi import _check_input, make_mmo, project, quambo, quao
 import numpy as np
 from numpy.testing import assert_raises
@@ -255,9 +255,9 @@ def test_quambo():
     olp_quambo_quambo = coeff_ab_quambo.T.dot(olp_ab_ab).dot(coeff_ab_quambo)
     olp_quambo_omo = coeff_ab_quambo.T.dot(olp_ab_omo)
     coeff_quambo_omo = project(olp_quambo_quambo, olp_quambo_omo)
-    pop = mulliken_populations(
+    pop = OrbitalPartitionTools(
         coeff_quambo_omo, occupations[indices_span], olp_quambo_quambo, 6, ab_atom_indices
-    )
+    ).mulliken_populations()
     partial_pop = np.array([11, 17, 8, 8, 8, 8]) - pop
     assert np.allclose(
         partial_pop, np.array([0.968, 2.454, -0.807, -0.904, -0.904, -0.807]), atol=1e-3
@@ -294,9 +294,9 @@ def test_quao():
     olp_quao_quao = coeff_ab_quao.T.dot(olp_ab_ab).dot(coeff_ab_quao)
     olp_quao_omo = coeff_ab_quao.T.dot(olp_ab_omo)
     coeff_quao_omo = project(olp_quao_quao, olp_quao_omo)
-    pop = mulliken_populations(
+    pop = OrbitalPartitionTools(
         coeff_quao_omo, occupations[indices_span], olp_quao_quao, 6, ab_atom_indices
-    )
+    ). mulliken_populations()
     partial_pop = np.array([11, 17, 8, 8, 8, 8]) - pop
     assert np.allclose(
         partial_pop, np.array([0.967, 2.498, -0.819, -0.914, -0.914, -0.819]), atol=1e-3

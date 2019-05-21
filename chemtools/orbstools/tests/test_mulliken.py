@@ -4,19 +4,15 @@ try:
 except ImportError:
     from importlib.resources import path
 
-from chemtools.orbstools.mulliken import (
-    lowdin_populations,
-    mulliken_populations,
-    mulliken_populations_newbasis,
-)
+from chemtools.orbstools.mulliken import OrbitalPartitionTools
 from chemtools.orbstools.orthogonalization import power_symmetric
 from chemtools.orbstools.quasi import project
 import numpy as np
 from numpy.testing import assert_raises
 
 
-def test_mulliken_populations_input():
-    """Test input checks in the orbstools.mulliken.mulliken_populations."""
+def test_init():
+    """Test MullikenPopulations.__init__."""
     # get random unitary matrix
     unitary = np.linalg.svd(np.random.rand(20, 20))[0]
     # get random olp_ab_ab
@@ -30,13 +26,10 @@ def test_mulliken_populations_input():
     occupations = np.random.rand(15)
     num_atoms = 4
     ab_atom_indices = np.array([0, 1, 2, 1, 1, 0, 2, 1, 0, 2, 1, 2, 0, 1, 2, 0, 3, 3, 1, 0])
-    atom_weights = np.random.rand(4, 20, 20)
-    atom_weights += np.swapaxes(atom_weights, 1, 2)
-    atom_weights /= np.sum(atom_weights, axis=0)[None, :, :]
 
     assert_raises(
         TypeError,
-        mulliken_populations,
+        OrbitalPartitionTools,
         coeff_ab_mo.tolist(),
         occupations,
         olp_ab_ab,
@@ -45,7 +38,7 @@ def test_mulliken_populations_input():
     )
     assert_raises(
         TypeError,
-        mulliken_populations,
+        OrbitalPartitionTools,
         coeff_ab_mo.ravel(),
         occupations,
         olp_ab_ab,
@@ -54,7 +47,7 @@ def test_mulliken_populations_input():
     )
     assert_raises(
         TypeError,
-        mulliken_populations,
+        OrbitalPartitionTools,
         coeff_ab_mo.astype(int),
         occupations,
         olp_ab_ab,
@@ -64,7 +57,7 @@ def test_mulliken_populations_input():
 
     assert_raises(
         TypeError,
-        mulliken_populations,
+        OrbitalPartitionTools,
         coeff_ab_mo,
         occupations.tolist(),
         olp_ab_ab,
@@ -73,7 +66,7 @@ def test_mulliken_populations_input():
     )
     assert_raises(
         TypeError,
-        mulliken_populations,
+        OrbitalPartitionTools,
         coeff_ab_mo,
         occupations[:, None],
         olp_ab_ab,
@@ -82,7 +75,7 @@ def test_mulliken_populations_input():
     )
     assert_raises(
         TypeError,
-        mulliken_populations,
+        OrbitalPartitionTools,
         coeff_ab_mo,
         occupations.astype(bool),
         olp_ab_ab,
@@ -92,7 +85,7 @@ def test_mulliken_populations_input():
 
     assert_raises(
         TypeError,
-        mulliken_populations,
+        OrbitalPartitionTools,
         coeff_ab_mo,
         occupations,
         olp_ab_ab.tolist(),
@@ -101,7 +94,7 @@ def test_mulliken_populations_input():
     )
     assert_raises(
         TypeError,
-        mulliken_populations,
+        OrbitalPartitionTools,
         coeff_ab_mo,
         occupations,
         olp_ab_ab.ravel(),
@@ -110,7 +103,7 @@ def test_mulliken_populations_input():
     )
     assert_raises(
         TypeError,
-        mulliken_populations,
+        OrbitalPartitionTools,
         coeff_ab_mo,
         occupations,
         olp_ab_ab.astype(int),
@@ -120,7 +113,7 @@ def test_mulliken_populations_input():
 
     assert_raises(
         TypeError,
-        mulliken_populations,
+        OrbitalPartitionTools,
         coeff_ab_mo,
         occupations,
         olp_ab_ab,
@@ -130,7 +123,7 @@ def test_mulliken_populations_input():
 
     assert_raises(
         TypeError,
-        mulliken_populations,
+        OrbitalPartitionTools,
         coeff_ab_mo,
         occupations,
         olp_ab_ab,
@@ -139,7 +132,7 @@ def test_mulliken_populations_input():
     )
     assert_raises(
         TypeError,
-        mulliken_populations,
+        OrbitalPartitionTools,
         coeff_ab_mo,
         occupations,
         olp_ab_ab,
@@ -148,7 +141,7 @@ def test_mulliken_populations_input():
     )
     assert_raises(
         TypeError,
-        mulliken_populations,
+        OrbitalPartitionTools,
         coeff_ab_mo,
         occupations,
         olp_ab_ab,
@@ -158,7 +151,7 @@ def test_mulliken_populations_input():
 
     assert_raises(
         ValueError,
-        mulliken_populations,
+        OrbitalPartitionTools,
         coeff_ab_mo,
         occupations,
         olp_ab_ab.reshape(10, 40),
@@ -167,7 +160,7 @@ def test_mulliken_populations_input():
     )
     assert_raises(
         ValueError,
-        mulliken_populations,
+        OrbitalPartitionTools,
         coeff_ab_mo.reshape(15, 20),
         occupations,
         olp_ab_ab,
@@ -176,7 +169,7 @@ def test_mulliken_populations_input():
     )
     assert_raises(
         ValueError,
-        mulliken_populations,
+        OrbitalPartitionTools,
         coeff_ab_mo,
         np.random.rand(20),
         olp_ab_ab,
@@ -185,7 +178,7 @@ def test_mulliken_populations_input():
     )
     assert_raises(
         TypeError,
-        mulliken_populations,
+        OrbitalPartitionTools,
         coeff_ab_mo,
         occupations,
         np.random.rand(20, 20),
@@ -197,7 +190,7 @@ def test_mulliken_populations_input():
     rand_olp_ab_ab += rand_olp_ab_ab.T
     assert_raises(
         TypeError,
-        mulliken_populations,
+        OrbitalPartitionTools,
         coeff_ab_mo,
         occupations,
         rand_olp_ab_ab,
@@ -212,7 +205,7 @@ def test_mulliken_populations_input():
     rand_olp_ab_ab *= rand_norm[None, :]
     assert_raises(
         TypeError,
-        mulliken_populations,
+        OrbitalPartitionTools,
         coeff_ab_mo,
         occupations,
         rand_olp_ab_ab,
@@ -224,7 +217,7 @@ def test_mulliken_populations_input():
     rand_occupations[6] = -1
     assert_raises(
         ValueError,
-        mulliken_populations,
+        OrbitalPartitionTools,
         coeff_ab_mo,
         rand_occupations,
         olp_ab_ab,
@@ -235,57 +228,38 @@ def test_mulliken_populations_input():
     # not sure how to check that the warning is raised but the following code prints the warning
     rand_occupations = np.random.rand(15)
     rand_occupations[6] = 2
-    mulliken_populations(coeff_ab_mo, rand_occupations, olp_ab_ab, num_atoms, ab_atom_indices)
-
-    rand_weights = np.random.rand(3, 20, 20)
-    assert_raises(
-        ValueError,
-        mulliken_populations,
-        coeff_ab_mo,
-        rand_occupations,
-        olp_ab_ab,
-        num_atoms,
-        ab_atom_indices,
-        atom_weights=rand_weights,
-    )
-    rand_weights = np.random.rand(4, 20, 19)
-    assert_raises(
-        ValueError,
-        mulliken_populations,
-        coeff_ab_mo,
-        rand_occupations,
-        olp_ab_ab,
-        num_atoms,
-        ab_atom_indices,
-        atom_weights=rand_weights,
-    )
-    rand_weights = np.random.rand(4, 20, 20)
-    assert_raises(
-        ValueError,
-        mulliken_populations,
-        coeff_ab_mo,
-        rand_occupations,
-        olp_ab_ab,
-        num_atoms,
-        ab_atom_indices,
-        atom_weights=rand_weights,
-    )
-    rand_weights = np.random.rand(4, 20, 20)
-    rand_weights += np.swapaxes(rand_weights, 1, 2)
-    assert_raises(
-        ValueError,
-        mulliken_populations,
-        coeff_ab_mo,
-        rand_occupations,
-        olp_ab_ab,
-        num_atoms,
-        ab_atom_indices,
-        atom_weights=rand_weights,
-    )
+    OrbitalPartitionTools(coeff_ab_mo, rand_occupations, olp_ab_ab, num_atoms, ab_atom_indices)
 
 
 def test_mulliken_populations():
     """Test orbstools.mulliken.mulliken_populations."""
+    # get random unitary matrix
+    unitary = np.linalg.svd(np.random.rand(20, 20))[0]
+    # get random olp_ab_ab
+    olp_ab_ab = (unitary * np.random.rand(20)).dot(unitary.T)
+    norm = np.diag(olp_ab_ab) ** (-0.5)
+    olp_ab_ab *= norm[:, None]
+    olp_ab_ab *= norm[None, :]
+    # get random mo's
+    coeff_ab_mo = np.random.rand(20, 15) - 0.5
+    coeff_ab_mo *= np.diag(coeff_ab_mo.T.dot(olp_ab_ab).dot(coeff_ab_mo)) ** (-0.5)
+    occupations = np.random.rand(15)
+    num_atoms = 4
+    ab_atom_indices = np.array([0, 1, 2, 1, 1, 0, 2, 1, 0, 2, 1, 2, 0, 1, 2, 0, 3, 3, 1, 0])
+
+    atom_weights = np.random.rand(4, 20, 20)
+    atom_weights += np.swapaxes(atom_weights, 1, 2)
+    atom_weights /= np.sum(atom_weights, axis=0)[None, :, :]
+    orbpart = OrbitalPartitionTools(coeff_ab_mo, occupations, olp_ab_ab, num_atoms, ab_atom_indices)
+    assert_raises(ValueError, orbpart.mulliken_populations, atom_weights=np.random.rand(3, 20, 20))
+    rand_weights = np.random.rand(4, 20, 19)
+    assert_raises(ValueError, orbpart.mulliken_populations, atom_weights=np.random.rand(3, 20, 20))
+    rand_weights = np.random.rand(4, 20, 20)
+    assert_raises(ValueError, orbpart.mulliken_populations, atom_weights=rand_weights)
+    rand_weights = np.random.rand(4, 20, 20)
+    rand_weights += np.swapaxes(rand_weights, 1, 2)
+    assert_raises(ValueError, orbpart.mulliken_populations, atom_weights=np.random.rand(3, 20, 20))
+
     # Model system
     coeff_ab_mo = np.identity(10)
     occupations = np.array([2] * 4 + [0] * 6)
@@ -294,7 +268,9 @@ def test_mulliken_populations():
     ab_atom_indices = np.array([0, 0, 1, 1, 0, 0, 1, 1, 0, 1])
     assert np.allclose(
         np.array([4, 4]),
-        mulliken_populations(coeff_ab_mo, occupations, olp_ab_ab, num_atoms, ab_atom_indices),
+        OrbitalPartitionTools(
+            coeff_ab_mo, occupations, olp_ab_ab, num_atoms, ab_atom_indices
+        ).mulliken_populations(),
     )
     # H2O RHF/STO-3G
     coeff_ab_mo = np.array(
@@ -381,7 +357,9 @@ def test_mulliken_populations():
     assert np.allclose(
         np.array([-0.38189777, 0.1909489, 0.19094886]),
         np.array([8, 1, 1])
-        - mulliken_populations(coeff_ab_mo, occupations, olp_ab_ab, num_atoms, ab_atom_indices),
+        - OrbitalPartitionTools(
+            coeff_ab_mo, occupations, olp_ab_ab, num_atoms, ab_atom_indices
+        ).mulliken_populations(),
     )
 
 
@@ -396,11 +374,10 @@ def test_mulliken_populations_newbasis():
     with path("chemtools.data", "naclo4_ab_atom_indices.npy") as fname:
         ab_atom_indices = np.load(str(fname))
 
+    orbpart = OrbitalPartitionTools(coeff_ab_mo, occupations, olp_ab_ab, 6, ab_atom_indices)
     assert np.allclose(
-        mulliken_populations_newbasis(
-            coeff_ab_mo, occupations, olp_ab_ab, 6, np.identity(124), ab_atom_indices
-        ),
-        mulliken_populations(coeff_ab_mo, occupations, olp_ab_ab, 6, ab_atom_indices),
+        orbpart.mulliken_populations_newbasis(np.identity(124), ab_atom_indices),
+        orbpart.mulliken_populations(),
     )
 
     coeff_ab_rand = np.linalg.svd(np.random.rand(124, 124))[0].T
@@ -410,12 +387,14 @@ def test_mulliken_populations_newbasis():
     coeff_ab_rand *= np.diag(olp_rand_rand) ** (-0.5)
     olp_rand_rand = coeff_ab_rand.T.dot(olp_ab_ab).dot(coeff_ab_rand)
     coeff_rand_mo = project(olp_rand_rand, coeff_ab_rand.T.dot(olp_ab_ab).dot(coeff_ab_mo))
+
+    orbpart = OrbitalPartitionTools(coeff_ab_mo, occupations, olp_ab_ab, 6, rand_atom_indices)
     assert np.allclose(coeff_ab_rand.dot(coeff_rand_mo), coeff_ab_mo)
     assert np.allclose(
-        mulliken_populations_newbasis(
-            coeff_ab_mo, occupations, olp_ab_ab, 6, coeff_ab_rand, rand_atom_indices
-        ),
-        mulliken_populations(coeff_rand_mo, occupations, olp_rand_rand, 6, rand_atom_indices),
+        orbpart.mulliken_populations_newbasis(coeff_ab_rand, rand_atom_indices),
+        OrbitalPartitionTools(
+            coeff_rand_mo, occupations, olp_rand_rand, 6, rand_atom_indices
+        ).mulliken_populations(),
     )
 
 
@@ -431,10 +410,9 @@ def test_lowdin_populations():
         ab_atom_indices = np.load(str(fname))
 
     coeff_ab_oab = power_symmetric(olp_ab_ab, -0.5)
+    orbpart = OrbitalPartitionTools(coeff_ab_mo, occupations, olp_ab_ab, 6, ab_atom_indices)
     assert np.allclose(coeff_ab_oab.T.dot(olp_ab_ab).dot(coeff_ab_oab), np.identity(124))
     assert np.allclose(
-        mulliken_populations_newbasis(
-            coeff_ab_mo, occupations, olp_ab_ab, 6, coeff_ab_oab, ab_atom_indices
-        ),
-        lowdin_populations(coeff_ab_mo, occupations, olp_ab_ab, 6, ab_atom_indices),
+        orbpart.mulliken_populations_newbasis(coeff_ab_oab, ab_atom_indices),
+        orbpart.lowdin_populations(),
     )
