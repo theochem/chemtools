@@ -20,7 +20,7 @@ nci = NCI.from_file('formic_acid_dimer.fchk', grid=cub)
 #    & formic_acid_dimer.vmd
 #    To visualize the iso-surface, use command: $ vmd -e formic_acid_dimer.vmd
 
-nci.generate_plot('formic_acid_dimer', denslim=(-0.15,0.15))
+# nci.generate_plot('formic_acid_dimer', denslim=(-0.15, 0.15))
 nci.generate_scripts('formic_acid_dimer')
 
 
