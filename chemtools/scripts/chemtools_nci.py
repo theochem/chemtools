@@ -36,12 +36,12 @@ Generate a VMD (Visual Molecular Dynamics) script as well as cube files required
 for visualizing non-covalent interactions (NCI) with VMD package.
 
 The generated files include:
-  fname_output.vmd             The VMD script.
-  fname_output-dens.cube       The signed density cube file.
-  fname_output-grad.cube       The reduced density gradient cube file.
+  output.vmd             The VMD script.
+  output-dens.cube       The signed density cube file.
+  output-grad.cube       The reduced density gradient cube file.
 
 The values of signed density (density multiplied by the sign of 2nd eigenvalue of
-Hessian) are multiplied by 100.0 when being recorded in cube file. Similiar to NCIPlot
+Hessian) are multiplied by 100.0 when being recorded in cube file. Similar to NCIPlot
 program, this is used for coloring reduced density gradient iso-surface(s).
 The values of reduced density gradient are masked using the given denscut argument
 before being recorded in cube file. More specifically, similar to NCIPlot program,
@@ -50,14 +50,12 @@ set to 100.0 to have VMD only display reduced density gradient iso-surface(s) fo
 region with density < denscut.
 
 If VMD is setup on your system, you can visualize NCI with the command below:
-    $ vmd -e fname_output.vmd
+    $ vmd -e output.vmd
 For instruction on how to open the script from the VMD interactive environment,
 please refer to ChemTools website.
 
-Note: The fname_output.vmd script requires fname_output-dens.cube &
-      fname_output-grad.cube to plot NCI in VMD software (they files should
-      be all in the same directory).
-Note: The generated VMD script is the same as the NCIPlot Software version 1.0.
+Note: The output.vmd script requires output-dens.cube & output-grad.cube to plot NCI
+      in VMD software (they files should be all in the same directory).
 """
 
 
@@ -66,11 +64,11 @@ def parse_args_nci(subparser):
 
     # required arguments
     subparser.add_argument(
-        'file_wfn',
+        'fname',
         help='Wave-function file. Supported formats: fchk, mkl, molden.input, wfn.')
 
     subparser.add_argument(
-        'output_name', help='Name of generated cube files and vmd script.')
+        'output', help='Name of generated cube files and vmd script.')
 
     # optional arguments
     subparser.add_argument(
@@ -93,7 +91,7 @@ def parse_args_nci(subparser):
         action='store_true',
         help='plot reduced density gradient vs. signed density (density'
         'multiplied by sign of hessian\'s 2nd eigenvalue). This generates a '
-        'output_name.png file. This plot is not affected by the value of '
+        'output.png file. This plot is not affected by the value of '
         'denscut argument. [default=%(default)s]')
 
     subparser.add_argument(
@@ -128,7 +126,7 @@ def parse_args_nci(subparser):
 def main_nci(args):
     """Build NCI model and dump VMD script and cube files for visualizing NCI with VMD."""
     # load molecule
-    mol = Molecule.from_file(args.file_wfn)
+    mol = Molecule.from_file(args.fname)
 
     # make cubic grid
     if args.cube.endswith('.cube'):
@@ -145,8 +143,8 @@ def main_nci(args):
     nci = NCI.from_molecule(mol, grid=cube)
 
     # dump files/scripts for visualizing NCI
-    nci.generate_scripts(args.output_name, isosurf=args.isosurface, denscut=args.denscut)
+    nci.generate_scripts(args.output, isosurf=args.isosurface, denscut=args.denscut)
 
     # plot reduced density gradient vs. signed density
     if args.plot:
-        nci.generate_plot(args.output_name, color=args.color)
+        nci.generate_plot(args.output, color=args.color)
