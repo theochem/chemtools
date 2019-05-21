@@ -35,8 +35,7 @@ logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 __all__ = ['parse_args_mot', 'main_mot']
 
 mot_desp = """
-Generate a VMD (Visual Molecular Dynamics) script as well as cube file required
-for visualizing molecular orbitals with VMD package.
+Visualize Molecular Orbitals (MO) using VMD package.
 
 The generated files include:
   output.vmd                 The VMD script.

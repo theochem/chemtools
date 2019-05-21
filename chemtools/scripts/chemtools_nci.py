@@ -32,8 +32,7 @@ __all__ = ['parse_args_nci', 'main_nci']
 
 # description message
 nci_desp = """
-Generate a VMD (Visual Molecular Dynamics) script as well as cube files required
-for visualizing non-covalent interactions (NCI) with VMD package.
+Visualize Non-Covalent Interactions (NCI) using VMD package.
 
 The generated files include:
   output.vmd             The VMD script.

@@ -32,8 +32,7 @@ __all__ = ['parse_args_lol', 'main_lol']
 
 # description message
 lol_dest = """
-Generate a VMD (Visual Molecular Dynamics) script as well as cube file required
-for visualizing Localized Orbital Locator (LOL) with VMD package.
+Visualize Localized Orbital Locator (LOL) using VMD package.
 
 The generated files include:
   output.vmd             The VMD script.

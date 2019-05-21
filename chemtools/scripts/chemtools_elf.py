@@ -32,8 +32,7 @@ __all__ = ['parse_args_elf', 'main_elf']
 
 # description message
 elf_dest = """
-Generate a VMD (Visual Molecular Dynamics) script as well as cube file required
-for visualizing Electron Localization Function (ELF) with VMD package.
+Visualize Electron Localization Function (ELF) using VMD package.
 
 The generated files include:
   output.vmd             The VMD script.
