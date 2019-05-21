@@ -136,4 +136,5 @@ def main_esp(args):
 
     cube.generate_cube(rhoname, mol.compute_density(cube.points))
     cube.generate_cube(espname, mol.compute_esp(cube.points))
-    print_vmd_script_isosurface(vmdname, rhoname, colorfile=espname, isosurf=args.isosurface)
+    print_vmd_script_isosurface(vmdname, rhoname, colorfile=espname, isosurf=args.isosurface,
+                                scalemin=args.scalemin, scalemax=args.scalemax)
