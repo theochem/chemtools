@@ -36,15 +36,15 @@ Generate a VMD (Visual Molecular Dynamics) script as well as cube file required
 for visualizing Electron Localization Function (ELF) with VMD package.
 
 The generated files include:
-  fname_output.vmd             The VMD script.
-  fname_output-elf.cube        The ELF cube file.
+  output.vmd             The VMD script.
+  output-elf.cube        The ELF cube file.
 
 If VMD is setup on your system, you can visualize ELF with the command below:
-    $ vmd -e fname_output.vmd
+    $ vmd -e output.vmd
 For instruction on how to open the script from the VMD interactive environment,
 please refer to ChemTools website.
 
-Note: The fname_output.vmd script requires fname_output-elf.cube to plot ELF
+Note: The output.vmd script requires output-elf.cube to plot ELF
       in VMD software (they files should be all in the same directory).
 """
 
@@ -54,11 +54,11 @@ def parse_args_elf(subparser):
 
     # required arguments
     subparser.add_argument(
-        'file_wfn',
+        'fname',
         help='wave-function file. Supported formats: fchk, mkl, molden.input, wfn.')
 
     subparser.add_argument(
-        'output_name', help='name of generated cube file and vmd script.')
+        'output', help='name of generated cube file and vmd script.')
 
     # optional arguments
     subparser.add_argument(
@@ -110,7 +110,7 @@ def parse_args_elf(subparser):
 def main_elf(args):
     """Build ELF model and dump VMD script and cube files for visualizing ELF."""
     # load molecule
-    mol = Molecule.from_file(args.file_wfn)
+    mol = Molecule.from_file(args.fname)
 
     # make cubic grid
     if args.cube.endswith('.cube'):
@@ -128,4 +128,4 @@ def main_elf(args):
                             trans_a=args.trans_a, denscut=args.denscut)
 
     # dump file/script for visualizing ELF
-    elf.generate_scripts(args.output_name, isosurf=args.isosurface)
+    elf.generate_scripts(args.output, isosurf=args.isosurface)
