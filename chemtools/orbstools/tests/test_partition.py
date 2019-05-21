@@ -177,25 +177,25 @@ def test_init():
         ab_atom_indices,
     )
     assert_raises(
-        TypeError,
+        ValueError,
         OrbitalPartitionTools,
         coeff_ab_mo,
         occupations,
         np.random.rand(20, 20),
         num_atoms,
-        ab_atom_indices.tolist(),
+        ab_atom_indices,
     )
 
     rand_olp_ab_ab = np.random.rand(20, 20)
     rand_olp_ab_ab += rand_olp_ab_ab.T
     assert_raises(
-        TypeError,
+        ValueError,
         OrbitalPartitionTools,
         coeff_ab_mo,
         occupations,
         rand_olp_ab_ab,
         num_atoms,
-        ab_atom_indices.tolist(),
+        ab_atom_indices,
     )
 
     rand_olp_ab_ab = np.random.rand(20, 20)
@@ -204,13 +204,13 @@ def test_init():
     rand_olp_ab_ab *= rand_norm[:, None]
     rand_olp_ab_ab *= rand_norm[None, :]
     assert_raises(
-        TypeError,
+        ValueError,
         OrbitalPartitionTools,
         coeff_ab_mo,
         occupations,
         rand_olp_ab_ab,
         num_atoms,
-        ab_atom_indices.tolist(),
+        ab_atom_indices,
     )
 
     rand_occupations = np.random.rand(15)
@@ -227,8 +227,40 @@ def test_init():
 
     # not sure how to check that the warning is raised but the following code prints the warning
     rand_occupations = np.random.rand(15)
-    rand_occupations[6] = 2
+    rand_occupations[6] = 2.1
     OrbitalPartitionTools(coeff_ab_mo, rand_occupations, olp_ab_ab, num_atoms, ab_atom_indices)
+
+    assert_raises(
+        ValueError,
+        OrbitalPartitionTools,
+        coeff_ab_mo,
+        occupations,
+        olp_ab_ab,
+        num_atoms,
+        np.hstack([ab_atom_indices, 1]),
+    )
+    bad_ab_atom_indices = ab_atom_indices.copy()
+    bad_ab_atom_indices[0] = -1
+    assert_raises(
+        ValueError,
+        OrbitalPartitionTools,
+        coeff_ab_mo,
+        occupations,
+        olp_ab_ab,
+        num_atoms,
+        bad_ab_atom_indices,
+    )
+    bad_ab_atom_indices = ab_atom_indices.copy()
+    bad_ab_atom_indices[0] = num_atoms
+    assert_raises(
+        ValueError,
+        OrbitalPartitionTools,
+        coeff_ab_mo,
+        occupations,
+        olp_ab_ab,
+        num_atoms,
+        bad_ab_atom_indices,
+    )
 
 
 def test_mulliken_populations():
@@ -251,14 +283,14 @@ def test_mulliken_populations():
     atom_weights += np.swapaxes(atom_weights, 1, 2)
     atom_weights /= np.sum(atom_weights, axis=0)[None, :, :]
     orbpart = OrbitalPartitionTools(coeff_ab_mo, occupations, olp_ab_ab, num_atoms, ab_atom_indices)
+    assert_raises(TypeError, orbpart.mulliken_populations, atom_weights=atom_weights.tolist())
     assert_raises(ValueError, orbpart.mulliken_populations, atom_weights=np.random.rand(3, 20, 20))
-    rand_weights = np.random.rand(4, 20, 19)
-    assert_raises(ValueError, orbpart.mulliken_populations, atom_weights=np.random.rand(3, 20, 20))
-    rand_weights = np.random.rand(4, 20, 20)
-    assert_raises(ValueError, orbpart.mulliken_populations, atom_weights=rand_weights)
+    assert_raises(ValueError, orbpart.mulliken_populations, atom_weights=np.random.rand(4, 20, 19))
+    assert_raises(ValueError, orbpart.mulliken_populations, atom_weights=np.random.rand(4, 20, 20))
     rand_weights = np.random.rand(4, 20, 20)
     rand_weights += np.swapaxes(rand_weights, 1, 2)
-    assert_raises(ValueError, orbpart.mulliken_populations, atom_weights=np.random.rand(3, 20, 20))
+    assert_raises(ValueError, orbpart.mulliken_populations, atom_weights=rand_weights)
+    orbpart.mulliken_populations(atom_weights=atom_weights)
 
     # Model system
     coeff_ab_mo = np.identity(10)

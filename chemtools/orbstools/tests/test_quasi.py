@@ -77,10 +77,17 @@ def test_check_input():
     assert_raises(TypeError, _check_input, olp_ab_ab=olp_ab_ab.tolist())
     assert_raises(TypeError, _check_input, olp_ab_ab=olp_ab_ab.reshape(10, 10, 1))
     assert_raises(TypeError, _check_input, olp_ab_ab=olp_ab_ab.reshape(4, 25))
-    assert_raises(ValueError, _check_input, olp_ab_ab=olp_ab_ab * np.random.rand(10))
-    assert_raises(ValueError, _check_input, olp_ab_ab=np.random.rand(10, 10))
+    bad_olp_ab_ab = olp_ab_ab.copy()
+    bad_olp_ab_ab *= np.arange(10)[:, None]
+    bad_olp_ab_ab *= np.arange(10)[None, :]
+    assert_raises(ValueError, _check_input, olp_ab_ab=bad_olp_ab_ab)
     bad_olp_ab_ab = np.random.rand(10, 10)
-    assert_raises(ValueError, _check_input, olp_ab_ab=bad_olp_ab_ab + bad_olp_ab_ab.T)
+    bad_olp_ab_ab[np.arange(10), np.arange(10)] = 1
+    assert_raises(ValueError, _check_input, olp_ab_ab=bad_olp_ab_ab)
+    bad_olp_ab_ab = np.random.rand(10, 10)
+    bad_olp_ab_ab += bad_olp_ab_ab.T
+    bad_olp_ab_ab[np.arange(10), np.arange(10)] = 1
+    assert_raises(ValueError, _check_input, olp_ab_ab=bad_olp_ab_ab)
     _check_input(olp_ab_ab=olp_ab_ab)
 
     assert_raises(TypeError, _check_input, olp_aao_ab=olp_aao_ab.tolist())
@@ -91,9 +98,13 @@ def test_check_input():
     assert_raises(TypeError, _check_input, olp_aao_aao=olp_aao_aao.reshape(5, 5, 1))
     assert_raises(TypeError, _check_input, olp_aao_aao=np.random.rand(4, 5))
     assert_raises(ValueError, _check_input, olp_aao_aao=olp_aao_aao * np.random.rand(5))
-    assert_raises(ValueError, _check_input, olp_aao_aao=np.random.rand(5, 5))
-    bad_olp_aao_aao = np.random.rand(5, 5)
-    assert_raises(ValueError, _check_input, olp_aao_aao=bad_olp_aao_aao + bad_olp_aao_aao.T)
+    bad_olp_aao_aao = np.random.rand(10, 10)
+    bad_olp_aao_aao[np.arange(10), np.arange(10)] = 1
+    assert_raises(ValueError, _check_input, olp_aao_aao=bad_olp_aao_aao)
+    bad_olp_aao_aao = np.random.rand(10, 10)
+    bad_olp_aao_aao += bad_olp_aao_aao.T
+    bad_olp_aao_aao[np.arange(10), np.arange(10)] = 1
+    assert_raises(ValueError, _check_input, olp_aao_aao=bad_olp_aao_aao)
     _check_input(olp_aao_aao=olp_aao_aao)
 
     assert_raises(
