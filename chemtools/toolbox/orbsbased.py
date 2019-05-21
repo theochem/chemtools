@@ -111,7 +111,8 @@ class OrbitalLocalTool(object):
         index = np.copy(np.asarray(index))
         return self._molecule.compute_molecular_orbital(self._points, spin, index=index)
 
-    def compute_average_local_ionization_energy(self):
+    @property
+    def average_local_ionization_energy(self):
         r"""Average local ionization energy of alpha and beta electrons.
 
         .. math::
