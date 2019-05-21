@@ -93,12 +93,13 @@ class SquareRootGlobalTool(BaseGlobalTool):
         check_number_electrons(n_elec, self._n0 - 1, self._n0 + 1)
 
         # Square Root Model goes to infinity as N goes to infinity.
-        output = self._params[0] + self._params[1] * np.sqrt(n_elec) + self._params[2] * n_elec
         if np.isinf(n_elec):
             if self.params[2] > 0.:
                 output = np.inf
             else:
                 output = -np.inf
+        else:
+            output = self._params[0] + self._params[1] * np.sqrt(n_elec) + self._params[2] * n_elec
         return output
 
     @doc_inherit(BaseGlobalTool)
