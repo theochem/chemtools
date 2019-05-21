@@ -4,7 +4,7 @@ try:
 except ImportError:
     from importlib.resources import path
 
-from chemtools.orbstools.mulliken import OrbitalPartitionTools
+from chemtools.orbstools.partition import OrbitalPartitionTools
 from chemtools.orbstools.orthogonalization import power_symmetric
 from chemtools.orbstools.quasi import project
 import numpy as np
@@ -232,7 +232,7 @@ def test_init():
 
 
 def test_mulliken_populations():
-    """Test orbstools.mulliken.mulliken_populations."""
+    """Test orbstools.partition.OrbitalPartitionTools.mulliken_populations."""
     # get random unitary matrix
     unitary = np.linalg.svd(np.random.rand(20, 20))[0]
     # get random olp_ab_ab
@@ -364,7 +364,7 @@ def test_mulliken_populations():
 
 
 def test_mulliken_populations_newbasis():
-    """Test orbstools.mulliken.mulliken_populations_newabasis."""
+    """Test orbstools.partition.OrbitalPartitionTools.mulliken_populations_newabasis."""
     with path("chemtools.data", "naclo4_coeff_ab_mo.npy") as fname:
         coeff_ab_mo = np.load(str(fname))
     with path("chemtools.data", "naclo4_olp_ab_ab.npy") as fname:
@@ -399,7 +399,7 @@ def test_mulliken_populations_newbasis():
 
 
 def test_lowdin_populations():
-    """Test orbstools.mulliken.lowdin_populations."""
+    """Test orbstools.partition.OrbitalPartitionTools.lowdin_populations."""
     with path("chemtools.data", "naclo4_coeff_ab_mo.npy") as fname:
         coeff_ab_mo = np.load(str(fname))
     with path("chemtools.data", "naclo4_olp_ab_ab.npy") as fname:

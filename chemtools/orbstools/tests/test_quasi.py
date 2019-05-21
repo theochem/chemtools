@@ -4,7 +4,7 @@ try:
 except ImportError:
     from importlib.resources import path
 
-from chemtools.orbstools.mulliken import OrbitalPartitionTools
+from chemtools.orbstools.partition import OrbitalPartitionTools
 from chemtools.orbstools.quasi import _check_input, make_mmo, project, quambo, quao
 import numpy as np
 from numpy.testing import assert_raises
