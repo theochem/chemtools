@@ -138,17 +138,15 @@ def main_nci(args):
         # make a cubic grid
         spacing, extension = [float(item) for item in args.cube.split(',')]
         cube = UniformGrid.from_molecule(mol, spacing=spacing, extension=extension, rotate=True)
-
     else:
-        raise ValueError('Argument cube={0} is not recognized!'.format(
-            args.cube))
+        raise ValueError('Argument cube={0} is not recognized!'.format(args.cube))
 
     # build NCI model
-    nci = NCI.from_molecule(mol, cube)
+    nci = NCI.from_molecule(mol, grid=cube)
 
     # dump files/scripts for visualizing NCI
-    nci.generate_scripts(args.output_name, args.isosurface, args.denscut)
+    nci.generate_scripts(args.output_name, isosurf=args.isosurface, denscut=args.denscut)
 
     # plot reduced density gradient vs. signed density
-    if args.generate_plot:
+    if args.plot:
         nci.generate_plot(args.output_name, color=args.color)
