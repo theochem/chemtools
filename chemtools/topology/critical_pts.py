@@ -124,7 +124,7 @@ class Topo(object):
         y = np.arange(min_xyz[1] - extra, max_xyz[1] + extra, 0.2)
         z = np.arange(min_xyz[2] - extra, max_xyz[2] + extra, 0.2)
         g = np.meshgrid(x, y, z)
-        return np.vstack(np.ravel(i) for i in g).T
+        return np.stack([i.ravel() for i in g], axis=1)
 
     def add_points(self, points):
         """Add a point to exiting initial guess points.
