@@ -135,12 +135,10 @@ def main_conceptual_local(args):
         spacing, threshold = [float(item) for item in args.cube.split(',')]
         cube = UniformGrid.from_molecule(mol, spacing, threshold)
     else:
-        raise ValueError('Argument cube={0} is not recognized!'.format(
-            args.cube))
+        raise ValueError('Argument cube={0} is not recognized!'.format(args.cube))
 
     # build global tool
-    model = LocalConceptualDFT.from_file(args.fname, args.model,
-                                         cube.points)
+    model = LocalConceptualDFT.from_file(args.fname, args.model, cube.points)
     # check whether local property exists
     if not hasattr(model, args.prop):
         raise ValueError('The {0} local conceptual DFT class does not contain '
@@ -151,10 +149,9 @@ def main_conceptual_local(args):
             '{1} local conceptual DFT.'.format(args.prop, args.model))
 
     # name of files
-    cubefile = '{0}.cube'.format(args.output)
-    vmdfile = '{0}.vmd'.format(args.output)
+    cubfname = '{0}.cube'.format(args.output)
+    vmdfname = '{0}.vmd'.format(args.output)
     # dump cube file of local property
-    cube.generate_cube(cubefile, getattr(model, args.prop))
+    cube.generate_cube(cubfname, getattr(model, args.prop))
     # generate VMD scripts for visualizing iso-surface with VMD
-    print_vmd_script_isosurface(vmdfile, cubefile, isosurf=args.isosurface,
-                                material='BlownGlass')
+    print_vmd_script_isosurface(vmdfname, cubfname, isosurf=args.isosurface, material='BlownGlass')
