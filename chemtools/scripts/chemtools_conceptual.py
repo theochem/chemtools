@@ -70,7 +70,7 @@ def parse_args_local(subparser):
     # required arguments
     subparser.add_argument('model', help='Energy model.')
     subparser.add_argument(
-        'property',
+        'prop',
         type=str,
         choices=property_list,
         metavar='property',
