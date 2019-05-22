@@ -30,6 +30,7 @@ from chemtools import Molecule
 from chemtools import UniformGrid, print_vmd_script_isosurface
 from chemtools import GlobalConceptualDFT, LocalConceptualDFT
 
+
 __all__ = [
     'parse_args_global', 'parse_args_local', 'main_conceptual_global',
     'main_conceptual_local'
@@ -44,7 +45,7 @@ def parse_args_global(subparser):
     # required arguments
     subparser.add_argument('model', help='Energy model.')
     subparser.add_argument(
-        'file_wfn',
+        'fname',
         nargs='*',
         help='Wave-function file. Supported formats: fchk, mkl, molden.input, wfn.')
 
@@ -78,9 +79,9 @@ def parse_args_local(subparser):
         help='The local property for plotting iso-surface. '
         'Choices: {{{}}}'.format(", ".join(property_list)))
     subparser.add_argument(
-        'output_name', help='Name of generated cube files and vmd script.')
+        'output', help='Name of generated cube files and vmd script.')
     subparser.add_argument(
-        'file_wfn',
+        'fname',
         nargs='*',
         help='Wave-function file(s). Supported formats: fchk, mkl, molden.'
         'input, wfn. If one files is provided, the frontier moleculer orbital'
@@ -115,7 +116,7 @@ def parse_args_local(subparser):
 def main_conceptual_global(args):
     """Build GlobalConceptualDFT class and print global descriptors."""
     # build global tool
-    model = GlobalConceptualDFT.from_file(args.file_wfn, args.model)
+    model = GlobalConceptualDFT.from_file(args.fname, args.model)
     # print available descriptors
     print(model)
 
@@ -123,7 +124,7 @@ def main_conceptual_global(args):
 def main_conceptual_local(args):
     """Build LocalConceptualDFT class and dump a cube file of local descriptor."""
     # load the first molecule
-    mol = Molecule.from_file(args.file_wfn[0])
+    mol = Molecule.from_file(args.fname[0])
 
     # make cubic grid
     if args.cube.endswith('.cube'):
@@ -138,7 +139,7 @@ def main_conceptual_local(args):
             args.cube))
 
     # build global tool
-    model = LocalConceptualDFT.from_file(args.file_wfn, args.model,
+    model = LocalConceptualDFT.from_file(args.fname, args.model,
                                          cube.points)
     # check whether local property exists
     if not hasattr(model, args.prop):
@@ -150,8 +151,8 @@ def main_conceptual_local(args):
             '{1} local conceptual DFT.'.format(args.prop, args.model))
 
     # name of files
-    cubefile = '{0}.cube'.format(args.output_name)
-    vmdfile = '{0}.vmd'.format(args.output_name)
+    cubefile = '{0}.cube'.format(args.output)
+    vmdfile = '{0}.vmd'.format(args.output)
     # dump cube file of local property
     cube.generate_cube(cubefile, getattr(model, args.prop))
     # generate VMD scripts for visualizing iso-surface with VMD
