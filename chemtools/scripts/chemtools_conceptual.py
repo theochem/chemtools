@@ -62,6 +62,7 @@ def parse_args_local(subparser):
     property_list = [
         'ff_plus',
         'ff_minus',
+        'ff_zero',
         'fukui_function',
         'dual_descriptor',
         # add more property
