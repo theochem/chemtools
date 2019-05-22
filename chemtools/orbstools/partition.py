@@ -1,4 +1,6 @@
 """Mulliken population analysis."""
+import itertools as it
+
 import numpy as np
 from chemtools.orbstools.orthogonalization import power_symmetric
 from chemtools.orbstools.quasi import project
@@ -46,6 +48,8 @@ class OrbitalPartitionTools:
         Return the Mulliken populations of the given system in a new basis set.
     lowdin_populations(self, atom_weights=None)
         Return the Lowdin populations of the molecular orbitals in atomic orbital basis set.
+    bond_order(self)
+        Return the bond order.
 
     """
 
@@ -440,3 +444,41 @@ class OrbitalPartitionTools:
         return self.mulliken_populations_newbasis(
             coeff_ab_oab, self.ab_atom_indices, new_atom_weights=atom_weights
         )
+
+    @property
+    def bond_order(self):
+        """Return the bond order.
+
+        Returns
+        -------
+        bond_order : np.ndarray(N, N)
+            Bond orders of each pair of atoms.
+
+        """
+        num_atoms = self.num_atoms
+        ab_atom_indices = self.ab_atom_indices
+
+        density = (self.coeff_ab_mo * self.occupations[None, :]).dot(self.coeff_ab_mo.T)
+        raw_pops = self.olp_ab_ab.dot(density)
+
+        # filter out the irrelevant atoms
+        bond_order = np.zeros((num_atoms, num_atoms))
+        for atom_a, atom_b in it.combinations_with_replacement(range(num_atoms), 2):
+            # select the populations that are associated with atoms a and b
+            raw_pops_ab = raw_pops[
+                np.logical_and(
+                    ab_atom_indices[:, None] == atom_a, ab_atom_indices[None, :] == atom_b
+                )
+            ]
+            bond_order[atom_a, atom_b] = 2 * np.sum(raw_pops_ab)
+            # equivalent to the following
+            # for i, index_one in enumerate(ab_atom_indices):
+            #     for j, index_two in enumerate(ab_atom_indices):
+            #         if atom_a == index_one and atom_b == index_two:
+            #             bond_order[atom_a, atom_b] += raw_pops[i, j]
+        bond_order += bond_order.transpose()
+        # adding the transpose duplicates the diagonal
+        bond_order[np.arange(num_atoms), np.arange(num_atoms)] /= 2
+
+        bond_order[np.arange(self.num_atoms), np.arange(self.num_atoms)] = 0
+        return bond_order

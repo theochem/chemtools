@@ -448,3 +448,31 @@ def test_lowdin_populations():
         orbpart.mulliken_populations_newbasis(coeff_ab_oab, ab_atom_indices),
         orbpart.lowdin_populations(),
     )
+
+
+# FIXME: test compares against more explicit code and not reference
+def test_bond_order():
+    """Test orbstools.partition.OrbitalPartitionTools.bond_order."""
+    with path("chemtools.data", "naclo4_coeff_ab_mo.npy") as fname:
+        coeff_ab_mo = np.load(str(fname))
+    with path("chemtools.data", "naclo4_olp_ab_ab.npy") as fname:
+        olp_ab_ab = np.load(str(fname))
+    with path("chemtools.data", "naclo4_occupations.npy") as fname:
+        occupations = np.load(str(fname))
+    with path("chemtools.data", "naclo4_ab_atom_indices.npy") as fname:
+        ab_atom_indices = np.load(str(fname))
+
+    bond_order = np.zeros((6, 6))
+    density = (coeff_ab_mo * occupations[None, :]).dot(coeff_ab_mo.T)
+    raw_pops = olp_ab_ab.dot(density)
+    for atom_one in range(6):
+        for atom_two in range(6):
+            if atom_one == atom_two:
+                continue
+            for i, index_one in enumerate(ab_atom_indices):
+                for j, index_two in enumerate(ab_atom_indices):
+                    if index_one == atom_one and index_two == atom_two:
+                        bond_order[atom_one, atom_two] += 2 * raw_pops[i, j]
+
+    orbpart = OrbitalPartitionTools(coeff_ab_mo, occupations, olp_ab_ab, 6, ab_atom_indices)
+    assert np.allclose(bond_order, orbpart.bond_order)
