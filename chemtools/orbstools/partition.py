@@ -224,7 +224,7 @@ class OrbitalPartitionTools:
             N &= \sum_i^{occ} n_i \braket{\psi_i | \psi_i}\\
             &= \sum_i^{occ} n_i \sum_{jk} C_{ij}^\dagger \braket{\phi_j | \phi_k} C_{ki}\\
             &= \sum_{jk} \braket{\phi_j | \phi_k} \sum_i^{occ} C_{ki} n_i C_{ij}^\dagger\\
-            &= \sum_{jk} S_{jk} X_{kj}\\
+            &= \sum_{jk} S_{jk} P_{kj}\\
 
         where
 

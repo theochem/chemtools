@@ -307,7 +307,7 @@ def test_quao():
     coeff_quao_omo = project(olp_quao_quao, olp_quao_omo)
     pop = OrbitalPartitionTools(
         coeff_quao_omo, occupations[indices_span], olp_quao_quao, 6, ab_atom_indices
-    ). mulliken_populations()
+    ).mulliken_populations()
     partial_pop = np.array([11, 17, 8, 8, 8, 8]) - pop
     assert np.allclose(
         partial_pop, np.array([0.967, 2.498, -0.819, -0.914, -0.914, -0.819]), atol=1e-3
