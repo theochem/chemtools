@@ -502,3 +502,79 @@ def test_bond_order():
 
     orbpart = OrbitalPartitionTools(coeff_ab_mo, occupations, olp_ab_ab, 6, ab_atom_indices)
     assert np.allclose(bond_order, orbpart.bond_order)
+
+
+def test_bond_order_wiberg_mayer():
+    """Test orbstools.partition.OrbitalPartitionTools.bond_order_wilberg_mayer."""
+    with path("chemtools.data", "naclo4_coeff_ab_mo.npy") as fname:
+        coeff_ab_mo = np.load(str(fname))
+    with path("chemtools.data", "naclo4_olp_ab_ab.npy") as fname:
+        olp_ab_ab = np.load(str(fname))
+    with path("chemtools.data", "naclo4_occupations.npy") as fname:
+        occupations = np.load(str(fname))
+    with path("chemtools.data", "naclo4_ab_atom_indices.npy") as fname:
+        ab_atom_indices = np.load(str(fname))
+
+    density = (coeff_ab_mo * occupations[None, :]).dot(coeff_ab_mo.T)
+    raw_pops = olp_ab_ab.dot(density)
+    bond_order = np.zeros((6, 6))
+    for atom_one in range(6):
+        for atom_two in range(6):
+            if atom_one == atom_two:
+                continue
+            for i, index_one in enumerate(ab_atom_indices):
+                for j, index_two in enumerate(ab_atom_indices):
+                    if index_one == atom_one and index_two == atom_two:
+                        bond_order[atom_one, atom_two] += raw_pops[i, j] * raw_pops[j, i]
+
+    orbpart = OrbitalPartitionTools(coeff_ab_mo, occupations, olp_ab_ab, 6, ab_atom_indices)
+    assert np.allclose(bond_order, orbpart.bond_order_wiberg_mayer)
+
+
+def test_bond_order_wiberg_mayer_unrestricted():
+    """Test OrbitalPartitionTools.bond_order_wiberg_mayer against Gaussian results.
+
+    Results are compared with those generated from Gaussian. The system is H2O UB3LYP/aug-cc-pVDZ,
+    singlet, and at zero net charge. The following the its coordinates (au):
+
+    O 0.0159484498, 0.0170042791, 0.0238579956
+    H -0.772778442, 0.561446550, 1.57501231
+    H 1.29850109, 1.26951236, -0.309113326
+
+    """
+    with path("chemtools.data", "h2o_coeff_ab_mo_alpha.npy") as fname:
+        coeff_ab_mo_alpha = np.load(str(fname))
+    with path("chemtools.data", "h2o_coeff_ab_mo_beta.npy") as fname:
+        coeff_ab_mo_beta = np.load(str(fname))
+    with path("chemtools.data", "h2o_occupations_alpha.npy") as fname:
+        occupations_alpha = np.load(str(fname))
+    with path("chemtools.data", "h2o_occupations_beta.npy") as fname:
+        occupations_beta = np.load(str(fname))
+    with path("chemtools.data", "h2o_olp_ab_ab_alpha.npy") as fname:
+        olp_ab_ab_alpha = np.load(str(fname))
+    with path("chemtools.data", "h2o_olp_ab_ab_beta.npy") as fname:
+        olp_ab_ab_beta = np.load(str(fname))
+    with path("chemtools.data", "h2o_ab_basis_map_alpha.npy") as fname:
+        ab_atom_indices_alpha = np.load(str(fname))
+    with path("chemtools.data", "h2o_ab_basis_map_beta.npy") as fname:
+        ab_atom_indices_beta = np.load(str(fname))
+
+    orbpart_alpha = OrbitalPartitionTools(
+        coeff_ab_mo_alpha, occupations_alpha, olp_ab_ab_alpha, 3, ab_atom_indices_alpha
+    )
+    orbpart_beta = OrbitalPartitionTools(
+        coeff_ab_mo_beta, occupations_beta, olp_ab_ab_beta, 3, ab_atom_indices_beta
+    )
+    bond_order = np.array(
+        [
+            [0.0, 1.059127, 1.059127],
+            [1.059127, 0.0, -0.008082],
+            [1.059127, -0.008082, 0.0],
+        ]
+    )
+
+    assert np.allclose(
+        bond_order,
+        2 * (orbpart_alpha.bond_order_wiberg_mayer + orbpart_beta.bond_order_wiberg_mayer),
+        atol=1e-6,
+    )

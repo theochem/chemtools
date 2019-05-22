@@ -50,6 +50,8 @@ class OrbitalPartitionTools:
         Return the Lowdin populations of the molecular orbitals in atomic orbital basis set.
     bond_order(self)
         Return the bond order.
+    bond_order_wiberg_mayer(self)
+        Return the Wilberg-Mayer bond order.
 
     """
 
@@ -462,3 +464,31 @@ class OrbitalPartitionTools:
 
         bond_order[np.arange(self.num_atoms), np.arange(self.num_atoms)] = 0
         return bond_order
+
+    @property
+    def bond_order_wiberg_mayer(self):
+        """Return the Wilberg-Mayer bond order.
+
+        Returns
+        -------
+        wilberg_mayer_bond_order : np.ndarray(N, N)
+             Wilberg-Mayer bond orders for each pair of atoms.
+
+        """
+        num_atoms = self.num_atoms
+        ab_atom_indices = self.ab_atom_indices
+
+        density = (self.coeff_ab_mo * self.occupations[None, :]).dot(self.coeff_ab_mo.T)
+        raw_pops = self.olp_ab_ab.dot(density)
+
+        # filter out the irrelevant atoms
+        output = np.zeros((num_atoms, num_atoms))
+        for atom_a, atom_b in it.combinations(range(num_atoms), 2):
+            # select the populations that are associated with atoms a and b
+            raw_pops_ab = raw_pops[ab_atom_indices == atom_a]
+            raw_pops_ab = raw_pops_ab[:, ab_atom_indices == atom_b]
+            raw_pops_ba = raw_pops[ab_atom_indices == atom_b]
+            raw_pops_ba = raw_pops_ba[:, ab_atom_indices == atom_a]
+            output[atom_a, atom_b] = np.trace(raw_pops_ab.dot(raw_pops_ba))
+        output += output.transpose()
+        return output
