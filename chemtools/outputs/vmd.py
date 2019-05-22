@@ -427,7 +427,7 @@ def print_vmd_script_nci(scriptfile, densfile, rdgfile, isosurf=0.5, denscut=0.0
 
 
 def print_vmd_script_isosurface(scriptfile, isofile, colorfile=None, isosurf=0.5, material='Opaque',
-                                scalemin=-0.05, scalemax=0.05, colorscheme=None, negative=False,
+                                scalemin=-0.05, scalemax=0.05, colorscheme=None, negative=True,
                                 representation='CPK'):
     """Generate VMD (Visual Molecular Dynamics) script for visualizing the isosurface.
 
