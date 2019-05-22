@@ -44,8 +44,8 @@ class OrbitalPartitionTools:
         Initialize attributes.
     mulliken_populations(self, atom_weights=None)
         Return the Mulliken populations of the given molecular orbitals.
-    mulliken_populations_newbasis(self, coeff_ab_new, new_atom_indices, new_atom_weights=None)
-        Return the Mulliken populations of the given system in a new basis set.
+    transform_orbitals(self, coeff_ab_new, new_atom_indices)
+        Return a new instance of OrbitalPartitionTools with the orbitals transformed.
     lowdin_populations(self, atom_weights=None)
         Return the Lowdin populations of the molecular orbitals in atomic orbital basis set.
     bond_order(self)
@@ -365,8 +365,8 @@ class OrbitalPartitionTools:
 
         return output
 
-    def mulliken_populations_newbasis(self, coeff_ab_new, new_atom_indices, new_atom_weights=None):
-        r"""Return the Mulliken populations of the given system in a new basis set.
+    def transform_orbitals(self, coeff_ab_new, new_atom_indices):
+        """Return a new instance of OrbitalPartitionTools with the orbitals transformed.
 
         Parameters
         ----------
@@ -381,40 +381,21 @@ class OrbitalPartitionTools:
             Index of the atom to which each of the new basis function belongs.
             Data type must be integers.
             `L` is the number of atomic orbitals.
-        new_atom_weights : np.ndarray(A, L, L)
-            Weights of the pair of new basis functions for the atoms. In other words, this weight
-            controls the amount of electrons associated with an new basis function pair that will be
-            attributed to an atom.
-            `A` is the number of atoms and `K` is the number of new basis functions.
-            Default is the Mulliken partitioning scheme where two basis functions that belong to the
-            given atom is 1, only one basis function that belong to the given atoms is 0.5, and no
-            basis functions is 0.
 
         Returns
         -------
-        population : np.ndarray(M,)
-            Number of electrons associated with each atom.
-            `M` is the number of atoms, which will be assumed to be the maximum index in
-            `ab_atom_indices`.
+        new_orbpart : OrbitalPartitionTools
+            New instance of OrbitalPartitionTools with the orbitals transformed.
 
-        See Also
-        --------
-        orbstools.mulliken.mulliken_populations
 
         """
-        coeff_ab_mo = self.coeff_ab_mo
-        occupations = self.occupations
-        olp_ab_ab = self.olp_ab_ab
-        num_atoms = self.num_atoms
-
-        olp_new_new = coeff_ab_new.T.dot(olp_ab_ab).dot(coeff_ab_new)
-        olp_new_mo = coeff_ab_new.T.dot(olp_ab_ab).dot(coeff_ab_mo)
+        olp_new_new = coeff_ab_new.T.dot(self.olp_ab_ab).dot(coeff_ab_new)
+        olp_new_mo = coeff_ab_new.T.dot(self.olp_ab_ab).dot(self.coeff_ab_mo)
         coeff_new_mo = project(olp_new_new, olp_new_mo)
 
-        orbpart = self.__class__(
-            coeff_new_mo, occupations, olp_new_new, num_atoms, new_atom_indices
+        return self.__class__(
+            coeff_new_mo, self.occupations, olp_new_new, self.num_atoms, new_atom_indices
         )
-        return orbpart.mulliken_populations(atom_weights=new_atom_weights)
 
     def lowdin_populations(self, atom_weights=None):
         r"""Return the Lowdin populations of the molecular orbitals in atomic orbital basis set.
@@ -441,9 +422,8 @@ class OrbitalPartitionTools:
 
         """
         coeff_ab_oab = power_symmetric(self.olp_ab_ab, -0.5)
-        return self.mulliken_populations_newbasis(
-            coeff_ab_oab, self.ab_atom_indices, new_atom_weights=atom_weights
-        )
+        new_orbpart = self.transform_orbitals(coeff_ab_oab, self.ab_atom_indices)
+        return new_orbpart.mulliken_populations(atom_weights=atom_weights)
 
     @property
     def bond_order(self):

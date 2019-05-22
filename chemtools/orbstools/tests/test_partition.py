@@ -395,8 +395,34 @@ def test_mulliken_populations():
     )
 
 
+def test_transform_orbitals():
+    """Test orbtools.partition.OrbitalPartitionTools.transform_orbitals."""
+    with path("chemtools.data", "naclo4_coeff_ab_mo.npy") as fname:
+        coeff_ab_mo = np.load(str(fname))
+    with path("chemtools.data", "naclo4_olp_ab_ab.npy") as fname:
+        olp_ab_ab = np.load(str(fname))
+    with path("chemtools.data", "naclo4_occupations.npy") as fname:
+        occupations = np.load(str(fname))
+    with path("chemtools.data", "naclo4_ab_atom_indices.npy") as fname:
+        ab_atom_indices = np.load(str(fname))
+
+    coeff_ab_rand = np.linalg.svd(np.random.rand(124, 124))[0].T
+    rand_atom_indices = (np.random.rand(124) * 6 // 1).astype(int)
+    # normalize
+    olp_rand_rand = coeff_ab_rand.T.dot(olp_ab_ab).dot(coeff_ab_rand)
+    coeff_ab_rand *= np.diag(olp_rand_rand) ** (-0.5)
+    olp_rand_rand = coeff_ab_rand.T.dot(olp_ab_ab).dot(coeff_ab_rand)
+    coeff_rand_mo = project(olp_rand_rand, coeff_ab_rand.T.dot(olp_ab_ab).dot(coeff_ab_mo))
+
+    orbpart = OrbitalPartitionTools(coeff_ab_mo, occupations, olp_ab_ab, 6, ab_atom_indices)
+    neworbpart = orbpart.transform_orbitals(coeff_ab_rand, rand_atom_indices)
+    assert np.allclose(coeff_ab_rand.dot(coeff_rand_mo), orbpart.coeff_ab_mo)
+    assert np.allclose(coeff_rand_mo, neworbpart.coeff_ab_mo)
+    assert np.allclose(olp_rand_rand, neworbpart.olp_ab_ab)
+
+
 def test_mulliken_populations_newbasis():
-    """Test orbstools.partition.OrbitalPartitionTools.mulliken_populations_newabasis."""
+    """Test orbstools.partition.OrbitalPartitionTools.mulliken_populations with a new basis."""
     with path("chemtools.data", "naclo4_coeff_ab_mo.npy") as fname:
         coeff_ab_mo = np.load(str(fname))
     with path("chemtools.data", "naclo4_olp_ab_ab.npy") as fname:
@@ -408,7 +434,7 @@ def test_mulliken_populations_newbasis():
 
     orbpart = OrbitalPartitionTools(coeff_ab_mo, occupations, olp_ab_ab, 6, ab_atom_indices)
     assert np.allclose(
-        orbpart.mulliken_populations_newbasis(np.identity(124), ab_atom_indices),
+        orbpart.transform_orbitals(np.identity(124), ab_atom_indices).mulliken_populations(),
         orbpart.mulliken_populations(),
     )
 
@@ -423,7 +449,7 @@ def test_mulliken_populations_newbasis():
     orbpart = OrbitalPartitionTools(coeff_ab_mo, occupations, olp_ab_ab, 6, rand_atom_indices)
     assert np.allclose(coeff_ab_rand.dot(coeff_rand_mo), coeff_ab_mo)
     assert np.allclose(
-        orbpart.mulliken_populations_newbasis(coeff_ab_rand, rand_atom_indices),
+        orbpart.transform_orbitals(coeff_ab_rand, rand_atom_indices).mulliken_populations(),
         OrbitalPartitionTools(
             coeff_rand_mo, occupations, olp_rand_rand, 6, rand_atom_indices
         ).mulliken_populations(),
@@ -445,7 +471,7 @@ def test_lowdin_populations():
     orbpart = OrbitalPartitionTools(coeff_ab_mo, occupations, olp_ab_ab, 6, ab_atom_indices)
     assert np.allclose(coeff_ab_oab.T.dot(olp_ab_ab).dot(coeff_ab_oab), np.identity(124))
     assert np.allclose(
-        orbpart.mulliken_populations_newbasis(coeff_ab_oab, ab_atom_indices),
+        orbpart.transform_orbitals(coeff_ab_oab, ab_atom_indices).mulliken_populations(),
         orbpart.lowdin_populations(),
     )
 
