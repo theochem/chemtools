@@ -28,12 +28,12 @@ from __future__ import print_function
 
 from chemtools import Molecule
 from chemtools import UniformGrid, print_vmd_script_isosurface
-from chemtools import GlobalConceptualDFT, LocalConceptualDFT
+from chemtools import GlobalConceptualDFT, LocalConceptualDFT, CondensedConceptualDFT
 
 
 __all__ = [
-    'parse_args_global', 'parse_args_local', 'main_conceptual_global',
-    'main_conceptual_local'
+    'parse_args_global', 'parse_args_local', 'parse_args_condensed',
+    'main_conceptual_global', 'main_conceptual_local', 'main_conceptual_condensed'
 ]
 
 
@@ -113,6 +113,63 @@ def parse_args_local(subparser):
     #                     '[default=%(default)s]')
 
 
+def parse_args_condensed(subparser):
+    """Parse command-line arguments for computing local conceptual DFT indicators."""
+    # description message
+    # description = """ """
+
+    # get property list from LocalConceptualDFT's parent class
+    # property_list = [
+    #     name for name, func in BaseLocalTool.__dict__.items()
+    #     if isinstance(func, property)
+    # ]
+    property_list = [
+        'ff_plus',
+        'ff_minus',
+        'ff_zero',
+        'fukui_function',
+        'dual_descriptor',
+        # add more property
+    ]
+
+    # required arguments
+    subparser.add_argument('model', help='Energy model.')
+    subparser.add_argument(
+        'prop',
+        type=str,
+        choices=property_list,
+        metavar='property',
+        help='The local property for plotting iso-surface. '
+        'Choices: {{{}}}'.format(", ".join(property_list)))
+    subparser.add_argument(
+        'fname',
+        nargs='*',
+        help='Wave-function file(s). Supported formats: fchk, mkl, molden.'
+        'input, wfn. If one files is provided, the frontier moleculer orbital'
+        '(FMO) approach is invoked, otherwise the finite difference (FD)'
+        'approach is taken.')
+
+    subparser.add_argument(
+        '--approach',
+        type=str,
+        default='FMR',
+        choices=['FMR', 'RMF'],
+        metavar='property',
+        help='choose between fragment of molecular response or response of molecular fragment.'
+        'Choices: {{{}}}'.format(", ".join(property_list)) +
+        '[default=%(default)s]')
+
+    subparser.add_argument(
+        '--scheme',
+        type=str,
+        default='h',
+        choices=['h', 'hi', 'mbis'],
+        metavar='property',
+        help='partitioning scheme.'
+        'Choices: {{{}}}'.format(", ".join(property_list)) +
+             '[default=%(default)s]')
+
+
 def main_conceptual_global(args):
     """Build GlobalConceptualDFT class and print global descriptors."""
     # build global tool
@@ -155,3 +212,29 @@ def main_conceptual_local(args):
     cube.generate_cube(cubfname, getattr(model, args.prop))
     # generate VMD scripts for visualizing iso-surface with VMD
     print_vmd_script_isosurface(vmdfname, cubfname, isosurf=args.isosurface, material='BlownGlass')
+
+
+def main_conceptual_condensed(args):
+    """Build LocalConceptualDFT class and dump a cube file of local descriptor."""
+
+    # build condensed tool
+    model = CondensedConceptualDFT.from_file(args.fname, model=args.model, scheme=args.scheme,
+                                             approach=args.approach)
+    # check whether local property exists
+    if not hasattr(model, args.prop):
+        raise ValueError('The {0} condensed conceptual DFT class does not contain '
+                         '{1} attribute.'.format(args.model, args.prop))
+    if callable(getattr(model, args.prop)):
+        raise ValueError(
+            'The {0} argument is a method, please provide an attribute of '
+            '{1} local conceptual DFT.'.format(args.prop, args.model))
+
+    prop = getattr(model, args.prop)
+
+    print("")
+    print('Atomic contribution of %s for scheme=%s & approach %s:' % (args.prop, args.scheme.upper(), args.approach))
+    for index in range(len(model.numbers)):
+        print('% 3i   % 3i   %10.6f' % (index, model.numbers[index], prop[index]))
+    print("")
+    print(prop)
+    print(model.numbers)

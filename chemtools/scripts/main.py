@@ -31,7 +31,8 @@ from chemtools.scripts.chemtools_conceptual import (
     main_conceptual_global,
     main_conceptual_local,
     parse_args_global,
-    parse_args_local,
+    parse_args_local, parse_args_condensed, main_conceptual_condensed,
+
 )
 from chemtools.scripts.chemtools_nci import main_nci, parse_args_nci, nci_desp
 from chemtools.scripts.chemtools_elf import main_elf, parse_args_elf, elf_dest
@@ -52,8 +53,9 @@ SCRIPT_MAIN = {
     "nci": main_nci,
     "elf": main_elf,
     "lol": main_lol,
-    "lcdft": main_conceptual_local,
     "gcdft": main_conceptual_global,
+    "lcdft": main_conceptual_local,
+    "ccdft": main_conceptual_condensed,
 }
 
 
@@ -115,13 +117,28 @@ def parse_args_chemtools():
     )
     parse_args_lol(parser_lol)
 
-    # sub parser for lcdft functions
-    parser_nci = subparser.add_parser("lcdft", help="Local Conceptual DFT.")
-    parse_args_local(parser_nci)
-
     # sub parser for gcdft functions
-    parser_nci = subparser.add_parser("gcdft", help="Global Conceptual DFT.")
-    parse_args_global(parser_nci)
+    parser_g = subparser.add_parser(
+        "gcdft",
+        help="Global Conceptual DFT.",
+        description='Global Conceptual Density Functional Theory.',
+    )
+    parse_args_global(parser_g)
+
+    # sub parser for lcdft functions
+    parser_l = subparser.add_parser(
+        "lcdft",
+        help="Local Conceptual DFT.",
+        description='Local Conceptual Density Functional Theory.',
+    )
+    parse_args_local(parser_l)
+
+    parser_c = subparser.add_parser(
+        "ccdft",
+        help="Condensed Conceptual DFT.",
+        description='Condensed Conceptual Density Functional Theory.',
+    )
+    parse_args_condensed(parser_c)
 
     return parser.parse_args()
 
