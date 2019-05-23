@@ -1,4 +1,4 @@
-"""Test chemtools.toolbox.motbased.MOTBasedTool.compute_populations"""
+"""Test methods for orbital partitioning in chemtools.toolbox.motbased.MOTBasedTool."""
 try:
     from importlib_resources import path
 except ImportError:
@@ -9,8 +9,8 @@ import numpy as np
 from numpy.testing import assert_raises
 
 
-def test_compute_populations():
-    """Test MOTBasedTool.compute_populations.
+def test_compute_charges():
+    """Test MOTBasedTool.compute_charges.
 
     Results are compared with those generated from Gaussian. The system is H2O UB3LYP/aug-cc-pVDZ,
     singlet, and at zero net charge. The following the its coordinates:
@@ -33,3 +33,26 @@ def test_compute_populations():
         atol=1e-6,
     )
     assert_raises(ValueError, mot.compute_charges, "bad type")
+
+
+def test_compute_bond_order():
+    """Test MOTBasedTool.compute_bond_order.
+
+    Results are compared with those generated from Gaussian. The system is H2O UB3LYP/aug-cc-pVDZ,
+    singlet, and at zero net charge. The following the its coordinates (au):
+
+    O 0.0159484498, 0.0170042791, 0.0238579956
+    H -0.772778442, 0.561446550, 1.57501231
+    H 1.29850109, 1.26951236, -0.309113326
+
+    """
+    with path("chemtools.data.examples", "h2o.fchk") as fname:
+        mot = MOTBasedTool.from_file(str(fname))
+
+    bond_order = np.array(
+        [[0.0, 1.059127, 1.059127], [1.059127, 0.0, -0.008082], [1.059127, -0.008082, 0.0]]
+    )
+
+    assert np.allclose(bond_order, mot.compute_bond_orders(), atol=1e-6)
+
+    assert_raises(ValueError, mot.compute_bond_orders, "bad type")

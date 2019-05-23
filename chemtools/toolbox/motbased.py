@@ -176,6 +176,47 @@ class MOTBasedTool(object):
 
         return atomic_charges - pop
 
+    def compute_bond_orders(self, scheme="wiberg-mayer"):
+        """Return the bond order for each pair of atoms.
+
+        Parameters
+        ----------
+        scheme : "wiberg-mayer"
+            Type of the bond order.
+            Default is the Wiberg-Mayer bond order.
+
+        Returns
+        -------
+        bond_orders : np.ndarray(N, N)
+            Bond order for each atom pair.
+
+        Raises
+        ------
+        ValueError
+            If scheme is not "wiberg-mayer".
+
+        """
+        coeff_ab_mo_alpha, coeff_ab_mo_beta = self.orbital_coefficient
+        occupations_alpha, occupations_beta = self.orbital_occupation
+        olp_ab_ab = self.orbital_overlap
+        num_atoms = len(self._molecule.numbers)
+        ab_atom_indices = self._molecule._ind_basis_center
+
+        orbpart_alpha = OrbitalPartitionTools(
+            coeff_ab_mo_alpha, occupations_alpha, olp_ab_ab, num_atoms, ab_atom_indices
+        )
+        orbpart_beta = OrbitalPartitionTools(
+            coeff_ab_mo_beta, occupations_beta, olp_ab_ab, num_atoms, ab_atom_indices
+        )
+
+        if scheme == "wiberg-mayer":
+            bond_order = orbpart_alpha.bond_order_wiberg_mayer_unrestricted
+            bond_order += orbpart_beta.bond_order_wiberg_mayer_unrestricted
+        else:
+            raise ValueError("Bond order scheme must 'wiberg-mayer'.")
+
+        return bond_order
+
     def generate_scripts(self, fname, spin='a', index=None, isosurf=0.05, grid=None):
         """Generate VMD script(s) and cube file(s) to visualize MO iso-surface of given orbitals.
 
