@@ -31,10 +31,10 @@ from scipy.optimize import bisect
 from chemtools.wrappers.molecule import Molecule
 
 
-__all__ = ['OrbitalLocalTool']
+__all__ = ['DFTBasedTool']
 
 
-class OrbitalLocalTool(object):
+class DFTBasedTool(object):
     """Class of orbital-based descriptive tools."""
 
     def __init__(self, molecule, points):

@@ -29,7 +29,7 @@ import numpy as np
 from numpy.testing import assert_raises, assert_array_almost_equal, assert_allclose
 
 from chemtools.wrappers.molecule import Molecule
-from chemtools.toolbox.orbsbased import OrbitalLocalTool
+from chemtools.toolbox.orbsbased import DFTBasedTool
 try:
     from importlib_resources import path
 except ImportError:
@@ -38,16 +38,16 @@ except ImportError:
 
 def test_orbital_based_raises():
     # check file name
-    assert_raises(ValueError, OrbitalLocalTool.from_file, "gibberish", np.array([0.0, 1.0]))
+    assert_raises(ValueError, DFTBasedTool.from_file, "gibberish", np.array([0.0, 1.0]))
     with path("chemtools.data", "h2o_dimer_pbe_sto3g.wfn") as fname:
-        assert_raises(ValueError, OrbitalLocalTool.from_file, fname, np.array([0.0, 1.0]))
-        assert_raises(ValueError, OrbitalLocalTool.from_file, fname, np.array([0.0, 1.0]))
+        assert_raises(ValueError, DFTBasedTool.from_file, fname, np.array([0.0, 1.0]))
+        assert_raises(ValueError, DFTBasedTool.from_file, fname, np.array([0.0, 1.0]))
     with path("chemtools.data", "h2o_dimer_pbe_sto3g.wfn") as fname:
-        assert_raises(ValueError, OrbitalLocalTool.from_file, fname, np.array([0.0, 1.0]))
-        assert_raises(ValueError, OrbitalLocalTool.from_file, fname, np.array([0.0, 1.0, 0.0]))
-        assert_raises(ValueError, OrbitalLocalTool.from_file, fname, np.array([[0, 1], [1, 0.]]))
+        assert_raises(ValueError, DFTBasedTool.from_file, fname, np.array([0.0, 1.0]))
+        assert_raises(ValueError, DFTBasedTool.from_file, fname, np.array([0.0, 1.0, 0.0]))
+        assert_raises(ValueError, DFTBasedTool.from_file, fname, np.array([[0, 1], [1, 0.]]))
         # check spin argument
-        tool = OrbitalLocalTool.from_file(fname, np.array([[0., 0., 0.]]))
+        tool = DFTBasedTool.from_file(fname, np.array([[0., 0., 0.]]))
     assert_raises(KeyError, tool.compute_orbital_expression, np.array([9]), spin="error")
     assert_raises(KeyError, tool.compute_orbital_expression, np.array([9]), spin="alph")
     assert_raises(KeyError, tool.compute_orbital_expression, np.array([9]), spin="bet")
@@ -78,7 +78,7 @@ def test_orbital_based_from_file_ch4_uhf_ccpvdz():
         data = np.load(str(fname))
     # test from_file initialization & check against Fortran code
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
-        tool = OrbitalLocalTool.from_file(fname, data["points"])
+        tool = DFTBasedTool.from_file(fname, data["points"])
     check_orbital_based_properties(tool, data)
 
 
@@ -89,13 +89,13 @@ def test_orbital_based_from_molecule_ch4_uhf_ccpvdz():
     # test from_molecule initialization with exp_beta & check against Fortran code
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
         molecule = Molecule.from_file(fname)
-    tool = OrbitalLocalTool(molecule, data["points"])
+    tool = DFTBasedTool(molecule, data["points"])
     check_orbital_based_properties(tool, data)
     # test from_molecule initialization without exp_beta & check against Fortran code
     del molecule._exp_beta
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
         molecule = Molecule.from_file(fname)
-    tool = OrbitalLocalTool(molecule, data["points"])
+    tool = DFTBasedTool(molecule, data["points"])
     check_orbital_based_properties(tool, data)
 
 
@@ -105,7 +105,7 @@ def test_orbital_based_from_file_ch4_rhf_ccpvdz():
         data = np.load(str(fname))
     # test from_file initialization & check against Fortran code
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
-        tool = OrbitalLocalTool.from_file(fname, data["points"])
+        tool = DFTBasedTool.from_file(fname, data["points"])
     check_orbital_based_properties(tool, data)
 
 
@@ -116,7 +116,7 @@ def test_orbital_based_from_molecule_ch4_rhf_ccpvdz():
     # test from_file initialization & check against Fortran code
     with path("chemtools.data", "ch4_rhf_ccpvdz.fchk") as fname:
         molecule = Molecule.from_file(fname)
-    tool = OrbitalLocalTool(molecule, data["points"])
+    tool = DFTBasedTool(molecule, data["points"])
     check_orbital_based_properties(tool, data)
 
 
@@ -162,7 +162,7 @@ def test_orbital_based_from_file_orbital_expression_ch4_uhf_ccpvdz():
         data = np.load(str(fname))
     # test from_file initialization & check against Fortran code
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
-        tool = OrbitalLocalTool.from_file(fname, data["points"])
+        tool = DFTBasedTool.from_file(fname, data["points"])
     check_orbital_expression(tool, data)
 
 
@@ -173,13 +173,13 @@ def test_orbital_based_from_molecule_orbital_expression_ch4_uhf_ccpvdz():
     # test from_molecule initialization with exp_beta & check against Fortran code
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
         molecule = Molecule.from_file(fname)
-    tool = OrbitalLocalTool(molecule, data["points"])
+    tool = DFTBasedTool(molecule, data["points"])
     check_orbital_expression(tool, data)
     # test from_molecule initialization without exp_beta & check against Fortran code
     del molecule._exp_beta
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
         molecule = Molecule.from_file(fname)
-    tool = OrbitalLocalTool(molecule, data["points"])
+    tool = DFTBasedTool(molecule, data["points"])
     check_orbital_expression(tool, data)
 
 
@@ -189,7 +189,7 @@ def test_orbital_based_from_file_orbital_expression_ch4_rhf_ccpvdz():
         data = np.load(str(fname))
     # test from_file initialization & check against Fortran code
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
-        tool = OrbitalLocalTool.from_file(fname, data["points"])
+        tool = DFTBasedTool.from_file(fname, data["points"])
     check_orbital_expression(tool, data)
 
 
@@ -200,7 +200,7 @@ def test_orbital_based_from_molecule_orbital_expression_ch4_rhf_ccpvdz():
     # test from_file initialization & check against Fortran code
     with path("chemtools.data", "ch4_rhf_ccpvdz.fchk") as fname:
         molecule = Molecule.from_file(fname)
-    tool = OrbitalLocalTool(molecule, data["points"])
+    tool = DFTBasedTool(molecule, data["points"])
     check_orbital_expression(tool, data)
 
 
@@ -214,7 +214,7 @@ def test_orbital_based_h2o_b3lyp_sto3g():
                        [ 3., 3., 0.], [ 3., 3., 3.]])
     # initialize OrbitalLocalTool from_file
     with path("chemtools.data", "water_b3lyp_sto3g.fchk") as fname:
-        tool = OrbitalLocalTool.from_file(fname, points)
+        tool = DFTBasedTool.from_file(fname, points)
     # check mep against Fortran code
     expected = np.array([-0.01239766, -0.02982537, -0.02201149,   -0.01787292, -0.05682143,
                          -0.02503563, -0.00405942, -0.00818772,   -0.00502268,  0.00321181,
