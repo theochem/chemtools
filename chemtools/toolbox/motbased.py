@@ -26,7 +26,7 @@
 
 from chemtools.utils.utils import doc_inherit
 from chemtools.utils.cube import UniformGrid
-from chemtools.orbstools.mulliken import mulliken_populations, lowdin_populations
+from chemtools.orbstools.partition import OrbitalPartitionTools
 from chemtools.outputs.vmd import print_vmd_script_isosurface
 from chemtools.wrappers.molecule import Molecule, MolecularOrbitals
 
@@ -146,6 +146,11 @@ class MOTBasedTool(object):
         populations : np.ndarray(N,)
             Number of electrons in each atom according the population analysis.
 
+        Raises
+        ------
+        ValueError
+            If scheme is not "wiberg-mayer".
+
         """
         coeff_ab_mo_alpha, coeff_ab_mo_beta = self._molecule.mo.coefficient
         occupations_alpha, occupations_beta = self._molecule.mo.occupation
@@ -154,20 +159,18 @@ class MOTBasedTool(object):
         num_atoms = len(self._molecule.numbers)
         ab_atom_indices = self._molecule._ind_basis_center
 
+        orbpart_alpha = OrbitalPartitionTools(
+            coeff_ab_mo_alpha, occupations_alpha, olp_ab_ab, num_atoms, ab_atom_indices
+        )
+        orbpart_beta = OrbitalPartitionTools(
+            coeff_ab_mo_beta, occupations_beta, olp_ab_ab, num_atoms, ab_atom_indices
+        )
         if scheme == "mulliken":
-            pop = mulliken_populations(
-                coeff_ab_mo_alpha, occupations_alpha, olp_ab_ab, num_atoms, ab_atom_indices
-            )
-            pop += mulliken_populations(
-                coeff_ab_mo_beta, occupations_beta, olp_ab_ab, num_atoms, ab_atom_indices
-            )
+            pop = orbpart_alpha.mulliken_populations()
+            pop += orbpart_beta.mulliken_populations()
         elif scheme == "lowdin":
-            pop = lowdin_populations(
-                coeff_ab_mo_alpha, occupations_alpha, olp_ab_ab, num_atoms, ab_atom_indices
-            )
-            pop += lowdin_populations(
-                coeff_ab_mo_beta, occupations_beta, olp_ab_ab, num_atoms, ab_atom_indices
-            )
+            pop = orbpart_alpha.lowdin_populations()
+            pop += orbpart_beta.lowdin_populations()
         else:
             raise ValueError("`scheme` must be one of 'mulliken' or 'lowdin'.")
 
