@@ -26,6 +26,7 @@
 
 
 import logging
+import numpy as np
 
 from chemtools import Molecule, UniformGrid, MOTBasedTool
 
@@ -61,9 +62,18 @@ def parse_args_mot(subparser):
         help='wave-function file. Supported formats: fchk, mkl, molden.input, wfn.')
 
     subparser.add_argument(
-        'output', help='name of generated cube file and vmd script.')
+        '--output',
+        default=None,
+        help='name of generated cube file and vmd script. If None, the output name in derived'
+             'from fname. [default=%(default)s]')
 
     # optional arguments
+    subparser.add_argument(
+        '--info',
+        action='store_true',
+        default=False,
+        help='print basic information on molecule and wave-function. [default=%(default)s]')
+
     subparser.add_argument(
         '--spin',
         default='a',
@@ -104,6 +114,34 @@ def main_mot(args):
     # load molecule
     mol = Molecule.from_file(args.fname)
 
+    hia, hib = np.array(mol.homo_index) - 1
+    lia, lib = np.array(mol.lumo_index) - 1
+    ea, eb = mol.orbital_energy
+    print('')
+    print('File: {0}'.format(args.fname))
+    # print('Charge      : % 5f' % np.sum(mol.numbers) - np.sum(ne))
+    # print('Multiplicity: % 5d' % np.max(ne) - np.min(ne) + 1)
+    print('')
+    print('Atomic number and coordinates:')
+    for index, num in enumerate(mol.numbers):
+        coord = mol.coordinates[index, :]
+        print('% 2i   %10.6f   %10.6f   %10.6f' % (num, coord[0], coord[1], coord[2]))
+    print('')
+    print('Information on alpha & beta electrons:')
+    print('# electrons  :  % 3.3f       % 3.3f' % mol.nelectrons)
+    print('HOMO index   : % 3d        % 5d' % mol.homo_index)
+    print('')
+    print('LUMO+2 index : %10.6f   %10.6f' % (ea[lia + 2], eb[lib + 2]))
+    print('LUMO+1 energy: %10.6f   %10.6f' % (ea[lia + 1], eb[lib + 1]))
+    print('LUMO   energy: %10.6f   %10.6f' % mol.lumo_energy)
+    print('HOMO   energy: %10.6f   %10.6f' % mol.homo_energy)
+    print('HOMO-1 energy: %10.6f   %10.6f' % (ea[hia - 1], eb[hib - 1]))
+    print('HOMO-2 energy: %10.6f   %10.6f' % (ea[hia - 2], eb[hib - 2]))
+    print('')
+
+    if args.info:
+        return
+
     # make cubic grid
     if args.cube.endswith('.cube'):
         # load cube file
@@ -126,18 +164,20 @@ def main_mot(args):
     mot = MOTBasedTool.from_molecule(mol)
 
     # print logging message
-    logging.info('')
-    logging.info('Initialized : {0}'.format(mot))
-    logging.info('# of basis           : {0}'.format(mot.nbasis))
-    logging.info('# of a & b electrons : {0}'.format(mot.nelectrons))
-    logging.info('')
-    logging.info('Index  of a & b LUMO : {0}'.format(mot.lumo_index))
-    logging.info('Energy of a & b LUMO : {0}'.format(mot.lumo_energy))
-    logging.info('')
-    logging.info('Index  of a & b HOMO : {0}'.format(mot.homo_index))
-    logging.info('Energy of a & b HOMO : {0}'.format(mot.homo_energy))
-    logging.info('')
+    # logging.info('')
+    # logging.info('Initialized : {0}'.format(mot))
+    # logging.info('# of basis           : {0}'.format(mot.nbasis))
+    # logging.info('# of a & b electrons : {0}'.format(mot.nelectrons))
+    # logging.info('')
+    # logging.info('Index  of a & b LUMO : {0}'.format(mot.lumo_index))
+    # logging.info('Energy of a & b LUMO : {0}'.format(mot.lumo_energy))
+    # logging.info('')
+    # logging.info('Index  of a & b HOMO : {0}'.format(mot.homo_index))
+    # logging.info('Energy of a & b HOMO : {0}'.format(mot.homo_energy))
+    # logging.info('')
 
     # dump file/script for visualizing MOT
+    if args.output is None:
+        args.output = args.fname.rsplit('.')[0]
     mot.generate_scripts(args.output, spin=args.spin, index=index, grid=cube,
                          isosurf=args.isosurface)
