@@ -94,6 +94,8 @@ install:
 - conda config --set always_yes yes
 - conda config --add channels theochem
 - conda config --add channels conda-forge
+- conda create -n chemtools python=2.7
+- conda activate chemtools
 - conda install -q conda conda-build
 
 # Set the version info from the git tag
@@ -101,19 +103,8 @@ install:
   export PROJECT_VERSION=$(python tools/gitversion.py) &&
   python tools/gitversion.py python > ${PROJECT_NAME}/version.py;
 
-# Get a list of all build and runtime dependencies.
-# This should become easier, without the copy to conda.recipe.ugly.
-- conda render -f tools/conda.recipe/rendered.yaml tools/conda.recipe
-- CONDA_DEPENDENCIES=$(python -c "from yaml import load;
-    req1 = load(open('tools/conda.recipe/rendered.yaml'))['requirements'];
-    deps = req1['build'] + req1['run'];
-    print(' '.join(set(dep.split()[0] for dep in deps)))")
-
-# Get the right python version for building. This only does something for 3.5.
-# Install extra package needed to make things work. Most things can be listed as
-# dependencies on metal.yaml and setup.py, unless setup.py already imports them.
-# Install conda tools for packaging and uploading
-- conda install -q python=${MYCONDAPY} anaconda-client ${CONDA_DEPENDENCIES}
+- conda install -c theochem horton
+- pip install -e .
 # Install more recent stuff with pip
 - pip install --upgrade pylint codecov coverage pycodestyle pydocstyle
 # Show conda info for debugging
