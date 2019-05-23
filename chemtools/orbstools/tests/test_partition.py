@@ -477,6 +477,7 @@ def test_lowdin_populations():
 
 
 # FIXME: test compares against more explicit code and not reference
+# FIXME: not implemented yet
 def test_bond_order():
     """Test orbstools.partition.OrbitalPartitionTools.bond_order."""
     with path("chemtools.data", "naclo4_coeff_ab_mo.npy") as fname:
@@ -488,20 +489,21 @@ def test_bond_order():
     with path("chemtools.data", "naclo4_ab_atom_indices.npy") as fname:
         ab_atom_indices = np.load(str(fname))
 
-    bond_order = np.zeros((6, 6))
-    density = (coeff_ab_mo * occupations[None, :]).dot(coeff_ab_mo.T)
-    raw_pops = olp_ab_ab.dot(density)
-    for atom_one in range(6):
-        for atom_two in range(6):
-            if atom_one == atom_two:
-                continue
-            for i, index_one in enumerate(ab_atom_indices):
-                for j, index_two in enumerate(ab_atom_indices):
-                    if index_one == atom_one and index_two == atom_two:
-                        bond_order[atom_one, atom_two] += 2 * raw_pops[i, j]
+    # bond_order = np.zeros((6, 6))
+    # density = (coeff_ab_mo * occupations[None, :]).dot(coeff_ab_mo.T)
+    # raw_pops = olp_ab_ab.dot(density)
+    # for atom_one in range(6):
+    #     for atom_two in range(6):
+    #         if atom_one == atom_two:
+    #             continue
+    #         for i, index_one in enumerate(ab_atom_indices):
+    #             for j, index_two in enumerate(ab_atom_indices):
+    #                 if index_one == atom_one and index_two == atom_two:
+    #                     bond_order[atom_one, atom_two] += raw_pops[i, j]
 
     orbpart = OrbitalPartitionTools(coeff_ab_mo, occupations, olp_ab_ab, 6, ab_atom_indices)
-    assert np.allclose(bond_order, orbpart.bond_order)
+    assert_raises(NotImplementedError, orbpart.bond_order)
+    # assert np.allclose(bond_order, orbpart.bond_order())
 
 
 def test_bond_order_wiberg_mayer():
