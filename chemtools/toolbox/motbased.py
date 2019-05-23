@@ -26,6 +26,7 @@
 
 from chemtools.utils.utils import doc_inherit
 from chemtools.utils.cube import UniformGrid
+from chemtools.orbstools.mulliken import mulliken_populations, lowdin_populations
 from chemtools.outputs.vmd import print_vmd_script_isosurface
 from chemtools.wrappers.molecule import Molecule
 
@@ -144,7 +145,47 @@ class MOTBasedTool(object):
     def compute_density(self, points, spin='ab', index=None):
         return self._molecule.compute_density(points, spin, index)
 
-    def compute_populations(self):
+    def compute_populations(self, scheme="mulliken"):
+        """Return the partial charges at each atom using the given population analysis method.
+
+        Parameters
+        ----------
+        scheme : {"lowdin", "mulliken"}
+            Type of population analysis.
+            Default is Mulliken population analysis.
+
+        Returns
+        -------
+        populations : np.ndarray(N,)
+            Number of electrons in each atom according the population analysis.
+
+        """
+        coeff_ab_mo_alpha, coeff_ab_mo_beta = self.orbital_coefficient
+        occupations_alpha, occupations_beta = self.orbital_occupation
+        olp_ab_ab = self.orbital_overlap
+        atomic_charges = self._molecule.numbers
+        num_atoms = len(self._molecule.numbers)
+        ab_atom_indices = self._molecule._ind_basis_center
+
+        if scheme == "mulliken":
+            pop = mulliken_populations(
+                coeff_ab_mo_alpha, occupations_alpha, olp_ab_ab, num_atoms, ab_atom_indices
+            )
+            pop += mulliken_populations(
+                coeff_ab_mo_beta, occupations_beta, olp_ab_ab, num_atoms, ab_atom_indices
+            )
+        elif scheme == "lowdin":
+            pop = lowdin_populations(
+                coeff_ab_mo_alpha, occupations_alpha, olp_ab_ab, num_atoms, ab_atom_indices
+            )
+            pop += lowdin_populations(
+                coeff_ab_mo_beta, occupations_beta, olp_ab_ab, num_atoms, ab_atom_indices
+            )
+        else:
+            raise ValueError("`scheme` must be one of 'mulliken' or 'lowdin'.")
+
+        return atomic_charges - pop
+
         raise NotImplementedError
 
     def generate_scripts(self, fname, spin='a', index=None, isosurf=0.05, grid=None):
