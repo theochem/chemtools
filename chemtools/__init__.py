@@ -33,6 +33,7 @@ from chemtools.outputs import *
 import horton
 
 
-horton.log._level = 1
+horton.log.head_banner = ""
+horton.log.foot_banner = ""
 
 __version__ = '0.9.0'
