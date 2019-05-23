@@ -236,5 +236,3 @@ def main_conceptual_condensed(args):
     for index in range(len(model.numbers)):
         print('% 3i   % 3i   %10.6f' % (index, model.numbers[index], prop[index]))
     print("")
-    print(prop)
-    print(model.numbers)
