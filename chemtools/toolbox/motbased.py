@@ -145,7 +145,7 @@ class MOTBasedTool(object):
     def compute_density(self, points, spin='ab', index=None):
         return self._molecule.compute_density(points, spin, index)
 
-    def compute_populations(self, scheme="mulliken"):
+    def compute_charges(self, scheme="mulliken"):
         """Return the partial charges at each atom using the given population analysis method.
 
         Parameters

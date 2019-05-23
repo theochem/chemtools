@@ -24,12 +24,12 @@ def test_compute_populations():
         mot = MOTBasedTool.from_file(str(fname))
     assert np.allclose(
         np.array([-0.166945, 0.083473, 0.083473]),
-        mot.compute_populations(),
+        mot.compute_charges(),
         atol=1e-6,
     )
     assert np.allclose(
         np.array([0.203965, -0.101983, -0.101983]),
-        mot.compute_populations("lowdin"),
+        mot.compute_charges("lowdin"),
         atol=1e-6,
     )
-    assert_raises(ValueError, mot.compute_populations, "bad type")
+    assert_raises(ValueError, mot.compute_charges, "bad type")
