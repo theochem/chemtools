@@ -566,15 +566,12 @@ def test_bond_order_wiberg_mayer_unrestricted():
         coeff_ab_mo_beta, occupations_beta, olp_ab_ab_beta, 3, ab_atom_indices_beta
     )
     bond_order = np.array(
-        [
-            [0.0, 1.059127, 1.059127],
-            [1.059127, 0.0, -0.008082],
-            [1.059127, -0.008082, 0.0],
-        ]
+        [[0.0, 1.059127, 1.059127], [1.059127, 0.0, -0.008082], [1.059127, -0.008082, 0.0]]
     )
 
     assert np.allclose(
         bond_order,
-        2 * (orbpart_alpha.bond_order_wiberg_mayer + orbpart_beta.bond_order_wiberg_mayer),
+        orbpart_alpha.bond_order_wiberg_mayer_unrestricted
+        + orbpart_beta.bond_order_wiberg_mayer_unrestricted,
         atol=1e-6,
     )

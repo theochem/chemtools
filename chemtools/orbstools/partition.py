@@ -52,6 +52,8 @@ class OrbitalPartitionTools:
         Return the bond order.
     bond_order_wiberg_mayer(self)
         Return the Wilberg-Mayer bond order.
+    bond_order_wiberg_mayer_unrestricted(self)
+        Return the Wilberg-Mayer bond order provided that the given parameters are spin specific.
 
     """
 
@@ -492,3 +494,23 @@ class OrbitalPartitionTools:
             output[atom_a, atom_b] = np.trace(raw_pops_ab.dot(raw_pops_ba))
         output += output.transpose()
         return output
+
+    @property
+    def bond_order_wiberg_mayer_unrestricted(self):
+        """Return the Wilberg-Mayer bond order provided that the given parameters are spin specific.
+
+        This method assumes that the parameters provided to the class, i.e. coeff_ab_mo,
+        occupations, olp_ab_ab, and ab_atom_indices, are specific for either alpha or beta spin.
+
+        Returns
+        -------
+        wilberg_mayer_bond_order_unrestricted : np.ndarray(N, N)
+             Wilberg-Mayer bond orders for each pair of atom for the given spin.
+
+        Note
+        ----
+        If you want to produce the bond order for the whole system (not just for the given spin),
+        the bond order for both of the spins must be added together.
+
+        """
+        return 2 * self.bond_order_wiberg_mayer
