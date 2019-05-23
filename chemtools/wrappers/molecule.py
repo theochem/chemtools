@@ -78,34 +78,36 @@ class Molecule(object):
         # FIXME: following code is pretty hacky. it will be used for the orbital partitioning code
         # GOBasis object stores basis set to atom and angular momentum mapping
         # by shell and not by contraction. So it needs to be converted
-        ind_shell_atom = np.array(iodata.obasis.shell_map)
-        ind_shell_orbtype = np.array(iodata.obasis.shell_types)
+        try:
+            ind_shell_atom = np.array(iodata.obasis.shell_map)
+            ind_shell_orbtype = np.array(iodata.obasis.shell_types)
 
-        def num_contr(orbtype):
-            """Return the number of contractions for the given orbital type.
+            def num_contr(orbtype):
+                """Return the number of contractions for the given orbital type.
 
-            Parameters
-            ----------
-            orbtype : int
-                Horton's orbital type scheme.
-                Positive number corresponds to cartesian type and negative number corresponds to
-                spherical types.
+                Parameters
+                ----------
+                orbtype : int
+                    Horton's orbital type scheme.
+                    Positive number corresponds to cartesian type and negative number corresponds to
+                    spherical types.
 
-            Returns
-            -------
-            num_contr : int
-                Number of contractions for the given orbital type.
+                Returns
+                -------
+                num_contr : int
+                    Number of contractions for the given orbital type.
 
-            """
-            if orbtype < 0:
-                return 1 + 2 * abs(orbtype)
-            return 1 + orbtype + sum(i * (i + 1) / 2 for i in range(1, orbtype + 1))
+                """
+                if orbtype < 0:
+                    return 1 + 2 * abs(orbtype)
+                return 1 + orbtype + sum(i * (i + 1) / 2 for i in range(1, orbtype + 1))
 
-        numcontr_per_shell = np.array([num_contr(i) for i in ind_shell_orbtype])
-        # Duplicate each shell information by the number of contractions in shell
-        self._ind_basis_center = np.repeat(ind_shell_atom, numcontr_per_shell)
-        self._ind_basis_orbtype = np.repeat(ind_shell_orbtype, numcontr_per_shell)
-
+            numcontr_per_shell = np.array([num_contr(i) for i in ind_shell_orbtype])
+            # Duplicate each shell information by the number of contractions in shell
+            self._ind_basis_center = np.repeat(ind_shell_atom, numcontr_per_shell)
+            self._ind_basis_orbtype = np.repeat(ind_shell_orbtype, numcontr_per_shell)
+        except AttributeError:
+            pass
 
     @classmethod
     def from_file(cls, fname, wavefunction=False):
