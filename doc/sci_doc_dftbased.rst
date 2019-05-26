@@ -50,3 +50,9 @@ functionals in DFT.
     to use :math:`\alpha`, :math:`\beta`, :math:`\alpha - \beta` or :math:`\alpha + \beta` electron
     density, respectively. For simplicity, we do not specify the spin in mathematical formulas that
     follows.
+
+
+.. toctree::
+   :maxdepth: 1
+
+   sci_doc_dftbased_esp
