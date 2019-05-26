@@ -55,4 +55,5 @@ functionals in DFT.
 .. toctree::
    :maxdepth: 1
 
+   sci_doc_dftbased_dens
    sci_doc_dftbased_esp
