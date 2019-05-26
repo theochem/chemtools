@@ -71,7 +71,7 @@ quantum chemistry.
    :caption: Scientific Documentation
 
    sci_doc_conceptual
-   sci_doc_densitytool
+   sci_doc_dftbased
    sci_doc_orbitaltool
    sci_doc_nci
    sci_doc_zref

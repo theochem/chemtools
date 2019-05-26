@@ -22,71 +22,31 @@
     : --
 
 
-.. _density_tools:
+.. _dftbased:
 
-Density-Based Local Descriptors
-###############################
+Density Functional Theory (DFT) Based
+#####################################
 
-All the tools for calculations based on the electron density :math:`\rho\left(\mathbf{r}\right)`,
-gradient and hessian of the :math:`N` electron reference state.
+The Hohenberg-Kohn theorem assures us that a system’s ground-state electron density contains all
+the information necessary to compute all of its observable properties.
+Moreover, the mathematical framework of density-functional theory (DFT) provides a rich framework
+for deriving chemically intuitive concepts to compute conceptual properties of chemical systems,
+even though those properties are rarely observable.
 
-**Electron density** :math:`\rho\left(\mathbf{r}\right)` represents the probability of finding an electron within a certain volume element :math:`d\boldsymbol{r}`. It is found
-by integrating the square of the wave function over all variables except the spatial coordinates of one electron:
+Unlike the framework of conceptual DFT (which is focused on reactivity), the DFT-based descriptive
+tools are primarily used to elucidate molecule's electronic structure and binding, though some
+of them are relevant to chemical reactivity as well.
+At the most fundamental level, the electron density and its derivatives are of the most fundamental
+importance.
+At the next level, various energetic quantities associated with DFT have a leading role; these
+include the electrostatic potential, the kinetic energy density and various approximations thereto,
+etc. Suitably chosen linear combinations of these quantities have proven conceptual significance,
+as do several of the “intermediate quantities” that are commonly used in developing new density
+functionals in DFT.
 
- .. math:: \rho(\boldsymbol{r}) = N\int \ldots \int \vert
-           \Psi(\boldsymbol{x}_1 , \boldsymbol{x}_2 , \ldots , \boldsymbol{x}_N) \vert^2
-           d\sigma_1 , d\boldsymbol{x}_2 , \ldots , d\boldsymbol{x}_N ,
-
-where the vectors :math:`\boldsymbol{x}_i` include the space coordinates, :math:`\boldsymbol{r}_i`, and the spin coordinate, :math:`\sigma_i`, of the i-th electron.
-
-**Gradient of electron density** :math:`\nabla \rho\left(\mathbf{r}\right)` represents the first-order partial
-derivatives of the electron density with respect to the coordinates:
-
- .. math:: \nabla \rho\left(\mathbf{r}\right) =
-           \left( \frac{\partial}{\partial x} \rho\left(\mathbf{r}\right), \frac{\partial}{\partial y} \rho\left(\mathbf{r}\right), \frac{\partial}{\partial z} \rho\left(\mathbf{r}\right)\right)
-
-**Hessian of electron density** :math:`\nabla^2 \rho\left(\mathbf{r}\right)` represents the second-order
-partial derivative of the electron density with respect to coordinates:
-
- .. math::  \nabla^2 \rho\left(\mathbf{r}\right) = \begin{bmatrix}
-                \frac{\partial^2 \rho\left(\mathbf{r}\right)}{\partial x^2}  &
-                \frac{\partial^2 \rho\left(\mathbf{r}\right)}{\partial x \partial y}  &
-                \frac{\partial^2 \rho\left(\mathbf{r}\right)}{\partial x \partial z}  \\
-                \frac{\partial^2 \rho\left(\mathbf{r}\right)}{\partial y \partial x}  &
-                \frac{\partial^2 \rho\left(\mathbf{r}\right)}{\partial y^2}  &
-                \frac{\partial^2 \rho\left(\mathbf{r}\right)}{\partial y \partial z}  \\
-                \frac{\partial^2 \rho\left(\mathbf{r}\right)}{\partial z \partial x}  &
-                \frac{\partial^2 \rho\left(\mathbf{r}\right)}{\partial z \partial y}  &
-                \frac{\partial^2 \rho\left(\mathbf{r}\right)}{\partial z^2}  \\
-            \end{bmatrix}
-
- .. TODO::
-    Elaborate on the different properties and their meaning
-
-Shanon information defined as :math:`\rho(r) \ln \rho(r)`.
-
-Gradient norm representing the norm of the gradient vector at every point:
-
-        .. math::
-           \lvert \nabla \rho\left(\mathbf{r}\right) \rvert = \sqrt{
-                  \left(\frac{\partial\rho\left(\mathbf{r}\right)}{\partial x}\right)^2 +
-                  \left(\frac{\partial\rho\left(\mathbf{r}\right)}{\partial y}\right)^2 +
-                  \left(\frac{\partial\rho\left(\mathbf{r}\right)}{\partial z}\right)^2 }
-
-Reduced density gradient (RDG) defined as:
-
-        .. math::
-           s\left(\mathbf{r}\right) = \frac{1}{3\left(2\pi ^2 \right)^{1/3}}
-           \frac{\lvert \nabla \rho\left(\mathbf{r}\right) \rvert}{\rho\left(\mathbf{r}\right)^{4/3}}
-
-Weizsacker kinetic energy/local steric energy/Fisher information density defined as:
-
-        .. math::
-           T\left(\mathbf{r}\right) =
-           \frac{\lvert \nabla \rho\left(\mathbf{r}\right) \rvert ^2}{8 \rho\left(\mathbf{r}\right)}
-
-Thomas-Fermi kinetic energy density defined as:
-
-        .. math::
-            T\left(\mathbf{r}\right) = \frac{3}{10} \left( 6 \pi ^2 \right)^{2/3}
-            \left( \frac{\rho\left(\mathbf{r}\right)}{2} \right)^{5/3}
+ .. Note::
+    DFT-based tools can be computed in a spin resolved or non-spin resolved manner. Specifically,
+    you can initialize the DFTBased class with `spin="a"`, `spin="b"`, `spin="s"`, or `spin="ab"`
+    to use :math:`\alpha`, :math:`\beta`, :math:`\alpha - \beta` or :math:`\alpha + \beta` electron
+    density, respectively. For simplicity, we do not specify the spin in mathematical formulas that
+    follows.
