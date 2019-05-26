@@ -40,11 +40,12 @@ where the vectors :math:`\boldsymbol{x}_i` include the space coordinates, :math:
 and the spin coordinate, :math:`\sigma_i`, of the i-th electron.
 
 
-**Shanon Information** :math:`\sigma\left(\mathbf{r}\right)` represents the electron density
+**Shape Function** :math:`\sigma\left(\mathbf{r}\right)` represents the electron density
 per particle:
 
  .. math::
-    \sigma\left(\mathbf{r}\right) = \rho\left(\mathbf{r}\right) \ln \rho\left(\mathbf{r}\right)
+    \sigma\left(\mathbf{r}\right) = \frac{\rho\left(\mathbf{r}\right)}{N} =
+    \frac{\rho\left(\mathbf{r}\right)}{\int \rho\left(\mathbf{r}\right) d\mathbf{r}}
 
 
 **Electron Density Gradient** :math:`\nabla\rho\left(\mathbf{r}\right)` represents the 1st-order
