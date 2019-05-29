@@ -57,3 +57,4 @@ functionals in DFT.
 
    sci_doc_dftbased_dens
    sci_doc_dftbased_esp
+   sci_doc_dftbased_it
