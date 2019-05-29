@@ -1,19 +1,19 @@
 """Test chemtools.utils.mesh."""
-from chemtools.utils.mesh import plane_mesh
+from chemtools.utils.mesh import mesh_plane
 import numpy as np
 from numpy.testing import assert_raises
 
 
 def test_plane_mesh():
     """Test chemtools.utils.mesh.plane_mesh."""
-    assert_raises(TypeError, plane_mesh, np.random.rand(3, 2), 1.0, 1.0)
-    assert_raises(TypeError, plane_mesh, np.random.rand(3, 3).tolist(), 1.0, 1.0)
-    assert_raises(TypeError, plane_mesh, np.random.rand(3, 3), 1, 1.0)
-    assert_raises(TypeError, plane_mesh, np.random.rand(3, 3), 0.0, 1.0)
-    assert_raises(TypeError, plane_mesh, np.random.rand(3, 3), -1.0, 1.0)
-    assert_raises(TypeError, plane_mesh, np.random.rand(3, 3), 1.0, [])
-    assert_raises(TypeError, plane_mesh, np.random.rand(3, 3), 1.0, np.array(1))
-    assert_raises(TypeError, plane_mesh, np.random.rand(3, 3), 1.0, -0.1)
+    assert_raises(TypeError, mesh_plane, np.random.rand(3, 2), 1.0, 1.0)
+    assert_raises(TypeError, mesh_plane, np.random.rand(3, 3).tolist(), 1.0, 1.0)
+    assert_raises(TypeError, mesh_plane, np.random.rand(3, 3), 1, 1.0)
+    assert_raises(TypeError, mesh_plane, np.random.rand(3, 3), 0.0, 1.0)
+    assert_raises(TypeError, mesh_plane, np.random.rand(3, 3), -1.0, 1.0)
+    assert_raises(TypeError, mesh_plane, np.random.rand(3, 3), 1.0, [])
+    assert_raises(TypeError, mesh_plane, np.random.rand(3, 3), 1.0, np.array(1))
+    assert_raises(TypeError, mesh_plane, np.random.rand(3, 3), 1.0, -0.1)
 
     # equilateral triangle on xy plane, centered at origin, side of length 1
     coords = np.array(
@@ -34,4 +34,4 @@ def test_plane_mesh():
             temp.append([1 - i * height / 4, -width / 2 + width / 4 * j, 0])
         ref.append(temp)
 
-    assert np.allclose(plane_mesh(coords, 0.5, 1 - 2.0 / 3 * 0.75 ** 0.5), ref)
+    assert np.allclose(mesh_plane(coords, 0.5, 1 - 2.0 / 3 * 0.75 ** 0.5), ref)

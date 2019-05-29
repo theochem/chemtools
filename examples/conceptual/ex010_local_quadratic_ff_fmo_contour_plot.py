@@ -12,12 +12,12 @@ EX10: 2D-Contours Quadratic Fukui Function (FMO Approach)
 
 import numpy as np
 import matplotlib.pyplot as plt
-from chemtools import LocalConceptualDFT, plane_mesh
+from chemtools import LocalConceptualDFT, mesh_plane
 
 
 # 1. Make a 2D grid in xy-plane (molecular plane).
 
-xyz = plane_mesh(
+xyz = mesh_plane(
     np.array(
         [
             [2.27823914e00, 4.13899085e-07, 3.12033662e-07],

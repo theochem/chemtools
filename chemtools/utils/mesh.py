@@ -26,7 +26,7 @@
 import numpy as np
 
 
-def plane_mesh(points, spacing, extension):
+def mesh_plane(points, spacing, extension):
     """Return the grid points on the plane spanned by the given three coordinates.
 
     Parameters
