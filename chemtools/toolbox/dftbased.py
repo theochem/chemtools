@@ -21,7 +21,7 @@
 #
 # --
 # pragma pylint: disable=invalid-name
-"""Orbital-Based Local Tools."""
+"""Density Functional Theory (DFT) Based Tools."""
 
 
 import numpy as np
@@ -35,7 +35,7 @@ __all__ = ['DFTBasedTool']
 
 
 class DFTBasedTool(object):
-    """Class of orbital-based descriptive tools."""
+    """Class of Density Functional Theory (DFT) Based Descriptive Tools."""
 
     def __init__(self, molecule, points):
         r"""Initialize class using instance of `Molecule` and grid points.

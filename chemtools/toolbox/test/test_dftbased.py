@@ -21,12 +21,12 @@
 #
 # --
 # pragma pylint: disable=invalid-name,bad-whitespace,bad-continuation
-"""Test chemtools.toolbox.orbbased."""
+"""Test chemtools.toolbox.dftbased."""
 
 
 import numpy as np
 
-from numpy.testing import assert_raises, assert_array_almost_equal, assert_allclose
+from numpy.testing import assert_raises, assert_array_almost_equal
 
 from chemtools.wrappers.molecule import Molecule
 from chemtools.toolbox.dftbased import DFTBasedTool
