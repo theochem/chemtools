@@ -26,12 +26,12 @@
 import numpy as np
 
 
-def plane_mesh(plane_points, spacing, extension):
+def plane_mesh(points, spacing, extension):
     """Return the grid points on the plane spanned by the given three coordinates.
 
     Parameters
     ----------
-    plane_points : np.ndarray(3, 3)
+    points : np.ndarray(3, 3)
         Points that are on the plane.
         Rows corespond to the different points, columns correspond to the x, y, and z components.
         The first set of coordinate will be used to establish the new vertical (i.e. y) direction in
@@ -64,25 +64,15 @@ def plane_mesh(plane_points, spacing, extension):
         If the three points on the plane are on a line.
 
     """
-    if not (
-        isinstance(plane_points, np.ndarray)
-        and plane_points.ndim == 2
-        and plane_points.shape == (3, 3)
-    ):
-        raise TypeError(
-            "`plane_points` must be given as a two-dimensional numpy array of shape (3, 3)."
-        )
-    if not isinstance(spacing, float):
-        raise TypeError("`spacing` must be a float.")
-    if spacing <= 0:
-        raise ValueError("`spacing` must be greater than 0.")
-    if not isinstance(extension, (int, float)):
-        raise TypeError("`extension` must be int or float.")
-    if extension < 0:
-        raise ValueError("`extension` must be greater than 0.")
+    if not (isinstance(points, np.ndarray) and points.ndim == 2 and points.shape == (3, 3)):
+        raise TypeError("Arguments points must be given as a 2D numpy array of shape (3, 3).")
+    if not isinstance(spacing, float) or spacing <= 0:
+        raise TypeError("Argument spacing must be a float greater than 0.")
+    if not isinstance(extension, (int, float)) or extension < 0:
+        raise TypeError("Argument extension must be int or float greater than 0.")
 
-    center = np.average(plane_points, axis=0)
-    vec = plane_points - center
+    center = np.average(points, axis=0)
+    vec = points - center
     length_vec = (np.sum(vec ** 2, axis=1) ** 0.5)[:, None]
     if np.any(length_vec == 0):
         raise ValueError("Three points on the plane cannot be in a line.")
@@ -91,7 +81,7 @@ def plane_mesh(plane_points, spacing, extension):
         raise ValueError("Three points on the plane cannot be in a line.")
 
     # edges of the cube
-    edges = unit_vec * extension + plane_points
+    edges = unit_vec * extension + points
     # length of the edges from the center
     length_edges = (np.sum((edges - center) ** 2, axis=1) ** 0.5)[:, None]
     # use first point as a reference

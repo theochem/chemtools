@@ -9,11 +9,11 @@ def test_plane_mesh():
     assert_raises(TypeError, plane_mesh, np.random.rand(3, 2), 1.0, 1.0)
     assert_raises(TypeError, plane_mesh, np.random.rand(3, 3).tolist(), 1.0, 1.0)
     assert_raises(TypeError, plane_mesh, np.random.rand(3, 3), 1, 1.0)
-    assert_raises(ValueError, plane_mesh, np.random.rand(3, 3), 0.0, 1.0)
-    assert_raises(ValueError, plane_mesh, np.random.rand(3, 3), -1.0, 1.0)
+    assert_raises(TypeError, plane_mesh, np.random.rand(3, 3), 0.0, 1.0)
+    assert_raises(TypeError, plane_mesh, np.random.rand(3, 3), -1.0, 1.0)
     assert_raises(TypeError, plane_mesh, np.random.rand(3, 3), 1.0, [])
     assert_raises(TypeError, plane_mesh, np.random.rand(3, 3), 1.0, np.array(1))
-    assert_raises(ValueError, plane_mesh, np.random.rand(3, 3), 1.0, -0.1)
+    assert_raises(TypeError, plane_mesh, np.random.rand(3, 3), 1.0, -0.1)
 
     # equilateral triangle on xy plane, centered at origin, side of length 1
     coords = np.array(
