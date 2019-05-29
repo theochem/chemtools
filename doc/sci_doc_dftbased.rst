@@ -56,5 +56,6 @@ functionals in DFT.
    :maxdepth: 1
 
    sci_doc_dftbased_dens
+   sci_doc_dftbased_ked
    sci_doc_dftbased_esp
    sci_doc_dftbased_it
