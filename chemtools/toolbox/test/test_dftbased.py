@@ -29,7 +29,7 @@ import numpy as np
 from numpy.testing import assert_raises, assert_array_almost_equal, assert_allclose
 
 from chemtools.wrappers.molecule import Molecule
-from chemtools.toolbox.orbsbased import DFTBasedTool
+from chemtools.toolbox.dftbased import DFTBasedTool
 try:
     from importlib_resources import path
 except ImportError:

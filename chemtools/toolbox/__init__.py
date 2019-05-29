@@ -28,6 +28,6 @@ from chemtools.toolbox.utils import *
 from chemtools.toolbox.conceptual import *
 from chemtools.toolbox.motbased import *
 from chemtools.toolbox.kinetic import *
-from chemtools.toolbox.orbsbased import *
+from chemtools.toolbox.dftbased import *
 from chemtools.toolbox.densbased import *
 from chemtools.toolbox.interactions import *
