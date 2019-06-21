@@ -93,8 +93,8 @@ class Topology(object):
         self.g_f = grad_func
         self.h_f = hess_func
         # num of the maximum equals to num of atoms
-        if points is None:
-            points = self._default_cube(extra)
+        if points.ndim != 2 and points.shape[1] != 3:
+            raise ValueError("Argument points should be a 2D-array with 3 columns!")
         self._kdtree = KDTree(points)
         self._found_ct = np.zeros((0, 3))
         self._found_ct_type = np.zeros(0, dtype=int)
@@ -102,29 +102,6 @@ class Topology(object):
         self._bcp = []
         self._rcp = []
         self._ccp = []
-
-    def _default_cube(self, extra=5):
-        """Generate default cubic meshgrid for calculate critical pts.
-
-        grid range from (min(x, y, z) + extra, max(x, y, x) + extra, step=0.2)
-
-        Parameters
-        ----------
-        extra : int, default to 5
-            extra space for generating cubic meshgrid
-
-        Returns
-        -------
-        np.ndarray(K, 3)
-            3 dimenstion arrays
-        """
-        max_xyz = np.max(self.coors, axis=0)
-        min_xyz = np.min(self.coors, axis=0)
-        x = np.arange(min_xyz[0] - extra, max_xyz[0] + extra, 0.2)
-        y = np.arange(min_xyz[1] - extra, max_xyz[1] + extra, 0.2)
-        z = np.arange(min_xyz[2] - extra, max_xyz[2] + extra, 0.2)
-        g = np.meshgrid(x, y, z)
-        return np.stack([i.ravel() for i in g], axis=1)
 
     def add_points(self, points):
         """Add a point to exiting initial guess points.
