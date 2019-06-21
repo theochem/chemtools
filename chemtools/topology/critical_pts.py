@@ -61,13 +61,13 @@ class CriticalPoint(object):
         return "{}".format(self.point)
 
 
-class Topo(object):
-    """Topo class for searching critical points given scalar function."""
+class Topology(object):
+    """Topology class for searching critical points given scalar function."""
 
     def __init__(
         self, coors, value_func, gradian_func, hess_func, points=None, extra=5
     ):
-        """Initialize Topo class instance.
+        """Initialize Topology class instance.
 
         Parameters
         ----------

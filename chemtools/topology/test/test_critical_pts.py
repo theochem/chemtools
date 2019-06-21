@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 
-from chemtools.topology.critical_pts import Topo, CriticalPoint
+from chemtools.topology.critical_pts import Topology, CriticalPoint
 
 import numpy as np
 from numpy.testing import assert_allclose
@@ -44,18 +44,18 @@ class TestCriticalPoints(TestCase):
         # """Test properly initiate topo instance."""
         coors = np.array([[1, 1, 1], [-1, -1, -1]])
         pts = np.random.rand(4, 3)
-        topo = Topo(coors, self.gauss_func, self.gauss_deriv, self.gauss_deriv2, pts)
-        assert isinstance(topo, Topo)
+        topo = Topology(coors, self.gauss_func, self.gauss_deriv, self.gauss_deriv2, pts)
+        assert isinstance(topo, Topology)
 
     def test_default_cube(self):
         # """Test default cube for points."""
         coors = np.array([[1, 1, 1], [-1, -1, -1]])
-        topo = Topo(coors, self.gauss_func, self.gauss_deriv, self.gauss_deriv2)
+        topo = Topology(coors, self.gauss_func, self.gauss_deriv, self.gauss_deriv2)
         assert topo._kdtree.data.shape == (60 * 60 * 60, 3)
 
     def test_construct_cage(self):
         # """Test construct cage among target points."""
-        pts = Topo._construct_cage(np.array([0, 0, 0]), 1)
+        pts = Topology._construct_cage(np.array([0, 0, 0]), 1)
         assert len(pts) == 4
         dis = np.linalg.norm(pts[:] - np.array([0, 0, 0]), axis=-1)
         assert_allclose(dis, np.ones(4) * 4.89898, rtol=1e-5)
@@ -65,9 +65,9 @@ class TestCriticalPoints(TestCase):
         # initiate topo obj.
         coors = np.array([[1, 1, 1], [-1, -1, -1]])
         pts = np.random.rand(4, 3)
-        topo = Topo(coors, self.gauss_func, self.gauss_deriv, self.gauss_deriv2, pts)
+        topo = Topology(coors, self.gauss_func, self.gauss_deriv, self.gauss_deriv2, pts)
         # get cage points
-        pts = Topo._construct_cage(np.array([0.5, 0.5, 0.5]), 0.1)
+        pts = Topology._construct_cage(np.array([0.5, 0.5, 0.5]), 0.1)
         g_pts = topo.get_gradient(pts)
         # assert len(g_pts) == 4
         ref_g = self.gauss_deriv(pts)
@@ -77,7 +77,7 @@ class TestCriticalPoints(TestCase):
         # """Test add critical points to class."""
         coors = np.array([[1, 1, 1], [-1, -1, -1]])
         pts = np.random.rand(4, 3)
-        topo = Topo(coors, self.gauss_func, self.gauss_deriv, self.gauss_deriv2, pts)
+        topo = Topology(coors, self.gauss_func, self.gauss_deriv, self.gauss_deriv2, pts)
         pt = CriticalPoint(np.random.rand(3), None, None)
         # bond
         ct_type = -1
@@ -100,7 +100,7 @@ class TestCriticalPoints(TestCase):
         # """Test same pts as nuclear position."""
         coors = np.array([[1, 1, 1], [-1, -1, -1]])
         pts = np.random.rand(4, 3)
-        topo = Topo(coors, self.gauss_func, self.gauss_deriv, self.gauss_deriv2, pts)
+        topo = Topology(coors, self.gauss_func, self.gauss_deriv, self.gauss_deriv2, pts)
         for i in coors:
             result = topo._is_coors_pt(i)
             assert result
@@ -136,7 +136,7 @@ class TestCriticalPoints(TestCase):
         pts = np.vstack(
             (pts, np.array([0.05, 0.05, 0.05]), np.array([-0.05, -0.05, -0.05]))
         )
-        tp_ins = Topo(atoms, fun_v, fun_d, fun_d2, pts)
+        tp_ins = Topology(atoms, fun_v, fun_d, fun_d2, pts)
         tp_ins.find_critical_pts()
         # one critical pt
         assert len(tp_ins._found_ct) == 1
@@ -172,7 +172,7 @@ class TestCriticalPoints(TestCase):
                 + self.gauss_deriv2(coors, atoms[2], alphas=alf)
             )
 
-        tp_ins = Topo(atoms, fun_v, fun_d, fun_d2, extra=1)
+        tp_ins = Topology(atoms, fun_v, fun_d, fun_d2, extra=1)
         tp_ins.find_critical_pts()
         assert len(tp_ins._crit_bond) == 3
         assert len(tp_ins._crit_ring) == 1
