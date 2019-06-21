@@ -186,18 +186,17 @@ class Topology(object):
             n_points only support 4 at this moment
         """
         if n_points == 4:
-            # 489898 = sqrt(24), 0.942809 = sqrt(8) / 3
-            # 0.471405 = sqrt(2) / 3, 0.816497 = sqrt(2 / 3)
-            constant = 4.89898 * length
-            p1 = point + constant * np.array([0.942809, 0.0, -0.333333])
-            p2 = point + constant * np.array([-0.471405, 0.816497, -0.333333])
-            p3 = point + constant * np.array([-0.471405, -0.816497, -0.333333])
+            constant = np.sqrt(24) * length
+            p1 = point + constant * np.array([np.sqrt(8.0) / 3.0, 0.0, -1.0 / 3.0])
+            p2 = point - constant * np.array([np.sqrt(2.0) / 3.0, -np.sqrt(2.0 / 3.0), 1.0 / 3.0])
+            p3 = point - constant * np.array([np.sqrt(2.0) / 3.0, np.sqrt(2.0 / 3.0), 1.0 / 3.0])
             p4 = point + constant * np.array([0.0, 0.0, 1.0])
+            points = np.vstack((p1, p2, p3, p4))
         else:
             raise NotImplementedError(
                 "Given args n_point={} is not valid".format(n_points)
             )
-        return np.vstack((p1, p2, p3, p4))
+        return points
 
     def find_critical_pts(self):
         """Start the critical point finding main function."""
