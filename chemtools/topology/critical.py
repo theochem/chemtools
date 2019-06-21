@@ -95,7 +95,7 @@ class Topology(object):
         # num of the maximum equals to num of atoms
         if points.ndim != 2 and points.shape[1] != 3:
             raise ValueError("Argument points should be a 2D-array with 3 columns!")
-        self._kdtree = KDTree(points)
+        self._kdtree = KDTree(np.vstack((coors, points)))
         self._found_ct = np.zeros((0, 3))
         self._found_ct_type = np.zeros(0, dtype=int)
         self._nna = []
