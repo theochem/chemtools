@@ -95,6 +95,8 @@ class Topology(object):
         # num of the maximum equals to num of atoms
         if points.ndim != 2 and points.shape[1] != 3:
             raise ValueError("Argument points should be a 2D-array with 3 columns!")
+        if points.shape[0] < 4:
+            raise ValueError("At least 4 points are needed for critical point search!")
         self._kdtree = KDTree(np.vstack((coors, points)))
         self._found_ct = np.zeros((0, 3))
         self._found_ct_type = np.zeros(0, dtype=int)
