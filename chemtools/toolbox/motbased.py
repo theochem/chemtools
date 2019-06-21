@@ -186,8 +186,6 @@ class MOTBasedTool(object):
 
         return atomic_charges - pop
 
-        raise NotImplementedError
-
     def generate_scripts(self, fname, spin='a', index=None, isosurf=0.05, grid=None):
         """Generate VMD script(s) and cube file(s) to visualize MO iso-surface of given orbitals.
 
