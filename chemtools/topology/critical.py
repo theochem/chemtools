@@ -161,22 +161,6 @@ class Topology(object):
         )
         return sol
 
-    def get_gradient(self, points):
-        """Compute the gradient of given points.
-
-        Parameters
-        ----------
-        points : np.ndarray(N, 3)
-            arbituary number of points
-
-        Returns
-        -------
-        np.ndarray(N, 3)
-            1st order derivative of given points
-        """
-        g_list = self.g_f(points)
-        return g_list
-
     @staticmethod
     def _construct_cage(point, length, n_points=4):
         """Construct points to encage given guess point.
@@ -220,8 +204,8 @@ class Topology(object):
         for init_point in self._kdtree.data:
             length, _ = self._kdtree.query(init_point, 4)
             tetrahedral = self._construct_cage(init_point, length[-1])
-            g_values = self.get_gradient(tetrahedral)
-            central_g = self.get_gradient(init_point)
+            g_values = self.g_f(tetrahedral)
+            central_g = self.g_f(init_point)
             # initial guess points
             if np.all(np.linalg.norm(central_g) < np.linalg.norm(g_values, axis=-1)):
                 result = self._root_find(init_point)
