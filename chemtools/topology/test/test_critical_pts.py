@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 
-from chemtools.topology.critical_pts import Topology, CriticalPoint
+from chemtools.topology.critical import Topology, CriticalPoint
 
 import numpy as np
 from numpy.testing import assert_allclose
