@@ -98,10 +98,10 @@ class Topology(object):
         self._kdtree = KDTree(points)
         self._found_ct = np.zeros((0, 3))
         self._found_ct_type = np.zeros(0, dtype=int)
-        self._crit_max = []
-        self._crit_bond = []
-        self._crit_ring = []
-        self._crit_cage = []
+        self._nna = []
+        self._bcp = []
+        self._rcp = []
+        self._ccp = []
 
     def _default_cube(self, extra=5):
         """Generate default cubic meshgrid for calculate critical pts.
@@ -232,10 +232,10 @@ class Topology(object):
             sum of +(-) eigenvalues of points
         """
         signature_dict = {
-            -3: self._crit_max,
-            3: self._crit_cage,
-            -1: self._crit_bond,
-            1: self._crit_ring,
+            -3: self._nna,
+            3: self._ccp,
+            -1: self._bcp,
+            1: self._rcp,
         }
         signature_dict[ct_type].append(ct_pt)
         self._found_ct = np.vstack((self._found_ct, ct_pt.point))
@@ -248,12 +248,7 @@ class Topology(object):
 
     def _satisfy_poincare_hopf(self):
         """int: the total sum of poincare hopf eqaution."""
-        pre_hopf = (
-            len(self._crit_max)
-            - len(self._crit_bond)
-            + len(self._crit_ring)
-            - len(self._crit_cage)
-        )
+        pre_hopf = len(self._nna) - len(self._bcp) + len(self._rcp) - len(self._ccp)
         return pre_hopf + len(self.coors)
 
     def _classify_critical_pt(self, point, eigen_cutoff=1e-4):

@@ -82,19 +82,19 @@ class TestCriticalPoints(TestCase):
         # bond
         ct_type = -1
         topo._add_critical_point(pt, ct_type)
-        assert_allclose(topo._crit_bond[0].point, pt.point, atol=1e-10)
+        assert_allclose(topo._bcp[0].point, pt.point, atol=1e-10)
         # maxima
         ct_type = -3
         topo._add_critical_point(pt, ct_type)
-        assert_allclose(topo._crit_max[0].point, pt.point, atol=1e-10)
+        assert_allclose(topo._nna[0].point, pt.point, atol=1e-10)
         # ring
         ct_type = 1
         topo._add_critical_point(pt, ct_type)
-        assert_allclose(topo._crit_ring[0].point, pt.point, atol=1e-10)
+        assert_allclose(topo._rcp[0].point, pt.point, atol=1e-10)
         # cage
         ct_type = 3
         topo._add_critical_point(pt, ct_type)
-        assert_allclose(topo._crit_cage[0].point, pt.point, atol=1e-10)
+        assert_allclose(topo._ccp[0].point, pt.point, atol=1e-10)
 
     def test_is_coors_pt(self):
         # """Test same pts as nuclear position."""
@@ -140,7 +140,7 @@ class TestCriticalPoints(TestCase):
         tp_ins.find_critical_pts()
         # one critical pt
         assert len(tp_ins._found_ct) == 1
-        assert len(tp_ins._crit_bond) == 1
+        assert len(tp_ins._bcp) == 1
         # one critical type bond
         assert tp_ins._found_ct_type[0] == -1
         # one critical point at origin
@@ -174,7 +174,7 @@ class TestCriticalPoints(TestCase):
 
         tp_ins = Topology(atoms, fun_v, fun_d, fun_d2, extra=1)
         tp_ins.find_critical_pts()
-        assert len(tp_ins._crit_bond) == 3
-        assert len(tp_ins._crit_ring) == 1
-        assert len(tp_ins._crit_max) == 0
-        assert len(tp_ins._crit_cage) == 0
+        assert len(tp_ins._bcp) == 3
+        assert len(tp_ins._rcp) == 1
+        assert len(tp_ins._nna) == 0
+        assert len(tp_ins._ccp) == 0
