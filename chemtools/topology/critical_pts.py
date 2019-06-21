@@ -65,7 +65,7 @@ class Topology(object):
     """Topology class for searching critical points given scalar function."""
 
     def __init__(
-        self, coors, value_func, gradian_func, hess_func, points=None, extra=5
+        self, coors, value_func, grad_func, hess_func, points=None, extra=5
     ):
         """Initialize Topology class instance.
 
@@ -75,7 +75,7 @@ class Topology(object):
             Cartesian coordinates of all atoms
         value_func : Callable[np.ndarray(N, 3) -> float]
             Objective scalar function in space
-        gradian_func : Callable[np.ndarray(N, 3) -> np.ndarray(3,)]
+        grad_func : Callable[np.ndarray(N, 3) -> np.ndarray(3,)]
             1st order derivative of the scarlar function
         hess_func : Callable[np.ndarray(N, 3) -> np.ndarray(3, 3)]
             2nd order derivative of the scarlar function
@@ -90,7 +90,7 @@ class Topology(object):
             raise ValueError("Input array need to be (N, 3) shape.")
         self.coors = coors
         self.v_f = value_func
-        self.g_f = gradian_func
+        self.g_f = grad_func
         self.h_f = hess_func
         # num of the maximum equals to num of atoms
         if points is None:
