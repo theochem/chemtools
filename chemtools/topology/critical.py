@@ -152,14 +152,40 @@ class Topology(object):
 
     def find_critical_pts(self):
         """Start the critical point finding main function."""
-        for init_point in self._kdtree.data:
+        for index, init_point in enumerate(self._kdtree.data):
             length, _ = self._kdtree.query(init_point, 4)
-            tetrahedral = self._construct_cage(init_point, length[-1])
+            tetrahedral = self._construct_cage(init_point, np.max(length))
             g_values = self.g_f(tetrahedral)
             central_g = self.g_f(init_point)
-            # initial guess points
+            good_guess = np.all(np.linalg.norm(central_g) < np.linalg.norm(g_values, axis=-1))
+            if index < len(self.coors) or good_guess:
+                try:
+                    cp_coord = self.converge_to_cp(init_point.copy())
+                except Exception as _:
+                    continue
+                # add if a new CP
+                if not np.any([np.linalg.norm(p - cp_coord) < 1.e-3 for p in self._found_ct]):
+                    dens = self.v_f(cp_coord[np.newaxis, :])
+                    grad = self.compute_grad(cp_coord)
+                    # add if dens & grad are not zero
+                    if abs(dens) < 1.e-4 and np.all(abs(grad) < 1.e-4):
+                        continue
+                    cp, sig = self._classify_critical_pt(cp_coord)
+                    self._add_critical_point(cp, sig)
+
         if self._satisfy_poincare_hopf() != 1:
             warnings.warn("Poincare Hopf value is not 1", RuntimeWarning)
+
+    def converge_to_cp(self, guess, maxiter=5000):
+        niter = 0
+        norm = np.inf
+        while niter < maxiter and norm > 1.e-4:
+            grad = self.g_f(guess)
+            norm = np.linalg.norm(grad, axis=-1)
+            hess = self.compute_hess(guess)
+            guess = guess - np.dot(np.linalg.inv(hess), grad[:, np.newaxis]).flatten()
+            niter += 1
+        return guess
 
     def _add_critical_point(self, ct_pt, ct_type):
         """Add criticla point to instance.
