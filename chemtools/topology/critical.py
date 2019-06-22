@@ -173,7 +173,8 @@ class Topology(object):
                     # add if dens & grad are not zero
                     if abs(dens) < 1.e-4 and np.all(abs(grad) < 1.e-4):
                         continue
-                    cp = self._classify_critical_pt(point)
+                    eigenvals, eigenvecs = np.linalg.eigh(self.h_f(point))
+                    cp = CriticalPoint(point, eigenvals, eigenvecs, 1e-4)
                     self._add_critical_point(cp)
         if not self.poincare_hopf_equation:
             warnings.warn("Poincare–Hopf equation is not satisfied.", RuntimeWarning)
@@ -212,24 +213,3 @@ class Topology(object):
         """bool: whether the Poincare–Hopf equation is satisfied."""
         pre_hopf = len(self._nna) - len(self._bcp) + len(self._rcp) - len(self._ccp)
         return pre_hopf == 1
-
-    def _classify_critical_pt(self, point, eigen_cutoff=1e-4):
-        """Classify the type of given critical point.
-
-        Parameters
-        ----------
-        point : np.ndarray(3,)
-            Coordinates of given critical point
-        eigen_cutoff : float, default to 1e-4
-            The engenvalue cutoff incase too small value
-
-        Returns
-        -------
-        tuple(CriticalPoint, int)
-            CriticalPoint instance with all property of crit pt
-            and the sum of sign of eigenvalues of given point
-        """
-        hess_crit = self.h_f(point)
-        eigenvals, eigenvecs = np.linalg.eigh(hess_crit)
-        cp = CriticalPoint(point, eigenvals, eigenvecs, eigen_cutoff)
-        return cp
