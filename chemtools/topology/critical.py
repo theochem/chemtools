@@ -52,6 +52,11 @@ class CriticalPoint(EigenValueTool):
         self._point = point
         self._eigenvectors = eigenvectors
 
+    @property
+    def point(self):
+        """Cartesian coordinates of critical point."""
+        return self._point
+
 
 class Topology(object):
     """Topology class for searching critical points given scalar function."""
