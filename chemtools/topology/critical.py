@@ -25,42 +25,32 @@ r"""Functionality for finding critical points of any scalar function."""
 
 import warnings
 import numpy as np
+
 from scipy.optimize import root
 from scipy.spatial import KDTree
 
+from chemtools.topology.eigenvalues import EigenValueTool
 
-class CriticalPoint(object):
-    """Critical Point data class.
 
-    Attributes
-    ----------
-    eigenvalues : float
-        eigenvalue of its hessian function
-    eigenvectors : np.ndarray(3,)
-        eigenfunction of its hessian function
-    point : np.ndarray(N,)
-        Coordinates of the critical point
-    """
+class CriticalPoint(EigenValueTool):
+    """Critical Point data class."""
 
-    def __init__(self, point, eigenvalues, eigenvectors):
+    def __init__(self, point, eigenvalues, eigenvectors, eps=1e-15):
         """Initialize CriticalPoint data class.
 
         Parameters
         ----------
+        point : np.ndarray(N,)
+            Coordinates of the critical point
         eigenvalues : np.ndarray
             eigenvalue of its hessian function
         eigenvectors : TYPE
             eigenfunction of its hessian function
-        point : np.ndarray(N,)
-            Coordinates of the critical point
-        """
-        self.point = point
-        self.eigenvalues = eigenvalues
-        self.eigenvectors = eigenvectors
 
-    def __repr__(self):
-        """str: Change the represendation of class instance."""
-        return "{}".format(self.point)
+        """
+        super(CriticalPoint, self).__init__(eigenvalues[np.newaxis, :], eps=eps)
+        self._point = point
+        self._eigenvectors = eigenvectors
 
 
 class Topology(object):
@@ -249,17 +239,8 @@ class Topology(object):
         """
         hess_crit = self.h_f(point)
         eigenvals, eigenvecs = np.linalg.eigh(hess_crit)
-        # Zero eigenvalues occur with points that are far away.
-        # If eigenvalues too small, neglect this critical point
-        if np.max(np.abs(eigenvals)) > eigen_cutoff:
-            signature = np.sum(np.sign(eigenvals))
-        else:
-            signature = 0
-            # Add this critical point to it's list
-        crit_pt = CriticalPoint(point, eigenvals, eigenvecs)
-        return crit_pt, signature
-        # signature_dict[signature].append(crit_pt)
-        # self._satisfy_poincare_hopf()
+        cp = CriticalPoint(point, eigenvals, eigenvecs, eigen_cutoff)
+        return cp, cp.signature[0]
 
     def check_not_same_pt(self, pts, ct_type):
         """Bool: check given point is not already included in critical pts."""
