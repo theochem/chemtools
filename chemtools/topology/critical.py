@@ -26,7 +26,6 @@ r"""Functionality for finding critical points of any scalar function."""
 import warnings
 import numpy as np
 
-from scipy.optimize import root
 from scipy.spatial import KDTree
 
 from chemtools.topology.eigenvalues import EigenValueTool
@@ -62,7 +61,7 @@ class Topology(object):
     """Topology class for searching critical points given scalar function."""
 
     def __init__(
-        self, coors, value_func, grad_func, hess_func, points=None, extra=5
+        self, value_func, grad_func, hess_func, points, coords=None,
     ):
         """Initialize Topology class instance.
 
@@ -83,18 +82,27 @@ class Topology(object):
         extra : int, optional
             Extra space for generating meshgrid. Used in above situation
         """
-        if coors.ndim != 2:
-            raise ValueError("Input array need to be (N, 3) shape.")
-        self.coors = coors
-        self.v_f = value_func
-        self.g_f = grad_func
-        self.h_f = hess_func
-        # num of the maximum equals to num of atoms
         if points.ndim != 2 and points.shape[1] != 3:
             raise ValueError("Argument points should be a 2D-array with 3 columns!")
         if points.shape[0] < 4:
             raise ValueError("At least 4 points are needed for critical point search!")
-        self._kdtree = KDTree(np.vstack((coors, points)))
+        self._points = points
+
+        if coords is not None and coords.ndim != 2 and coords.shape[1] != 3:
+            raise ValueError("Argument coords should be a 2D-array with 3 columns.")
+        if coords is not None:
+            self._coords = coords
+            self._kdtree = KDTree(np.vstack((self._coords, self._points)))
+        else:
+            self._coords = []
+            self._kdtree = KDTree(points)
+
+        self.v_f = value_func
+        self._grad_func = grad_func
+        self._hess_func = hess_func
+        self.g_f = self.compute_grad
+        self.h_f = self.compute_hess
+
         self._nna = []
         self._bcp = []
         self._rcp = []
@@ -150,9 +158,9 @@ class Topology(object):
             g_values = self.g_f(tetrahedral)
             central_g = self.g_f(init_point)
             good_guess = np.all(np.linalg.norm(central_g) < np.linalg.norm(g_values, axis=-1))
-            if index < len(self.coors) or good_guess:
+            if index < len(self._coords) or good_guess:
                 try:
-                    point = self.find_critical_point(init_point.copy())
+                    point = self.root_vector_func(init_point.copy())
                 except Exception as _:
                     continue
                 # add if a new CP
@@ -168,7 +176,7 @@ class Topology(object):
         if not self.poincare_hopf_equation:
             warnings.warn("Poincare–Hopf equation is not satisfied.", RuntimeWarning)
 
-    def find_critical_point(self, guess, maxiter=5000):
+    def root_vector_func(self, guess, maxiter=5000):
         niter = 0
         norm = np.inf
         while niter < maxiter and norm > 1.e-4:
