@@ -170,8 +170,8 @@ class Topology(object):
                     # add if dens & grad are not zero
                     if abs(dens) < 1.e-4 and np.all(abs(grad) < 1.e-4):
                         continue
-                    cp, sig = self._classify_critical_pt(cp_coord)
-                    self._add_critical_point(cp, sig)
+                    cp = self._classify_critical_pt(cp_coord)
+                    self._add_critical_point(cp)
         if not self.poincare_hopf_equation:
             warnings.warn("Poincare–Hopf equation is not satisfied.", RuntimeWarning)
 
@@ -186,7 +186,7 @@ class Topology(object):
             niter += 1
         return guess
 
-    def _add_critical_point(self, ct_pt, ct_type):
+    def _add_critical_point(self, ct_pt):
         """Add criticla point to instance.
 
         Parameters
@@ -202,9 +202,9 @@ class Topology(object):
             -1: self._bcp,
             1: self._rcp,
         }
-        signature_dict[ct_type].append(ct_pt)
+        signature_dict[ct_pt.signature[0]].append(ct_pt)
         self._found_ct = np.vstack((self._found_ct, ct_pt.point))
-        self._found_ct_type = np.append(self._found_ct_type, int(ct_type))
+        self._found_ct_type = np.append(self._found_ct_type, int(ct_pt.signature))
 
     @property
     def poincare_hopf_equation(self):
@@ -231,4 +231,4 @@ class Topology(object):
         hess_crit = self.h_f(point)
         eigenvals, eigenvecs = np.linalg.eigh(hess_crit)
         cp = CriticalPoint(point, eigenvals, eigenvecs, eigen_cutoff)
-        return cp, cp.signature[0]
+        return cp
