@@ -95,12 +95,15 @@ class Topology(object):
         if points.shape[0] < 4:
             raise ValueError("At least 4 points are needed for critical point search!")
         self._kdtree = KDTree(np.vstack((coors, points)))
-        self._found_ct = np.zeros((0, 3))
-        self._found_ct_type = np.zeros(0, dtype=int)
         self._nna = []
         self._bcp = []
         self._rcp = []
         self._ccp = []
+
+    @property
+    def cps(self):
+        """"""
+        return self._nna + self._bcp + self._rcp + self._ccp
 
     def add_points(self, points):
         """Add a point to exiting initial guess points.
@@ -160,17 +163,17 @@ class Topology(object):
             good_guess = np.all(np.linalg.norm(central_g) < np.linalg.norm(g_values, axis=-1))
             if index < len(self.coors) or good_guess:
                 try:
-                    cp_coord = self.converge_to_cp(init_point.copy())
+                    point = self.converge_to_cp(init_point.copy())
                 except Exception as _:
                     continue
                 # add if a new CP
-                if not np.any([np.linalg.norm(p - cp_coord) < 1.e-3 for p in self._found_ct]):
-                    dens = self.v_f(cp_coord[np.newaxis, :])
-                    grad = self.compute_grad(cp_coord)
+                if not np.any([np.linalg.norm(cp.point - point) < 1.e-3 for cp in self.cps]):
+                    dens = self.v_f(point[np.newaxis, :])
+                    grad = self.compute_grad(point)
                     # add if dens & grad are not zero
                     if abs(dens) < 1.e-4 and np.all(abs(grad) < 1.e-4):
                         continue
-                    cp = self._classify_critical_pt(cp_coord)
+                    cp = self._classify_critical_pt(point)
                     self._add_critical_point(cp)
         if not self.poincare_hopf_equation:
             warnings.warn("Poincare–Hopf equation is not satisfied.", RuntimeWarning)
@@ -203,8 +206,6 @@ class Topology(object):
             1: self._rcp,
         }
         signature_dict[ct_pt.signature[0]].append(ct_pt)
-        self._found_ct = np.vstack((self._found_ct, ct_pt.point))
-        self._found_ct_type = np.append(self._found_ct_type, int(ct_pt.signature))
 
     @property
     def poincare_hopf_equation(self):
