@@ -102,36 +102,33 @@ class Topology(object):
         self._hess_func = hess_func
         self.g_f = self.compute_grad
         self.h_f = self.compute_hess
-
-        self._nna = []
-        self._bcp = []
-        self._rcp = []
-        self._ccp = []
+        # dictionary for storing critical points using (rank, signature) as key
+        self._cps = {}
 
     @property
     def cps(self):
         """sequence of CriticalPoint instances."""
-        return self._nna + self._bcp + self._rcp + self._ccp
+        return [cp for cp_class in self._cps.values() for cp in cp_class]
 
     @property
     def nna(self):
         """Sequence of CriticalPoint instances representing (non-)nuclear attractors."""
-        return self._nna
+        return self._cps.get((3, -3), [])
 
     @property
     def bcp(self):
         """Sequence of CriticalPoint instances representing bond critical points."""
-        return self._bcp
+        return self._cps.get((3, -1), [])
 
     @property
     def rcp(self):
         """Sequence of CriticalPoint instances representing ring critical points."""
-        return self._rcp
+        return self._cps.get((3, 1), [])
 
     @property
     def ccp(self):
         """Sequence of CriticalPoint instances representing cage critical points."""
-        return self._ccp
+        return self._cps.get((3, 3), [])
 
     @property
     def poincare_hopf_equation(self):
@@ -197,7 +194,9 @@ class Topology(object):
                         continue
                     eigenvals, eigenvecs = np.linalg.eigh(self.h_f(point))
                     cp = CriticalPoint(point, eigenvals, eigenvecs, 1e-4)
-                    self._add_critical_point(cp)
+                    # add cp
+                    self._cps.setdefault((cp.rank[0], cp.signature[0]), []).append(cp)
+
         if not self.poincare_hopf_equation:
             warnings.warn("Poincare–Hopf equation is not satisfied.", RuntimeWarning)
 
@@ -211,21 +210,3 @@ class Topology(object):
             guess = guess - np.dot(np.linalg.inv(hess), grad[:, np.newaxis]).flatten()
             niter += 1
         return guess
-
-    def _add_critical_point(self, ct_pt):
-        """Add criticla point to instance.
-
-        Parameters
-        ----------
-        ct_pt : np.ndarray(3,)
-            critical point coordinates
-        ct_type : int
-            sum of +(-) eigenvalues of points
-        """
-        signature_dict = {
-            -3: self._nna,
-            3: self._ccp,
-            -1: self._bcp,
-            1: self._rcp,
-        }
-        signature_dict[ct_pt.signature[0]].append(ct_pt)
