@@ -105,17 +105,6 @@ class Topology(object):
         """"""
         return self._nna + self._bcp + self._rcp + self._ccp
 
-    def add_points(self, points):
-        """Add a point to exiting initial guess points.
-
-        Parameters
-        ----------
-        points : np.ndarray(3,)
-            a numpy 3d array
-        """
-        new_points = np.vstack((self._kdtree.data, points))
-        self._kdtree = KDTree(new_points)
-
     @staticmethod
     def _construct_cage(point, length, n_points=4):
         """Construct points to encage given guess point.
