@@ -61,7 +61,7 @@ class Topology(object):
     """Topology class for searching critical points given scalar function."""
 
     def __init__(
-        self, value_func, grad_func, hess_func, points, coords=None,
+        self, value_func, grad_func, hess_func, points, coords=None, n_neighbours=4,
     ):
         """Initialize Topology class instance.
 
@@ -100,6 +100,9 @@ class Topology(object):
         self.v_f = value_func
         self.g_f = grad_func
         self.h_f = hess_func
+        # pre-compute coordinates of polyhedron vertices
+        self._neighbours = self._polyhedron_coordinates(n_neighbours)
+
         # dictionary for storing critical points using (rank, signature) as key
         self._cps = {}
 
@@ -133,49 +136,12 @@ class Topology(object):
         """bool: whether the Poincare–Hopf equation is satisfied."""
         return len(self.nna) - len(self.bcp) + len(self.rcp) - len(self.ccp) == 1
 
-    @staticmethod
-    def _construct_cage(point, length, n_points=4):
-        """Construct points to encage given guess point.
-
-        Parameters
-        ----------
-        point : np.ndarray(3,)
-            initial guess point
-        length : float
-            multiplier for the lengh of cage side.
-        n_points : int, default to 4
-            number of points to form the cage
-
-        Returns
-        -------
-        np.ndarray(4, 3)
-            coordinates of 4 points forming a tetrahedral around
-            initial guess point
-
-        Raises
-        ------
-        NotImplementedError
-            n_points only support 4 at this moment
-        """
-        if n_points == 4:
-            constant = np.sqrt(24) * length
-            p1 = point + constant * np.array([np.sqrt(8.0) / 3.0, 0.0, -1.0 / 3.0])
-            p2 = point - constant * np.array([np.sqrt(2.0) / 3.0, -np.sqrt(2.0 / 3.0), 1.0 / 3.0])
-            p3 = point - constant * np.array([np.sqrt(2.0) / 3.0, np.sqrt(2.0 / 3.0), 1.0 / 3.0])
-            p4 = point + constant * np.array([0.0, 0.0, 1.0])
-            points = np.vstack((p1, p2, p3, p4))
-        else:
-            raise NotImplementedError(
-                "Given args n_point={} is not valid".format(n_points)
-            )
-        return points
-
     def find_critical_pts(self):
         """Start the critical point finding main function."""
         for index, init_point in enumerate(self._kdtree.data):
             length, _ = self._kdtree.query(init_point, 4)
-            tetrahedral = self._construct_cage(init_point, np.max(length))
-            g_values = self.g_f(tetrahedral)
+            neighbours = init_point + np.max(length) * self._neighbours
+            g_values = self.g_f(neighbours)
             central_g = self.g_f(init_point)
             good_guess = np.all(np.linalg.norm(central_g) < np.linalg.norm(g_values, axis=-1))
             if index < len(self._coords) or good_guess:
@@ -208,3 +174,23 @@ class Topology(object):
             guess = guess - np.dot(np.linalg.inv(hess), grad[:, np.newaxis]).flatten()
             niter += 1
         return guess
+
+    @staticmethod
+    def _polyhedron_coordinates(n_vertices):
+        """Compute Cartesian coordinates of polyhedron vertices.
+
+        Parameters
+        ----------
+        n_vertices : int
+            Number of vertices of polyhedron.
+
+        """
+        if n_vertices == 4:
+            coords = np.array([[np.sqrt(8.0) / 3.0, 0.0, -1.0 / 3.0],
+                               [-np.sqrt(2.0) / 3.0, np.sqrt(2.0 / 3.0), -1.0 / 3.0],
+                               [-np.sqrt(2.0) / 3.0, -np.sqrt(2.0 / 3.0), -1.0 / 3.0],
+                               [0.0, 0.0, 1.0]])
+            coords *= np.sqrt(24)
+        else:
+            raise NotImplementedError("Number of vertices {} is not supported".format(n_vertices))
+        return coords
