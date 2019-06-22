@@ -110,8 +110,33 @@ class Topology(object):
 
     @property
     def cps(self):
-        """"""
+        """sequence of CriticalPoint instances."""
         return self._nna + self._bcp + self._rcp + self._ccp
+
+    @property
+    def nna(self):
+        """Sequence of CriticalPoint instances representing (non-)nuclear attractors."""
+        return self._nna
+
+    @property
+    def bcp(self):
+        """Sequence of CriticalPoint instances representing bond critical points."""
+        return self._bcp
+
+    @property
+    def rcp(self):
+        """Sequence of CriticalPoint instances representing ring critical points."""
+        return self._rcp
+
+    @property
+    def ccp(self):
+        """Sequence of CriticalPoint instances representing cage critical points."""
+        return self._ccp
+
+    @property
+    def poincare_hopf_equation(self):
+        """bool: whether the Poincare–Hopf equation is satisfied."""
+        return len(self.nna) - len(self.bcp) + len(self.rcp) - len(self.ccp) == 1
 
     @staticmethod
     def _construct_cage(point, length, n_points=4):
@@ -204,9 +229,3 @@ class Topology(object):
             1: self._rcp,
         }
         signature_dict[ct_pt.signature[0]].append(ct_pt)
-
-    @property
-    def poincare_hopf_equation(self):
-        """bool: whether the Poincare–Hopf equation is satisfied."""
-        pre_hopf = len(self._nna) - len(self._bcp) + len(self._rcp) - len(self._ccp)
-        return pre_hopf == 1
