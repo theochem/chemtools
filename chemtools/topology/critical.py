@@ -163,7 +163,7 @@ class Topology(object):
             good_guess = np.all(np.linalg.norm(central_g) < np.linalg.norm(g_values, axis=-1))
             if index < len(self.coors) or good_guess:
                 try:
-                    point = self.converge_to_cp(init_point.copy())
+                    point = self.find_critical_point(init_point.copy())
                 except Exception as _:
                     continue
                 # add if a new CP
@@ -179,7 +179,7 @@ class Topology(object):
         if not self.poincare_hopf_equation:
             warnings.warn("Poincare–Hopf equation is not satisfied.", RuntimeWarning)
 
-    def converge_to_cp(self, guess, maxiter=5000):
+    def find_critical_point(self, guess, maxiter=5000):
         niter = 0
         norm = np.inf
         while niter < maxiter and norm > 1.e-4:
