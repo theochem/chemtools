@@ -108,30 +108,6 @@ class Topology(object):
         new_points = np.vstack((self._kdtree.data, points))
         self._kdtree = KDTree(new_points)
 
-    def _root_find(self, init_guess):
-        """Use scipy root method to compute the root.
-
-        Parameters
-        ----------
-        init_guess : np.ndarray(3,)
-            init guess point
-
-        Returns
-        -------
-        OptimizeResult
-            property: .success return result of the computation
-                      .x       return the root
-        """
-        sol = root(
-            self.g_f,
-            x0=init_guess,
-            jac=self.h_f,
-            tol=1e-15,
-            method="hybr",
-            options={"maxfev": 1000},
-        )
-        return sol
-
     @staticmethod
     def _construct_cage(point, length, n_points=4):
         """Construct points to encage given guess point.
@@ -177,17 +153,6 @@ class Topology(object):
             g_values = self.g_f(tetrahedral)
             central_g = self.g_f(init_point)
             # initial guess points
-            if np.all(np.linalg.norm(central_g) < np.linalg.norm(g_values, axis=-1)):
-                result = self._root_find(init_point)
-                # converge to critical pt
-                if result.success:
-                    point = result.x
-                    # if critical pt is maxima, skip.
-                    if self._is_coors_pt(point):
-                        continue
-                    ct_pt, ct_type = self._classify_critical_pt(point)
-                    if ct_type != 0 and self.check_not_same_pt(ct_pt, ct_type):
-                        self._add_critical_point(ct_pt, ct_type)
         if self._satisfy_poincare_hopf() != 1:
             warnings.warn("Poincare Hopf value is not 1", RuntimeWarning)
 
