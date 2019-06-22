@@ -172,9 +172,8 @@ class Topology(object):
                         continue
                     cp, sig = self._classify_critical_pt(cp_coord)
                     self._add_critical_point(cp, sig)
-
-        if self._satisfy_poincare_hopf() != 1:
-            warnings.warn("Poincare Hopf value is not 1", RuntimeWarning)
+        if not self.poincare_hopf_equation:
+            warnings.warn("Poincare–Hopf equation is not satisfied.", RuntimeWarning)
 
     def converge_to_cp(self, guess, maxiter=5000):
         niter = 0
@@ -207,10 +206,11 @@ class Topology(object):
         self._found_ct = np.vstack((self._found_ct, ct_pt.point))
         self._found_ct_type = np.append(self._found_ct_type, int(ct_type))
 
-    def _satisfy_poincare_hopf(self):
-        """int: the total sum of poincare hopf eqaution."""
+    @property
+    def poincare_hopf_equation(self):
+        """bool: whether the Poincare–Hopf equation is satisfied."""
         pre_hopf = len(self._nna) - len(self._bcp) + len(self._rcp) - len(self._ccp)
-        return pre_hopf + len(self.coors)
+        return pre_hopf == 1
 
     def _classify_critical_pt(self, point, eigen_cutoff=1e-4):
         """Classify the type of given critical point.
