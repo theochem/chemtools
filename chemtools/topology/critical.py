@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-# QTAIM is an atoms-in-molecules partitioning package based on
-# Richard Bader's Quantum Theory of Atoms in Molecules.
+# ChemTools is a collection of interpretive chemical tools for
+# analyzing outputs of the quantum chemistry calculations.
 #
-# Copyright (C) 2014-2015 The QTAIM Development Team
+# Copyright (C) 2016-2019 The ChemTools Development Team
 #
-# This file is part of QTAIM.
+# This file is part of ChemTools.
 #
-# QTAIM is free software; you can redistribute it and/or
+# ChemTools is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 3
 # of the License, or (at your option) any later version.
 #
-# QTAIM is distributed in the hope that it will be useful,
+# ChemTools is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -20,7 +20,9 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-r"""This file contains functions for finding the critical points."""
+r"""Functionality for finding critical points of any scalar function."""
+
+
 import warnings
 import numpy as np
 from scipy.optimize import root
