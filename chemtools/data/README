@@ -22,3 +22,7 @@ rdg		Reduced density gradient
 alie		Average local ionization energy
 esp		Total ESP
 ellipticity	Ellipticity
+nna_coords	Cartesian coordinates of (non-)nuclear attractors
+bcp_coords	Cartesian coordinates of bond critical points
+rcp_coords	Cartesian coordinates of ring critical points
+ccp_coords	Cartesian coordinates of cage critical points
