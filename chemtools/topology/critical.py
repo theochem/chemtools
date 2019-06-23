@@ -98,10 +98,8 @@ class Topology(object):
             self._kdtree = KDTree(points)
 
         self.v_f = value_func
-        self._grad_func = grad_func
-        self._hess_func = hess_func
-        self.g_f = self.compute_grad
-        self.h_f = self.compute_hess
+        self.g_f = grad_func
+        self.h_f = hess_func
         # dictionary for storing critical points using (rank, signature) as key
         self._cps = {}
 
@@ -188,7 +186,7 @@ class Topology(object):
                 # add if a new CP
                 if not np.any([np.linalg.norm(cp.point - point) < 1.e-3 for cp in self.cps]):
                     dens = self.v_f(point[np.newaxis, :])
-                    grad = self.compute_grad(point)
+                    grad = self.g_f(point)
                     # add if dens & grad are not zero
                     if abs(dens) < 1.e-4 and np.all(abs(grad) < 1.e-4):
                         continue
@@ -206,7 +204,7 @@ class Topology(object):
         while niter < maxiter and norm > 1.e-4:
             grad = self.g_f(guess)
             norm = np.linalg.norm(grad, axis=-1)
-            hess = self.compute_hess(guess)
+            hess = self.h_f(guess)
             guess = guess - np.dot(np.linalg.inv(hess), grad[:, np.newaxis]).flatten()
             niter += 1
         return guess
