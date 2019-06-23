@@ -86,3 +86,38 @@ def test_critical_point_li2():
     assert len(top.ccp) == 0
     assert len(top.cps) == 5
     assert top.poincare_hopf_equation
+
+
+def test_critical_point_cyclopropenium_oxide():
+    # test against multiwfn 3.6 dev src
+    with path("chemtools.data", "data_multiwfn36_fchk_c3h2o_q+0_ub3lyp_augccpvdz.npz") as fname:
+        data = np.load(str(fname))
+        nna, bcp, rcp = data["nna_coords"], data["bcp_coords"], data["rcp_coords"]
+    # find critical points
+    with path("chemtools.data", "c3h2o_q+0_ub3lyp_augccpvdz.fchk") as fpath:
+        mol = Molecule.from_file(fpath)
+    cub = UniformGrid.from_molecule(mol, spacing=0.25, extension=0.1, rotate=False)
+    top = TopologicalTool.from_molecule(mol, points=cub.points)
+    # check NA
+    assert len(top.nna) == 6
+    assert sum([np.allclose(top.nna[0].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
+    assert sum([np.allclose(top.nna[1].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
+    assert sum([np.allclose(top.nna[2].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
+    assert sum([np.allclose(top.nna[3].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
+    assert sum([np.allclose(top.nna[4].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
+    assert sum([np.allclose(top.nna[5].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
+    # check BCP
+    assert len(top.bcp) == 6
+    assert sum([np.allclose(top.bcp[0].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
+    assert sum([np.allclose(top.bcp[1].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
+    assert sum([np.allclose(top.bcp[2].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
+    assert sum([np.allclose(top.bcp[3].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
+    assert sum([np.allclose(top.bcp[4].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
+    assert sum([np.allclose(top.bcp[5].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
+    # check RCP
+    assert len(top.rcp) == 1
+    assert sum([np.allclose(top.rcp[0].point, point, rtol=0.0, atol=1.0e-5) for point in rcp]) == 1
+    # check total number of CP
+    assert len(top.ccp) == 0
+    assert len(top.cps) == 13
+    assert top.poincare_hopf_equation
