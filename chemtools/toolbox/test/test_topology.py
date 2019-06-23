@@ -52,7 +52,6 @@ def test_critical_point_h2o():
     assert sum([np.allclose(top.nna[2].point, point, rtol=0.0) for point in nna]) == 1
     # check BCP
     assert len(top.bcp) == 2
-    print(sum([np.allclose(top.bcp[1].point, point, rtol=0.0) for point in bcp]))
     assert sum([np.allclose(top.bcp[0].point, point, rtol=0.0) for point in bcp]) == 1
     assert sum([np.allclose(top.bcp[1].point, point, rtol=0.0) for point in bcp]) == 1
     # check total number of CP

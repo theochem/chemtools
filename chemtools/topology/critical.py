@@ -60,9 +60,7 @@ class CriticalPoint(EigenValueTool):
 class Topology(object):
     """Topology class for searching critical points given scalar function."""
 
-    def __init__(
-        self, value_func, grad_func, hess_func, points, coords=None, n_neighbours=4,
-    ):
+    def __init__(self, value_func, grad_func, hess_func, points, coords=None, n_neighbours=4):
         """Initialize Topology class instance.
 
         Parameters
@@ -108,7 +106,7 @@ class Topology(object):
 
     @property
     def cps(self):
-        """sequence of CriticalPoint instances."""
+        """Sequence of CriticalPoint instances."""
         return [cp for cp_class in self._cps.values() for cp in cp_class]
 
     @property
