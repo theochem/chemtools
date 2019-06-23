@@ -182,9 +182,9 @@ class Topology(object):
         norm = np.inf
         while niter < maxiter and norm > 1.e-4:
             grad = self.g_f(guess)
-            norm = np.linalg.norm(grad, axis=-1)
             hess = self.h_f(guess)
             guess = guess - np.dot(np.linalg.inv(hess), grad[:, np.newaxis]).flatten()
+            norm = np.linalg.norm(grad, axis=-1)
             niter += 1
         return guess
 
