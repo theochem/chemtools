@@ -136,35 +136,48 @@ class Topology(object):
         """bool: whether the Poincare–Hopf equation is satisfied."""
         return len(self.nna) - len(self.bcp) + len(self.rcp) - len(self.ccp) == 1
 
-    def find_critical_pts(self):
-        """Start the critical point finding main function."""
-        for index, init_point in enumerate(self._kdtree.data):
-            length, _ = self._kdtree.query(init_point, 4)
-            neighbours = init_point + np.max(length) * self._neighbours
-            g_values = self.g_f(neighbours)
-            central_g = self.g_f(init_point)
-            good_guess = np.all(np.linalg.norm(central_g) < np.linalg.norm(g_values, axis=-1))
-            if index < len(self._coords) or good_guess:
+    def find_critical_points(self):
+        """Find and store the critical points."""
+        for index, point in enumerate(self._kdtree.data):
+            # compute distance to 4 closest grid points
+            dists, _ = self._kdtree.query(point, 4)
+            # compute coordinates of neighbouring polyhedron vertices surrounding the point
+            neigh = point + np.max(dists) * self._neighbours
+            # compute the gradient norm of point & surrounding vertices
+            point_norm = np.linalg.norm(self.g_f(point))
+            neigh_norm = np.linalg.norm(self.g_f(neigh), axis=-1)
+            # use central point as initial guess for critical point finding
+            if index < len(self._coords) or np.all(point_norm < neigh_norm):
                 try:
-                    point = self.root_vector_func(init_point.copy())
+                    cp_point = self._root_vector_func(point.copy())
                 except Exception as _:
                     continue
-                # add if a new CP
-                if not np.any([np.linalg.norm(cp.point - point) < 1.e-3 for cp in self.cps]):
-                    dens = self.v_f(point[np.newaxis, :])
-                    grad = self.g_f(point)
-                    # add if dens & grad are not zero
+                # add critical point if it is new
+                if not np.any([np.linalg.norm(cp_point - cp.point) < 1.e-3 for cp in self.cps]):
+                    dens = self.v_f(cp_point)
+                    grad = self.g_f(cp_point)
+                    # skip critical point if its dens & grad are zero
                     if abs(dens) < 1.e-4 and np.all(abs(grad) < 1.e-4):
                         continue
-                    eigenvals, eigenvecs = np.linalg.eigh(self.h_f(point))
-                    cp = CriticalPoint(point, eigenvals, eigenvecs, 1e-4)
-                    # add cp
+                    # compute rank & signature of critical point
+                    eigenvals, eigenvecs = np.linalg.eigh(self.h_f(cp_point))
+                    cp = CriticalPoint(cp_point, eigenvals, eigenvecs, 1e-4)
                     self._cps.setdefault((cp.rank[0], cp.signature[0]), []).append(cp)
-
+        # check Poincare–Hopf equation
         if not self.poincare_hopf_equation:
             warnings.warn("Poincare–Hopf equation is not satisfied.", RuntimeWarning)
 
-    def root_vector_func(self, guess, maxiter=5000):
+    def _root_vector_func(self, guess, maxiter=5000):
+        """Find root of a multivariate function using Newton-Raphson method.
+
+        Parameters
+        ----------
+        guess : np.ndarray
+            Cartesian coordinates of initial guess.
+        maxiter: int, optional
+            Maximum number of iterations.
+
+        """
         niter = 0
         norm = np.inf
         while niter < maxiter and norm > 1.e-4:
