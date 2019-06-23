@@ -136,6 +136,17 @@ class Topology(object):
         """bool: whether the Poincare–Hopf equation is satisfied."""
         return len(self.nna) - len(self.bcp) + len(self.rcp) - len(self.ccp) == 1
 
+    def add_points(self, points):
+        """Add extra points as seeds to search for critical points.
+
+        Parameters
+        ----------
+        points : np.ndarray
+            Cartesian coordinates of points.
+
+        """
+        self._kdtree = KDTree(np.vstack((self._kdtree.data, points)))
+
     def find_critical_points(self):
         """Find and store the critical points."""
         for index, point in enumerate(self._kdtree.data):
