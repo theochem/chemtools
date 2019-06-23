@@ -8,15 +8,16 @@ import numpy as np
 from numpy.testing import assert_allclose
 
 
+"""
 class TestCriticalPoints(TestCase):
-    """Test critical point finder class."""
+    # Test critical point finder class.
 
     def gauss_func(self, coors, centers=np.zeros(3), alphas=1):
-        # """Generate gaussian function value.
+        # Generate gaussian function value.
         return np.prod(np.exp((-alphas * (coors - centers) ** 2)), axis=-1)
 
     def gauss_deriv(self, coors, centers=np.zeros(3), alphas=1):
-        # """Generate 1st order derivative of gaussian function."""
+        # Generate 1st order derivative of gaussian function.
         if coors.ndim > 1:
             func_v = self.gauss_func(coors, centers, alphas)[:, None]
         else:
@@ -24,7 +25,7 @@ class TestCriticalPoints(TestCase):
         return -2 * alphas * (coors - centers) * func_v
 
     def gauss_deriv2(self, coors, centers=np.zeros(3), alphas=1):
-        # """Generate 2nd order derivative of gaussian function."""
+        # Generate 2nd order derivative of gaussian function.
         diag = (
             -2 * alphas + 4 * alphas ** 2 * (coors - centers) ** 2
         ) * self.gauss_func(coors, centers, alphas)
@@ -41,27 +42,27 @@ class TestCriticalPoints(TestCase):
         return hm
 
     def test_topo(self):
-        # """Test properly initiate topo instance."""
+        # Test properly initiate topo instance.
         coors = np.array([[1, 1, 1], [-1, -1, -1]])
         pts = np.random.rand(4, 3)
         topo = Topology(coors, self.gauss_func, self.gauss_deriv, self.gauss_deriv2, pts)
         assert isinstance(topo, Topology)
 
     def test_default_cube(self):
-        # """Test default cube for points."""
+        # Test default cube for points.
         coors = np.array([[1, 1, 1], [-1, -1, -1]])
         topo = Topology(coors, self.gauss_func, self.gauss_deriv, self.gauss_deriv2)
         assert topo._kdtree.data.shape == (60 * 60 * 60, 3)
 
     def test_construct_cage(self):
-        # """Test construct cage among target points."""
+        # Test construct cage among target points.
         pts = Topology._construct_cage(np.array([0, 0, 0]), 1)
         assert len(pts) == 4
         dis = np.linalg.norm(pts[:] - np.array([0, 0, 0]), axis=-1)
         assert_allclose(dis, np.ones(4) * 4.89898, rtol=1e-5)
 
     def test_get_gradietn(self):
-        # """Test get proper gradient."""
+        # Test get proper gradient.
         # initiate topo obj.
         coors = np.array([[1, 1, 1], [-1, -1, -1]])
         pts = np.random.rand(4, 3)
@@ -74,7 +75,7 @@ class TestCriticalPoints(TestCase):
         assert_allclose(ref_g, g_pts)
 
     def test_add_critical_points(self):
-        # """Test add critical points to class."""
+        # Test add critical points to class.
         coors = np.array([[1, 1, 1], [-1, -1, -1]])
         pts = np.random.rand(4, 3)
         topo = Topology(coors, self.gauss_func, self.gauss_deriv, self.gauss_deriv2, pts)
@@ -97,7 +98,7 @@ class TestCriticalPoints(TestCase):
         assert_allclose(topo._ccp[0].point, pt.point, atol=1e-10)
 
     def test_is_coors_pt(self):
-        # """Test same pts as nuclear position."""
+        # Test same pts as nuclear position.
         coors = np.array([[1, 1, 1], [-1, -1, -1]])
         pts = np.random.rand(4, 3)
         topo = Topology(coors, self.gauss_func, self.gauss_deriv, self.gauss_deriv2, pts)
@@ -110,24 +111,24 @@ class TestCriticalPoints(TestCase):
             assert not result
 
     def test_find_one_critical_pt(self):
-        # """Test two atoms critical pts."""
+        # Test two atoms critical pts.
         atoms = np.array([[-2, -2, -2], [2, 2, 2]])
         alf = 0.3
 
         def fun_v(coors):
-            """Generate value function."""
+            # Generate value function.
             return self.gauss_func(coors, atoms[0], alphas=alf) + self.gauss_func(
                 coors, atoms[1], alphas=alf
             )
 
         def fun_d(coors):
-            """Generate 1st order deriv function."""
+            # Generate 1st order deriv function.
             return self.gauss_deriv(coors, atoms[0], alphas=alf) + self.gauss_deriv(
                 coors, atoms[1], alphas=alf
             )
 
         def fun_d2(coors):
-            """Generate 2nd order deriv function."""
+            # Generate 2nd order deriv function.
             return self.gauss_deriv2(coors, atoms[0], alphas=alf) + self.gauss_deriv2(
                 coors, atoms[1], alphas=alf
             )
@@ -147,7 +148,7 @@ class TestCriticalPoints(TestCase):
         assert_allclose(tp_ins._found_ct[0], [0, 0, 0], atol=1e-10)
 
     def test_find_triangle_critical_pt(self):
-        # """Test three atom ring critical pts."""
+        # Test three atom ring critical pts.
         atoms = np.array([[-2, -2, 0], [2, -2, 0], [0, 1, 0]])
         alf = 1
 
@@ -178,3 +179,4 @@ class TestCriticalPoints(TestCase):
         assert len(tp_ins._rcp) == 1
         assert len(tp_ins._nna) == 0
         assert len(tp_ins._ccp) == 0
+"""
