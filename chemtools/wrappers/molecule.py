@@ -111,13 +111,13 @@ class Molecule(object):
 
     @classmethod
     def from_file(cls, fname, wavefunction=False):
-        """
-        Initialize class given a file.
+        """Initialize class given a file.
 
         Parameters
         ----------
         fname : str
             Path to molecule's files.
+
         """
         # load molecule
         logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
@@ -133,13 +133,13 @@ class Molecule(object):
         return cls(iodata, wavefunction)
 
     def __getattr__(self, attr):
-        """
-        Return attribute.
+        """Return attribute.
 
         Parameters
         ----------
         attr : str
             The name of attribute to retrieve.
+
         """
         value = getattr(self._iodata, attr, None)
         return value
@@ -214,16 +214,30 @@ class Molecule(object):
         return arr
 
     def compute_density_matrix(self, spin="ab", index=None):
-        """
-        Return the density matrix array for the specified spin orbitals.
+        """Compute the density matrix array for the specified spin orbitals.
+
+        Parameters
+        ----------
+        spin : str, optional
+           The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
+           alpha and beta occupied spin orbitals) are used for computing the electron density.
+
+           - "a" or "alpha": consider alpha electrons
+           - "b" or "beta": consider beta electrons
+           - "ab": consider alpha and beta electrons
+
+        index : sequence, optional
+           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
+           orbitals are each indexed from 1 to :attr:`nbasis`.
+           If ``None``, all orbitals of the given spin(s) are included.
+
         """
         # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin, index=index)
         return dm._array
 
     def _get_density_matrix(self, spin, index=None):
-        """
-        Return HORTON density matrix object corresponding to the specified spin.
+        """Return HORTON density matrix object corresponding to the specified spin orbitals.
 
         Parameters
         ----------
@@ -235,7 +249,7 @@ class Molecule(object):
            - "b" or "beta": consider beta electrons
            - "ab": consider alpha and beta electrons
 
-        index : sequence, default=None
+        index : sequence, optional
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
            If ``None``, all orbitals of the given spin(s) are included.
@@ -263,7 +277,6 @@ class Molecule(object):
                 index = index.reshape(1)
             if index.ndim >= 2:
                 raise ValueError("Indices should be given as a one-dimensional numpy array.")
-            # FIXME: indexing here starts from 1 for some reason
             index -= 1
             if np.any(index < 0):
                 raise ValueError(
@@ -289,11 +302,11 @@ class Molecule(object):
            - "a" or "alpha": consider alpha electrons
            - "b" or "beta": consider beta electrons
 
-        index : sequence, default=None
+        index : sequence, optional
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
            If ``None``, all occupied spin orbitals are included.
-        output : np.ndarray, default=None
+        output : np.ndarray, optional
            Array with shape (n, m) to store the output, where n in the number of points and m
            is the number of molecular orbitals. When ``None`` the array is allocated.
         """
@@ -339,7 +352,7 @@ class Molecule(object):
         points : ndarray
            The 2d-array containing the cartesian coordinates of points on which density is
            evaluated. It has a shape (n, 3) where n is the number of points.
-        spin : str
+        spin : str, optional
            The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
            alpha and beta occupied spin orbitals) are used for computing the electron density.
 
@@ -347,13 +360,14 @@ class Molecule(object):
            - "b" or "beta": consider beta electrons
            - "ab": consider alpha and beta electrons
 
-        index : sequence
+        index : sequence, optional
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
            If ``None``, all occupied spin orbitals are included.
-        output : np.ndarray
+        output : np.ndarray, optional
            Array with shape (n,) to store the output, where n in the number of points.
            When ``None`` the array is allocated.
+
         """
         # check points
         if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
@@ -441,7 +455,7 @@ class Molecule(object):
         points : ndarray
            The 2d-array containing the cartesian coordinates of points on which density is
            evaluated. It has a shape (n, 3) where n is the number of points.
-        spin : str
+        spin : str, optional
            The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
            alpha and beta occupied spin orbitals) are used for computing the electron density.
 
@@ -449,11 +463,11 @@ class Molecule(object):
            - "b" or "beta": consider beta electrons
            - "ab": consider alpha and beta electrons
 
-        index : sequence
+        index : sequence, optional
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
            If ``None``, all orbitals of the given spin(s) are included.
-        output : np.ndarray
+        output : np.ndarray, optional
            Array with shape (n, 6) to store the output, where n in the number of points.
            When ``None`` the array is allocated.
         """
@@ -494,7 +508,7 @@ class Molecule(object):
         points : ndarray
            The 2d-array containing the cartesian coordinates of points on which density is
            evaluated. It has a shape (n, 3) where n is the number of points.
-        spin : str, default="ab"
+        spin : str, optional
            The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
            alpha and beta occupied spin orbitals) are used for computing the electron density.
 
@@ -502,14 +516,14 @@ class Molecule(object):
            - "b" or "beta": consider beta electrons
            - "ab": consider alpha and beta electrons
 
-        index : sequence, default=None
+        index : sequence, optional
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
            If ``None``, all orbitals of the given spin(s) are included.
-        output : np.ndarray, default=None
+        output : np.ndarray, optional
            Array with shape (n,) to store the output, where n in the number of points.
            When ``None`` the array is allocated.
-        charges : np.ndarray, default=None
+        charges : np.ndarray, optional
            Array with shape (n,) representing the point charges at the position of the nuclei.
            When ``None``, the pseudo numbers are used.
         """
@@ -553,7 +567,7 @@ class Molecule(object):
         points : ndarray
            The 2d-array containing the cartesian coordinates of points on which density is
            evaluated. It has a shape (n, 3) where n is the number of points.
-        spin : str
+        spin : str, optional
            The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
            alpha and beta occupied spin orbitals) are used for computing the electron density.
 
@@ -561,13 +575,14 @@ class Molecule(object):
            - "b" or "beta": consider beta electrons
            - "ab": consider alpha and beta electrons
 
-        index : sequence
+        index : sequence, optional
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
            If ``None``, all orbitals of the given spin(s) are included.
-        output : np.ndarray
+        output : np.ndarray, optional
            Array with shape (n,) to store the output, where n in the number of points.
            When ``None`` the array is allocated.
+
         """
         # check points
         if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
@@ -593,7 +608,7 @@ class Molecule(object):
         points : ndarray
            The 2d-array containing the cartesian coordinates of points on which density is
            evaluated. It has a shape (n, 3) where n is the number of points.
-        spin : str
+        spin : str, optional
            The type of occupied spin orbitals. By default, the alpha and beta electrons (i.e.
            alpha and beta occupied spin orbitals) are used for computing the electron density.
 
@@ -601,10 +616,11 @@ class Molecule(object):
            - "b" or "beta": consider beta electrons
            - "ab": consider alpha and beta electrons
 
-        index : sequence
+        index : sequence, optional
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
            If ``None``, all orbitals of the given spin(s) are included.
+
         """
         # check points
         if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
