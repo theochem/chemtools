@@ -34,6 +34,7 @@ try:
 except ImportError:
     from importlib.resources import path
 
+
 def check_horton_molecule_raises(mol):
     """Check expected raised error messages by HortonWaveFunction class."""
     # example point array
@@ -95,10 +96,12 @@ def test_horton_molecule_check_raises_fchk_ch4_uhf_ccpvdz():
         molecule = Molecule.from_file(fname)
     check_horton_molecule_raises(molecule)
 
+
 def test_horton_molecule_check_raises_fchk_ch4_rhf_ccpvdz():
     with path('chemtools.data', 'ch4_rhf_ccpvdz.fchk') as fname:
         molecule = Molecule.from_file(fname)
     check_horton_molecule_raises(molecule)
+
 
 def test_horton_molecule_check_raises_wfn_ch4_uhf_ccpvdz():
     with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as fname:
@@ -308,7 +311,6 @@ def test_horton_molecule_grid_gaussian_wfn_ch4_uhf_ccpvdz():
 
 
 def check_horton_molecule_against_fortran_ch4_uhf_ccpvdz(mol):
-    """Check local properties of HortonWaveFunction class against in-house Fortran code."""
     # get expected data computed by Fortran code
     points, exp8, exp9, dens, grad, ke, _, _ = load_data_fortran_ch4_uhf_ccpvdz()
     # check density & gradient
@@ -413,12 +415,7 @@ def test_horton_molecule_basic_fchk_o2_uhf():
 
 
 def test_horton_molecule_get_density_matrix_index_fchk_ch4_uhf_ccpvdz():
-    """Test Molecule_get_density_matrix using fchk for CH4 UHF/ccPVDZ.
-
-    This test checks for the behaviour of Molecule._get_density_matrix for different values of the
-    parameter, `index`.
-
-    """
+    # check get_density_matrix for different values of the index/
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fname:
         mol = Molecule.from_file(fname)
     dm_full = mol._get_density_matrix("a")._array
@@ -432,6 +429,6 @@ def test_horton_molecule_get_density_matrix_index_fchk_ch4_uhf_ccpvdz():
     for i in range(1, mol.nbasis + 1):
         for j in range(1, mol.nbasis + 1):
             # NOTE: indices can be repeated
-            indices = np.array([i -1 , j - 1])
+            indices = np.array([i -1, j - 1])
             assert np.allclose(dm_full[indices[:, None], indices[None, :]],
                                mol._get_density_matrix("a", [i, j])._array)
