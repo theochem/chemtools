@@ -33,7 +33,7 @@ The following dependencies will be necessary for ChemTools to build properly,
 * Python >= 2.7, < 3.0: http://www.python.org/ (Also install development files.)
 * PIP >= 7.0: https://pip.pypa.io/ (Not required in some scenarios but never bad to have.)
 * SciPy >= 0.11.0: http://www.scipy.org/
-* NumPy >= 1.9.1: http://www.numpy.org/
+* NumPy >= 1.16.0: http://www.numpy.org/
 * SymPy >= 0.7.1: http://code.google.com/p/sympy/
 * Matplotlib >= 1.0: http://matplotlib.org/
 * Nosetests >= 1.1.2: http://readthedocs.org/docs/nose/en/latest/

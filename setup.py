@@ -44,7 +44,7 @@ setup(
         'Topic :: Science/Engineering :: Molecular Science'
     ],
     install_requires=[
-        'numpy>=1.15', 'matplotlib', 'Pillow', 'Image', 'sympy',
+        'numpy>=1.16', 'matplotlib', 'Pillow', 'Image', 'sympy',
         'scipy', 'importlib_resources; python_version < "3.7"',
         'nose',
     ],
