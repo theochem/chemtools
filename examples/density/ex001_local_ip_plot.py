@@ -7,7 +7,7 @@ Compute average local IP and visualize it on electron density iso-surface for 2,
 
 """
 
-import numpy as np
+
 from chemtools import  UniformGrid, Molecule, print_vmd_script_isosurface, DFTBasedTool
 
 # 1. Build Orbital Theory model
@@ -33,7 +33,6 @@ cub.generate_cube(lipname, lip_a + lip_b)
 
 print_vmd_script_isosurface(fname + '.vmd', rhoname, colorfile=lipname, isosurf=0.002,
                             scalemin=-1.0, scalemax=mol.homo_energy[0])
-
 
 
 # DISCARD BELOW:
