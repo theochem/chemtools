@@ -124,7 +124,7 @@ def check_orbital_expression(tool, data):
     """Check OrbitalLocalTool.compute_orbital_expression against stored data array."""
     result = tool._compute_orbital_expression(5)
     assert_array_almost_equal(result[:, 0], data["orbital_05"], decimal=6)
-    result = tool._compute_orbital_expression(np.array([5]), spin="beta")
+    result = tool._compute_orbital_expression(np.array([5]), spin="b")
     assert_array_almost_equal(result[:, 0], data["orbital_05"], decimal=6)
     result = tool._compute_orbital_expression(6)
     assert_array_almost_equal(result[:, 0], data["orbital_06"], decimal=6)
@@ -135,7 +135,7 @@ def check_orbital_expression(tool, data):
     result = tool._compute_orbital_expression([8, 9])
     assert_array_almost_equal(result[:, 0], data["orbital_08"], decimal=6)
     assert_array_almost_equal(result[:, 1], data["orbital_09"], decimal=6)
-    result = tool._compute_orbital_expression([5, 8, 9], spin="beta")
+    result = tool._compute_orbital_expression([5, 8, 9], spin="b")
     assert_array_almost_equal(result[:, 0], data["orbital_05"], decimal=6)
     assert_array_almost_equal(result[:, 1], data["orbital_08"], decimal=6)
     assert_array_almost_equal(result[:, 2], data["orbital_09"], decimal=6)

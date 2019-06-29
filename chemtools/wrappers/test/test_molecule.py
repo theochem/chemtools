@@ -41,8 +41,8 @@ def check_horton_molecule_raises(mol):
     points = np.array([[0., 0., 0.], [1., 1., 1.]])
     # check invalid orbital spin argument
     assert_raises(ValueError, mol.compute_density_matrix, "alphabeta")
-    assert_raises(ValueError, mol.compute_density, points, spin="alph")
-    assert_raises(ValueError, mol.compute_gradient, points, spin="ba")
+    assert_raises(ValueError, mol.compute_density, points, spin="alpha")
+    assert_raises(ValueError, mol.compute_gradient, points, spin="beta")
     assert_raises(ValueError, mol.compute_hessian, points, spin="betaalpha")
     assert_raises(ValueError, mol.compute_ked, points, spin="balpha")
     # check invalid points argument
@@ -269,8 +269,6 @@ def check_horton_molecule_against_gaussian_ch4_uhf_ccpvdz(mol):
     # density computed by summing squared mo expressions
     assert_almost_equal(mol.compute_density(points, "ab", range(1, 6)), dens, decimal=5)
     assert_almost_equal(mol.compute_density(points, "a", range(1, 6)), dens / 2, decimal=5)
-    assert_almost_equal(mol.compute_density(points, "alpha", range(1, 6)), dens / 2, decimal=5)
-    assert_almost_equal(mol.compute_density(points, "beta", range(1, 6)), dens / 2, decimal=5)
 
 
 def test_horton_molecule_grid_gaussian_fchk_ch4_uhf_ccpvdz():
@@ -306,19 +304,13 @@ def check_horton_molecule_against_fortran_ch4_uhf_ccpvdz(mol):
     # check density computed by summing squared mo expressions
     assert_almost_equal(mol.compute_density(points, "ab", range(1, 6)), dens, decimal=6)
     assert_almost_equal(mol.compute_density(points, "a", range(1, 6)), dens/2, decimal=6)
-    assert_almost_equal(mol.compute_density(points, "alpha", range(1, 6)), dens/2, decimal=6)
     assert_almost_equal(mol.compute_density(points, "b", range(1, 6)), dens/2, decimal=6)
-    assert_almost_equal(mol.compute_density(points, "beta", range(1, 6)), dens/2, decimal=6)
     # check mo expression of 8th orbital
     assert_almost_equal(mol.compute_molecular_orbital(points, "a", 8), exp8, decimal=6)
-    assert_almost_equal(mol.compute_molecular_orbital(points, "alpha", 8), exp8, decimal=6)
     assert_almost_equal(mol.compute_molecular_orbital(points, "b", 8), exp8, decimal=6)
-    assert_almost_equal(mol.compute_molecular_orbital(points, "beta", 8), exp8, decimal=6)
     # check mo expression of 9th orbital
     assert_almost_equal(mol.compute_molecular_orbital(points, "a", 9), exp9, decimal=6)
-    assert_almost_equal(mol.compute_molecular_orbital(points, "alpha", 9), exp9, decimal=6)
     assert_almost_equal(mol.compute_molecular_orbital(points, "b", 9), exp9, decimal=6)
-    assert_almost_equal(mol.compute_molecular_orbital(points, "beta", 9), exp9, decimal=6)
     # check positive definite ke
     assert_almost_equal(mol.compute_ked(points, "ab"), ke, decimal=6)
 
