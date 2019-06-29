@@ -73,22 +73,6 @@ def check_horton_molecule_raises(mol):
     # check invalid charges argument
     assert_raises(ValueError, mol.compute_esp, points, charges=np.array([6., 1., 1.]))
     assert_raises(ValueError, mol.compute_esp, points, charges=[6., 1., 1., 1., 1.])
-    # check invalid output argument
-    assert_raises(ValueError, mol.compute_molecular_orbital, points, "a", 3, np.zeros((2,)))
-    assert_raises(ValueError, mol.compute_molecular_orbital, points, "b", 3, np.zeros((2, 2)))
-    assert_raises(ValueError, mol.compute_molecular_orbital, points, "a", [0], np.zeros((2,)))
-    assert_raises(ValueError, mol.compute_molecular_orbital, points, "b", [0, 1], np.zeros((2, 1)))
-    assert_raises(ValueError, mol.compute_molecular_orbital, points, "a", None, np.zeros((2,)))
-    assert_raises(ValueError, mol.compute_molecular_orbital, points, "b", None, np.zeros((2, 1)))
-    assert_raises(ValueError, mol.compute_density, points, spin="a", output=np.zeros(3))
-    assert_raises(ValueError, mol.compute_density, points, spin="b", output=np.zeros((2, 3)))
-    assert_raises(ValueError, mol.compute_gradient, points, spin="a", output=np.zeros(2))
-    assert_raises(ValueError, mol.compute_gradient, points, spin="b", output=np.zeros((2, 2)))
-    assert_raises(ValueError, mol.compute_hessian, points, spin="ab", output=np.zeros(2))
-    assert_raises(ValueError, mol.compute_hessian, points, spin="ab", output=np.zeros((2, 3)))
-    assert_raises(ValueError, mol.compute_esp, points, spin="ab", output=np.zeros(3))
-    assert_raises(ValueError, mol.compute_esp, points, spin="b", output=np.zeros((2, 4)))
-    assert_raises(ValueError, mol.compute_ked, points, "a", None, np.zeros(3))
 
 
 def test_horton_molecule_check_raises_fchk_ch4_uhf_ccpvdz():
@@ -284,9 +268,9 @@ def check_horton_molecule_against_gaussian_ch4_uhf_ccpvdz(mol):
     assert_almost_equal(hess[:, 0], hessian_xx, decimal=5)
     # density computed by summing squared mo expressions
     assert_almost_equal(mol.compute_density(points, "ab", range(1, 6)), dens, decimal=5)
-    assert_almost_equal(mol.compute_density(points, "a", range(1, 6)), dens/2, decimal=5)
-    assert_almost_equal(mol.compute_density(points, "alpha", range(1, 6), None), dens/2, decimal=5)
-    assert_almost_equal(mol.compute_density(points, "beta", range(1, 6), None), dens/2, decimal=5)
+    assert_almost_equal(mol.compute_density(points, "a", range(1, 6)), dens / 2, decimal=5)
+    assert_almost_equal(mol.compute_density(points, "alpha", range(1, 6)), dens / 2, decimal=5)
+    assert_almost_equal(mol.compute_density(points, "beta", range(1, 6)), dens / 2, decimal=5)
 
 
 def test_horton_molecule_grid_gaussian_fchk_ch4_uhf_ccpvdz():

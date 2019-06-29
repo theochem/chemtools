@@ -287,7 +287,7 @@ class Molecule(object):
             dm._array = dm._array[index[:, np.newaxis], index[np.newaxis, :]]
         return dm
 
-    def compute_molecular_orbital(self, points, spin, index=None, output=None):
+    def compute_molecular_orbital(self, points, spin, index=None):
         """
         Return molecular orbitals evaluated on the given points for the spin orbitals.
 
@@ -306,9 +306,7 @@ class Molecule(object):
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
            If ``None``, all occupied spin orbitals are included.
-        output : np.ndarray, optional
-           Array with shape (n, m) to store the output, where n in the number of points and m
-           is the number of molecular orbitals. When ``None`` the array is allocated.
+
         """
         # check points
         if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
@@ -330,11 +328,7 @@ class Molecule(object):
                 raise ValueError('Argument index={0} cannot be less than one!'.format(index + 1))
 
         # allocate output array
-        if output is None:
-            output = np.zeros((points.shape[0], index.shape[0]), float)
-        npoints, norbs = points.shape[0], index.shape[0]
-        if output.shape != (npoints, norbs):
-            raise ValueError("Argument output should be a {0} array.".format((npoints, norbs)))
+        output = np.zeros((points.shape[0], index.shape[0]), float)
 
         # get orbital expression of specified spin
         spin_type = {"a": "alpha", "alpha": "alpha", "b": "beta", "beta": "beta"}
@@ -343,7 +337,7 @@ class Molecule(object):
         self._iodata.obasis.compute_grid_orbitals_exp(exp, points, index, output=output)
         return output
 
-    def compute_density(self, points, spin="ab", index=None, output=None):
+    def compute_density(self, points, spin="ab", index=None):
         r"""
         Return electron density evaluated on the given points for the spin orbitals.
 
@@ -364,9 +358,6 @@ class Molecule(object):
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
            If ``None``, all occupied spin orbitals are included.
-        output : np.ndarray, optional
-           Array with shape (n,) to store the output, where n in the number of points.
-           When ``None`` the array is allocated.
 
         """
         # check points
@@ -376,10 +367,7 @@ class Molecule(object):
             raise ValueError("Argument points should be a 2d-array of floats!")
 
         # allocate output array
-        if output is None:
-            output = np.zeros((points.shape[0],), float)
-        if output.shape != (points.shape[0],):
-            raise ValueError("Argument output should be a {0} array.".format((points.shape[0],)))
+        output = np.zeros((points.shape[0],), float)
 
         # compute density
         if index is None:
@@ -403,7 +391,7 @@ class Molecule(object):
                 np.sum(mo**2, axis=1, out=output)
         return output
 
-    def compute_gradient(self, points, spin="ab", index=None, output=None):
+    def compute_gradient(self, points, spin="ab", index=None):
         r"""
         Return gradient of electron density evaluated on the given points for the spin orbitals.
 
@@ -424,9 +412,7 @@ class Molecule(object):
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
            If ``None``, all orbitals of the given spin(s) are included.
-        output : np.ndarray
-           Array with shape (n, 3) to store the output, where n in the number of points.
-           When ``None`` the array is allocated.
+
         """
         # check points
         if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
@@ -435,10 +421,7 @@ class Molecule(object):
             raise ValueError("Argument points should be a 2d-array of floats!")
 
         # allocate output array
-        if output is None:
-            output = np.zeros((points.shape[0], 3), float)
-        if output.shape != (points.shape[0], 3):
-            raise ValueError("Argument output should be a {0} array.".format((points.shape[0], 3)))
+        output = np.zeros((points.shape[0], 3), float)
 
         # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin, index=index)
@@ -446,7 +429,7 @@ class Molecule(object):
         self._iodata.obasis.compute_grid_gradient_dm(dm, points, output=output)
         return output
 
-    def compute_hessian(self, points, spin="ab", index=None, output=None):
+    def compute_hessian(self, points, spin="ab", index=None):
         r"""
         Return hessian of electron density evaluated on the given points for the spin orbitals.
 
@@ -467,9 +450,7 @@ class Molecule(object):
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
            If ``None``, all orbitals of the given spin(s) are included.
-        output : np.ndarray, optional
-           Array with shape (n, 6) to store the output, where n in the number of points.
-           When ``None`` the array is allocated.
+
         """
         # check points
         if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
@@ -478,10 +459,7 @@ class Molecule(object):
             raise ValueError("Argument points should be a 2d-array of floats!")
 
         # allocate output array
-        if output is None:
-            output = np.zeros((points.shape[0], 6), float)
-        if output.shape != (points.shape[0], 6):
-            raise ValueError("Argument output should be a {0} array.".format((points.shape[0], 6)))
+        output = np.zeros((points.shape[0], 6), float)
 
         # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin, index=index)
@@ -489,7 +467,7 @@ class Molecule(object):
         self._iodata.obasis.compute_grid_hessian_dm(dm, points, output=output)
         return output
 
-    def compute_esp(self, points, spin="ab", index=None, output=None, charges=None):
+    def compute_esp(self, points, spin="ab", index=None, charges=None):
         r"""
         Return the molecular electrostatic potential on the given points for the specified spin.
 
@@ -520,9 +498,6 @@ class Molecule(object):
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
            If ``None``, all orbitals of the given spin(s) are included.
-        output : np.ndarray, optional
-           Array with shape (n,) to store the output, where n in the number of points.
-           When ``None`` the array is allocated.
         charges : np.ndarray, optional
            Array with shape (n,) representing the point charges at the position of the nuclei.
            When ``None``, the pseudo numbers are used.
@@ -534,10 +509,7 @@ class Molecule(object):
             raise ValueError("Argument points should be a 2d-array of floats!")
 
         # allocate output array
-        if output is None:
-            output = np.zeros((points.shape[0],), np.float)
-        if output.shape != (points.shape[0],):
-            raise ValueError("Argument output should be a {0} array.".format((points.shape[0],)))
+        output = np.zeros((points.shape[0],), np.float)
 
         # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin, index=index)
@@ -552,7 +524,7 @@ class Molecule(object):
                                                 output=output)
         return output
 
-    def compute_ked(self, points, spin="ab", index=None, output=None):
+    def compute_ked(self, points, spin="ab", index=None):
         r"""
         Return positive definite kinetic energy density on the given points for the specified spin.
 
@@ -579,9 +551,6 @@ class Molecule(object):
            Sequence of integers representing the index of spin orbitals. Alpha and beta spin
            orbitals are each indexed from 1 to :attr:`nbasis`.
            If ``None``, all orbitals of the given spin(s) are included.
-        output : np.ndarray, optional
-           Array with shape (n,) to store the output, where n in the number of points.
-           When ``None`` the array is allocated.
 
         """
         # check points
@@ -590,10 +559,7 @@ class Molecule(object):
         if not np.issubdtype(points.dtype, np.float64):
             raise ValueError("Argument points should be a 2d-array of floats!")
         # allocate output array
-        if output is None:
-            output = np.zeros((points.shape[0],), float)
-        if output.shape != (points.shape[0],):
-            raise ValueError("Argument output should be a {0} array.".format((points.shape[0],)))
+        output = np.zeros((points.shape[0],), float)
         # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin, index=index)
         # compute kinetic energy
