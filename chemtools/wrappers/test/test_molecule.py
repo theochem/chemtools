@@ -25,8 +25,7 @@
 
 import numpy as np
 from numpy.testing import assert_raises, assert_equal, assert_almost_equal
-from chemtools.utils.test.test_data import (load_data_gaussian_cubegen_ch4_uhf_ccpvdz,
-                                            load_data_fortran_ch4_uhf_ccpvdz)
+from chemtools.utils.test.test_data import load_data_fortran_ch4_uhf_ccpvdz
 from chemtools.wrappers import Molecule
 
 try:
@@ -256,8 +255,11 @@ def test_molecule_esp_fchk_uhf_ch4():
 
 def check_molecule_against_gaussian_ch4(mol):
     """Check local properties of HortonWaveFunction class against Gaussian09_C.01"s cubegen."""
-    # get expected data computed by Gaussian09_C.01"s cubegen
-    points, dens, grad, laplacian, hessian_xx, esp = load_data_gaussian_cubegen_ch4_uhf_ccpvdz()
+    # get expected data computed by Gaussian09_C.01 cubegen
+    with path("chemtools.data", "data_cubegen_g09_C01_ch4_uhf_ccpvdz.npz") as fname:
+        data = np.load(fname)
+        points, dens, grad = data["points"], data["dens"], data["grad"]
+        lap, hess_xx, esp = data["lap"], data["hess_xx"], data["esp"]
     # check density, gradient, esp & hessian
     assert_almost_equal(mol.compute_density(points, "ab"), dens, decimal=5)
     assert_almost_equal(mol.compute_density(points, "a"), 0.5 * dens, decimal=5)
@@ -265,8 +267,8 @@ def check_molecule_against_gaussian_ch4(mol):
     assert_almost_equal(mol.compute_gradient(points, "ab"), grad, decimal=5)
     assert_almost_equal(mol.compute_esp(points, "ab"), esp, decimal=5)
     hess = mol.compute_hessian(points, "ab")
-    assert_almost_equal(hess[:, 0] + hess[:, 3] + hess[:, 5], laplacian, decimal=5)
-    assert_almost_equal(hess[:, 0], hessian_xx, decimal=5)
+    assert_almost_equal(hess[:, 0] + hess[:, 3] + hess[:, 5], lap, decimal=5)
+    assert_almost_equal(hess[:, 0], hess_xx, decimal=5)
     # density computed by summing squared mo expressions
     assert_almost_equal(mol.compute_density(points, "ab", range(1, 6)), dens, decimal=5)
     assert_almost_equal(mol.compute_density(points, "a", range(1, 6)), 0.5 * dens, decimal=5)
