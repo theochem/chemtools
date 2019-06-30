@@ -57,24 +57,24 @@ def check_orbital_based_properties(tool, data):
     """Test OrbitalLocalTool against stored data arrays."""
     # check spin chemical potential at T=25000K
     result = tool.compute_spin_chemical_potential(25000.0)
-    assert_array_almost_equal(result, data["spin_mu_temp_25000"], decimal=6)
+    assert_array_almost_equal(result, data["smu_t25000"], decimal=6)
     # check density at T=25000K
     result = tool.compute_temperature_dependent_density(25000.0)
-    assert_array_almost_equal(result[0], 0.5 * data["density_temp_25000"], decimal=6)
-    assert_array_almost_equal(result[1], 0.5 * data["density_temp_25000"], decimal=6)
+    assert_array_almost_equal(result[0], 0.5 * data["dens_t25000"], decimal=6)
+    assert_array_almost_equal(result[1], 0.5 * data["dens_t25000"], decimal=6)
     # check local density of state at T=25000K
     result = tool.compute_temperature_dependent_state(25000)
-    assert_array_almost_equal(result[0], 0.5 * data["density_states_temp_25000"], decimal=6)
-    assert_array_almost_equal(result[1], 0.5 * data["density_states_temp_25000"], decimal=6)
+    assert_array_almost_equal(result[0], 0.5 * data["dens_state_t25000"], decimal=6)
+    assert_array_almost_equal(result[1], 0.5 * data["dens_state_t25000"], decimal=6)
     # check local ionization potential
     result = tool.average_local_ionization_energy
-    assert_array_almost_equal(result[0], 0.5 * data["local_ip"], decimal=4)
-    assert_array_almost_equal(result[1], 0.5 * data["local_ip"], decimal=4)
+    assert_array_almost_equal(result[0], 0.5 * data["lip"], decimal=4)
+    assert_array_almost_equal(result[1], 0.5 * data["lip"], decimal=4)
 
 
 def test_orbital_based_from_file_ch4_uhf_ccpvdz():
     # load data computed with Fortran code
-    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as fname:
+    with path("chemtools.data", "data_fortran_ch4_uhf_ccpvdz.npz") as fname:
         data = np.load(str(fname))
     # test from_file initialization & check against Fortran code
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
@@ -84,7 +84,7 @@ def test_orbital_based_from_file_ch4_uhf_ccpvdz():
 
 def test_orbital_based_from_molecule_ch4_uhf_ccpvdz():
     # load data computed with Fortran code
-    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as fname:
+    with path("chemtools.data", "data_fortran_ch4_uhf_ccpvdz.npz") as fname:
         data = np.load(str(fname))
     # test from_molecule initialization with exp_beta & check against Fortran code
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
@@ -101,7 +101,7 @@ def test_orbital_based_from_molecule_ch4_uhf_ccpvdz():
 
 def test_orbital_based_from_file_ch4_rhf_ccpvdz():
     # load data computed with Fortran code
-    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as fname:
+    with path("chemtools.data", "data_fortran_ch4_uhf_ccpvdz.npz") as fname:
         data = np.load(str(fname))
     # test from_file initialization & check against Fortran code
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
@@ -111,7 +111,7 @@ def test_orbital_based_from_file_ch4_rhf_ccpvdz():
 
 def test_orbital_based_from_molecule_ch4_rhf_ccpvdz():
     # load data computed with Fortran code
-    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as fname:
+    with path("chemtools.data", "data_fortran_ch4_uhf_ccpvdz.npz") as fname:
         data = np.load(str(fname))
     # test from_file initialization & check against Fortran code
     with path("chemtools.data", "ch4_rhf_ccpvdz.fchk") as fname:
@@ -123,42 +123,42 @@ def test_orbital_based_from_molecule_ch4_rhf_ccpvdz():
 def check_orbital_expression(tool, data):
     """Check OrbitalLocalTool.compute_orbital_expression against stored data array."""
     result = tool._compute_orbital_expression(5)
-    assert_array_almost_equal(result[:, 0], data["orbital_05"], decimal=6)
+    assert_array_almost_equal(result[:, 0], data["orb_05"], decimal=6)
     result = tool._compute_orbital_expression(np.array([5]), spin="b")
-    assert_array_almost_equal(result[:, 0], data["orbital_05"], decimal=6)
+    assert_array_almost_equal(result[:, 0], data["orb_05"], decimal=6)
     result = tool._compute_orbital_expression(6)
-    assert_array_almost_equal(result[:, 0], data["orbital_06"], decimal=6)
+    assert_array_almost_equal(result[:, 0], data["orb_06"], decimal=6)
     result = tool._compute_orbital_expression(8)
-    assert_array_almost_equal(result[:, 0], data["orbital_08"], decimal=6)
+    assert_array_almost_equal(result[:, 0], data["orb_08"], decimal=6)
     result = tool._compute_orbital_expression(9)
-    assert_array_almost_equal(result[:, 0], data["orbital_09"], decimal=6)
+    assert_array_almost_equal(result[:, 0], data["orb_09"], decimal=6)
     result = tool._compute_orbital_expression([8, 9])
-    assert_array_almost_equal(result[:, 0], data["orbital_08"], decimal=6)
-    assert_array_almost_equal(result[:, 1], data["orbital_09"], decimal=6)
+    assert_array_almost_equal(result[:, 0], data["orb_08"], decimal=6)
+    assert_array_almost_equal(result[:, 1], data["orb_09"], decimal=6)
     result = tool._compute_orbital_expression([5, 8, 9], spin="b")
-    assert_array_almost_equal(result[:, 0], data["orbital_05"], decimal=6)
-    assert_array_almost_equal(result[:, 1], data["orbital_08"], decimal=6)
-    assert_array_almost_equal(result[:, 2], data["orbital_09"], decimal=6)
+    assert_array_almost_equal(result[:, 0], data["orb_05"], decimal=6)
+    assert_array_almost_equal(result[:, 1], data["orb_08"], decimal=6)
+    assert_array_almost_equal(result[:, 2], data["orb_09"], decimal=6)
     result = tool._compute_orbital_expression((8, 9, 5))
-    assert_array_almost_equal(result[:, 0], data["orbital_08"], decimal=6)
-    assert_array_almost_equal(result[:, 1], data["orbital_09"], decimal=6)
-    assert_array_almost_equal(result[:, 2], data["orbital_05"], decimal=6)
+    assert_array_almost_equal(result[:, 0], data["orb_08"], decimal=6)
+    assert_array_almost_equal(result[:, 1], data["orb_09"], decimal=6)
+    assert_array_almost_equal(result[:, 2], data["orb_05"], decimal=6)
     result = tool._compute_orbital_expression(np.array([8, 9]))
-    assert_array_almost_equal(result[:, 0], data["orbital_08"], decimal=6)
-    assert_array_almost_equal(result[:, 1], data["orbital_09"], decimal=6)
+    assert_array_almost_equal(result[:, 0], data["orb_08"], decimal=6)
+    assert_array_almost_equal(result[:, 1], data["orb_09"], decimal=6)
     result = tool._compute_orbital_expression(np.array([6, 5]), spin="b")
-    assert_array_almost_equal(result[:, 0], data["orbital_06"], decimal=6)
-    assert_array_almost_equal(result[:, 1], data["orbital_05"], decimal=6)
+    assert_array_almost_equal(result[:, 0], data["orb_06"], decimal=6)
+    assert_array_almost_equal(result[:, 1], data["orb_05"], decimal=6)
     result = tool._compute_orbital_expression(np.array([5, 6, 8, 9]), spin="a")
-    assert_array_almost_equal(result[:, 0], data["orbital_05"], decimal=6)
-    assert_array_almost_equal(result[:, 1], data["orbital_06"], decimal=6)
-    assert_array_almost_equal(result[:, 2], data["orbital_08"], decimal=6)
-    assert_array_almost_equal(result[:, 3], data["orbital_09"], decimal=6)
+    assert_array_almost_equal(result[:, 0], data["orb_05"], decimal=6)
+    assert_array_almost_equal(result[:, 1], data["orb_06"], decimal=6)
+    assert_array_almost_equal(result[:, 2], data["orb_08"], decimal=6)
+    assert_array_almost_equal(result[:, 3], data["orb_09"], decimal=6)
 
 
 def test_orbital_based_from_file_orbital_expression_ch4_uhf_ccpvdz():
     # load data computed with Fortran code
-    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as fname:
+    with path("chemtools.data", "data_fortran_ch4_uhf_ccpvdz.npz") as fname:
         data = np.load(str(fname))
     # test from_file initialization & check against Fortran code
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
@@ -168,7 +168,7 @@ def test_orbital_based_from_file_orbital_expression_ch4_uhf_ccpvdz():
 
 def test_orbital_based_from_molecule_orbital_expression_ch4_uhf_ccpvdz():
     # load data computed with Fortran code
-    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as fname:
+    with path("chemtools.data", "data_fortran_ch4_uhf_ccpvdz.npz") as fname:
         data = np.load(str(fname))
     # test from_molecule initialization with exp_beta & check against Fortran code
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
@@ -185,7 +185,7 @@ def test_orbital_based_from_molecule_orbital_expression_ch4_uhf_ccpvdz():
 
 def test_orbital_based_from_file_orbital_expression_ch4_rhf_ccpvdz():
     # load data computed with Fortran code
-    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as fname:
+    with path("chemtools.data", "data_fortran_ch4_uhf_ccpvdz.npz") as fname:
         data = np.load(str(fname))
     # test from_file initialization & check against Fortran code
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
@@ -195,7 +195,7 @@ def test_orbital_based_from_file_orbital_expression_ch4_rhf_ccpvdz():
 
 def test_orbital_based_from_molecule_orbital_expression_ch4_rhf_ccpvdz():
     # load data computed with Fortran code
-    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as fname:
+    with path("chemtools.data", "data_fortran_ch4_uhf_ccpvdz.npz") as fname:
         data = np.load(str(fname))
     # test from_file initialization & check against Fortran code
     with path("chemtools.data", "ch4_rhf_ccpvdz.fchk") as fname:

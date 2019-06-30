@@ -7,20 +7,26 @@ If the properties are evaluated at the position of nuclei, nuc_ prefix is added 
 nums   		Atomic numbers
 coords  	Atomic coordinates
 points		Grid points coordinate
+orb_{xx}	Orbital expression of orbital {xx}
 dens	    	Density
+dens_t{x}	Dennsity at {x} temperature
+dens_state_t{x}	Dennsity of state at {x} temperature
 grad		Gradient
 grad_norm	Gradient norm
 lap		Lapalcian
 hess	 	Hessian
 hess_eigval	Hessian eigenvalues
 ked_pd	 	Kinetic energy density positive definite (Lagrangian kinetic energy)
-ked_ham		Lagrangian kinetic energy
+ked_ham		Hamiltonian kinetic energy
+ked_tf		Thomas-Fermi kinetic energy density
+ked_w		Weizsacker kinetic energy density
 elf	 	Electron localization function
 lol	 	Localized orbital locator
 lie	 	Local information entropy
 rdg		Reduced density gradient
 alie		Average local ionization energy
 esp		Total ESP
+smu_t{x}	Spin chemical potential at temperature {x}
 ellipticity	Ellipticity
 nna_coords	Cartesian coordinates of (non-)nuclear attractors
 bcp_coords	Cartesian coordinates of bond critical points

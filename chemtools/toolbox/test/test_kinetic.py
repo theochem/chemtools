@@ -39,17 +39,17 @@ except ImportError:
 def check_kinetic_energy_density(tool, data):
     """Test KineticEnergyDensity against stored data arrays."""
     # check density & gradient
-    assert_array_almost_equal(tool.density, data['density'], decimal=6)
+    assert_array_almost_equal(tool.density, data["dens"], decimal=6)
     # check kinetic energy density
-    assert_array_almost_equal(tool.ked_positive_definite, data['ke_positive_definite'], decimal=6)
-    assert_array_almost_equal(tool.ked_weizsacker, data['ke_weizsacker'], decimal=6)
+    assert_array_almost_equal(tool.ked_positive_definite, data["ked_pd"], decimal=6)
+    assert_array_almost_equal(tool.ked_weizsacker, data["ked_w"], decimal=6)
     # TODO: Why assert_array_almost_equal doesn't work for ke_thomas_fermi
-    assert_allclose(tool.ked_thomas_fermi, data['ke_thomas_fermi'], rtol=1e-08, atol=1e-08)
+    assert_allclose(tool.ked_thomas_fermi, data["ked_tf"], rtol=1e-08, atol=1e-08)
 
 
 def test_kinetic_from_file_ch4_uhf_ccpvdz():
     # load data computed with Fortran code
-    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as fname:
+    with path("chemtools.data", "data_fortran_ch4_uhf_ccpvdz.npz") as fname:
         data = np.load(str(fname))
     # test from_file initialization & check against Fortran code
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
@@ -59,7 +59,7 @@ def test_kinetic_from_file_ch4_uhf_ccpvdz():
 
 def test_kinetic_from_molecule_ch4_uhf_ccpvdz():
     # load data computed with Fortran code
-    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as fname:
+    with path("chemtools.data", "data_fortran_ch4_uhf_ccpvdz.npz") as fname:
         data = np.load(str(fname))
     # test from_molecule initialization with exp_beta & check against Fortran code
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
@@ -77,7 +77,7 @@ def test_kinetic_from_molecule_ch4_uhf_ccpvdz():
 
 def test_kinetic_from_file_ch4_rhf_ccpvdz():
     # load data computed with Fortran code
-    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as fname:
+    with path("chemtools.data", "data_fortran_ch4_uhf_ccpvdz.npz") as fname:
         data = np.load(str(fname))
     # test from_file initialization & check against Fortran code
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
@@ -87,7 +87,7 @@ def test_kinetic_from_file_ch4_rhf_ccpvdz():
 
 def test_kinetic_from_molecule_ch4_rhf_ccpvdz():
     # load data computed with Fortran code
-    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as fname:
+    with path("chemtools.data", "data_fortran_ch4_uhf_ccpvdz.npz") as fname:
         data = np.load(str(fname))
     # test from_file initialization & check against Fortran code
     with path("chemtools.data", "ch4_rhf_ccpvdz.fchk") as fname:

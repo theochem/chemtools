@@ -296,24 +296,22 @@ def test_molecule_grid_g09_wfn_uhf_ch4():
 
 def check_molecule_against_fortran_ch4(mol):
     # get expected data computed by Fortran code
-    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as fname:
+    with path("chemtools.data", "data_fortran_ch4_uhf_ccpvdz.npz") as fname:
         data = np.load(fname)
-        points, exp8, exp9 = data["points"], data["orbital_08"], data["orbital_09"]
-        dens, grad, ke = data["density"], data["gradient"], data["ke_positive_definite"]
+        points, exp8, exp9 = data["points"], data["orb_08"], data["orb_09"]
+        dens, grad, ke = data["dens"], data["grad"], data["ked_pd"]
     # check density & gradient
     assert_almost_equal(mol.compute_density(points, "ab", None), dens, decimal=6)
     assert_almost_equal(mol.compute_gradient(points, "ab", None), grad, decimal=6)
-    # check alpha & beta density
     assert_almost_equal(mol.compute_density(points, "a", None), 0.5 * dens, decimal=6)
     assert_almost_equal(mol.compute_density(points, "b", None), 0.5 * dens, decimal=6)
     # check density computed by summing squared mo expressions
     assert_almost_equal(mol.compute_density(points, "ab", range(1, 6)), dens, decimal=6)
     assert_almost_equal(mol.compute_density(points, "a", range(1, 6)), 0.5 * dens, decimal=6)
     assert_almost_equal(mol.compute_density(points, "b", range(1, 6)), 0.5 * dens, decimal=6)
-    # check mo expression of 8th orbital
+    # check mo expression
     assert_almost_equal(mol.compute_molecular_orbital(points, "a", 8)[:, 0], exp8, decimal=6)
     assert_almost_equal(mol.compute_molecular_orbital(points, "b", 8)[:, 0], exp8, decimal=6)
-    # check mo expression of 9th orbital
     assert_almost_equal(mol.compute_molecular_orbital(points, "a", 9)[:, 0], exp9, decimal=6)
     assert_almost_equal(mol.compute_molecular_orbital(points, "b", 9)[:, 0], exp9, decimal=6)
     # check positive definite ke
