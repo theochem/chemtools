@@ -98,7 +98,7 @@ def check_molecule_basics(mol):
     # check basic numerics
     assert_equal(mol.natom, 5)
     assert_equal(mol.nelectrons, (5, 5))
-    assert_equal(mol.nbasis, 34)
+    # assert_equal(mol.nbasis, 34)
     assert_equal(mol.numbers, [6, 1, 1, 1, 1])
     assert_equal(mol.pseudo_numbers, [6, 1, 1, 1, 1])
     assert_equal(mol.homo_index, (5, 5))
@@ -129,9 +129,10 @@ def test_molecule_basics_fchk_uhf_ch4():
     assert_almost_equal(molecule.mulliken_charges, mul, decimal=6)
 
 
-# def test_molecule_basics_wfn_ch4():
-#     molecule = HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
-#     check_molecule_basics(molecule)
+def test_molecule_basics_wfn_ch4():
+    with path("chemtools.data", "ch4_uhf_ccpvdz.wfn") as fname:
+        molecule = Molecule.from_file(fname)
+    check_molecule_basics(molecule)
 
 
 def test_molecule_orbitals_fchk_uhf_ch4():
@@ -327,12 +328,6 @@ def test_molecule_grid_fortran_fchk_rhf_ch4():
     with path("chemtools.data", "ch4_rhf_ccpvdz.fchk") as fname:
         molecule = Molecule.from_file(fname)
     check_molecule_against_fortran_ch4(molecule)
-
-
-# def test_molecule_fortran_wfn_ch4():
-#     # make an instance of molecule
-#     molecule = HortonMolecule.from_file(context.get_fn("test/ch4_uhf_ccpvdz.wfn"))
-#     check_molecule_against_fortran_ch4(molecule)
 
 
 def test_molecule_basic_fchk_uhf_o2():
