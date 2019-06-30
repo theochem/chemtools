@@ -24,10 +24,10 @@
 """The Toolbox Module."""
 
 
-from chemtools.toolbox.utils import *
-from chemtools.toolbox.conceptual import *
-from chemtools.toolbox.motbased import *
-from chemtools.toolbox.kinetic import *
-from chemtools.toolbox.dftbased import *
-from chemtools.toolbox.densbased import *
-from chemtools.toolbox.interactions import *
+from chemtools.toolbox.conceptual import GlobalConceptualDFT, LocalConceptualDFT, CondensedConceptualDFT
+from chemtools.toolbox.motbased import MOTBasedTool
+from chemtools.toolbox.kinetic import KED
+from chemtools.toolbox.dftbased import DFTBasedTool
+from chemtools.toolbox.densbased import DensityLocalTool
+from chemtools.toolbox.interactions import NCI, ELF, LOL
+from chemtools.toolbox.topology import TopologicalTool

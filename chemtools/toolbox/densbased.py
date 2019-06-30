@@ -28,9 +28,6 @@ from chemtools.wrappers.molecule import Molecule
 from chemtools.denstools.densbased import DensGradLapKedTool
 
 
-__all__ = ['DensityLocalTool']
-
-
 class DensityLocalTool(DensGradLapKedTool):
     """Density Local Tool Class."""
 

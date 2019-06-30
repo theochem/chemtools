@@ -31,9 +31,6 @@ from scipy.optimize import bisect
 from chemtools.wrappers.molecule import Molecule
 
 
-__all__ = ['DFTBasedTool']
-
-
 class DFTBasedTool(object):
     """Class of Density Functional Theory (DFT) Based Descriptive Tools."""
 

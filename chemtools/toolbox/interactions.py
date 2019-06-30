@@ -36,9 +36,6 @@ from chemtools.outputs.vmd import print_vmd_script_nci, print_vmd_script_isosurf
 from numpy.ma import masked_less
 
 
-__all__ = ['NCI', 'ELF', 'LOL']
-
-
 class BaseInteraction(object):
     """Base class for (non)bonding interactions indicators."""
 

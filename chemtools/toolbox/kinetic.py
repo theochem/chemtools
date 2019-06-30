@@ -31,9 +31,6 @@ from chemtools.wrappers.molecule import Molecule
 from chemtools.denstools.densbased import DensGradTool, DensGradLapTool, DensGradLapKedTool
 
 
-__all__ = ["KED"]
-
-
 class KED(object):
     """Kinetic Energy Density Class."""
 

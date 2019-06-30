@@ -31,9 +31,6 @@ from chemtools.outputs.vmd import print_vmd_script_isosurface
 from chemtools.wrappers.molecule import Molecule
 
 
-__all__ = ['MOTBasedTool']
-
-
 class MOTBasedTool(object):
     """Molecular Orbital Theory Based Descriptive Tools."""
 
