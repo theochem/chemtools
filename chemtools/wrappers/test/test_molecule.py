@@ -25,7 +25,6 @@
 
 import numpy as np
 from numpy.testing import assert_raises, assert_equal, assert_almost_equal
-from chemtools.utils.test.test_data import load_data_fortran_ch4_uhf_ccpvdz
 from chemtools.wrappers import Molecule
 
 try:
@@ -297,7 +296,10 @@ def test_molecule_grid_g09_wfn_uhf_ch4():
 
 def check_molecule_against_fortran_ch4(mol):
     # get expected data computed by Fortran code
-    points, exp8, exp9, dens, grad, ke, _, _ = load_data_fortran_ch4_uhf_ccpvdz()
+    with path("chemtools.data", "data_orbitalbased_fortran_ch4_uhf_ccpvdz.npz") as fname:
+        data = np.load(fname)
+        points, exp8, exp9 = data["points"], data["orbital_08"], data["orbital_09"]
+        dens, grad, ke = data["density"], data["gradient"], data["ke_positive_definite"]
     # check density & gradient
     assert_almost_equal(mol.compute_density(points, "ab", None), dens, decimal=6)
     assert_almost_equal(mol.compute_gradient(points, "ab", None), grad, decimal=6)
@@ -309,11 +311,11 @@ def check_molecule_against_fortran_ch4(mol):
     assert_almost_equal(mol.compute_density(points, "a", range(1, 6)), 0.5 * dens, decimal=6)
     assert_almost_equal(mol.compute_density(points, "b", range(1, 6)), 0.5 * dens, decimal=6)
     # check mo expression of 8th orbital
-    assert_almost_equal(mol.compute_molecular_orbital(points, "a", 8), exp8, decimal=6)
-    assert_almost_equal(mol.compute_molecular_orbital(points, "b", 8), exp8, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, "a", 8)[:, 0], exp8, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, "b", 8)[:, 0], exp8, decimal=6)
     # check mo expression of 9th orbital
-    assert_almost_equal(mol.compute_molecular_orbital(points, "a", 9), exp9, decimal=6)
-    assert_almost_equal(mol.compute_molecular_orbital(points, "b", 9), exp9, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, "a", 9)[:, 0], exp9, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, "b", 9)[:, 0], exp9, decimal=6)
     # check positive definite ke
     assert_almost_equal(mol.compute_ked(points, "ab"), ke, decimal=6)
 
