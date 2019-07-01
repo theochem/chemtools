@@ -256,7 +256,7 @@ def check_molecule_against_gaussian_ch4(mol):
     """Check local properties of HortonWaveFunction class against Gaussian09_C.01"s cubegen."""
     # get expected data computed by Gaussian09_C.01 cubegen
     with path("chemtools.data", "data_cubegen_g09_C01_ch4_uhf_ccpvdz.npz") as fname:
-        data = np.load(fname)
+        data = np.load(str(fname))
         points, dens, grad = data["points"], data["dens"], data["grad"]
         lap, hess_xx, esp = data["lap"], data["hess_xx"], data["esp"]
     # check density, gradient, esp & hessian
@@ -297,7 +297,7 @@ def test_molecule_grid_g09_wfn_uhf_ch4():
 def check_molecule_against_fortran_ch4(mol):
     # get expected data computed by Fortran code
     with path("chemtools.data", "data_fortran_ch4_uhf_ccpvdz.npz") as fname:
-        data = np.load(fname)
+        data = np.load(str(fname))
         points, exp8, exp9 = data["points"], data["orb_08"], data["orb_09"]
         dens, grad, ke = data["dens"], data["grad"], data["ked_pd"]
     # check density & gradient
