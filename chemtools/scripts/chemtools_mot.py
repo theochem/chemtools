@@ -25,18 +25,14 @@
 """Molecular Orbital Theory (MOT) Script."""
 
 
-import logging
 import numpy as np
 
-from chemtools import Molecule, MOTBasedTool
+from chemtools.wrappers.molecule import Molecule
+from chemtools.toolbox.motbased import MOTBasedTool
 from chemtools.scripts.common import help_cube, load_molecule_and_grid
 
-logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
-
-__all__ = ['parse_args_mot', 'main_mot']
-
-mot_desp = """
+description_mot = """
 Visualize Molecular Orbitals (MO) using VMD package.
 
 The generated files include:
@@ -51,15 +47,15 @@ def parse_args_mot(subparser):
 
     # required arguments
     subparser.add_argument(
-        'fname',
+        "fname",
         help="wave-function file.")
 
     # optional arguments
     subparser.add_argument(
-        '--info',
-        action='store_true',
+        "--info",
+        action="store_true",
         default=False,
-        help='only print basic information on molecule and wave-function. [default=%(default)s]')
+        help="only print basic information on molecule and wave-function. [default=%(default)s]")
 
     subparser.add_argument(
         "-o", "--output",
@@ -70,13 +66,13 @@ def parse_args_mot(subparser):
 
     subparser.add_argument(
         "-s", "--spin",
-        default='a',
-        choices=['a', 'b'],
+        default="a",
+        choices=["a", "b"],
         type=str,
-        help='type of occupied spin orbitals to visualize. [default=%(default)s]')
+        help="type of occupied spin orbitals to visualize. [default=%(default)s]")
 
     subparser.add_argument(
-        '--index',
+        "--index",
         default=None,
         type=str,
         metavar="",
@@ -85,7 +81,7 @@ def parse_args_mot(subparser):
 
     subparser.add_argument(
         "-c", "--cube",
-        default='0.2,5.0',
+        default="0.2,5.0",
         type=str,
         metavar="",
         help=help_cube)
@@ -95,7 +91,7 @@ def parse_args_mot(subparser):
         default=0.05,
         type=float,
         metavar="",
-        help='iso-surface value of MO to visualize. [default=%(default)s]')
+        help="iso-surface value of MO to visualize. [default=%(default)s]")
 
 
 def main_mot(args):
@@ -108,56 +104,42 @@ def main_mot(args):
     hia, hib = np.array(mol.homo_index) - 1
     lia, lib = np.array(mol.lumo_index) - 1
     ea, eb = mol.orbital_energy
-    print('')
-    print('File: {0}'.format(args.fname))
-    # print('Charge      : % 5f' % np.sum(mol.numbers) - np.sum(ne))
-    # print('Multiplicity: % 5d' % np.max(ne) - np.min(ne) + 1)
-    print('')
-    print('Atomic number and coordinates:')
+    print("")
+    print("File: {0}".format(args.fname))
+    # print("Charge      : % 5f" % np.sum(mol.numbers) - np.sum(ne))
+    # print("Multiplicity: % 5d" % np.max(ne) - np.min(ne) + 1)
+    print("")
+    print("Atomic number and coordinates:")
     for index, num in enumerate(mol.numbers):
         coord = mol.coordinates[index, :]
-        print('% 2i   %10.6f   %10.6f   %10.6f' % (num, coord[0], coord[1], coord[2]))
-    print('')
-    print('Information on alpha & beta electrons:')
-    print('# electrons  :  % 3.3f       % 3.3f' % mol.nelectrons)
-    print('HOMO index   : % 3d        % 5d' % mol.homo_index)
-    print('')
-    print('LUMO+2 index : %10.6f   %10.6f' % (ea[lia + 2], eb[lib + 2]))
-    print('LUMO+1 energy: %10.6f   %10.6f' % (ea[lia + 1], eb[lib + 1]))
-    print('LUMO   energy: %10.6f   %10.6f' % mol.lumo_energy)
-    print('HOMO   energy: %10.6f   %10.6f' % mol.homo_energy)
-    print('HOMO-1 energy: %10.6f   %10.6f' % (ea[hia - 1], eb[hib - 1]))
-    print('HOMO-2 energy: %10.6f   %10.6f' % (ea[hia - 2], eb[hib - 2]))
-    print('')
+        print("% 2i   %10.6f   %10.6f   %10.6f" % (num, coord[0], coord[1], coord[2]))
+    print("")
+    print("Information on alpha & beta electrons:")
+    print("# electrons  :  % 3.3f       % 3.3f" % mol.nelectrons)
+    print("HOMO index   : % 3d        % 5d" % mol.homo_index)
+    print("")
+    print("LUMO+2 index : %10.6f   %10.6f" % (ea[lia + 2], eb[lib + 2]))
+    print("LUMO+1 energy: %10.6f   %10.6f" % (ea[lia + 1], eb[lib + 1]))
+    print("LUMO   energy: %10.6f   %10.6f" % mol.lumo_energy)
+    print("HOMO   energy: %10.6f   %10.6f" % mol.homo_energy)
+    print("HOMO-1 energy: %10.6f   %10.6f" % (ea[hia - 1], eb[hib - 1]))
+    print("HOMO-2 energy: %10.6f   %10.6f" % (ea[hia - 2], eb[hib - 2]))
+    print("")
 
     if args.info:
         return
 
-    if args.index is not None:
-        index = [int(item) for item in args.index.split(',')]
+    index = args.index
+    if index is not None:
+        index = [int(item) for item in index.split(",")]
         if len(index) == 1:
             index = index[0]
-    else:
-        index = None
 
     # build model
     mot = MOTBasedTool.from_molecule(mol)
 
-    # print logging message
-    # logging.info('')
-    # logging.info('Initialized : {0}'.format(mot))
-    # logging.info('# of basis           : {0}'.format(mot.nbasis))
-    # logging.info('# of a & b electrons : {0}'.format(mot.nelectrons))
-    # logging.info('')
-    # logging.info('Index  of a & b LUMO : {0}'.format(mot.lumo_index))
-    # logging.info('Energy of a & b LUMO : {0}'.format(mot.lumo_energy))
-    # logging.info('')
-    # logging.info('Index  of a & b HOMO : {0}'.format(mot.homo_index))
-    # logging.info('Energy of a & b HOMO : {0}'.format(mot.homo_energy))
-    # logging.info('')
-
-    # dump file/script for visualization
+    # dump files for visualization
     if args.output is None:
-        args.output = args.fname.rsplit('.')[0]
+        args.output = args.fname.rsplit(".")[0]
     mot.generate_scripts(args.output, spin=args.spin, index=index, grid=cube,
                          isosurf=args.isosurface)

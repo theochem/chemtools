@@ -37,7 +37,7 @@ from chemtools.scripts.chemtools_conceptual import (
 from chemtools.scripts.chemtools_nci import main_nci, parse_args_nci, description_nci
 from chemtools.scripts.chemtools_elf import main_elf, parse_args_elf, description_elf
 from chemtools.scripts.chemtools_lol import main_lol, parse_args_lol, description_lol
-from chemtools.scripts.chemtools_mot import main_mot, parse_args_mot, mot_desp
+from chemtools.scripts.chemtools_mot import main_mot, parse_args_mot, description_mot
 from chemtools.scripts.chemtools_esp import main_esp, parse_args_esp, description_esp
 
 from argparse import RawDescriptionHelpFormatter
@@ -80,7 +80,7 @@ def parse_args_chemtools():
     parser_mot = subparser.add_parser(
         "mot",
         help="Molecular Orbital Theory (MOT).",
-        description=mot_desp,
+        description=description_mot,
         formatter_class=RawDescriptionHelpFormatter,
     )
     parse_args_mot(parser_mot)
