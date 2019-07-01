@@ -29,6 +29,7 @@ import logging
 import numpy as np
 
 from chemtools import Molecule, UniformGrid, MOTBasedTool
+from chemtools.scripts.common import help_cube
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
@@ -85,14 +86,8 @@ def parse_args_mot(subparser):
         '--cube',
         default='0.2,5.0',
         type=str,
-        metavar='N',
-        help='specify the cubic grid used for visualizing MO. '
-        'This can be either a cube file with .cube extension, or a '
-        'user-defined cubic grid specified by spacing and extension parameters '
-        'separated by a comma. For example, 0.2,5.0 which specifies 0.2 a.u. '
-        'distance between grid points, and 5.0 a.u. extension of cubic grid '
-        'on each side of the molecule. This cube is used for evaluating '
-        'MO and visualizing it using VMD program. [default=%(default)s]')
+        metavar="",
+        help=help_cube)
 
     subparser.add_argument(
         '--isosurface',

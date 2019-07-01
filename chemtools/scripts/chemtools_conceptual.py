@@ -29,6 +29,7 @@ from __future__ import print_function
 from chemtools import Molecule
 from chemtools import UniformGrid, print_vmd_script_isosurface
 from chemtools import GlobalConceptualDFT, LocalConceptualDFT, CondensedConceptualDFT
+from chemtools.scripts.common import help_cube
 
 
 __all__ = [
@@ -94,14 +95,7 @@ def parse_args_local(subparser):
         default='0.2,4.0',
         type=str,
         metavar='N',
-        help='Specify the cubic grid used for visualizing iso-surface. '
-        'This can be either a cube file with .cube extension, or a '
-        'user-defined cubic grid specified by spacing and padding parameters '
-        'separated by a comma. For example, 0.2,5.0 which specifies 0.2 a.u. '
-        'distance between grid points, and 5.0 a.u. extension of cubic grid '
-        'on each side of the molecule. This cube is used for evaluating '
-        'the local property and visualizing the iso-surface using VMD. '
-        '[default=%(default)s]')
+        help=help_cube)
     subparser.add_argument(
         '--isosurface',
         default=0.005,

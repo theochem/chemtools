@@ -26,6 +26,7 @@
 
 
 from chemtools import Molecule, UniformGrid, NCI
+from chemtools.scripts.common import help_cube
 
 
 __all__ = ['parse_args_nci', 'main_nci']
@@ -67,14 +68,7 @@ def parse_args_nci(subparser):
         default='0.1,2.0',
         type=str,
         metavar='N',
-        help='specify the cubic grid used for visualizing NCI. '
-        'This can be either a cube file with .cube extension, or a '
-        'user-defined cubic grid specified by spacing and padding parameters '
-        'separated by a comma. For example, 0.2,5.0 which specifies 0.2 a.u. '
-        'distance between grid points, and 5.0 a.u. extension of cubic grid '
-        'on each side of the molecule. This cube is used for evaluating '
-        'density, computing reduced density gradient (RDG) and visualizing '
-        'NCI using VMD program. [default=%(default)s]')
+        help=help_cube)
 
     subparser.add_argument(
         '--plot',

@@ -26,6 +26,7 @@
 
 
 from chemtools import Molecule, UniformGrid, LOL
+from chemtools.scripts.common import help_cube
 
 
 __all__ = ['parse_args_lol', 'main_lol']
@@ -75,14 +76,8 @@ def parse_args_lol(subparser):
         '--cube',
         default='0.1,2.0',
         type=str,
-        metavar='N',
-        help='specify the cubic grid used for visualizing LOL. '
-        'This can be either a cube file with .cube extension, or a '
-        'user-defined cubic grid specified by spacing and extension parameters '
-        'separated by a comma. For example, 0.2,5.0 which specifies 0.2 a.u. '
-        'distance between grid points, and 5.0 a.u. extension of cubic grid '
-        'on each side of the molecule. This cube is used for evaluating '
-        'LOL and visualizing it using VMD program. [default=%(default)s]')
+        metavar="",
+        help=help_cube)
 
     subparser.add_argument(
         '--isosurface',
