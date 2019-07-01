@@ -25,14 +25,11 @@
 """Localized Orbital Locator (LOL) Script."""
 
 
-from chemtools import LOL
+from chemtools.toolbox.interactions import LOL
 from chemtools.scripts.common import help_cube, load_molecule_and_grid
 
 
-__all__ = ['parse_args_lol', 'main_lol']
-
-# description message
-lol_dest = """
+description_lol = """
 Visualize Localized Orbital Locator (LOL) using VMD package.
 
 The generated files include:
@@ -46,7 +43,7 @@ def parse_args_lol(subparser):
 
     # required arguments
     subparser.add_argument(
-        'fname',
+        "fname",
         help="wave-function file.")
 
     # optional arguments
@@ -55,32 +52,32 @@ def parse_args_lol(subparser):
         default=None,
         type=str,
         metavar="",
-        help='name of generated output files. By default, it is derived from fname.')
+        help="name of generated output files. By default, it is derived from fname.")
 
     subparser.add_argument(
         "-t", "--trans",
-        default='inverse_rational',
-        choices=['inverse_rational', 'inverse_hyperbolic'],
+        default="inverse_rational",
+        choices=["inverse_rational", "inverse_hyperbolic"],
         type=str,
-        help='type of transformation applied to LOL ratio. [default=%(default)s]')
+        help="type of transformation applied to LOL ratio. [default=%(default)s]")
 
     subparser.add_argument(
         "-k", "--trans_k",
         default=1,
         type=int,
         metavar="",
-        help='parameter k of transformation. [default=%(default)s]')
+        help="parameter k of transformation. [default=%(default)s]")
 
     subparser.add_argument(
         "-a", "--trans_a",
         default=1,
         type=int,
         metavar="",
-        help='parameter a of transformation. [default=%(default)s]')
+        help="parameter a of transformation. [default=%(default)s]")
 
     subparser.add_argument(
         "-c", "--cube",
-        default='0.1,2.0',
+        default="0.1,2.0",
         type=str,
         metavar="",
         help=help_cube)
@@ -90,7 +87,7 @@ def parse_args_lol(subparser):
         default=0.5,
         type=float,
         metavar="",
-        help='iso-surface value of LOL to visualize. [default=%(default)s]')
+        help="iso-surface value of LOL to visualize. [default=%(default)s]")
 
     subparser.add_argument(
         "-d", "--denscut",
@@ -98,7 +95,7 @@ def parse_args_lol(subparser):
         type=float,
         metavar="",
         help="the LOL value of points with electron density < denscut is set to zero. "
-             '[default=%(default)s]')
+             "[default=%(default)s]")
 
 
 def main_lol(args):
@@ -110,7 +107,7 @@ def main_lol(args):
     lol = LOL.from_molecule(mol, grid=cube, trans=args.trans, trans_k=args.trans_k,
                             trans_a=args.trans_a, denscut=args.denscut)
 
-    # dump cube file/script for visualization
+    # dump files for visualization
     output = args.output
     if output is None:
         output = args.fname.split(".")[0]

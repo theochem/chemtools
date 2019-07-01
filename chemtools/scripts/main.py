@@ -36,7 +36,7 @@ from chemtools.scripts.chemtools_conceptual import (
 )
 from chemtools.scripts.chemtools_nci import main_nci, parse_args_nci, nci_desp
 from chemtools.scripts.chemtools_elf import main_elf, parse_args_elf, description_elf
-from chemtools.scripts.chemtools_lol import main_lol, parse_args_lol, lol_dest
+from chemtools.scripts.chemtools_lol import main_lol, parse_args_lol, description_lol
 from chemtools.scripts.chemtools_mot import main_mot, parse_args_mot, mot_desp
 from chemtools.scripts.chemtools_esp import main_esp, parse_args_esp, esp_desp
 
@@ -112,7 +112,7 @@ def parse_args_chemtools():
     parser_lol = subparser.add_parser(
         "lol",
         help="Localized Orbital Locator (LOL).",
-        description=lol_dest,
+        description=description_lol,
         formatter_class=RawDescriptionHelpFormatter,
     )
     parse_args_lol(parser_lol)
