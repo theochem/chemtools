@@ -47,7 +47,7 @@ def parse_args_elf(subparser):
     # required arguments
     subparser.add_argument(
         'fname',
-        help='wave-function file. Supported formats: fchk, mkl, molden.input, wfn.')
+        help="wave-function file.")
 
     # optional arguments
     subparser.add_argument(
@@ -58,42 +58,46 @@ def parse_args_elf(subparser):
         help='name of generated output files. By default, it is derived from fname.')
 
     subparser.add_argument(
-        '--trans',
+        "-t", "--trans",
         default='rational',
         choices=['rational', 'hyperbolic'],
         type=str,
         help='type of transformation applied to ELF ratio. [default=%(default)s]')
 
     subparser.add_argument(
-        '--trans_k',
+        "-k", "--trans_k",
         default=2,
         type=int,
+        metavar="",
         help='parameter k of transformation. [default=%(default)s]')
 
     subparser.add_argument(
-        '--trans_a',
+        "-a", "--trans_a",
         default=1,
         type=int,
+        metavar="",
         help='parameter a of transformation. [default=%(default)s]')
 
     subparser.add_argument(
-        '--cube',
+        "-c", "--cube",
         default='0.1,2.0',
         type=str,
         metavar="",
         help=help_cube)
 
     subparser.add_argument(
-        '--isosurface',
+        "-i", "--isosurface",
         default=0.8,
         type=float,
+        metavar="",
         help='iso-surface value of ELF to visualize. [default=%(default)s]')
 
     subparser.add_argument(
-        '--denscut',
+        "-d", "--denscut",
         default=0.0005,
         type=float,
-        help='the ELF value of points with density < denscut is set to zero. '
+        metavar="",
+        help="the ELF value of points with electron density < denscut is set to zero. "
              '[default=%(default)s]')
 
 

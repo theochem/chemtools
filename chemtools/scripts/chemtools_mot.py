@@ -52,23 +52,24 @@ def parse_args_mot(subparser):
     # required arguments
     subparser.add_argument(
         'fname',
-        help='wave-function file. Supported formats: fchk, mkl, molden.input, wfn.')
+        help="wave-function file.")
 
     # optional arguments
-    subparser.add_argument(
-        "-o", '--output',
-        default=None,
-        type=str,
-        help='name of generated output files. By default, it is derived from fname.')
-
     subparser.add_argument(
         '--info',
         action='store_true',
         default=False,
-        help='print basic information on molecule and wave-function. [default=%(default)s]')
+        help='only print basic information on molecule and wave-function. [default=%(default)s]')
 
     subparser.add_argument(
-        '--spin',
+        "-o", "--output",
+        default=None,
+        type=str,
+        metavar="",
+        help="name of generated output files. By default, it is derived from fname.")
+
+    subparser.add_argument(
+        "-s", "--spin",
         default='a',
         choices=['a', 'b'],
         type=str,
@@ -78,21 +79,22 @@ def parse_args_mot(subparser):
         '--index',
         default=None,
         type=str,
-        help='index of spin orbital to visualize represented by comma separated integers.'
-             'If None, files for generating all occupied molecular orbitals are generated.'
-             ' [default=%(default)s]')
+        metavar="",
+        help="index of spin orbital to visualize represented by comma separated integers."
+             "By default, all occupied molecular orbitals are visualized. [default=%(default)s]")
 
     subparser.add_argument(
-        '--cube',
+        "-c", "--cube",
         default='0.2,5.0',
         type=str,
         metavar="",
         help=help_cube)
 
     subparser.add_argument(
-        '--isosurface',
+        "-i", "--isosurface",
         default=0.05,
         type=float,
+        metavar="",
         help='iso-surface value of MO to visualize. [default=%(default)s]')
 
 
@@ -138,7 +140,7 @@ def main_mot(args):
     else:
         index = None
 
-    # build MOT model
+    # build model
     mot = MOTBasedTool.from_molecule(mol)
 
     # print logging message
@@ -154,7 +156,7 @@ def main_mot(args):
     # logging.info('Energy of a & b HOMO : {0}'.format(mot.homo_energy))
     # logging.info('')
 
-    # dump file/script for visualizing MOT
+    # dump file/script for visualization
     if args.output is None:
         args.output = args.fname.rsplit('.')[0]
     mot.generate_scripts(args.output, spin=args.spin, index=index, grid=cube,

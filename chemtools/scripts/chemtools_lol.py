@@ -47,52 +47,57 @@ def parse_args_lol(subparser):
     # required arguments
     subparser.add_argument(
         'fname',
-        help='wave-function file. Supported formats: fchk, mkl, molden.input, wfn.')
+        help="wave-function file.")
 
     # optional arguments
     subparser.add_argument(
         "-o", "--output",
         default=None,
         type=str,
+        metavar="",
         help='name of generated output files. By default, it is derived from fname.')
 
     subparser.add_argument(
-        '--trans',
+        "-t", "--trans",
         default='inverse_rational',
         choices=['inverse_rational', 'inverse_hyperbolic'],
         type=str,
         help='type of transformation applied to LOL ratio. [default=%(default)s]')
 
     subparser.add_argument(
-        '--trans_k',
+        "-k", "--trans_k",
         default=1,
         type=int,
+        metavar="",
         help='parameter k of transformation. [default=%(default)s]')
 
     subparser.add_argument(
-        '--trans_a',
+        "-a", "--trans_a",
         default=1,
         type=int,
+        metavar="",
         help='parameter a of transformation. [default=%(default)s]')
 
     subparser.add_argument(
-        '--cube',
+        "-c", "--cube",
         default='0.1,2.0',
         type=str,
         metavar="",
         help=help_cube)
 
     subparser.add_argument(
-        '--isosurface',
+        "-i", "--isosurface",
         default=0.5,
         type=float,
+        metavar="",
         help='iso-surface value of LOL to visualize. [default=%(default)s]')
 
     subparser.add_argument(
-        '--denscut',
+        "-d", "--denscut",
         default=0.0005,
         type=float,
-        help='the LOL value of points with density < denscut is set to zero. '
+        metavar="",
+        help="the LOL value of points with electron density < denscut is set to zero. "
              '[default=%(default)s]')
 
 
