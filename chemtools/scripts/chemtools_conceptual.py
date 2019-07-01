@@ -34,6 +34,13 @@ description_global = """
 Print global conceptual density functional theory (DFT) reactivity descriptors.
 """
 
+description_local = """
+Visualize local conceptual density functional theory (DFT) descriptor using VMD package.
+
+The generated files include:
+  output.vmd             The VMD script.
+  output-{prop}.cube     The local property cube file.
+"""
 
 
 def parse_args_global(subparser):
@@ -49,58 +56,48 @@ def parse_args_global(subparser):
 
 def parse_args_local(subparser):
     """Parse command-line arguments for computing local conceptual DFT indicators."""
-    # description message
-    # description = """ """
 
-    # get property list from LocalConceptualDFT's parent class
-    # property_list = [
-    #     name for name, func in BaseLocalTool.__dict__.items()
-    #     if isinstance(func, property)
-    # ]
     property_list = [
-        'ff_plus',
-        'ff_minus',
-        'ff_zero',
-        'fukui_function',
-        'dual_descriptor',
-        # add more property
+        "ff_plus",
+        "ff_minus",
+        "ff_zero",
+        "fukui_function",
+        "dual_descriptor",
     ]
 
     # required arguments
-    subparser.add_argument('model', help='Energy model.')
+    subparser.add_argument("model", help="energy model.")
+
     subparser.add_argument(
-        'prop',
+        "prop",
         type=str,
         choices=property_list,
-        metavar='property',
-        help='The local property for plotting iso-surface. '
-        'Choices: {{{}}}'.format(", ".join(property_list)))
+        metavar="property",
+        help="The local property for plotting iso-surface. "
+             "Choices: {{{}}}".format(", ".join(property_list)))
+
     subparser.add_argument(
-        'output', help='Name of generated cube files and vmd script.')
+        "output", help="Name of generated cube files and vmd script.")
+
     subparser.add_argument(
-        'fname',
-        nargs='*',
-        help='Wave-function file(s). Supported formats: fchk, mkl, molden.'
-        'input, wfn. If one files is provided, the frontier moleculer orbital'
-        '(FMO) approach is invoked, otherwise the finite difference (FD)'
-        'approach is taken.')
+        "fname",
+        nargs="*",
+        help="wave-function file(s). If more than one file is given, finite difference (FD) "
+             "approach is invoked instead of frontier molecular orbital (FMO) approach.")
 
     # optional arguments
     subparser.add_argument(
-        '--cube',
-        default='0.2,4.0',
+        "-c", "--cube",
+        default="0.2,4.0",
         type=str,
-        metavar='N',
+        metavar="",
         help=help_cube)
+
     subparser.add_argument(
-        '--isosurface',
+        "-i", "--isosurface",
         default=0.005,
         type=float,
-        help='iso-surface value of local property to visualize. '
-        '[default=%(default)s]')
-    # parser.add_argument('--color', default='b', type=str,
-    #                     help='color of reduced density gradient vs. signed density scatter plot.'
-    #                     '[default=%(default)s]')
+        help="iso-surface value of local property to visualize. [default=%(default)s]")
 
 
 def parse_args_condensed(subparser):
@@ -173,24 +170,24 @@ def main_conceptual_local(args):
     # load molecule & cubic grid
     mol, cube = load_molecule_and_grid(args.fname, args.cube)
 
-    # build global tool
+    # build model
     model = LocalConceptualDFT.from_file(args.fname, args.model, cube.points)
     # check whether local property exists
     if not hasattr(model, args.prop):
-        raise ValueError('The {0} local conceptual DFT class does not contain '
-                         '{1} attribute.'.format(args.model, args.prop))
+        raise ValueError("The {0} local conceptual DFT class does not contain "
+                         "{1} attribute.".format(args.model, args.prop))
     if callable(getattr(model, args.prop)):
         raise ValueError(
-            'The {0} argument is a method, please provide an attribute of '
-            '{1} local conceptual DFT.'.format(args.prop, args.model))
+            "The {0} argument is a method, please provide an attribute of "
+            "{1} local conceptual DFT.".format(args.prop, args.model))
 
     # name of files
-    cubfname = '{0}.cube'.format(args.output)
-    vmdfname = '{0}.vmd'.format(args.output)
+    cubfname = "{0}.cube".format(args.output)
+    vmdfname = "{0}.vmd".format(args.output)
     # dump cube file of local property
     cube.generate_cube(cubfname, getattr(model, args.prop))
     # generate VMD scripts for visualizing iso-surface with VMD
-    print_vmd_script_isosurface(vmdfname, cubfname, isosurf=args.isosurface, material='BlownGlass')
+    print_vmd_script_isosurface(vmdfname, cubfname, isosurf=args.isosurface, material="BlownGlass")
 
 
 def main_conceptual_condensed(args):

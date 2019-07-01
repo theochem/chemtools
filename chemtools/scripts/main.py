@@ -35,6 +35,7 @@ from chemtools.scripts.chemtools_conceptual import (
     parse_args_local,
     parse_args_condensed,
     description_global,
+    description_local,
 )
 from chemtools.scripts.chemtools_nci import main_nci, parse_args_nci, description_nci
 from chemtools.scripts.chemtools_elf import main_elf, parse_args_elf, description_elf
@@ -132,7 +133,8 @@ def parse_args_chemtools():
     parser_l = subparser.add_parser(
         "lcdft",
         help="Local Conceptual DFT.",
-        description='Local Conceptual Density Functional Theory.',
+        description=description_local,
+        formatter_class=RawDescriptionHelpFormatter,
     )
     parse_args_local(parser_l)
 
