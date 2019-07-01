@@ -37,14 +37,6 @@ Visualize Electron Localization Function (ELF) using VMD package.
 The generated files include:
   output.vmd             The VMD script.
   output-elf.cube        The ELF cube file.
-
-If VMD is setup on your system, you can visualize ELF with the command below:
-    $ vmd -e output.vmd
-For instruction on how to open the script from the VMD interactive environment,
-please refer to ChemTools website.
-
-Note: The output.vmd script requires output-elf.cube to plot ELF
-      in VMD software (they files should be all in the same directory).
 """
 
 

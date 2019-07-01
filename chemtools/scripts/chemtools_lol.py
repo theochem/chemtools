@@ -37,14 +37,6 @@ Visualize Localized Orbital Locator (LOL) using VMD package.
 The generated files include:
   output.vmd             The VMD script.
   output-lol.cube        The LOL cube file.
-
-If VMD is setup on your system, you can visualize LOL with the command below:
-    $ vmd -e output.vmd
-For instruction on how to open the script from the VMD interactive environment,
-please refer to ChemTools website.
-
-Note: The output.vmd script requires output-lol.cube to plot LOL
-      in VMD software (they files should be all in the same directory).
 """
 
 

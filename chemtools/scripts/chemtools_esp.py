@@ -35,21 +35,12 @@ logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 __all__ = ['parse_args_esp', 'main_esp']
 
 esp_desp = """
-Visualize Electrostatic Potential (ESP) on electron density iso-surface with VMD package.
+Visualize Electrostatic Potential (ESP) on electron density iso-surface using VMD package.
 
 The generated files include:
   output.vmd          The VMD script.
-  output_esp.cube     The esp cube file.
+  output_esp.cube     The ESP cube file.
   output_dens.cube    The density cube file.
-
-If VMD is setup on your system, you can visualize iso-surface with the command below:
-    $ vmd -e output.vmd
-For instruction on how to open the script from the VMD interactive environment,
-please refer to ChemTools website.
-
-Note: The output.vmd script requires output_esp.cube & output_dens.cube to visualize ESP
-      on electron density iso-surface using VMD software (they files should be all in the
-      same directory).
 """
 
 

@@ -47,14 +47,6 @@ before being recorded in cube file. More specifically, similar to NCIPlot progra
 the reduced density gradient value of points for which density > denscut will be
 set to 100.0 to have VMD only display reduced density gradient iso-surface(s) for
 region with density < denscut.
-
-If VMD is setup on your system, you can visualize NCI with the command below:
-    $ vmd -e output.vmd
-For instruction on how to open the script from the VMD interactive environment,
-please refer to ChemTools website.
-
-Note: The output.vmd script requires output-dens.cube & output-grad.cube to plot NCI
-      in VMD software (they files should be all in the same directory).
 """
 
 
