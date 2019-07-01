@@ -27,9 +27,9 @@
 
 import logging
 
-from chemtools import Molecule, UniformGrid, print_vmd_script_isosurface
+from chemtools import print_vmd_script_isosurface
 
-from chemtools.scripts.common import help_cube
+from chemtools.scripts.common import help_cube, load_molecule_and_grid
 
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
@@ -103,19 +103,8 @@ def parse_args_esp(subparser):
 
 def main_esp(args):
     """Generate VMD script and cube files for visualizing ESP on electron density iso-surface."""
-    # load molecule
-    mol = Molecule.from_file(args.fname)
-
-    # make cubic grid
-    if args.cube.endswith('.cube'):
-        # load cube file
-        cube = UniformGrid.from_cube(args.cube)
-    elif len(args.cube.split(',')) == 2:
-        # make a cubic grid
-        spacing, extension = [float(item) for item in args.cube.split(',')]
-        cube = UniformGrid.from_molecule(mol, spacing=spacing, extension=extension, rotate=True)
-    else:
-        raise ValueError('Argument cube={0} is not recognized!'.format(args.cube))
+    # load molecule & cubic grid
+    mol, cube = load_molecule_and_grid(args.fname, args.cube)
 
     # dump cube files & script for visualization
     espname = args.output + '_esp.cube'

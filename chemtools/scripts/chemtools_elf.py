@@ -25,8 +25,8 @@
 """Electron Localization Function (ELF) Script."""
 
 
-from chemtools import Molecule, UniformGrid, ELF
-from chemtools.scripts.common import help_cube
+from chemtools.toolbox.interactions import ELF
+from chemtools.scripts.common import help_cube, load_molecule_and_grid
 
 
 __all__ = ['parse_args_elf', 'main_elf']
@@ -95,21 +95,10 @@ def parse_args_elf(subparser):
 
 def main_elf(args):
     """Build ELF model and dump VMD script and cube files for visualizing ELF."""
-    # load molecule
-    mol = Molecule.from_file(args.fname)
+    # load molecule & cubic grid
+    mol, cube = load_molecule_and_grid(args.fname, args.cube)
 
-    # make cubic grid
-    if args.cube.endswith('.cube'):
-        # load cube file
-        cube = UniformGrid.from_cube(args.cube)
-    elif len(args.cube.split(',')) == 2:
-        # make a cubic grid
-        spacing, extension = [float(item) for item in args.cube.split(',')]
-        cube = UniformGrid.from_molecule(mol, spacing=spacing, extension=extension, rotate=True)
-    else:
-        raise ValueError('Argument cube={0} is not recognized!'.format(args.cube))
-
-    # build ELF model
+    # build model
     elf = ELF.from_molecule(mol, grid=cube, trans=args.trans, trans_k=args.trans_k,
                             trans_a=args.trans_a, denscut=args.denscut)
 

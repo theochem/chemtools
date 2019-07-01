@@ -28,8 +28,8 @@
 import logging
 import numpy as np
 
-from chemtools import Molecule, UniformGrid, MOTBasedTool
-from chemtools.scripts.common import help_cube
+from chemtools import Molecule, MOTBasedTool
+from chemtools.scripts.common import help_cube, load_molecule_and_grid
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
@@ -98,8 +98,10 @@ def parse_args_mot(subparser):
 
 def main_mot(args):
     """Build MOTBasedTool model and dump VMD script and cube files for visualizing MO."""
-    # load molecule
-    mol = Molecule.from_file(args.fname)
+    if args.info:
+        mol = Molecule.from_file(args.fname)
+    else:
+        mol, cube = load_molecule_and_grid(args.fname, args.cube)
 
     hia, hib = np.array(mol.homo_index) - 1
     lia, lib = np.array(mol.lumo_index) - 1
@@ -128,17 +130,6 @@ def main_mot(args):
 
     if args.info:
         return
-
-    # make cubic grid
-    if args.cube.endswith('.cube'):
-        # load cube file
-        cube = UniformGrid.from_cube(args.cube)
-    elif len(args.cube.split(',')) == 2:
-        # make a cubic grid
-        spacing, extension = [float(item) for item in args.cube.split(',')]
-        cube = UniformGrid.from_molecule(mol, spacing=spacing, extension=extension, rotate=True)
-    else:
-        raise ValueError('Argument cube={0} is not recognized!'.format(args.cube))
 
     if args.index is not None:
         index = [int(item) for item in args.index.split(',')]

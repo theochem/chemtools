@@ -26,10 +26,9 @@
 
 from __future__ import print_function
 
-from chemtools import Molecule
-from chemtools import UniformGrid, print_vmd_script_isosurface
+from chemtools import print_vmd_script_isosurface
 from chemtools import GlobalConceptualDFT, LocalConceptualDFT, CondensedConceptualDFT
-from chemtools.scripts.common import help_cube
+from chemtools.scripts.common import help_cube, load_molecule_and_grid
 
 
 __all__ = [
@@ -174,19 +173,8 @@ def main_conceptual_global(args):
 
 def main_conceptual_local(args):
     """Build LocalConceptualDFT class and dump a cube file of local descriptor."""
-    # load the first molecule
-    mol = Molecule.from_file(args.fname[0])
-
-    # make cubic grid
-    if args.cube.endswith('.cube'):
-        # load cube file
-        cube = UniformGrid.from_cube(args.cube)
-    elif len(args.cube.split(',')) == 2:
-        # make a cubic grid
-        spacing, threshold = [float(item) for item in args.cube.split(',')]
-        cube = UniformGrid.from_molecule(mol, spacing, threshold)
-    else:
-        raise ValueError('Argument cube={0} is not recognized!'.format(args.cube))
+    # load molecule & cubic grid
+    mol, cube = load_molecule_and_grid(args.fname, args.cube)
 
     # build global tool
     model = LocalConceptualDFT.from_file(args.fname, args.model, cube.points)

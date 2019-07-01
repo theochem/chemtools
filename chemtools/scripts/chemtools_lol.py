@@ -25,8 +25,8 @@
 """Localized Orbital Locator (LOL) Script."""
 
 
-from chemtools import Molecule, UniformGrid, LOL
-from chemtools.scripts.common import help_cube
+from chemtools import LOL
+from chemtools.scripts.common import help_cube, load_molecule_and_grid
 
 
 __all__ = ['parse_args_lol', 'main_lol']
@@ -95,21 +95,10 @@ def parse_args_lol(subparser):
 
 def main_lol(args):
     """Build LOL model and dump VMD script and cube files for visualizing LOL."""
-    # load molecule
-    mol = Molecule.from_file(args.fname)
+    # load molecule & cubic grid
+    mol, cube = load_molecule_and_grid(args.fname, args.cube)
 
-    # make cubic grid
-    if args.cube.endswith('.cube'):
-        # load cube file
-        cube = UniformGrid.from_cube(args.cube)
-    elif len(args.cube.split(',')) == 2:
-        # make a cubic grid
-        spacing, extension = [float(item) for item in args.cube.split(',')]
-        cube = UniformGrid.from_molecule(mol, spacing=spacing, extension=extension, rotate=True)
-    else:
-        raise ValueError('Argument cube={0} is not recognized!'.format(args.cube))
-
-    # build LOL model
+    # build model
     lol = LOL.from_molecule(mol, grid=cube, trans=args.trans, trans_k=args.trans_k,
                             trans_a=args.trans_a, denscut=args.denscut)
 

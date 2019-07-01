@@ -25,8 +25,8 @@
 """Non-Covalent Interactions (NCI) Script."""
 
 
-from chemtools import Molecule, UniformGrid, NCI
-from chemtools.scripts.common import help_cube
+from chemtools import NCI
+from chemtools.scripts.common import help_cube, load_molecule_and_grid
 
 
 __all__ = ['parse_args_nci', 'main_nci']
@@ -110,19 +110,8 @@ def parse_args_nci(subparser):
 
 def main_nci(args):
     """Build NCI model and dump VMD script and cube files for visualizing NCI with VMD."""
-    # load molecule
-    mol = Molecule.from_file(args.fname)
-
-    # make cubic grid
-    if args.cube.endswith('.cube'):
-        # load cube file
-        cube = UniformGrid.from_cube(args.cube)
-    elif len(args.cube.split(',')) == 2:
-        # make a cubic grid
-        spacing, extension = [float(item) for item in args.cube.split(',')]
-        cube = UniformGrid.from_molecule(mol, spacing=spacing, extension=extension, rotate=True)
-    else:
-        raise ValueError('Argument cube={0} is not recognized!'.format(args.cube))
+    # load molecule & cubic grid
+    mol, cube = load_molecule_and_grid(args.fname, args.cube)
 
     # build NCI model
     nci = NCI.from_molecule(mol, grid=cube)
