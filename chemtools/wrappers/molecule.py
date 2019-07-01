@@ -437,7 +437,17 @@ class Molecule(object):
         dm = self._get_density_matrix(spin, index=index)
         # compute hessian
         self._iodata.obasis.compute_grid_hessian_dm(dm, points, output=output)
-        return output
+
+        # convert the (n, 6) shape to (n, 3, 3)
+        hess = np.zeros((len(points), 9))
+        # NOTE: hard coded in the indices of the upper triangular matrix in the flattened form
+        # in C ordering. Maybe there is a numpy function that does this. This might fail if the
+        # hessian is not in c-ordering
+        hess[:, [0, 1, 2, 4, 5, 8]] = output
+        hess = hess.reshape(len(points), 3, 3)
+        # hess += np.transpose(hess, axes=(0, 2, 1))
+        # hess[:, np.diag_indices(3)] /= 2.
+        return hess
 
     def compute_esp(self, points, spin="ab", index=None, charges=None):
         r"""

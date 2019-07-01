@@ -128,20 +128,12 @@ class NCI(BaseInteraction):
                              'match expected ({1},) shape.'.format(density.shape, len(grid.points)))
 
         if hessian is not None:
-            if hessian.shape != (len(grid.points), 6):
-                raise ValueError('Shape of hessian argument {0} does not match expected ({1}, 6)'
-                                 ' shape.'.format(hessian.shape, len(grid.points)))
+            if hessian.shape != (len(grid.points), 3, 3):
+                raise ValueError("Shape of hessian argument {0} does not match expected "
+                                 "({1}, 3, 3) shape!".format(hessian.shape, len(grid.points)))
 
-            # convert the (n, 6) shape to (n, 3, 3) to calculate eigenvalues.
-            hestri = np.zeros((len(grid.points), 9))
-            # NOTE: hard coded in the indices of the upper triangular matrix in the flattened form
-            # in C ordering. Maybe there is a numpy function that does this. This might fail if the
-            # hessian is not in c-ordering
-            hestri[:, [0, 1, 2, 4, 5, 8]] = hessian
-            hestri = hestri.reshape(len(grid.points), 3, 3)
-
-            # compute hessian and its eigenvalues on cubic grid
-            eigvalues = np.linalg.eigvalsh(hestri, UPLO='U')
+            # compute hessian eigenvalues on cubic grid
+            eigvalues = np.linalg.eigvalsh(hessian, UPLO='U')
 
             # use sign of second eigenvalue to distinguish interaction types
             sdens = np.sign(eigvalues[:, 1]) * density
