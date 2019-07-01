@@ -25,20 +25,18 @@
 """Non-Covalent Interactions (NCI) Script."""
 
 
-from chemtools import NCI
+from chemtools.toolbox.interactions import NCI
 from chemtools.scripts.common import help_cube, load_molecule_and_grid
 
 
-__all__ = ['parse_args_nci', 'main_nci']
-
-# description message
-nci_desp = """
+description_nci = """
 Visualize Non-Covalent Interactions (NCI) using VMD package.
 
 The generated files include:
   output.vmd             The VMD script.
   output-dens.cube       The signed density cube file.
   output-grad.cube       The reduced density gradient cube file.
+  output.png             The reduced density gradient vs. signed density plot.
 
 The values of signed density (density multiplied by the sign of 2nd eigenvalue of
 Hessian) are multiplied by 100.0 when being recorded in cube file. Similar to NCIPlot
@@ -56,59 +54,60 @@ def parse_args_nci(subparser):
 
     # required arguments
     subparser.add_argument(
-        'fname',
-        help='Wave-function file. Supported formats: fchk, mkl, molden.input, wfn.')
+        "fname",
+        help="wave-function file.")
 
     subparser.add_argument(
         "-o", "--output",
         default=None,
         type=str,
-        help='name of generated output files. By default, it is derived from fname.')
+        help="name of generated output files. By default, it is derived from fname.")
 
     # optional arguments
     subparser.add_argument(
-        '--cube',
-        default='0.1,2.0',
+        "-c", "--cube",
+        default="0.1,2.0",
         type=str,
-        metavar='N',
+        metavar="",
         help=help_cube)
 
     subparser.add_argument(
-        '--plot',
-        default=False,
-        action='store_true',
-        help='plot reduced density gradient vs. signed density (density'
-        'multiplied by sign of hessian\'s 2nd eigenvalue). This generates a '
-        'output.png file. This plot is not affected by the value of '
-        'denscut argument. [default=%(default)s]')
+        "--plot",
+        default=True,
+        action="store_true",
+        help="plot reduced density gradient vs. signed density (density"
+             "multiplied by sign of hessian's 2nd eigenvalue). This plot is not affected "
+             "by the value of denscut argument. [default=%(default)s]")
 
     subparser.add_argument(
-        '--isosurface',
+        "-i", "--isosurface",
         default=0.5,
         type=float,
-        help='iso-surface value of reduced density gradient (RDG) to visualize. '
-        '[default=%(default)s]')
+        metavar="",
+        help="iso-surface value of reduced density gradient (RDG) to visualize. "
+             "[default=%(default)s]")
 
     subparser.add_argument(
-        '--denscut',
+        "-d", "--denscut",
         default=0.05,
         type=float,
-        help='density cutoff used in visualizing reduced density gradient (RDG) '
-        'iso-surfaces, and dumping reduced density gradient cube file. '
-        'Similar to NCIPlot program, reduced density gradient of points with '
-        'density > denscut will be set to 100.0 in the corresponding cube '
-        'file. This triggers the VMD to only display reduced density gradient '
-        'iso-surface(s) in regions for which density < denscut. '
-        'For visualizing all reduced density gradient (RDG) iso-surfaces, '
-        'disregarding of density value, set this argument to inf or infinity. '
-        '[default=%(default)s]')
+        metavar="",
+        help="density cutoff used in visualizing reduced density gradient (RDG) "
+             "iso-surfaces, and dumping reduced density gradient cube file. "
+             "Similar to NCIPlot program, reduced density gradient of points with "
+             "density > denscut will be set to 100.0 in the corresponding cube "
+             "file. This triggers the VMD to only display reduced density gradient "
+             "iso-surface(s) in regions for which density < denscut. "
+             "For visualizing all reduced density gradient (RDG) iso-surfaces, "
+             "disregarding of density value, set this argument to inf or infinity. "
+             "[default=%(default)s]")
 
     subparser.add_argument(
-        '--color',
-        default='b',
+        "--color",
+        default="b",
         type=str,
-        help='color of reduced density gradient vs. signed density scatter plot'
-        ' [default=%(default)s]')
+        help="color of reduced density gradient vs. signed density scatter plot."
+             " [default=%(default)s]")
 
 
 def main_nci(args):
@@ -116,10 +115,10 @@ def main_nci(args):
     # load molecule & cubic grid
     mol, cube = load_molecule_and_grid(args.fname, args.cube)
 
-    # build NCI model
+    # build model
     nci = NCI.from_molecule(mol, grid=cube)
 
-    # dump files/scripts for visualizing NCI
+    # dump files for visualization
     output = args.output
     if output is None:
         output = args.fname.split(".")[0]

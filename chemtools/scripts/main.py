@@ -34,7 +34,7 @@ from chemtools.scripts.chemtools_conceptual import (
     parse_args_local, parse_args_condensed, main_conceptual_condensed,
 
 )
-from chemtools.scripts.chemtools_nci import main_nci, parse_args_nci, nci_desp
+from chemtools.scripts.chemtools_nci import main_nci, parse_args_nci, description_nci
 from chemtools.scripts.chemtools_elf import main_elf, parse_args_elf, description_elf
 from chemtools.scripts.chemtools_lol import main_lol, parse_args_lol, description_lol
 from chemtools.scripts.chemtools_mot import main_mot, parse_args_mot, mot_desp
@@ -96,7 +96,7 @@ def parse_args_chemtools():
     parser_nci = subparser.add_parser(
         "nci",
         help="Non-Covalent Interactions (NCI).",
-        description=nci_desp,
+        description=description_nci,
         formatter_class=RawDescriptionHelpFormatter,
     )
     parse_args_nci(parser_nci)
