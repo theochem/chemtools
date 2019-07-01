@@ -27,7 +27,7 @@ Citing ChemTools
 
 In anticipation of the first announcement of ChemTools in a scientific journal, please reference ChemTools as follows:
 
-.. bibliography:: ../data/references.bib
+.. bibliography:: references.bib
    :style: unsrt
    :start: continue
    :list: bullet

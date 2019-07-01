@@ -27,7 +27,7 @@
 References
 ##########
 
-.. bibliography:: ../data/references.bib
+.. bibliography:: references.bib
    :style: unsrt
    :start: continue
    :encoding: latex+latin

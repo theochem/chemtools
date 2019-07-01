@@ -116,7 +116,7 @@ ELF = :math:`^1/_2` to the uniform electron gas-like correlation.
 
 **References:**
 
-.. bibliography:: ../data/references.bib
+.. bibliography:: references.bib
    :list: bullet
    :filter: (key % "Savin1991ACIE" or
              key % "Becke1990JCP")

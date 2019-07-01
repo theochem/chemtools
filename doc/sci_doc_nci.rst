@@ -108,6 +108,6 @@ function. See the tutorials and example gallery for more details.
 
 **References:**
 
-.. bibliography:: ../data/references.bib
+.. bibliography:: references.bib
    :list: bullet
    :filter: key % "Johnson2010JACS"

@@ -165,7 +165,7 @@ The related :ref:`derived global reactivity indicators <global_derived_indicator
 
 **References:**
 
-.. bibliography:: ../data/references.bib
+.. bibliography:: references.bib
    :style: unsrt
    :start: continue
    :list: bullet
