@@ -29,10 +29,7 @@ from chemtools.toolbox.interactions import ELF
 from chemtools.scripts.common import help_cube, load_molecule_and_grid
 
 
-__all__ = ['parse_args_elf', 'main_elf']
-
-# description message
-elf_dest = """
+description_elf = """
 Visualize Electron Localization Function (ELF) using VMD package.
 
 The generated files include:
@@ -46,7 +43,7 @@ def parse_args_elf(subparser):
 
     # required arguments
     subparser.add_argument(
-        'fname',
+        "fname",
         help="wave-function file.")
 
     # optional arguments
@@ -55,32 +52,32 @@ def parse_args_elf(subparser):
         default=None,
         type=str,
         metavar="",
-        help='name of generated output files. By default, it is derived from fname.')
+        help="name of generated output files. By default, it is derived from fname.")
 
     subparser.add_argument(
         "-t", "--trans",
-        default='rational',
-        choices=['rational', 'hyperbolic'],
+        default="rational",
+        choices=["rational", "hyperbolic"],
         type=str,
-        help='type of transformation applied to ELF ratio. [default=%(default)s]')
+        help="type of transformation applied to ELF ratio. [default=%(default)s]")
 
     subparser.add_argument(
         "-k", "--trans_k",
         default=2,
         type=int,
         metavar="",
-        help='parameter k of transformation. [default=%(default)s]')
+        help="parameter k of transformation. [default=%(default)s]")
 
     subparser.add_argument(
         "-a", "--trans_a",
         default=1,
         type=int,
         metavar="",
-        help='parameter a of transformation. [default=%(default)s]')
+        help="parameter a of transformation. [default=%(default)s]")
 
     subparser.add_argument(
         "-c", "--cube",
-        default='0.1,2.0',
+        default="0.1,2.0",
         type=str,
         metavar="",
         help=help_cube)
@@ -90,7 +87,7 @@ def parse_args_elf(subparser):
         default=0.8,
         type=float,
         metavar="",
-        help='iso-surface value of ELF to visualize. [default=%(default)s]')
+        help="iso-surface value of ELF to visualize. [default=%(default)s]")
 
     subparser.add_argument(
         "-d", "--denscut",
@@ -98,7 +95,7 @@ def parse_args_elf(subparser):
         type=float,
         metavar="",
         help="the ELF value of points with electron density < denscut is set to zero. "
-             '[default=%(default)s]')
+             "[default=%(default)s]")
 
 
 def main_elf(args):
@@ -110,7 +107,7 @@ def main_elf(args):
     elf = ELF.from_molecule(mol, grid=cube, trans=args.trans, trans_k=args.trans_k,
                             trans_a=args.trans_a, denscut=args.denscut)
 
-    # dump file/script for visualization
+    # dump files for visualization
     output = args.output
     if output is None:
         output = args.fname.split(".")[0]

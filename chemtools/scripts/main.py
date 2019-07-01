@@ -35,7 +35,7 @@ from chemtools.scripts.chemtools_conceptual import (
 
 )
 from chemtools.scripts.chemtools_nci import main_nci, parse_args_nci, nci_desp
-from chemtools.scripts.chemtools_elf import main_elf, parse_args_elf, elf_dest
+from chemtools.scripts.chemtools_elf import main_elf, parse_args_elf, description_elf
 from chemtools.scripts.chemtools_lol import main_lol, parse_args_lol, lol_dest
 from chemtools.scripts.chemtools_mot import main_mot, parse_args_mot, mot_desp
 from chemtools.scripts.chemtools_esp import main_esp, parse_args_esp, esp_desp
@@ -104,7 +104,7 @@ def parse_args_chemtools():
     parser_elf = subparser.add_parser(
         "elf",
         help="Electron Localization Function (ELF).",
-        description=elf_dest,
+        description=description_elf,
         formatter_class=RawDescriptionHelpFormatter,
     )
     parse_args_elf(parser_elf)
