@@ -49,10 +49,14 @@ def parse_args_elf(subparser):
         'fname',
         help='wave-function file. Supported formats: fchk, mkl, molden.input, wfn.')
 
-    subparser.add_argument(
-        'output', help='name of generated cube file and vmd script.')
-
     # optional arguments
+    subparser.add_argument(
+        "-o", "--output",
+        default=None,
+        type=str,
+        metavar="",
+        help='name of generated output files. By default, it is derived from fname.')
+
     subparser.add_argument(
         '--trans',
         default='rational',
@@ -102,5 +106,8 @@ def main_elf(args):
     elf = ELF.from_molecule(mol, grid=cube, trans=args.trans, trans_k=args.trans_k,
                             trans_a=args.trans_a, denscut=args.denscut)
 
-    # dump file/script for visualizing ELF
-    elf.generate_scripts(args.output, isosurf=args.isosurface)
+    # dump file/script for visualization
+    output = args.output
+    if output is None:
+        output = args.fname.split(".")[0]
+    elf.generate_scripts(output, isosurf=args.isosurface)

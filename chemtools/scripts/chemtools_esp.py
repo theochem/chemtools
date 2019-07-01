@@ -54,10 +54,13 @@ def parse_args_esp(subparser):
         'fname',
         help='wave-function file. Supported formats: fchk, mkl, molden.input, wfn.')
 
-    subparser.add_argument(
-        'output', help='name of generated cube files and vmd script.')
-
     # optional arguments
+    subparser.add_argument(
+        "-o", "--output",
+        default=None,
+        type=str,
+        help='name of generated output files. By default, it is derived from fname.')
+
     # subparser.add_argument(
     #     '--spin',
     #     default='a',
@@ -107,9 +110,12 @@ def main_esp(args):
     mol, cube = load_molecule_and_grid(args.fname, args.cube)
 
     # dump cube files & script for visualization
-    espname = args.output + '_esp.cube'
-    rhoname = args.output + '_rho.cube'
-    vmdname = args.output + '.vmd'
+    output = args.output
+    if output is None:
+        output = args.fname.split(".")[0]
+    espname = output + '_esp.cube'
+    rhoname = output + '_dens.cube'
+    vmdname = output + '.vmd'
 
     cube.generate_cube(rhoname, mol.compute_density(cube.points))
     cube.generate_cube(espname, mol.compute_esp(cube.points))

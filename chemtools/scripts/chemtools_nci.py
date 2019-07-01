@@ -60,7 +60,10 @@ def parse_args_nci(subparser):
         help='Wave-function file. Supported formats: fchk, mkl, molden.input, wfn.')
 
     subparser.add_argument(
-        'output', help='Name of generated cube files and vmd script.')
+        "-o", "--output",
+        default=None,
+        type=str,
+        help='name of generated output files. By default, it is derived from fname.')
 
     # optional arguments
     subparser.add_argument(
@@ -117,8 +120,11 @@ def main_nci(args):
     nci = NCI.from_molecule(mol, grid=cube)
 
     # dump files/scripts for visualizing NCI
-    nci.generate_scripts(args.output, isosurf=args.isosurface, denscut=args.denscut)
+    output = args.output
+    if output is None:
+        output = args.fname.split(".")[0]
+    nci.generate_scripts(output, isosurf=args.isosurface, denscut=args.denscut)
 
     # plot reduced density gradient vs. signed density
     if args.plot:
-        nci.generate_plot(args.output, color=args.color)
+        nci.generate_plot(output, color=args.color)

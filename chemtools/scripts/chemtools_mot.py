@@ -54,13 +54,13 @@ def parse_args_mot(subparser):
         'fname',
         help='wave-function file. Supported formats: fchk, mkl, molden.input, wfn.')
 
-    subparser.add_argument(
-        '--output',
-        default=None,
-        help='name of generated cube file and vmd script. If None, the output name in derived'
-             'from fname. [default=%(default)s]')
-
     # optional arguments
+    subparser.add_argument(
+        "-o", '--output',
+        default=None,
+        type=str,
+        help='name of generated output files. By default, it is derived from fname.')
+
     subparser.add_argument(
         '--info',
         action='store_true',
