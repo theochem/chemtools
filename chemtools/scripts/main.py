@@ -38,7 +38,7 @@ from chemtools.scripts.chemtools_nci import main_nci, parse_args_nci, nci_desp
 from chemtools.scripts.chemtools_elf import main_elf, parse_args_elf, description_elf
 from chemtools.scripts.chemtools_lol import main_lol, parse_args_lol, description_lol
 from chemtools.scripts.chemtools_mot import main_mot, parse_args_mot, mot_desp
-from chemtools.scripts.chemtools_esp import main_esp, parse_args_esp, esp_desp
+from chemtools.scripts.chemtools_esp import main_esp, parse_args_esp, description_esp
 
 from argparse import RawDescriptionHelpFormatter
 
@@ -88,7 +88,7 @@ def parse_args_chemtools():
     parser_esp = subparser.add_parser(
         "esp",
         help="Electrostatic Potential (ESP).",
-        description=esp_desp,
+        description=description_esp,
         formatter_class=RawDescriptionHelpFormatter,
     )
     parse_args_esp(parser_esp)
