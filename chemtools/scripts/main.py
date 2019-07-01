@@ -30,9 +30,11 @@ from chemtools import __version__
 from chemtools.scripts.chemtools_conceptual import (
     main_conceptual_global,
     main_conceptual_local,
+    main_conceptual_condensed,
     parse_args_global,
-    parse_args_local, parse_args_condensed, main_conceptual_condensed,
-
+    parse_args_local,
+    parse_args_condensed,
+    description_global,
 )
 from chemtools.scripts.chemtools_nci import main_nci, parse_args_nci, description_nci
 from chemtools.scripts.chemtools_elf import main_elf, parse_args_elf, description_elf
@@ -120,8 +122,9 @@ def parse_args_chemtools():
     # sub parser for gcdft functions
     parser_g = subparser.add_parser(
         "gcdft",
-        help="Global Conceptual DFT.",
-        description='Global Conceptual Density Functional Theory.',
+        help="Global Conceptual Density Functional Theory.",
+        description=description_global,
+        formatter_class=RawDescriptionHelpFormatter,
     )
     parse_args_global(parser_g)
 

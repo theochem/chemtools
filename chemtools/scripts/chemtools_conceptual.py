@@ -24,30 +24,27 @@
 # pragma pylint: disable=invalid-name
 """Conceptual Density Functional Theory Script."""
 
-from __future__ import print_function
 
 from chemtools import print_vmd_script_isosurface
 from chemtools import GlobalConceptualDFT, LocalConceptualDFT, CondensedConceptualDFT
 from chemtools.scripts.common import help_cube, load_molecule_and_grid
 
 
-__all__ = [
-    'parse_args_global', 'parse_args_local', 'parse_args_condensed',
-    'main_conceptual_global', 'main_conceptual_local', 'main_conceptual_condensed'
-]
+description_global = """
+Print global conceptual density functional theory (DFT) reactivity descriptors.
+"""
+
 
 
 def parse_args_global(subparser):
     """Parse command-line arguments for computing global conceptual DFT indicators."""
-    # description message
-    # description = """ """
-
     # required arguments
-    subparser.add_argument('model', help='Energy model.')
+    subparser.add_argument("model", help="energy model.")
     subparser.add_argument(
-        'fname',
-        nargs='*',
-        help='Wave-function file. Supported formats: fchk, mkl, molden.input, wfn.')
+        "fname",
+        nargs="*",
+        help="wave-function file(s). If more than one file is given, finite difference (FD) "
+             "approach is invoked instead of frontier molecular orbital (FMO) approach.")
 
 
 def parse_args_local(subparser):
