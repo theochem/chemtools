@@ -36,6 +36,7 @@ from chemtools.scripts.chemtools_conceptual import (
     parse_args_condensed,
     description_global,
     description_local,
+    description_condensed,
 )
 from chemtools.scripts.chemtools_nci import main_nci, parse_args_nci, description_nci
 from chemtools.scripts.chemtools_elf import main_elf, parse_args_elf, description_elf
@@ -141,7 +142,8 @@ def parse_args_chemtools():
     parser_c = subparser.add_parser(
         "ccdft",
         help="Condensed Conceptual DFT.",
-        description='Condensed Conceptual Density Functional Theory.',
+        description=description_condensed,
+        formatter_class=RawDescriptionHelpFormatter,
     )
     parse_args_condensed(parser_c)
 

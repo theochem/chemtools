@@ -42,6 +42,10 @@ The generated files include:
   output-{prop}.cube     The local property cube file.
 """
 
+description_condensed = """
+Print condensed conceptual density functional theory (DFT) reactivity descriptors.
+"""
+
 
 def parse_args_global(subparser):
     """Parse command-line arguments for computing global conceptual DFT indicators."""
@@ -102,66 +106,52 @@ def parse_args_local(subparser):
 
 def parse_args_condensed(subparser):
     """Parse command-line arguments for computing local conceptual DFT indicators."""
-    # description message
-    # description = """ """
 
-    # get property list from LocalConceptualDFT's parent class
-    # property_list = [
-    #     name for name, func in BaseLocalTool.__dict__.items()
-    #     if isinstance(func, property)
-    # ]
     property_list = [
-        'ff_plus',
-        'ff_minus',
-        'ff_zero',
-        'fukui_function',
-        'dual_descriptor',
-        # add more property
+        "ff_plus",
+        "ff_minus",
+        "ff_zero",
+        "fukui_function",
+        "dual_descriptor",
     ]
 
     # required arguments
-    subparser.add_argument('model', help='Energy model.')
+    subparser.add_argument("model", help="Energy model.")
+
     subparser.add_argument(
-        'prop',
+        "prop",
         type=str,
         choices=property_list,
-        metavar='property',
-        help='The local property for plotting iso-surface. '
-        'Choices: {{{}}}'.format(", ".join(property_list)))
-    subparser.add_argument(
-        'fname',
-        nargs='*',
-        help='Wave-function file(s). Supported formats: fchk, mkl, molden.'
-        'input, wfn. If one files is provided, the frontier moleculer orbital'
-        '(FMO) approach is invoked, otherwise the finite difference (FD)'
-        'approach is taken.')
+        metavar="property",
+        help="The local property for plotting iso-surface. "
+             "Choices: {{{}}}".format(", ".join(property_list)))
 
     subparser.add_argument(
-        '--approach',
-        type=str,
-        default='FMR',
-        choices=['FMR', 'RMF'],
-        metavar='property',
-        help='choose between fragment of molecular response or response of molecular fragment.'
-        'Choices: {{{}}}'.format(", ".join(property_list)) +
-        '[default=%(default)s]')
+        "fname",
+        nargs="*",
+        help="wave-function file(s). If more than one file is given, finite difference (FD) "
+             "approach is invoked instead of frontier molecular orbital (FMO) approach.")
 
     subparser.add_argument(
-        '--scheme',
+        "--approach",
         type=str,
-        default='h',
-        choices=['h', 'hi', 'mbis'],
-        metavar='property',
-        help='partitioning scheme.'
-        'Choices: {{{}}}'.format(", ".join(property_list)) +
-             '[default=%(default)s]')
+        default="FMR",
+        choices=["FMR", "RMF"],
+        help="choose between fragment of molecular response or response of molecular fragment."
+             "[default=%(default)s]")
+
+    subparser.add_argument(
+        "--scheme",
+        type=str,
+        default="h",
+        choices=["h", "hi", "mbis"],
+        help="partitioning scheme. [default=%(default)s]")
 
 
 def main_conceptual_global(args):
     """Build GlobalConceptualDFT class and print global descriptors."""
-    # build global tool
+    # build model & print descriptors
     model = GlobalConceptualDFT.from_file(args.fname, args.model)
-    # print available descriptors
     print(model)
 
 
@@ -198,17 +188,19 @@ def main_conceptual_condensed(args):
                                              approach=args.approach)
     # check whether local property exists
     if not hasattr(model, args.prop):
-        raise ValueError('The {0} condensed conceptual DFT class does not contain '
-                         '{1} attribute.'.format(args.model, args.prop))
+        raise ValueError("The {0} condensed conceptual DFT class does not contain "
+                         "{1} attribute.".format(args.model, args.prop))
     if callable(getattr(model, args.prop)):
         raise ValueError(
-            'The {0} argument is a method, please provide an attribute of '
-            '{1} local conceptual DFT.'.format(args.prop, args.model))
+            "The {0} argument is a method, please provide an attribute of "
+            "{1} local conceptual DFT.".format(args.prop, args.model))
 
     prop = getattr(model, args.prop)
 
     print("")
-    print('Atomic contribution of %s for scheme=%s & approach %s:' % (args.prop, args.scheme.upper(), args.approach))
+    print("Atomic contribution of %s for scheme=%s & approach %s:" % (args.prop,
+                                                                      args.scheme.upper(),
+                                                                      args.approach))
     for index in range(len(model.numbers)):
-        print('% 3i   % 3i   %10.6f' % (index, model.numbers[index], prop[index]))
+        print("% 3i   % 3i   %10.6f" % (index, model.numbers[index], prop[index]))
     print("")
