@@ -445,8 +445,9 @@ class Molecule(object):
         # hessian is not in c-ordering
         hess[:, [0, 1, 2, 4, 5, 8]] = output
         hess = hess.reshape(len(points), 3, 3)
-        # hess += np.transpose(hess, axes=(0, 2, 1))
-        # hess[:, np.diag_indices(3)] /= 2.
+        hess += np.transpose(hess, axes=(0, 2, 1))
+        for index in range(len(points)):
+            hess[index][np.diag_indices(3)] /= 2.
         return hess
 
     def compute_esp(self, points, spin="ab", index=None, charges=None):

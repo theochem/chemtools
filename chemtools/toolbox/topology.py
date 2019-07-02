@@ -132,7 +132,5 @@ class TopologicalTool(Topology):
             if point.ndim == 1:
                 point = point[np.newaxis, :]
             hess = molecule.compute_hessian(point, spin, index)[0]
-            hess += hess.T
-            hess[np.diag_indices(3)] /= 2.
             return hess
         return compute_hessian
