@@ -405,3 +405,43 @@ def test_molecule_density_matrix_index_fchk_uhf_ch4():
             indices = np.array([i -1, j - 1])
             assert np.allclose(dm_full[indices[:, None], indices[None, :]],
                                mol._get_density_matrix("a", [i, j])._array)
+
+
+def test_molecule_horton_h2o():
+    with path("chemtools.data", "data_horton_fchk_h2o_ub3lyp_ccpvtz.npz") as fname:
+        data = np.load(str(fname))
+    with path("chemtools.data", "h2o_q+0_ub3lyp_ccpvtz.fchk") as fname:
+        mol = Molecule.from_file(fname)
+    # check properties computed at nucleus against HORTON
+    points = data["coords"]
+    assert np.allclose(mol.compute_density(points), data["nuc_dens"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_gradient(points), data["nuc_grad"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_hessian(points), data["nuc_hess"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_ked(points), data["nuc_ked_pd"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_esp(points), data["nuc_esp"], rtol=0., atol=1.e-6)
+    # check properties computed on a grid against HORTON
+    assert np.allclose(mol.compute_density(data["points"]), data["dens"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_gradient(data["points"]), data["grad"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_hessian(data["points"]), data["hess"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_ked(data["points"]), data["ked_pd"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_esp(data["points"]), data["esp"], rtol=0., atol=1.e-6)
+
+
+def test_molecule_horton_ch4():
+    with path("chemtools.data", "data_horton_fchk_ch4_uhf_ccpvdz.npz") as fname:
+        data = np.load(str(fname))
+    with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
+        mol = Molecule.from_file(fname)
+    # check properties computed at nucleus against HORTON
+    points = data["coords"]
+    assert np.allclose(mol.compute_density(points), data["nuc_dens"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_gradient(points), data["nuc_grad"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_hessian(points), data["nuc_hess"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_ked(points), data["nuc_ked_pd"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_esp(points), data["nuc_esp"], rtol=0., atol=1.e-6)
+    # check properties computed on a grid against HORTON
+    assert np.allclose(mol.compute_density(data["points"]), data["dens"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_gradient(data["points"]), data["grad"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_hessian(data["points"]), data["hess"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_ked(data["points"]), data["ked_pd"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_esp(data["points"]), data["esp"], rtol=0., atol=1.e-6)
