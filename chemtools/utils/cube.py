@@ -26,7 +26,8 @@
 import logging
 import numpy as np
 
-from horton import IOData
+from chemtools.wrappers.molecule import Molecule
+
 try:
     from importlib_resources import path
 except ImportError:
@@ -186,12 +187,12 @@ class UniformGrid(object):
         # Load file
         logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
         try:
-            mol = IOData.from_file(str(fname))
+            mol = Molecule.from_file(str(fname))
         except IOError as _:
             try:
                 with path('chemtools.data.examples', str(fname)) as fname:
                     logging.info('Loading {0}'.format(str(fname)))
-                    mol = IOData.from_file(str(fname))
+                    mol = Molecule.from_file(str(fname))
             except IOError as error:
                 logging.info(error)
         return cls.from_molecule(mol, spacing, extension, rotate)
