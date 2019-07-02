@@ -147,14 +147,20 @@ class Topology(object):
 
     def find_critical_points(self):
         """Find and store the critical points."""
+        neighs = np.zeros((4 * len(self._kdtree.data), 3))
         for index, point in enumerate(self._kdtree.data):
             # compute distance to 4 closest grid points
             dists, _ = self._kdtree.query(point, 4)
-            # compute coordinates of neighbouring polyhedron vertices surrounding the point
-            neigh = point + np.max(dists) * self._neighbours
-            # compute the gradient norm of point & surrounding vertices
-            point_norm = np.linalg.norm(self.g_f(point))
-            neigh_norm = np.linalg.norm(self.g_f(neigh), axis=-1)
+            # store coordinates of neighbouring polyhedron vertices surrounding the point
+            neighs[4 * index: 4 * index + 4, :] = point + np.max(dists) * self._neighbours
+
+        # compute the gradient norm of points & surrounding vertices
+        points_norm = np.linalg.norm(self.g_f(self._kdtree.data), axis=-1)
+        neighs_norm = np.linalg.norm(self.g_f(neighs), axis=-1)
+
+        for index, point in enumerate(self._kdtree.data):
+            point_norm = points_norm[index]
+            neigh_norm = neighs_norm[4 * index: 4 * index + 4]
             # use central point as initial guess for critical point finding
             if index < len(self._coords) or np.all(point_norm < neigh_norm):
                 try:
