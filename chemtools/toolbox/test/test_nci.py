@@ -20,7 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Test chemtools.analysis.nci."""
+"""Test chemtools.toolbox.interactions.nci."""
 
 
 import os
@@ -50,21 +50,19 @@ def tmpdir(name):
         shutil.rmtree(dn)
 
 
-def test_toolbox_nci_raises():
+def test_nci_raises():
     # check file name
     assert_raises(ValueError, NCI.from_file, "gibberish")
     # with path('chemtools.data', 'h2o_dimer_pbe_sto3g.wf') as file1:
     #     assert_raises(OSError, NCI.from_file, file1)
 
 
-def test_analyze_nci_h2o_dimer_wfn():
+def test_nci_h2o_dimer_wfn():
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g-dens.cube') as dens_cube1_path:
         cube = UniformGrid.from_cube(dens_cube1_path)
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g.wfn') as file_path:
         desp = NCI.from_file(file_path, grid=cube)
     # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
-    # Build the NCI tool
-    # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g-grad.cube') as grad_cube1_path:
         dmol1 = Molecule.from_file(str(dens_cube1_path))
         gmol1 = Molecule.from_file(str(grad_cube1_path))
@@ -103,15 +101,14 @@ def test_analyze_nci_h2o_dimer_wfn():
         assert_equal(gmol1.pseudo_numbers, mol2.pseudo_numbers)
 
 
-def test_analyze_nci_h2o_dimer_fchk():
+def test_nci_h2o_dimer_fchk():
+    # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g.fchk') as file_path:
         mol = Molecule.from_file(file_path)
-    # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g-dens.cube') as dens_cube1_path:
         cube = UniformGrid.from_cube(dens_cube1_path)
-    # Build the NCI tool
     desp = NCI.from_molecule(mol, grid=cube)
-    # Check against .cube files created with NCIPLOT by E.R. Johnson and J. Contreras-Garcia
+
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g-grad.cube') as grad_cube1_path:
         dmol1 = Molecule.from_file(str(dens_cube1_path))
         gmol1 = Molecule.from_file(str(grad_cube1_path))
@@ -150,7 +147,7 @@ def test_analyze_nci_h2o_dimer_fchk():
         assert_equal(gmol1.pseudo_numbers, mol2.pseudo_numbers)
 
 
-def test_analyze_nci_assert_errors():
+def test_nci_assert_errors():
     with path('chemtools.data', 'h2o_dimer_pbe_sto3g.fchk') as file_path:
         mol = Molecule.from_file(file_path)
         cube = UniformGrid.from_file(file_path, spacing=2., extension=0.0)
