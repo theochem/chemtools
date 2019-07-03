@@ -48,6 +48,8 @@ class Molecule(object):
            An instance of horton.IOData object.
         """
         self._iodata = iodata
+        if hasattr(self._iodata, "obasis"):
+            self._basis = GaussianBasis(self._iodata.obasis)
 
         self._coordinates = self._iodata.coordinates
         self._numbers = self._iodata.numbers
@@ -148,7 +150,7 @@ class Molecule(object):
     @property
     def nbasis(self):
         """Number of basis functions."""
-        return self._iodata.obasis.nbasis
+        return self._basis.nbasis
 
     @property
     def nelectrons(self):
@@ -300,15 +302,10 @@ class Molecule(object):
             if np.any(index < 0):
                 raise ValueError("Argument index={0} cannot be less than one!".format(index + 1))
 
-        # allocate output array
-        output = np.zeros((points.shape[0], index.shape[0]), float)
-
         # get orbital expression of specified spin
         spin_type = {"a": "alpha", "b": "beta"}
         exp = getattr(self, "_exp_" + spin_type[spin])
-        # compute mo expression
-        self._iodata.obasis.compute_grid_orbitals_exp(exp, points, index, output=output)
-        return output
+        return self._basis.compute_orbitals(exp, points, index)
 
     def compute_density(self, points, spin="ab", index=None):
         r"""Return electron density.
@@ -339,7 +336,7 @@ class Molecule(object):
             # get density matrix corresponding to the specified spin
             dm = self._get_density_matrix(spin)
             # include all orbitals
-            self._iodata.obasis.compute_grid_density_dm(dm, points, output=output)
+            output = self._basis.compute_density(dm, points)
         else:
             # include subset of molecular orbitals
             if spin == "ab":
@@ -377,14 +374,8 @@ class Molecule(object):
         if not np.issubdtype(points.dtype, np.float64):
             raise ValueError("Argument points should be a 2d-array of floats!")
 
-        # allocate output array
-        output = np.zeros((points.shape[0], 3), float)
-
-        # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin, index=index)
-        # compute gradient
-        self._iodata.obasis.compute_grid_gradient_dm(dm, points, output=output)
-        return output
+        return self._basis.compute_gradient(dm, points)
 
     def compute_hessian(self, points, spin="ab", index=None):
         r"""Return hessian of the electron density.
@@ -407,25 +398,8 @@ class Molecule(object):
         if not np.issubdtype(points.dtype, np.float64):
             raise ValueError("Argument points should be a 2d-array of floats!")
 
-        # allocate output array
-        output = np.zeros((points.shape[0], 6), float)
-
-        # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin, index=index)
-        # compute hessian
-        self._iodata.obasis.compute_grid_hessian_dm(dm, points, output=output)
-
-        # convert the (n, 6) shape to (n, 3, 3)
-        hess = np.zeros((len(points), 9))
-        # NOTE: hard coded in the indices of the upper triangular matrix in the flattened form
-        # in C ordering. Maybe there is a numpy function that does this. This might fail if the
-        # hessian is not in c-ordering
-        hess[:, [0, 1, 2, 4, 5, 8]] = output
-        hess = hess.reshape(len(points), 3, 3)
-        hess += np.transpose(hess, axes=(0, 2, 1))
-        for index in range(len(points)):
-            hess[index][np.diag_indices(3)] /= 2.
-        return hess
+        return self._basis.compute_hessian(dm, points)
 
     def compute_laplacian(self, points, spin="ab", index=None):
         r"""Return Laplacian of the electron density.
@@ -478,9 +452,6 @@ class Molecule(object):
         if not np.issubdtype(points.dtype, np.float64):
             raise ValueError("Argument points should be a 2d-array of floats!")
 
-        # allocate output array
-        output = np.zeros((points.shape[0],), np.float)
-
         # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin, index=index)
         # assign point charges
@@ -489,10 +460,7 @@ class Molecule(object):
         elif not isinstance(charges, np.ndarray) or charges.shape != self.numbers.shape:
             raise ValueError("Argument charges should be a 1d-array "
                              "with {0} shape.".format(self.numbers.shape))
-        # compute esp
-        self._iodata.obasis.compute_grid_esp_dm(dm, self.coordinates, charges, points,
-                                                output=output)
-        return output
+        return self._basis.compute_esp(dm, points, self.coordinates, charges)
 
     def compute_ked(self, points, spin="ab", index=None):
         r"""Return positive definite or Lagrangian kinetic energy density.
@@ -518,13 +486,8 @@ class Molecule(object):
             raise ValueError("Argument points should be a 2d-array with 3 columns.")
         if not np.issubdtype(points.dtype, np.float64):
             raise ValueError("Argument points should be a 2d-array of floats!")
-        # allocate output array
-        output = np.zeros((points.shape[0],), float)
-        # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin, index=index)
-        # compute kinetic energy
-        self._iodata.obasis.compute_grid_kinetic_dm(dm, points, output=output)
-        return output
+        return self._basis.compute_ked(dm, points)
 
     def compute_megga(self, points, spin="ab", index=None):
         """Return electron density, gradient, laplacian & kinetic energy density.
@@ -549,7 +512,136 @@ class Molecule(object):
 
         # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin, index=index)
-
         # compute for the given set of orbitals
         output = self._iodata.obasis.compute_grid_mgga_dm(dm, points)
         return output[:, 0], output[:, 1:4], output[:, 4], output[:, 5]
+
+
+class GaussianBasis(object):
+    """Gaussian Basis Set."""
+
+    def __init__(self, basis):
+        self._basis = basis
+
+    @classmethod
+    def from_molecule(cls, mol):
+        """Initialize class given an instance of `Molecule`.
+
+        Parameters
+        ----------
+        mol : Molecule
+            An instance of `Molecule` class.
+
+        """
+        basis = mol._iodata.obasis
+        return cls(basis)
+
+    @classmethod
+    def from_file(cls, fname):
+        """Initialize class given a file.
+
+        Parameters
+        ----------
+        fname : str
+            Path to molecule"s files.
+
+        """
+        return cls.from_molecule(Molecule.from_file(fname))
+
+    @property
+    def nbasis(self):
+        """int : number of basis functions."""
+        return self._basis.nbasis
+
+    def compute_orbitals(self, dm, points, index):
+        """
+
+        Parameters
+        ----------
+        dm : ndarray
+           First order reduced density matrix of B basis sets given as a 2D array of (B, B) shape.
+        points : ndarray
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
+        index : sequence of int, optional
+           Sequence of integers representing the occupied spin orbitals which are indexed
+           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
+
+        """
+        return self._basis.compute_grid_orbitals_exp(dm, points, index)
+
+    def compute_density(self, dm, points):
+        """Return electron density evaluated on the a set of points.
+
+        Parameters
+        ----------
+        dm : ndarray
+           First order reduced density matrix of B basis sets given as a 2D array of (B, B) shape.
+        points : ndarray
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
+
+        """
+        return self._basis.compute_grid_density_dm(dm, points)
+
+    def compute_gradient(self, dm, points):
+        """Return gradient of the electron density evaluated on the a set of points.
+
+        Parameters
+        ----------
+        dm : ndarray
+           First order reduced density matrix of B basis sets given as a 2D array of (B, B) shape.
+        points : ndarray
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
+
+        """
+        return self._basis.compute_grid_gradient_dm(dm, points)
+
+    def compute_hessian(self, dm, points):
+        """Return hessian of the electron density evaluated on the a set of points.
+
+        Parameters
+        ----------
+        dm : ndarray
+           First order reduced density matrix of B basis sets given as a 2D array of (B, B) shape.
+        points : ndarray
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
+
+        """
+        # compute upper triangular elements
+        output = self._basis.compute_grid_hessian_dm(dm, points)
+        # convert the (n, 6) shape to (n, 3, 3)
+        hess = np.zeros((len(points), 9))
+        # NOTE: hard coded in the indices of the upper triangular matrix in the flattened form
+        # in C ordering. Maybe there is a numpy function that does this. This might fail if the
+        # hessian is not in c-ordering
+        hess[:, [0, 1, 2, 4, 5, 8]] = output
+        hess = hess.reshape(len(points), 3, 3)
+        hess += np.transpose(hess, axes=(0, 2, 1))
+        for index in range(len(points)):
+            hess[index][np.diag_indices(3)] /= 2.
+        return hess
+
+    def compute_esp(self, dm, points, coordinates, charges):
+        """Return electrostatic potential evaluated on the a set of points.
+
+        Parameters
+        ----------
+        dm : ndarray
+           First order reduced density matrix of B basis sets given as a 2D array of (B, B) shape.
+        points : ndarray
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
+
+        """
+        return self._basis.compute_grid_esp_dm(dm, coordinates, charges, points)
+
+    def compute_ked(self, dm, points):
+        """Return positive definite kinetic energy density evaluated on the a set of points.
+
+        Parameters
+        ----------
+        dm : ndarray
+           First order reduced density matrix of B basis sets given as a 2D array of (B, B) shape.
+        points : ndarray
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
+
+        """
+        return self._basis.compute_grid_kinetic_dm(dm, points)
