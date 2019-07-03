@@ -49,23 +49,14 @@ class Molecule(object):
         """
         self._iodata = iodata
 
-        # if not (isinstance(coordinates, np.ndarray) and coordinates.ndim == 2):
-        #     raise TypeError("Argument coordinates should be a 2d-array.")
-        # if not (isinstance(numbers, np.ndarray) and numbers.ndim == 1):
-        #     raise TypeError("Argument numbers should be a 1d-array.")
-        # if coordinates.shape[0] != numbers.size:
-        #     raise TypeError("Arguments coordinates and numbers should represent the same number "
-        #                     "of atoms! {0} != {1}".format(coordinates.shape[0], numbers.size))
-        # if coordinates.shape[1] != 3:
-        #     raise TypeError("Argument coordinates should be a 2d-array with 3 columns.")
-
         self._coordinates = self._iodata.coordinates
         self._numbers = self._iodata.numbers
-        if hasattr(self._iodata, 'exp_alpha'):
+
+        if hasattr(self._iodata, "exp_alpha"):
             # assign alpha orbital expression
             self._exp_alpha = self._iodata.exp_alpha
             # assign beta orbital expression
-            if hasattr(self._iodata, 'exp_beta') and self._iodata.exp_beta is not None:
+            if hasattr(self._iodata, "exp_beta") and self._iodata.exp_beta is not None:
                 self._exp_beta = self._iodata.exp_beta
             else:
                 self._exp_beta = self._iodata.exp_alpha
@@ -73,7 +64,7 @@ class Molecule(object):
             self._exp_alpha = None
             self._exp_beta = None
             if wavefunction:
-                raise ValueError('There is no wave-function information!')
+                raise ValueError("There is no wave-function information!")
 
         # FIXME: following code is pretty hacky. it will be used for the orbital partitioning code
         # GOBasis object stores basis set to atom and angular momentum mapping
@@ -116,17 +107,17 @@ class Molecule(object):
         Parameters
         ----------
         fname : str
-            Path to molecule's files.
+            Path to molecule"s files.
 
         """
         # load molecule
-        logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+        logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
         try:
             iodata = IOData.from_file(str(fname))
         except IOError as _:
             try:
-                with path('chemtools.data.examples', str(fname)) as fname:
-                    logging.info('Loading {0}'.format(str(fname)))
+                with path("chemtools.data.examples", str(fname)) as fname:
+                    logging.info("Loading {0}".format(str(fname)))
                     iodata = IOData.from_file(str(fname))
             except IOError as error:
                 logging.info(error)
@@ -221,28 +212,26 @@ class Molecule(object):
         spin : str, optional
            The type of occupied spin orbitals. Options are "a" (for alpha), "b" (for beta), and
            "ab" (for alpha + beta).
-        index : sequence, optional
-           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
-           orbitals are each indexed from 1 to :attr:`nbasis`.
-           If ``None``, all orbitals of the given spin(s) are included.
+        index : sequence of int, optional
+           Sequence of integers representing the occupied spin orbitals which are indexed
+           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
 
         """
         # get density matrix corresponding to the specified spin
         dm = self._get_density_matrix(spin, index=index)
         return dm._array
 
-    def _get_density_matrix(self, spin, index=None):
+    def _get_density_matrix(self, spin="ab", index=None):
         """Return HORTON density matrix object corresponding to the specified spin orbitals.
 
         Parameters
         ----------
-        spin : str
-           The type of occupied spin orbitals. Options are "a" (for alpha), "b" (for beta), and
-           "ab" (for alpha + beta).
-        index : sequence, optional
-           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
-           orbitals are each indexed from 1 to :attr:`nbasis`.
-           If ``None``, all orbitals of the given spin(s) are included.
+        spin : str, optional
+           Type of occupied spin orbitals which can be either "a" (for alpha), "b" (for
+           beta), and "ab" (for alpha + beta).
+        index : sequence of int, optional
+           Sequence of integers representing the occupied spin orbitals which are indexed
+           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
 
         """
         # check orbital spin
@@ -277,22 +266,19 @@ class Molecule(object):
             dm._array = dm._array[index[:, np.newaxis], index[np.newaxis, :]]
         return dm
 
-    def compute_molecular_orbital(self, points, spin, index=None):
-        """
-        Return molecular orbitals evaluated on the given points for the spin orbitals.
+    def compute_molecular_orbital(self, points, spin="ab", index=None):
+        """Return molecular orbitals.
 
         Parameters
         ----------
         points : ndarray
-           The 2d-array containing the cartesian coordinates of points on which density is
-           evaluated. It has a shape (n, 3) where n is the number of points.
-        spin : str
-           The type of occupied spin orbitals. Options are "a" (for alpha), "b" (for beta), and
-           "ab" (for alpha + beta).
-        index : sequence, optional
-           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
-           orbitals are each indexed from 1 to :attr:`nbasis`.
-           If ``None``, all occupied spin orbitals are included.
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
+        spin : str, optional
+           Type of occupied spin orbitals which can be either "a" (for alpha), "b" (for
+           beta), and "ab" (for alpha + beta).
+        index : sequence of int, optional
+           Sequence of integers representing the occupied spin orbitals which are indexed
+           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
 
         """
         # check points
@@ -312,7 +298,7 @@ class Molecule(object):
             if index.ndim == 0:
                 index = np.array([index])
             if np.any(index < 0):
-                raise ValueError('Argument index={0} cannot be less than one!'.format(index + 1))
+                raise ValueError("Argument index={0} cannot be less than one!".format(index + 1))
 
         # allocate output array
         output = np.zeros((points.shape[0], index.shape[0]), float)
@@ -325,21 +311,18 @@ class Molecule(object):
         return output
 
     def compute_density(self, points, spin="ab", index=None):
-        r"""
-        Return electron density evaluated on the given points for the spin orbitals.
+        r"""Return electron density.
 
         Parameters
         ----------
         points : ndarray
-           The 2d-array containing the cartesian coordinates of points on which density is
-           evaluated. It has a shape (n, 3) where n is the number of points.
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
         spin : str, optional
-           The type of occupied spin orbitals. Options are "a" (for alpha), "b" (for beta), and
-           "ab" (for alpha + beta).
-        index : sequence, optional
-           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
-           orbitals are each indexed from 1 to :attr:`nbasis`.
-           If ``None``, all occupied spin orbitals are included.
+           Type of occupied spin orbitals which can be either "a" (for alpha), "b" (for
+           beta), and "ab" (for alpha + beta).
+        index : sequence of int, optional
+           Sequence of integers representing the occupied spin orbitals which are indexed
+           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
 
         """
         # check points
@@ -374,21 +357,18 @@ class Molecule(object):
         return output
 
     def compute_gradient(self, points, spin="ab", index=None):
-        r"""
-        Return gradient of electron density evaluated on the given points for the spin orbitals.
+        r"""Return gradient of the electron density.
 
         Parameters
         ----------
         points : ndarray
-           The 2d-array containing the cartesian coordinates of points on which density is
-           evaluated. It has a shape (n, 3) where n is the number of points.
-        spin : str
-           The type of occupied spin orbitals. Options are "a" (for alpha), "b" (for beta), and
-           "ab" (for alpha + beta).
-        index : sequence
-           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
-           orbitals are each indexed from 1 to :attr:`nbasis`.
-           If ``None``, all orbitals of the given spin(s) are included.
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
+        spin : str, optional
+           Type of occupied spin orbitals which can be either "a" (for alpha), "b" (for
+           beta), and "ab" (for alpha + beta).
+        index : sequence of int, optional
+           Sequence of integers representing the occupied spin orbitals which are indexed
+           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
 
         """
         # check points
@@ -407,21 +387,18 @@ class Molecule(object):
         return output
 
     def compute_hessian(self, points, spin="ab", index=None):
-        r"""
-        Return hessian of electron density evaluated on the given points for the spin orbitals.
+        r"""Return hessian of the electron density.
 
         Parameters
         ----------
         points : ndarray
-           The 2d-array containing the cartesian coordinates of points on which density is
-           evaluated. It has a shape (n, 3) where n is the number of points.
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
         spin : str, optional
-           The type of occupied spin orbitals. Options are "a" (for alpha), "b" (for beta), and
-           "ab" (for alpha + beta).
-        index : sequence, optional
-           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
-           orbitals are each indexed from 1 to :attr:`nbasis`.
-           If ``None``, all orbitals of the given spin(s) are included.
+           Type of occupied spin orbitals which can be either "a" (for alpha), "b" (for
+           beta), and "ab" (for alpha + beta).
+        index : sequence of int, optional
+           Sequence of integers representing the occupied spin orbitals which are indexed
+           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
 
         """
         # check points
@@ -451,8 +428,7 @@ class Molecule(object):
         return hess
 
     def compute_esp(self, points, spin="ab", index=None, charges=None):
-        r"""
-        Return the molecular electrostatic potential on the given points for the specified spin.
+        r"""Return molecular electrostatic potential.
 
         The molecular electrostatic potential at point :math:`\mathbf{r}` is caused by the
         electron density :math:`\rho` of the specified spin orbitals and set of point charges
@@ -467,15 +443,13 @@ class Molecule(object):
         Parameters
         ----------
         points : ndarray
-           The 2d-array containing the cartesian coordinates of points on which density is
-           evaluated. It has a shape (n, 3) where n is the number of points.
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
         spin : str, optional
-           The type of occupied spin orbitals. Options are "a" (for alpha), "b" (for beta), and
-           "ab" (for alpha + beta).
-        index : sequence, optional
-           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
-           orbitals are each indexed from 1 to :attr:`nbasis`.
-           If ``None``, all orbitals of the given spin(s) are included.
+           Type of occupied spin orbitals which can be either "a" (for alpha), "b" (for
+           beta), and "ab" (for alpha + beta).
+        index : sequence of int, optional
+           Sequence of integers representing the occupied spin orbitals which are indexed
+           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
         charges : np.ndarray, optional
            Array with shape (n,) representing the point charges at the position of the nuclei.
            When ``None``, the pseudo numbers are used.
@@ -503,27 +477,22 @@ class Molecule(object):
         return output
 
     def compute_ked(self, points, spin="ab", index=None):
-        r"""
-        Return positive definite kinetic energy density on the given points for the specified spin.
-
-        Positive definite kinetic energy density is defined as,
+        r"""Return positive definite or Lagrangian kinetic energy density.
 
         .. math::
-           \tau \left(\mathbf{r}\right) =
-           \sum_i^N n_i \frac{1}{2} \rvert \nabla \phi_i \left(\mathbf{r}\right) \lvert^2
+           \tau_\text{PD} \left(\mathbf{r}\right) =
+           \tfrac{1}{2} \sum_i^N n_i \rvert \nabla \phi_i \left(\mathbf{r}\right) \lvert^2
 
         Parameters
         ----------
         points : ndarray
-           The 2d-array containing the cartesian coordinates of points on which density is
-           evaluated. It has a shape (n, 3) where n is the number of points.
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
         spin : str, optional
-           The type of occupied spin orbitals. Options are "a" (for alpha), "b" (for beta), and
-           "ab" (for alpha + beta).
-        index : sequence, optional
-           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
-           orbitals are each indexed from 1 to :attr:`nbasis`.
-           If ``None``, all orbitals of the given spin(s) are included.
+           Type of occupied spin orbitals which can be either "a" (for alpha), "b" (for
+           beta), and "ab" (for alpha + beta).
+        index : sequence of int, optional
+           Sequence of integers representing the occupied spin orbitals which are indexed
+           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
 
         """
         # check points
@@ -539,21 +508,19 @@ class Molecule(object):
         self._iodata.obasis.compute_grid_kinetic_dm(dm, points, output=output)
         return output
 
-    def compute_megga(self, points, spin='ab', index=None):
+    def compute_megga(self, points, spin="ab", index=None):
         """Return electron density, gradient, laplacian & kinetic energy density.
 
         Parameters
         ----------
         points : ndarray
-           The 2d-array containing the cartesian coordinates of points on which density is
-           evaluated. It has a shape (n, 3) where n is the number of points.
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
         spin : str, optional
-           The type of occupied spin orbitals. Options are "a" (for alpha), "b" (for beta), and
-           "ab" (for alpha + beta).
-        index : sequence, optional
-           Sequence of integers representing the index of spin orbitals. Alpha and beta spin
-           orbitals are each indexed from 1 to :attr:`nbasis`.
-           If ``None``, all orbitals of the given spin(s) are included.
+           Type of occupied spin orbitals which can be either "a" (for alpha), "b" (for
+           beta), and "ab" (for alpha + beta).
+        index : sequence of int, optional
+           Sequence of integers representing the occupied spin orbitals which are indexed
+           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
 
         """
         # check points
