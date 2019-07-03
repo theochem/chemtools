@@ -489,33 +489,6 @@ class Molecule(object):
         dm = self._get_density_matrix(spin, index=index)
         return self._basis.compute_ked(dm, points)
 
-    def compute_megga(self, points, spin="ab", index=None):
-        """Return electron density, gradient, laplacian & kinetic energy density.
-
-        Parameters
-        ----------
-        points : ndarray
-           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
-        spin : str, optional
-           Type of occupied spin orbitals which can be either "a" (for alpha), "b" (for
-           beta), and "ab" (for alpha + beta).
-        index : sequence of int, optional
-           Sequence of integers representing the occupied spin orbitals which are indexed
-           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
-
-        """
-        # check points
-        if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
-            raise ValueError("Argument points should be a 2d-array with 3 columns.")
-        if not np.issubdtype(points.dtype, np.float64):
-            raise ValueError("Argument points should be a 2d-array of floats!")
-
-        # get density matrix corresponding to the specified spin
-        dm = self._get_density_matrix(spin, index=index)
-        # compute for the given set of orbitals
-        output = self._iodata.obasis.compute_grid_mgga_dm(dm, points)
-        return output[:, 0], output[:, 1:4], output[:, 4], output[:, 5]
-
 
 class GaussianBasis(object):
     """Gaussian Basis Set."""

@@ -67,7 +67,11 @@ class DensityLocalTool(DensGradLapKedTool):
             Sequence of integers representing the index of spin orbitals.
 
         """
-        return cls(*molecule.compute_megga(points, spin, index))
+        dens = molecule.compute_density(points, spin, index)
+        grad = molecule.compute_gradient(points, spin, index)
+        lap = molecule.compute_laplacian(points, spin, index)
+        ked = molecule.compute_ked(points, spin, index)
+        return cls(dens, grad, lap, ked)
 
     @classmethod
     def from_file(cls, fname, points, spin='ab', index=None):

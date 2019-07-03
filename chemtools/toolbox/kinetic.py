@@ -82,7 +82,11 @@ class KED(object):
         if points.ndim != 2 or points.shape[1] != 3:
             raise ValueError("Argument points should be a 2D-array with 3 columns.")
         # compute density, gradient, & kinetic energy density on grid
-        return cls(*molecule.compute_megga(points, spin=spin, index=index))
+        dens = molecule.compute_density(points, spin, index)
+        grad = molecule.compute_gradient(points, spin, index)
+        lap = molecule.compute_laplacian(points, spin, index)
+        ked = molecule.compute_ked(points, spin, index)
+        return cls(dens, grad, lap, ked)
 
     @classmethod
     def from_file(cls, fname, points, spin='ab', index=None):
