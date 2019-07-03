@@ -265,9 +265,8 @@ def check_molecule_against_gaussian_ch4(mol):
     assert_almost_equal(mol.compute_density(points, "b"), 0.5 * dens, decimal=5)
     assert_almost_equal(mol.compute_gradient(points, "ab"), grad, decimal=5)
     assert_almost_equal(mol.compute_esp(points, "ab"), esp, decimal=5)
-    hess = mol.compute_hessian(points, "ab")
-    assert_almost_equal(np.trace(hess, axis1=1, axis2=2), lap, decimal=5)
-    assert_almost_equal(hess[:, 0, 0], hess_xx, decimal=5)
+    assert_almost_equal(mol.compute_laplacian(points, "ab", None), lap, decimal=5)
+    assert_almost_equal(mol.compute_hessian(points, "ab", None)[:, 0, 0], hess_xx, decimal=5)
     # density computed by summing squared mo expressions
     assert_almost_equal(mol.compute_density(points, "ab", range(1, 6)), dens, decimal=5)
     assert_almost_equal(mol.compute_density(points, "a", range(1, 6)), 0.5 * dens, decimal=5)

@@ -427,6 +427,24 @@ class Molecule(object):
             hess[index][np.diag_indices(3)] /= 2.
         return hess
 
+    def compute_laplacian(self, points, spin="ab", index=None):
+        r"""Return Laplacian of the electron density.
+
+        Parameters
+        ----------
+        points : ndarray
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
+        spin : str, optional
+           Type of occupied spin orbitals which can be either "a" (for alpha), "b" (for
+           beta), and "ab" (for alpha + beta).
+        index : sequence of int, optional
+           Sequence of integers representing the occupied spin orbitals which are indexed
+           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
+
+        """
+        hess = self.compute_hessian(points, spin, index)
+        return np.trace(hess, axis1=1, axis2=2)
+
     def compute_esp(self, points, spin="ab", index=None, charges=None):
         r"""Return molecular electrostatic potential.
 
