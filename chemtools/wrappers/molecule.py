@@ -49,7 +49,7 @@ class Molecule(object):
         """
         self._iodata = iodata
         if hasattr(self._iodata, "obasis"):
-            self._basis = GaussianBasis(self._iodata.obasis)
+            self._ao = AtomicOrbitals(self._iodata.obasis)
 
         self._coordinates = self._iodata.coordinates
         self._numbers = self._iodata.numbers
@@ -150,7 +150,7 @@ class Molecule(object):
     @property
     def nbasis(self):
         """Number of basis functions."""
-        return self._basis.nbasis
+        return self._ao.nbasis
 
     @property
     def nelectrons(self):
@@ -305,7 +305,7 @@ class Molecule(object):
         # get orbital expression of specified spin
         spin_type = {"a": "alpha", "b": "beta"}
         exp = getattr(self, "_exp_" + spin_type[spin])
-        return self._basis.compute_orbitals(exp, points, index)
+        return self._ao.compute_orbitals(exp, points, index)
 
     def compute_density(self, points, spin="ab", index=None):
         r"""Return electron density.
@@ -336,7 +336,7 @@ class Molecule(object):
             # get density matrix corresponding to the specified spin
             dm = self._get_density_matrix(spin)
             # include all orbitals
-            output = self._basis.compute_density(dm, points)
+            output = self._ao.compute_density(dm, points)
         else:
             # include subset of molecular orbitals
             if spin == "ab":
@@ -375,7 +375,7 @@ class Molecule(object):
             raise ValueError("Argument points should be a 2d-array of floats!")
 
         dm = self._get_density_matrix(spin, index=index)
-        return self._basis.compute_gradient(dm, points)
+        return self._ao.compute_gradient(dm, points)
 
     def compute_hessian(self, points, spin="ab", index=None):
         r"""Return hessian of the electron density.
@@ -399,7 +399,7 @@ class Molecule(object):
             raise ValueError("Argument points should be a 2d-array of floats!")
 
         dm = self._get_density_matrix(spin, index=index)
-        return self._basis.compute_hessian(dm, points)
+        return self._ao.compute_hessian(dm, points)
 
     def compute_laplacian(self, points, spin="ab", index=None):
         r"""Return Laplacian of the electron density.
@@ -460,7 +460,7 @@ class Molecule(object):
         elif not isinstance(charges, np.ndarray) or charges.shape != self.numbers.shape:
             raise ValueError("Argument charges should be a 1d-array "
                              "with {0} shape.".format(self.numbers.shape))
-        return self._basis.compute_esp(dm, points, self.coordinates, charges)
+        return self._ao.compute_esp(dm, points, self.coordinates, charges)
 
     def compute_ked(self, points, spin="ab", index=None):
         r"""Return positive definite or Lagrangian kinetic energy density.
@@ -487,10 +487,10 @@ class Molecule(object):
         if not np.issubdtype(points.dtype, np.float64):
             raise ValueError("Argument points should be a 2d-array of floats!")
         dm = self._get_density_matrix(spin, index=index)
-        return self._basis.compute_ked(dm, points)
+        return self._ao.compute_ked(dm, points)
 
 
-class GaussianBasis(object):
+class AtomicOrbitals(object):
     """Gaussian Basis Set."""
 
     def __init__(self, basis):
