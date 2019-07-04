@@ -91,12 +91,6 @@ def test_orbital_based_from_molecule_ch4_uhf_ccpvdz():
         molecule = Molecule.from_file(fname)
     tool = DFTBasedTool(molecule, data["points"])
     check_orbital_based_properties(tool, data)
-    # test from_molecule initialization without exp_beta & check against Fortran code
-    del molecule._exp_beta
-    with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
-        molecule = Molecule.from_file(fname)
-    tool = DFTBasedTool(molecule, data["points"])
-    check_orbital_based_properties(tool, data)
 
 
 def test_orbital_based_from_file_ch4_rhf_ccpvdz():
@@ -171,12 +165,6 @@ def test_orbital_based_from_molecule_orbital_expression_ch4_uhf_ccpvdz():
     with path("chemtools.data", "data_fortran_ch4_uhf_ccpvdz.npz") as fname:
         data = np.load(str(fname))
     # test from_molecule initialization with exp_beta & check against Fortran code
-    with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
-        molecule = Molecule.from_file(fname)
-    tool = DFTBasedTool(molecule, data["points"])
-    check_orbital_expression(tool, data)
-    # test from_molecule initialization without exp_beta & check against Fortran code
-    del molecule._exp_beta
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
         molecule = Molecule.from_file(fname)
     tool = DFTBasedTool(molecule, data["points"])
