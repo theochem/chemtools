@@ -283,12 +283,7 @@ class Molecule(object):
            from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
 
         """
-        # check points
-        if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
-            raise ValueError("Argument points should be a 2d-array with 3 columns.")
-        if not np.issubdtype(points.dtype, np.float64):
-            raise ValueError("Argument points should be a 2d-array of floats!")
-
+        self._check_argument(points)
         # assign orbital index (HORTON index the orbitals from 0)
         if index is None:
             # include all occupied orbitals of specified spin
@@ -322,11 +317,7 @@ class Molecule(object):
            from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
 
         """
-        # check points
-        if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
-            raise ValueError("Argument points should be a 2d-array with 3 columns.")
-        if not np.issubdtype(points.dtype, np.float64):
-            raise ValueError("Argument points should be a 2d-array of floats!")
+        self._check_argument(points)
 
         # allocate output array
         output = np.zeros((points.shape[0],), float)
@@ -368,12 +359,7 @@ class Molecule(object):
            from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
 
         """
-        # check points
-        if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
-            raise ValueError("Argument points should be a 2d-array with 3 columns.")
-        if not np.issubdtype(points.dtype, np.float64):
-            raise ValueError("Argument points should be a 2d-array of floats!")
-
+        self._check_argument(points)
         dm = self._get_density_matrix(spin, index=index)
         return self._ao.compute_gradient(dm, points)
 
@@ -392,12 +378,7 @@ class Molecule(object):
            from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
 
         """
-        # check points
-        if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
-            raise ValueError("Argument points should be a 2d-array with 3 columns.")
-        if not np.issubdtype(points.dtype, np.float64):
-            raise ValueError("Argument points should be a 2d-array of floats!")
-
+        self._check_argument(points)
         dm = self._get_density_matrix(spin, index=index)
         return self._ao.compute_hessian(dm, points)
 
@@ -446,20 +427,14 @@ class Molecule(object):
            Array with shape (n,) representing the point charges at the position of the nuclei.
            When ``None``, the pseudo numbers are used.
         """
-        # check points
-        if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
-            raise ValueError("Argument points should be a 2d-array with 3 columns.")
-        if not np.issubdtype(points.dtype, np.float64):
-            raise ValueError("Argument points should be a 2d-array of floats!")
-
-        # get density matrix corresponding to the specified spin
-        dm = self._get_density_matrix(spin, index=index)
+        self._check_argument(points)
         # assign point charges
         if charges is None:
             charges = self.pseudo_numbers
         elif not isinstance(charges, np.ndarray) or charges.shape != self.numbers.shape:
             raise ValueError("Argument charges should be a 1d-array "
                              "with {0} shape.".format(self.numbers.shape))
+        dm = self._get_density_matrix(spin, index=index)
         return self._ao.compute_esp(dm, points, self.coordinates, charges)
 
     def compute_ked(self, points, spin="ab", index=None):
@@ -481,13 +456,24 @@ class Molecule(object):
            from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
 
         """
-        # check points
-        if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
-            raise ValueError("Argument points should be a 2d-array with 3 columns.")
-        if not np.issubdtype(points.dtype, np.float64):
-            raise ValueError("Argument points should be a 2d-array of floats!")
+        self._check_argument(points)
         dm = self._get_density_matrix(spin, index=index)
         return self._ao.compute_ked(dm, points)
+
+    @staticmethod
+    def _check_argument(points):
+        """Check given arguments.
+
+        Parameters
+        ----------
+        points : ndarray
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
+
+        """
+        if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
+            raise ValueError("Argument points should be a 2D-array with 3 columns.")
+        if not np.issubdtype(points.dtype, np.float64):
+            raise ValueError("Argument points should be a 2D-array of floats!")
 
 
 class AtomicOrbitals(object):
