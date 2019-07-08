@@ -80,3 +80,14 @@ A.H.G. Patel, X.D. Yang, E. Vohringer-Martinez, C. Cardenas, T. Verstraelen,
 and P. W. Ayers. An explicit approach to conceptual density functional theory
 descriptors of arbitrary order. Chem. Phys. Lett., 660:307–312, 2016. <a href='http://www.sciencedirect.com/science/article/pii/S0009261416305280'>
 doi:10.1016/j.cplett.2016.07.039</a>.
+
+Acknowledgements
+----------------
+This software was developed using funding from a variety of international
+sources including, but not limited to: Canarie, the Canada Research Chairs,
+Compute Canada, the European Union's Horizon 2020 Marie Sklodowska-Curie Actions
+(Individual Fellowship No 800130), the Foundation of Scientific
+Research--Flanders (FWO), McMaster University, the National Fund for Scientific
+and Technological Development of Chile (FONDECYT), the Natural Sciences and
+Engineering Research Council of Canada (NSERC), the Research Board of Ghent
+University (BOF), and Sharcnet.
