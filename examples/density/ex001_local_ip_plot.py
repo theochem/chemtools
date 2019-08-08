@@ -15,7 +15,7 @@ from chemtools import  UniformGrid, Molecule, print_vmd_script_isosurface, DFTBa
 fname = 'dichloropyridine26_q+0'
 
 mol = Molecule.from_file(fname + '.fchk')
-cub = UniformGrid.from_molecule(mol, spacing=1.0, spacing=1.0, extension=5.0)
+cub = UniformGrid.from_molecule(mol, spacing=1.0, extension=5.0)
 orb = DFTBasedTool.from_molecule(mol, cub.points)
 
 # 2. Generate cube files: fname_esp.cube & fname_rho.cube
