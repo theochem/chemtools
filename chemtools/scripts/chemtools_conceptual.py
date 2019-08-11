@@ -161,7 +161,7 @@ def main_conceptual_local(args):
     mol, cube = load_molecule_and_grid(args.fname, args.cube)
 
     # build model
-    model = LocalConceptualDFT.from_file(args.fname, args.model, cube.points)
+    model = LocalConceptualDFT.from_molecule(args.fname, args.model, cube.points)
     # check whether local property exists
     if not hasattr(model, args.prop):
         raise ValueError("The {0} local conceptual DFT class does not contain "
