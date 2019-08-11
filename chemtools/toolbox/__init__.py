@@ -20,11 +20,11 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-# pragma pylint: disable=wildcard-import
 """The Toolbox Module."""
 
 
-from chemtools.toolbox.conceptual import GlobalConceptualDFT, LocalConceptualDFT, CondensedConceptualDFT
+from chemtools.toolbox.conceptual import GlobalConceptualDFT, LocalConceptualDFT
+from chemtools.toolbox.conceptual import CondensedConceptualDFT
 from chemtools.toolbox.motbased import MOTBasedTool
 from chemtools.toolbox.kinetic import KED
 from chemtools.toolbox.dftbased import DFTBasedTool
