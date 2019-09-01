@@ -103,7 +103,7 @@ def main_mot(args):
 
     hia, hib = np.array(mol.homo_index) - 1
     lia, lib = np.array(mol.lumo_index) - 1
-    ea, eb = mol.orbital_energy
+    ea, eb = mol.energy
     print("")
     print("File: {0}".format(args.fname))
     # print("Charge      : % 5f" % np.sum(mol.numbers) - np.sum(ne))

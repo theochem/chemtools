@@ -149,7 +149,7 @@ class Molecule(object):
     @property
     def nelectrons(self):
         """Number of alpha and beta electrons."""
-        occ_a, occ_b = self._mo.orbital_occupation
+        occ_a, occ_b = self._mo.occupation
         return np.sum(occ_a), np.sum(occ_b)
 
     @property
@@ -463,17 +463,17 @@ class MolecularOrbitals(object):
         return self._exp_a.lumo_energy, self._exp_b.lumo_energy
 
     @property
-    def orbital_occupation(self):
+    def occupation(self):
         """Orbital occupation of alpha and beta electrons."""
         return self._exp_a.occupations, self._exp_b.occupations
 
     @property
-    def orbital_energy(self):
+    def energy(self):
         """Orbital energy of alpha and beta electrons."""
         return self._exp_a.energies, self._exp_b.energies
 
     @property
-    def orbital_coefficient(self):
+    def coefficient(self):
         """Orbital coefficient of alpha and beta electrons.
 
         The alpha and beta orbital coefficients are each storied in a 2d-array in which

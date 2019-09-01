@@ -111,17 +111,17 @@ class MOTBasedTool(object):
         return self._molecule.lumo_energy
 
     @property
-    @doc_inherit(MolecularOrbitals, 'orbital_occupation')
+    @doc_inherit(MolecularOrbitals, 'occupation')
     def orbital_occupation(self):
         return self._molecule.orbital_occupation
 
     @property
-    @doc_inherit(MolecularOrbitals, 'orbital_energy')
+    @doc_inherit(MolecularOrbitals, 'energy')
     def orbital_energy(self):
         return self._molecule.orbital_energy
 
     @property
-    @doc_inherit(MolecularOrbitals, 'orbital_coefficient')
+    @doc_inherit(MolecularOrbitals, 'coefficient')
     def orbital_coefficient(self):
         return self._molecule.orbital_coefficient
 
@@ -157,8 +157,8 @@ class MOTBasedTool(object):
             Number of electrons in each atom according the population analysis.
 
         """
-        coeff_ab_mo_alpha, coeff_ab_mo_beta = self._molecule.mo.orbital_coefficient
-        occupations_alpha, occupations_beta = self._molecule.mo.orbital_occupation
+        coeff_ab_mo_alpha, coeff_ab_mo_beta = self._molecule.mo.coefficient
+        occupations_alpha, occupations_beta = self._molecule.mo.occupation
         olp_ab_ab = self.orbital_overlap
         atomic_charges = self._molecule.numbers
         num_atoms = len(self._molecule.numbers)

@@ -117,8 +117,8 @@ class DFTBasedTool(object):
            \phi_i(\mathbf{r}) \phi_i^*(\mathbf{r})}{\rho(\mathbf{r})}
         """
         # compute occupation & energy of alpha and beta orbitals
-        occ_a, occ_b = self._molecule.mo.orbital_occupation
-        energy_a, energy_b = self._molecule.mo.orbital_energy
+        occ_a, occ_b = self._molecule.mo.occupation
+        energy_a, energy_b = self._molecule.mo.energy
         # compute density of each alpha and beta orbital on grid points
         index = np.arange(1, self._molecule.nbasis + 1)
         ip_a = self._compute_orbital_expression(index, spin='a') ** 2
@@ -169,7 +169,7 @@ class DFTBasedTool(object):
         bt = 1.0 / (self._kb * temperature)
         # get number and energy of alpha and beta electrons
         n_a, n_b = self._molecule.nelectrons
-        energy_a, energy_b = self._molecule.mo.orbital_energy
+        energy_a, energy_b = self._molecule.mo.energy
         # find spin chemical potential of alpha electrons
         spin_pot_a = bisect(lambda x: np.sum(1. / (1. + np.exp(bt * (energy_a - x)))) - n_a,
                             energy_a[0], energy_a[-1], maxiter=maxiter, xtol=tolerance)
@@ -210,7 +210,7 @@ class DFTBasedTool(object):
         bt = 1.0 / (self._kb * temperature)
         # compute spin chemical potential & energies of alpha and beta orbitals
         spin_mu_a, spin_mu_b = self.compute_spin_chemical_potential(temperature)
-        energy_a, energy_b = self._molecule.mo.orbital_energy
+        energy_a, energy_b = self._molecule.mo.energy
         # compute density of each alpha and beta orbital on grid points
         index = np.arange(1, self._molecule.nbasis + 1)
         dens_a = self._compute_orbital_expression(index, spin='a') ** 2
@@ -255,7 +255,7 @@ class DFTBasedTool(object):
         bt = 1.0 / (self._kb * temperature)
         # compute spin chemical potential & energies of alpha and beta orbitals
         spin_mu_a, spin_mu_b = self.compute_spin_chemical_potential(temperature)
-        energy_a, energy_b = self._molecule.mo.orbital_energy
+        energy_a, energy_b = self._molecule.mo.energy
         # compute density of each alpha and beta orbital on grid points
         index = np.arange(1, self._molecule.nbasis + 1)
         dens_a = self._compute_orbital_expression(index, spin='a') ** 2
