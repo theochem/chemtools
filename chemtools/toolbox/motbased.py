@@ -28,7 +28,7 @@ from chemtools.utils.utils import doc_inherit
 from chemtools.utils.cube import UniformGrid
 from chemtools.orbstools.mulliken import mulliken_populations, lowdin_populations
 from chemtools.outputs.vmd import print_vmd_script_isosurface
-from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers.molecule import Molecule, MolecularOrbitals
 
 
 class MOTBasedTool(object):
@@ -67,7 +67,7 @@ class MOTBasedTool(object):
             Path to molecule's wave-function file.
 
         """
-        molecule = Molecule.from_file(fname, wavefunction=True)
+        molecule = Molecule.from_file(fname)
         return cls.from_molecule(molecule)
 
     @property
@@ -91,37 +91,37 @@ class MOTBasedTool(object):
         return self._molecule.nelectrons
 
     @property
-    @doc_inherit(Molecule, 'homo_index')
+    @doc_inherit(MolecularOrbitals, 'homo_index')
     def homo_index(self):
         return self._molecule.homo_index
 
     @property
-    @doc_inherit(Molecule, 'lumo_index')
+    @doc_inherit(MolecularOrbitals, 'lumo_index')
     def lumo_index(self):
         return self._molecule.lumo_index
 
     @property
-    @doc_inherit(Molecule, 'homo_energy')
+    @doc_inherit(MolecularOrbitals, 'homo_energy')
     def homo_energy(self):
         return self._molecule.homo_energy
 
     @property
-    @doc_inherit(Molecule, 'lumo_energy')
+    @doc_inherit(MolecularOrbitals, 'lumo_energy')
     def lumo_energy(self):
         return self._molecule.lumo_energy
 
     @property
-    @doc_inherit(Molecule, 'orbital_occupation')
+    @doc_inherit(MolecularOrbitals, 'orbital_occupation')
     def orbital_occupation(self):
         return self._molecule.orbital_occupation
 
     @property
-    @doc_inherit(Molecule, 'orbital_energy')
+    @doc_inherit(MolecularOrbitals, 'orbital_energy')
     def orbital_energy(self):
         return self._molecule.orbital_energy
 
     @property
-    @doc_inherit(Molecule, 'orbital_coefficient')
+    @doc_inherit(MolecularOrbitals, 'orbital_coefficient')
     def orbital_coefficient(self):
         return self._molecule.orbital_coefficient
 
@@ -157,8 +157,8 @@ class MOTBasedTool(object):
             Number of electrons in each atom according the population analysis.
 
         """
-        coeff_ab_mo_alpha, coeff_ab_mo_beta = self.orbital_coefficient
-        occupations_alpha, occupations_beta = self.orbital_occupation
+        coeff_ab_mo_alpha, coeff_ab_mo_beta = self._molecule.mo.orbital_coefficient
+        occupations_alpha, occupations_beta = self._molecule.mo.orbital_occupation
         olp_ab_ab = self.orbital_overlap
         atomic_charges = self._molecule.numbers
         num_atoms = len(self._molecule.numbers)

@@ -99,10 +99,10 @@ def check_molecule_basics(mol):
     # assert_equal(mol.nbasis, 34)
     assert_equal(mol.numbers, [6, 1, 1, 1, 1])
     assert_equal(mol.pseudo_numbers, [6, 1, 1, 1, 1])
-    assert_equal(mol.homo_index, (5, 5))
-    assert_equal(mol.lumo_index, (6, 6))
-    assert_equal(mol.orbital_occupation[0], np.array([1] * 5 + [0] * 29))
-    assert_equal(mol.orbital_occupation[1], np.array([1] * 5 + [0] * 29))
+    assert_equal(mol.mo.homo_index, (5, 5))
+    assert_equal(mol.mo.lumo_index, (6, 6))
+    assert_equal(mol.mo.orbital_occupation[0], np.array([1] * 5 + [0] * 29))
+    assert_equal(mol.mo.orbital_occupation[1], np.array([1] * 5 + [0] * 29))
     assert_almost_equal(mol.energy, -4.019868797400735E+01, decimal=8)
     # check coordinates
     coord = np.array([[-3.77945227E-05,  3.77945227E-05, -1.88972613E-05],
@@ -146,20 +146,20 @@ def test_molecule_orbitals_fchk_uhf_ch4():
                             1.89571385E+00,  2.21323213E+00,  2.21324619E+00,  2.21328532E+00,
                             2.54691042E+00,  2.54694190E+00,  2.75532231E+00,  2.79906776E+00,
                             2.79907762E+00,  2.79908651E+00])
-    assert_almost_equal(mol.orbital_energy[0], orb_energy, decimal=6)
-    assert_almost_equal(mol.orbital_energy[1], orb_energy, decimal=6)
-    assert_almost_equal(mol.homo_energy[0], orb_energy[4], decimal=6)
-    assert_almost_equal(mol.homo_energy[1], orb_energy[4], decimal=6)
-    assert_almost_equal(mol.lumo_energy[0], orb_energy[5], decimal=6)
-    assert_almost_equal(mol.lumo_energy[1], orb_energy[5], decimal=6)
+    assert_almost_equal(mol.mo.orbital_energy[0], orb_energy, decimal=6)
+    assert_almost_equal(mol.mo.orbital_energy[1], orb_energy, decimal=6)
+    assert_almost_equal(mol.mo.homo_energy[0], orb_energy[4], decimal=6)
+    assert_almost_equal(mol.mo.homo_energy[1], orb_energy[4], decimal=6)
+    assert_almost_equal(mol.mo.lumo_energy[0], orb_energy[5], decimal=6)
+    assert_almost_equal(mol.mo.lumo_energy[1], orb_energy[5], decimal=6)
     # check orbital coefficients
     orb_coeff = np.array([9.97287609E-01, 1.86004593E-02, -8.24772487E-03])
-    assert_almost_equal(mol.orbital_coefficient[1][:3, 0], orb_coeff, decimal=6)
-    assert_almost_equal(mol.orbital_coefficient[0][:3, 0], orb_coeff, decimal=6)
-    assert_almost_equal(mol.orbital_coefficient[1][0, 1], -0.188285003, decimal=6)
-    assert_almost_equal(mol.orbital_coefficient[0][0, 1], -0.188285003, decimal=6)
-    assert_almost_equal(mol.orbital_coefficient[1][-1, -1], 1.02960200, decimal=6)
-    assert_almost_equal(mol.orbital_coefficient[0][-1, -1], 1.02960200, decimal=6)
+    assert_almost_equal(mol.mo.orbital_coefficient[1][:3, 0], orb_coeff, decimal=6)
+    assert_almost_equal(mol.mo.orbital_coefficient[0][:3, 0], orb_coeff, decimal=6)
+    assert_almost_equal(mol.mo.orbital_coefficient[1][0, 1], -0.188285003, decimal=6)
+    assert_almost_equal(mol.mo.orbital_coefficient[0][0, 1], -0.188285003, decimal=6)
+    assert_almost_equal(mol.mo.orbital_coefficient[1][-1, -1], 1.02960200, decimal=6)
+    assert_almost_equal(mol.mo.orbital_coefficient[0][-1, -1], 1.02960200, decimal=6)
     # check overlap matrix
     overlap = mol.compute_orbital_overlap()
     assert_equal(overlap.shape, (34, 34))
@@ -341,10 +341,10 @@ def test_molecule_basic_fchk_uhf_o2():
     assert_equal(mol.nbasis, 44)
     assert_equal(mol.numbers, [8, 8])
     assert_equal(mol.pseudo_numbers, [8, 8])
-    assert_equal(mol.homo_index, (9, 7))
-    assert_equal(mol.lumo_index, (10, 8))
-    assert_equal(mol.orbital_occupation[0], np.array([1] * 9 + [0] * 35))
-    assert_equal(mol.orbital_occupation[1], np.array([1] * 7 + [0] * 37))
+    assert_equal(mol.mo.homo_index, (9, 7))
+    assert_equal(mol.mo.lumo_index, (10, 8))
+    assert_equal(mol.mo.orbital_occupation[0], np.array([1] * 9 + [0] * 35))
+    assert_equal(mol.mo.orbital_occupation[1], np.array([1] * 7 + [0] * 37))
     assert_almost_equal(mol.energy, -1.496641407696776E+02, decimal=8)
     # check coordinates
     coord = np.array([[0.0, 0.0, 1.09452498], [0.0, 0.0, -1.09452498]])
@@ -374,15 +374,15 @@ def test_molecule_basic_fchk_uhf_o2():
                               5.33007026E+00,  5.33007026E+00,  5.45827702E+00,  5.61601037E+00,
                               5.61601037E+00,  6.81582045E+00,  5.13257489E+01,  5.15352582E+01])
     # check orbital energy
-    assert_almost_equal(mol.orbital_energy[0], orb_energy_a, decimal=6)
-    assert_almost_equal(mol.orbital_energy[1], orb_energy_b, decimal=6)
-    assert_almost_equal(mol.homo_energy[0], orb_energy_a[8], decimal=6)
-    assert_almost_equal(mol.homo_energy[1], orb_energy_b[6], decimal=6)
-    assert_almost_equal(mol.lumo_energy[0], orb_energy_a[9], decimal=6)
-    assert_almost_equal(mol.lumo_energy[1], orb_energy_b[7], decimal=6)
+    assert_almost_equal(mol.mo.orbital_energy[0], orb_energy_a, decimal=6)
+    assert_almost_equal(mol.mo.orbital_energy[1], orb_energy_b, decimal=6)
+    assert_almost_equal(mol.mo.homo_energy[0], orb_energy_a[8], decimal=6)
+    assert_almost_equal(mol.mo.homo_energy[1], orb_energy_b[6], decimal=6)
+    assert_almost_equal(mol.mo.lumo_energy[0], orb_energy_a[9], decimal=6)
+    assert_almost_equal(mol.mo.lumo_energy[1], orb_energy_b[7], decimal=6)
     assert_almost_equal(mol.mulliken_charges, 0.0, decimal=6)
     # check orbital coefficients
-    assert_almost_equal(mol.orbital_coefficient[0][:3, 0],
+    assert_almost_equal(mol.mo.orbital_coefficient[0][:3, 0],
                         np.array([0.389497609, 0.333421243, 0.]), decimal=6)
 
 

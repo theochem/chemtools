@@ -38,7 +38,7 @@ __all__ = ["Molecule"]
 class Molecule(object):
     """Molecule class from HORTON package."""
 
-    def __init__(self, iodata, wavefunction=False):
+    def __init__(self, iodata):
         """
         Initialize class.
 
@@ -55,18 +55,12 @@ class Molecule(object):
         self._numbers = self._iodata.numbers
 
         if hasattr(self._iodata, "exp_alpha"):
-            # assign alpha orbital expression
-            self._exp_alpha = self._iodata.exp_alpha
-            # assign beta orbital expression
             if hasattr(self._iodata, "exp_beta") and self._iodata.exp_beta is not None:
-                self._exp_beta = self._iodata.exp_beta
+                self._mo = MolecularOrbitals(self._iodata.exp_alpha, self._iodata.exp_beta)
             else:
-                self._exp_beta = self._iodata.exp_alpha
+                self._mo = MolecularOrbitals(self._iodata.exp_alpha, self._iodata.exp_alpha)
         else:
-            self._exp_alpha = None
-            self._exp_beta = None
-            if wavefunction:
-                raise ValueError("There is no wave-function information!")
+            self._mo = None
 
         # FIXME: following code is pretty hacky. it will be used for the orbital partitioning code
         # GOBasis object stores basis set to atom and angular momentum mapping
@@ -103,7 +97,7 @@ class Molecule(object):
             pass
 
     @classmethod
-    def from_file(cls, fname, wavefunction=False):
+    def from_file(cls, fname):
         """Initialize class given a file.
 
         Parameters
@@ -123,7 +117,7 @@ class Molecule(object):
                     iodata = IOData.from_file(str(fname))
             except IOError as error:
                 logging.info(error)
-        return cls(iodata, wavefunction)
+        return cls(iodata)
 
     def __getattr__(self, attr):
         """Return attribute.
@@ -155,48 +149,13 @@ class Molecule(object):
     @property
     def nelectrons(self):
         """Number of alpha and beta electrons."""
-        return np.sum(self._exp_alpha.occupations), np.sum(self._exp_beta.occupations)
+        occ_a, occ_b = self._mo.orbital_occupation
+        return np.sum(occ_a), np.sum(occ_b)
 
     @property
-    def homo_index(self):
-        """Index of alpha and beta HOMO orbital."""
-        # HORTON indexes the orbitals from 0, so 1 is added to get the intuitive index
-        return self._exp_alpha.get_homo_index() + 1, self._exp_beta.get_homo_index() + 1
-
-    @property
-    def lumo_index(self):
-        """Index of alpha and beta LUMO orbital."""
-        # HORTON indexes the orbitals from 0, so 1 is added to get the intuitive index
-        return self._exp_alpha.get_lumo_index() + 1, self._exp_beta.get_lumo_index() + 1
-
-    @property
-    def homo_energy(self):
-        """Energy of alpha and beta HOMO orbital."""
-        return self._exp_alpha.homo_energy, self._exp_beta.homo_energy
-
-    @property
-    def lumo_energy(self):
-        """Energy of alpha and beta LUMO orbital."""
-        return self._exp_alpha.lumo_energy, self._exp_beta.lumo_energy
-
-    @property
-    def orbital_occupation(self):
-        """Orbital occupation of alpha and beta electrons."""
-        return self._exp_alpha.occupations, self._exp_beta.occupations
-
-    @property
-    def orbital_energy(self):
-        """Orbital energy of alpha and beta electrons."""
-        return self._exp_alpha.energies, self._exp_beta.energies
-
-    @property
-    def orbital_coefficient(self):
-        """Orbital coefficient of alpha and beta electrons.
-
-        The alpha and beta orbital coefficients are each storied in a 2d-array in which
-        the columns represent the basis coefficients of each molecular orbital.
-        """
-        return self._exp_alpha.coeffs, self._exp_beta.coeffs
+    def mo(self):
+        """Molecular orbital instance."""
+        return self._mo
 
     def compute_orbital_overlap(self):
         """Return the overlap matrix of molecular orbitals."""
@@ -245,8 +204,7 @@ class Molecule(object):
             dm = self._iodata.get_dm_full()
         else:
             # get orbital expression of specified spin
-            spin_type = {"a": "alpha", "b": "beta"}
-            exp = getattr(self, "_exp_" + spin_type[spin])
+            exp = getattr(self._mo, "_exp_" + spin)
             # get density matrix of specified spin
             dm = exp.to_dm()
 
@@ -288,7 +246,7 @@ class Molecule(object):
         if index is None:
             # include all occupied orbitals of specified spin
             spin_index = {"a": 0, "b": 1}
-            index = np.arange(self.homo_index[spin_index[spin]])
+            index = np.arange(self.mo.homo_index[spin_index[spin]])
         else:
             # include specified set of orbitals
             index = np.copy(np.asarray(index)) - 1
@@ -298,8 +256,7 @@ class Molecule(object):
                 raise ValueError("Argument index={0} cannot be less than one!".format(index + 1))
 
         # get orbital expression of specified spin
-        spin_type = {"a": "alpha", "b": "beta"}
-        exp = getattr(self, "_exp_" + spin_type[spin])
+        exp = getattr(self._mo, "_exp_" + spin)
         return self._ao.compute_orbitals(exp, points, index)
 
     def compute_density(self, points, spin="ab", index=None):
@@ -474,6 +431,55 @@ class Molecule(object):
             raise ValueError("Argument points should be a 2D-array with 3 columns.")
         if not np.issubdtype(points.dtype, np.float64):
             raise ValueError("Argument points should be a 2D-array of floats!")
+
+
+class MolecularOrbitals(object):
+    """Molecular orbital class."""
+
+    def __init__(self, exp_a, exp_b):
+        self._exp_a = exp_a
+        self._exp_b = exp_b
+
+    @property
+    def homo_index(self):
+        """Index of alpha and beta HOMO orbital."""
+        # HORTON indexes the orbitals from 0, so 1 is added to get the intuitive index
+        return self._exp_a.get_homo_index() + 1, self._exp_b.get_homo_index() + 1
+
+    @property
+    def lumo_index(self):
+        """Index of alpha and beta LUMO orbital."""
+        # HORTON indexes the orbitals from 0, so 1 is added to get the intuitive index
+        return self._exp_a.get_lumo_index() + 1, self._exp_b.get_lumo_index() + 1
+
+    @property
+    def homo_energy(self):
+        """Energy of alpha and beta HOMO orbital."""
+        return self._exp_a.homo_energy, self._exp_b.homo_energy
+
+    @property
+    def lumo_energy(self):
+        """Energy of alpha and beta LUMO orbital."""
+        return self._exp_a.lumo_energy, self._exp_b.lumo_energy
+
+    @property
+    def orbital_occupation(self):
+        """Orbital occupation of alpha and beta electrons."""
+        return self._exp_a.occupations, self._exp_b.occupations
+
+    @property
+    def orbital_energy(self):
+        """Orbital energy of alpha and beta electrons."""
+        return self._exp_a.energies, self._exp_b.energies
+
+    @property
+    def orbital_coefficient(self):
+        """Orbital coefficient of alpha and beta electrons.
+
+        The alpha and beta orbital coefficients are each storied in a 2d-array in which
+        the columns represent the basis coefficients of each molecular orbital.
+        """
+        return self._exp_a.coeffs, self._exp_b.coeffs
 
 
 class AtomicOrbitals(object):

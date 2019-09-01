@@ -63,15 +63,15 @@ def get_homo_lumo_data(molecule):
         Instance of Molecule class.
     """
     # get homo & lumo energy and spin
-    homo_energy = molecule.homo_energy[0]
+    homo_energy = molecule.mo.homo_energy[0]
     homo_spin = "a"
-    if molecule.homo_energy[1] > homo_energy:
-        homo_energy = molecule.homo_energy[1]
+    if molecule.mo.homo_energy[1] > homo_energy:
+        homo_energy = molecule.mo.homo_energy[1]
         homo_spin = "b"
-    lumo_energy = molecule.lumo_energy[0]
+    lumo_energy = molecule.mo.lumo_energy[0]
     lumo_spin = "a"
-    if molecule.lumo_energy[1] < lumo_energy:
-        lumo_energy = molecule.lumo_energy[1]
+    if molecule.mo.lumo_energy[1] < lumo_energy:
+        lumo_energy = molecule.mo.lumo_energy[1]
         lumo_spin = "b"
     return homo_energy, lumo_energy, homo_spin, lumo_spin
 
@@ -224,9 +224,9 @@ def get_dict_density(molecule, points):
         # compute homo & lumo density
         spin_to_index = {"a": 0, "b": 1}
         homo_dens = molecule.compute_density(points, homo_s,
-                                             molecule.homo_index[spin_to_index[homo_s]])
+                                             molecule.mo.homo_index[spin_to_index[homo_s]])
         lumo_dens = molecule.compute_density(points, lumo_s,
-                                             molecule.lumo_index[spin_to_index[lumo_s]])
+                                             molecule.mo.lumo_index[spin_to_index[lumo_s]])
         # store number of electron and density in a dictionary
         nelec = sum(molecule.nelectrons)
         dens = molecule.compute_density(points, "ab", None)
