@@ -444,23 +444,25 @@ class MolecularOrbitals(object):
     def homo_index(self):
         """Index of alpha and beta HOMO orbital."""
         # HORTON indexes the orbitals from 0, so 1 is added to get the intuitive index
-        return self._exp_a.get_homo_index() + 1, self._exp_b.get_homo_index() + 1
+        index_a = np.argwhere(self.occupation[0] == 0.)[0, 0]
+        index_b = np.argwhere(self.occupation[1] == 0.)[0, 0]
+        return index_a, index_b
 
     @property
     def lumo_index(self):
         """Index of alpha and beta LUMO orbital."""
         # HORTON indexes the orbitals from 0, so 1 is added to get the intuitive index
-        return self._exp_a.get_lumo_index() + 1, self._exp_b.get_lumo_index() + 1
+        return self.homo_index[0] + 1, self.homo_index[1] + 1
 
     @property
     def homo_energy(self):
         """Energy of alpha and beta HOMO orbital."""
-        return self._exp_a.homo_energy, self._exp_b.homo_energy
+        return self.energy[0][self.homo_index[0] - 1], self.energy[1][self.homo_index[1] - 1]
 
     @property
     def lumo_energy(self):
         """Energy of alpha and beta LUMO orbital."""
-        return self._exp_a.lumo_energy, self._exp_b.lumo_energy
+        return self.energy[0][self.lumo_index[0] - 1], self.energy[1][self.lumo_index[1] - 1]
 
     @property
     def occupation(self):
