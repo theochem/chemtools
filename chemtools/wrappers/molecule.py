@@ -375,8 +375,7 @@ class Molecule(object):
         dm = self.mo._get_dm(spin, index=index)
         return self._ao.compute_ked(dm, points)
 
-    @staticmethod
-    def _check_argument(points):
+    def _check_argument(self, points):
         """Check given arguments.
 
         Parameters
@@ -389,6 +388,10 @@ class Molecule(object):
             raise ValueError("Argument points should be a 2D-array with 3 columns.")
         if not np.issubdtype(points.dtype, np.float64):
             raise ValueError("Argument points should be a 2D-array of floats!")
+        if self._ao is None:
+            raise AttributeError("Atomic Orbitals information is needed!")
+        if self._mo is None:
+            raise AttributeError("Molecular Orbitals information is needed!")
 
 
 class MolecularOrbitals(object):
