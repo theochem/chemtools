@@ -56,9 +56,13 @@ class Molecule(object):
 
         if hasattr(self._iodata, "exp_alpha"):
             if hasattr(self._iodata, "exp_beta") and self._iodata.exp_beta is not None:
-                self._mo = MolecularOrbitals(self._iodata.exp_alpha, self._iodata.exp_beta)
+                exp_a, exp_b = self._iodata.exp_alpha, self._iodata.exp_beta
             else:
-                self._mo = MolecularOrbitals(self._iodata.exp_alpha, self._iodata.exp_alpha)
+                exp_a, exp_b = self._iodata.exp_alpha, self._iodata.exp_alpha
+            occs_a, occs_b = exp_a.occupations, exp_b.occupations
+            energy_a, energy_b = exp_a.energies, exp_b.energies
+            coeffs_a, coeffs_b = exp_a.coeffs, exp_b.coeffs
+            self._mo = MolecularOrbitals(occs_a, occs_b, energy_a, energy_b, coeffs_a, coeffs_b)
         else:
             self._mo = None
 
@@ -212,7 +216,10 @@ class Molecule(object):
                 raise ValueError("Argument index={0} cannot be less than one!".format(index + 1))
 
         # get orbital expression of specified spin
-        exp = getattr(self._mo, "_exp_" + spin)
+        if spin == 'b' and not hasattr(self._iodata, "exp_beta"):
+            exp = self._iodata.exp_alpha
+        else:
+            exp = getattr(self._iodata, "exp_" + {'a': 'alpha', 'b': 'beta'}[spin])
         return self._ao.compute_orbitals(exp, points, index)
 
     def compute_density(self, points, spin="ab", index=None):
@@ -392,16 +399,17 @@ class Molecule(object):
 class MolecularOrbitals(object):
     """Molecular orbital class."""
 
-    def __init__(self, exp_a, exp_b):
-        self._exp_a = exp_a
-        self._exp_b = exp_b
+    def __init__(self, occs_a, occs_b, energy_a, energy_b, coeffs_a, coeffs_b):
+        self._occs_a, self._occs_b = occs_a, occs_b
+        self._energy_a, self._energy_b = energy_a, energy_b
+        self._coeffs_a, self._coeffs_b = coeffs_a, coeffs_b
 
     @property
     def homo_index(self):
         """Index of alpha and beta HOMO orbital."""
         # HORTON indexes the orbitals from 0, so 1 is added to get the intuitive index
-        index_a = np.argwhere(self.occupation[0] == 0.)[0, 0]
-        index_b = np.argwhere(self.occupation[1] == 0.)[0, 0]
+        index_a = np.argwhere(self._occs_a == 0.)[0, 0]
+        index_b = np.argwhere(self._occs_b == 0.)[0, 0]
         return index_a, index_b
 
     @property
@@ -413,22 +421,22 @@ class MolecularOrbitals(object):
     @property
     def homo_energy(self):
         """Energy of alpha and beta HOMO orbital."""
-        return self.energy[0][self.homo_index[0] - 1], self.energy[1][self.homo_index[1] - 1]
+        return self._energy_a[self.homo_index[0] - 1], self._energy_b[self.homo_index[1] - 1]
 
     @property
     def lumo_energy(self):
         """Energy of alpha and beta LUMO orbital."""
-        return self.energy[0][self.lumo_index[0] - 1], self.energy[1][self.lumo_index[1] - 1]
+        return self._energy_a[self.lumo_index[0] - 1], self._energy_b[self.lumo_index[1] - 1]
 
     @property
     def occupation(self):
         """Orbital occupation of alpha and beta electrons."""
-        return self._exp_a.occupations, self._exp_b.occupations
+        return self._occs_a, self._occs_b
 
     @property
     def energy(self):
         """Orbital energy of alpha and beta electrons."""
-        return self._exp_a.energies, self._exp_b.energies
+        return self._energy_a, self._energy_b
 
     @property
     def coefficient(self):
@@ -437,7 +445,7 @@ class MolecularOrbitals(object):
         The alpha and beta orbital coefficients are each storied in a 2d-array in which
         the columns represent the basis coefficients of each molecular orbital.
         """
-        return self._exp_a.coeffs, self._exp_b.coeffs
+        return self._coeffs_a, self._coeffs_b
 
     def _get_dm(self, spin="ab", index=None):
         """Return HORTON density matrix object corresponding to the specified spin orbitals.
@@ -460,12 +468,11 @@ class MolecularOrbitals(object):
         if spin == "ab":
             return DM(self._get_dm("a", index)._array + self._get_dm("b", index)._array)
         elif spin == "a":
-            coeffs, occs = self.coefficient[0], self.occupation[0]
+            arr = np.dot(self._coeffs_a * self._occs_a, self._coeffs_a.T)
         elif spin == "b":
-            coeffs, occs = self.coefficient[1], self.occupation[1]
+            arr = np.dot(self._coeffs_b * self._occs_b, self._coeffs_b.T)
         else:
             raise ValueError("Argument spin={0} is not recognized!".format(spin))
-        arr = np.dot(coeffs * occs, coeffs.T)
 
         if index is not None:
             # convert to numpy array
