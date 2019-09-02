@@ -49,20 +49,15 @@ class Molecule(object):
         """
         self._iodata = iodata
         if hasattr(self._iodata, "obasis"):
-            self._ao = AtomicOrbitals(self._iodata.obasis)
+            self._ao = AtomicOrbitals.from_molecule(self)
+        else:
+            self._ao = None
 
         self._coordinates = self._iodata.coordinates
         self._numbers = self._iodata.numbers
 
         if hasattr(self._iodata, "exp_alpha"):
-            if hasattr(self._iodata, "exp_beta") and self._iodata.exp_beta is not None:
-                exp_a, exp_b = self._iodata.exp_alpha, self._iodata.exp_beta
-            else:
-                exp_a, exp_b = self._iodata.exp_alpha, self._iodata.exp_alpha
-            occs_a, occs_b = exp_a.occupations, exp_b.occupations
-            energy_a, energy_b = exp_a.energies, exp_b.energies
-            coeffs_a, coeffs_b = exp_a.coeffs, exp_b.coeffs
-            self._mo = MolecularOrbitals(occs_a, occs_b, energy_a, energy_b, coeffs_a, coeffs_b)
+            self._mo = MolecularOrbitals.from_molecule(self)
         else:
             self._mo = None
 
@@ -403,6 +398,37 @@ class MolecularOrbitals(object):
         self._occs_a, self._occs_b = occs_a, occs_b
         self._energy_a, self._energy_b = energy_a, energy_b
         self._coeffs_a, self._coeffs_b = coeffs_a, coeffs_b
+
+    @classmethod
+    def from_molecule(cls, mol):
+        """Initialize class given an instance of `Molecule`.
+
+        Parameters
+        ----------
+        mol : Molecule
+            An instance of `Molecule` class.
+
+        """
+        if hasattr(mol, "exp_beta") and mol.exp_beta is not None:
+            exp_a, exp_b = mol.exp_alpha, mol.exp_beta
+        else:
+            exp_a, exp_b = mol.exp_alpha, mol.exp_alpha
+        occs_a, occs_b = exp_a.occupations, exp_b.occupations
+        energy_a, energy_b = exp_a.energies, exp_b.energies
+        coeffs_a, coeffs_b = exp_a.coeffs, exp_b.coeffs
+        return cls(occs_a, occs_b, energy_a, energy_b, coeffs_a, coeffs_b)
+
+    @classmethod
+    def from_file(cls, fname):
+        """Initialize class given a file.
+
+        Parameters
+        ----------
+        fname : str
+            Path to molecule"s files.
+
+        """
+        return cls.from_molecule(Molecule.from_file(fname))
 
     @property
     def homo_index(self):
