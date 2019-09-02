@@ -179,52 +179,8 @@ class Molecule(object):
 
         """
         # get density matrix corresponding to the specified spin
-        dm = self._get_density_matrix(spin, index=index)
+        dm = self.mo._get_dm(spin, index=index)
         return dm._array
-
-    def _get_density_matrix(self, spin="ab", index=None):
-        """Return HORTON density matrix object corresponding to the specified spin orbitals.
-
-        Parameters
-        ----------
-        spin : str, optional
-           Type of occupied spin orbitals which can be either "a" (for alpha), "b" (for
-           beta), and "ab" (for alpha + beta).
-        index : sequence of int, optional
-           Sequence of integers representing the occupied spin orbitals which are indexed
-           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
-
-        """
-        # check orbital spin
-        if spin not in ["a", "b", "ab"]:
-            raise ValueError("Argument spin={0} is not recognized!".format(spin))
-        # compute density matrix
-        if spin == "ab":
-            # get density matrix of alpha & beta electrons
-            dm = self._iodata.get_dm_full()
-        else:
-            # get orbital expression of specified spin
-            exp = getattr(self._mo, "_exp_" + spin)
-            # get density matrix of specified spin
-            dm = exp.to_dm()
-
-        if index is not None:
-            # convert to numpy array
-            index = np.asarray(index)
-            # check
-            if index.ndim == 0:
-                index = index.reshape(1)
-            if index.ndim >= 2:
-                raise ValueError("Indices should be given as a one-dimensional numpy array.")
-            index -= 1
-            if np.any(index < 0):
-                raise ValueError(
-                    "Indices cannot be less than 1. Note that indices start from 1."
-                )
-            # select the appropriate indices by hard-coding it into the HORTON's DenseTwoIndex
-            # object.
-            dm._array = dm._array[index[:, np.newaxis], index[np.newaxis, :]]
-        return dm
 
     def compute_molecular_orbital(self, points, spin="ab", index=None):
         """Return molecular orbitals.
@@ -282,7 +238,7 @@ class Molecule(object):
         # compute density
         if index is None:
             # get density matrix corresponding to the specified spin
-            dm = self._get_density_matrix(spin)
+            dm = self.mo._get_dm(spin)
             # include all orbitals
             output = self._ao.compute_density(dm, points)
         else:
@@ -317,7 +273,7 @@ class Molecule(object):
 
         """
         self._check_argument(points)
-        dm = self._get_density_matrix(spin, index=index)
+        dm = self.mo._get_dm(spin, index=index)
         return self._ao.compute_gradient(dm, points)
 
     def compute_hessian(self, points, spin="ab", index=None):
@@ -336,7 +292,7 @@ class Molecule(object):
 
         """
         self._check_argument(points)
-        dm = self._get_density_matrix(spin, index=index)
+        dm = self.mo._get_dm(spin, index=index)
         return self._ao.compute_hessian(dm, points)
 
     def compute_laplacian(self, points, spin="ab", index=None):
@@ -391,7 +347,7 @@ class Molecule(object):
         elif not isinstance(charges, np.ndarray) or charges.shape != self.numbers.shape:
             raise ValueError("Argument charges should be a 1d-array "
                              "with {0} shape.".format(self.numbers.shape))
-        dm = self._get_density_matrix(spin, index=index)
+        dm = self.mo._get_dm(spin, index=index)
         return self._ao.compute_esp(dm, points, self.coordinates, charges)
 
     def compute_ked(self, points, spin="ab", index=None):
@@ -414,7 +370,7 @@ class Molecule(object):
 
         """
         self._check_argument(points)
-        dm = self._get_density_matrix(spin, index=index)
+        dm = self.mo._get_dm(spin, index=index)
         return self._ao.compute_ked(dm, points)
 
     @staticmethod
@@ -482,6 +438,50 @@ class MolecularOrbitals(object):
         the columns represent the basis coefficients of each molecular orbital.
         """
         return self._exp_a.coeffs, self._exp_b.coeffs
+
+    def _get_dm(self, spin="ab", index=None):
+        """Return HORTON density matrix object corresponding to the specified spin orbitals.
+
+        Parameters
+        ----------
+        spin : str, optional
+           Type of occupied spin orbitals which can be either "a" (for alpha), "b" (for
+           beta), and "ab" (for alpha + beta).
+        index : sequence of int, optional
+           Sequence of integers representing the occupied spin orbitals which are indexed
+           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
+
+        """
+        # temporary class because of HORTON2
+        class DM(object):
+            def __init__(self, arr):
+                self._array = arr
+
+        if spin == "ab":
+            return DM(self._get_dm("a", index)._array + self._get_dm("b", index)._array)
+        elif spin == "a":
+            coeffs, occs = self.coefficient[0], self.occupation[0]
+        elif spin == "b":
+            coeffs, occs = self.coefficient[1], self.occupation[1]
+        else:
+            raise ValueError("Argument spin={0} is not recognized!".format(spin))
+        arr = np.dot(coeffs * occs, coeffs.T)
+
+        if index is not None:
+            # convert to numpy array
+            index = np.asarray(index)
+            # check
+            if index.ndim == 0:
+                index = index.reshape(1)
+            if index.ndim >= 2:
+                raise ValueError("Indices should be given as a one-dimensional numpy array.")
+            index -= 1
+            if np.any(index < 0):
+                raise ValueError(
+                    "Indices cannot be less than 1. Note that indices start from 1."
+                )
+            arr = arr[index[:, np.newaxis], index[np.newaxis, :]]
+        return DM(arr)
 
 
 class AtomicOrbitals(object):

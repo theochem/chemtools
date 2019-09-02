@@ -390,20 +390,20 @@ def test_molecule_density_matrix_index_fchk_uhf_ch4():
     # check get_density_matrix for different values of the index/
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
         mol = Molecule.from_file(fname)
-    dm_full = mol._get_density_matrix("a")._array
+    dm_full = mol.mo._get_dm("a")._array
     # errors
-    assert_raises(ValueError, mol._get_density_matrix, "a", [[1]])
-    assert_raises(ValueError, mol._get_density_matrix, "a", [0])
+    assert_raises(ValueError, mol._get_dm, "a", [[1]])
+    assert_raises(ValueError, mol._get_dm, "a", [0])
     # one index
     for i in range(1, mol.nbasis + 1):
-        assert np.allclose(dm_full[i - 1, i - 1], mol._get_density_matrix("a", i)._array)
+        assert np.allclose(dm_full[i - 1, i - 1], mol.mo._get_dm("a", i)._array)
     # multiple indices
     for i in range(1, mol.nbasis + 1):
         for j in range(1, mol.nbasis + 1):
             # NOTE: indices can be repeated
             indices = np.array([i -1, j - 1])
             assert np.allclose(dm_full[indices[:, None], indices[None, :]],
-                               mol._get_density_matrix("a", [i, j])._array)
+                               mol.mo._get_dm("a", [i, j])._array)
 
 
 def test_molecule_horton_h2o():
