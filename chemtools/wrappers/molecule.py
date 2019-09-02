@@ -177,9 +177,7 @@ class Molecule(object):
            from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
 
         """
-        # get density matrix corresponding to the specified spin
-        dm = self.mo._get_dm(spin, index=index)
-        return dm._array
+        return self.mo.compute_dm(spin, index=index)._array
 
     def compute_molecular_orbital(self, points, spin="ab", index=None):
         """Return molecular orbitals.
@@ -240,7 +238,7 @@ class Molecule(object):
         # compute density
         if index is None:
             # get density matrix corresponding to the specified spin
-            dm = self.mo._get_dm(spin)
+            dm = self.mo.compute_dm(spin)
             # include all orbitals
             output = self._ao.compute_density(dm, points)
         else:
@@ -275,8 +273,7 @@ class Molecule(object):
 
         """
         self._check_argument(points)
-        dm = self.mo._get_dm(spin, index=index)
-        return self._ao.compute_gradient(dm, points)
+        return self._ao.compute_gradient(self.mo.compute_dm(spin, index=index), points)
 
     def compute_hessian(self, points, spin="ab", index=None):
         r"""Return hessian of the electron density.
@@ -294,8 +291,7 @@ class Molecule(object):
 
         """
         self._check_argument(points)
-        dm = self.mo._get_dm(spin, index=index)
-        return self._ao.compute_hessian(dm, points)
+        return self._ao.compute_hessian(self.mo.compute_dm(spin, index=index), points)
 
     def compute_laplacian(self, points, spin="ab", index=None):
         r"""Return Laplacian of the electron density.
@@ -349,7 +345,7 @@ class Molecule(object):
         elif not isinstance(charges, np.ndarray) or charges.shape != self.numbers.shape:
             raise ValueError("Argument charges should be a 1d-array "
                              "with {0} shape.".format(self.numbers.shape))
-        dm = self.mo._get_dm(spin, index=index)
+        dm = self.mo.compute_dm(spin, index=index)
         return self._ao.compute_esp(dm, points, self.coordinates, charges)
 
     def compute_ked(self, points, spin="ab", index=None):
@@ -372,8 +368,7 @@ class Molecule(object):
 
         """
         self._check_argument(points)
-        dm = self.mo._get_dm(spin, index=index)
-        return self._ao.compute_ked(dm, points)
+        return self._ao.compute_ked(self.mo.compute_dm(spin, index=index), points)
 
     def _check_argument(self, points):
         """Check given arguments.
@@ -476,7 +471,7 @@ class MolecularOrbitals(object):
         """
         return self._coeffs_a, self._coeffs_b
 
-    def _get_dm(self, spin="ab", index=None):
+    def compute_dm(self, spin="ab", index=None):
         """Return HORTON density matrix object corresponding to the specified spin orbitals.
 
         Parameters
@@ -495,7 +490,7 @@ class MolecularOrbitals(object):
                 self._array = arr
 
         if spin == "ab":
-            return DM(self._get_dm("a", index)._array + self._get_dm("b", index)._array)
+            return DM(self.compute_dm("a", index)._array + self.compute_dm("b", index)._array)
         elif spin == "a":
             arr = np.dot(self._coeffs_a * self._occs_a, self._coeffs_a.T)
         elif spin == "b":
