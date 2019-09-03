@@ -161,7 +161,7 @@ def test_molecule_orbitals_fchk_uhf_ch4():
     assert_almost_equal(mol.mo.coefficient[1][-1, -1], 1.02960200, decimal=6)
     assert_almost_equal(mol.mo.coefficient[0][-1, -1], 1.02960200, decimal=6)
     # check overlap matrix
-    overlap = mol.compute_orbital_overlap()
+    overlap = mol.ao.compute_overlap()
     assert_equal(overlap.shape, (34, 34))
     assert_almost_equal(np.diag(overlap), np.ones(34), decimal=6)
     assert_almost_equal(overlap, overlap.T, decimal=6)

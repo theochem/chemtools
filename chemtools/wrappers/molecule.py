@@ -150,14 +150,6 @@ class Molecule(object):
         """Molecular orbital instance."""
         return self._mo
 
-    def compute_orbital_overlap(self):
-        """Return the overlap matrix of molecular orbitals."""
-        # make linear algebra factory
-        lf = DenseLinalgFactory(self.ao.nbasis)
-        # compute overlap matrix
-        arr = self._iodata.obasis.compute_overlap(lf)._array
-        return arr
-
     def compute_density_matrix(self, spin="ab", index=None):
         """Compute the density matrix array for the specified spin orbitals.
 
@@ -549,6 +541,14 @@ class AtomicOrbitals(object):
     def nbasis(self):
         """int : number of basis functions."""
         return self._basis.nbasis
+
+    def compute_overlap(self):
+        """Return the overlap matrix of molecular orbitals."""
+        # make linear algebra factory
+        lf = DenseLinalgFactory(self.nbasis)
+        # compute overlap matrix
+        arr = self._basis.compute_overlap(lf)._array
+        return arr
 
     def compute_orbitals(self, dm, points, index):
         """
