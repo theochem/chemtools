@@ -115,7 +115,7 @@ def main_mot(args):
         print("% 2i   %10.6f   %10.6f   %10.6f" % (num, coord[0], coord[1], coord[2]))
     print("")
     print("Information on alpha & beta electrons:")
-    print("# electrons  :  % 3.3f       % 3.3f" % mol.nelectrons)
+    print("# electrons  :  % 3.3f       % 3.3f" % mol.mo.nelectrons)
     print("HOMO index   : % 3d        % 5d" % mol.homo_index)
     print("")
     print("LUMO+2 index : %10.6f   %10.6f" % (ea[lia + 2], eb[lib + 2]))

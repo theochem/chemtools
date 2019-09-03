@@ -168,7 +168,7 @@ class DFTBasedTool(object):
         """
         bt = 1.0 / (self._kb * temperature)
         # get number and energy of alpha and beta electrons
-        n_a, n_b = self._molecule.nelectrons
+        n_a, n_b = self._molecule.mo.nelectrons
         energy_a, energy_b = self._molecule.mo.energy
         # find spin chemical potential of alpha electrons
         spin_pot_a = bisect(lambda x: np.sum(1. / (1. + np.exp(bt * (energy_a - x)))) - n_a,

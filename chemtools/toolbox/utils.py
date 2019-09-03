@@ -184,7 +184,7 @@ def get_dict_energy(molecule):
     if isinstance(molecule, Molecule):
         # get homo/lumo energy
         homo_e, lumo_e, _, _ = get_homo_lumo_data(molecule)
-        nelec = sum(molecule.nelectrons)
+        nelec = sum(molecule.mo.nelectrons)
         # store number of electron and energy in a dictionary
         energies = {nelec: molecule.energy,
                     nelec + 1: molecule.energy + lumo_e,
@@ -194,7 +194,7 @@ def get_dict_energy(molecule):
         energies = {}
         for mol in molecule:
             # get number of electrons & check that it doesn't already exist
-            nelec = sum(mol.nelectrons)
+            nelec = sum(mol.mo.nelectrons)
             if nelec in energies.keys():
                 raise ValueError("Two molecules have {0} electrons!".format(nelec))
             # store number of electrons and energy in a dictionary
@@ -228,7 +228,7 @@ def get_dict_density(molecule, points):
         lumo_dens = molecule.compute_density(points, lumo_s,
                                              molecule.mo.lumo_index[spin_to_index[lumo_s]])
         # store number of electron and density in a dictionary
-        nelec = sum(molecule.nelectrons)
+        nelec = sum(molecule.mo.nelectrons)
         dens = molecule.compute_density(points, "ab", None)
         densities = {nelec: dens,
                      nelec + 1: dens + lumo_dens,
@@ -238,7 +238,7 @@ def get_dict_density(molecule, points):
         densities = {}
         for mol in molecule:
             # get number of electrons
-            nelec = sum(mol.nelectrons)
+            nelec = sum(mol.mo.nelectrons)
             if nelec in densities.keys():
                 raise ValueError("Two molecules have {0} electrons!".format(nelec))
             # store density for a given number of electron
@@ -281,7 +281,7 @@ def get_dict_population(molecule, approach, scheme, **kwargs):
             raise ValueError("Condensing scheme={0} is not possible, because attribute {1}_charges "
                              "of molecule instances is 'None'.".format(scheme, scheme.lower()))
         # make dictionary of populations
-        dict_pops = dict([(sum(m.nelectrons), m.numbers - pop) for m, pop in zip(molecule, pops)])
+        dict_pops = dict([(sum(m.mo.nelectrons), m.numbers - pop) for m, pop in zip(molecule, pops)])
         return dict_pops
 
     # case of condensing the density using denspart
@@ -303,7 +303,7 @@ def get_dict_population(molecule, approach, scheme, **kwargs):
             raise ValueError("Condensing within FD approach, currently works for "
                              "only 3 molecules! Given {0} molecules.".format(len(molecule)))
         # reference molecule is the middle molecule (for 3 molecules)
-        dict_mols = {sum(mol.nelectrons): mol for mol in molecule}
+        dict_mols = {sum(mol.mo.nelectrons): mol for mol in molecule}
         mol0 = dict_mols.pop(sorted(dict_mols.keys())[1])
     else:
         raise ValueError("Argument molecule not recognized!")
@@ -323,11 +323,11 @@ def get_dict_population(molecule, approach, scheme, **kwargs):
 
     # compute population of reference molecule
     part0 = wpart(mol0.coordinates, mol0.numbers, mol0.pseudo_numbers, grid,
-                  dict_dens[sum(mol0.nelectrons)], **kwargs)
+                  dict_dens[sum(mol0.mo.nelectrons)], **kwargs)
     part0.do_all()
     # record population of reference system
-    dict_pops = dict([(sum(mol0.nelectrons), part0["populations"])])
-    del dict_dens[sum(mol0.nelectrons)]
+    dict_pops = dict([(sum(mol0.mo.nelectrons), part0["populations"])])
+    del dict_dens[sum(mol0.mo.nelectrons)]
 
     # compute and record populations given grid in a dictionary
     for nelec, dens in dict_dens.iteritems():

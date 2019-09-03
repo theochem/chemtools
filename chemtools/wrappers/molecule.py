@@ -141,12 +141,6 @@ class Molecule(object):
         return self._numbers
 
     @property
-    def nelectrons(self):
-        """Number of alpha and beta electrons."""
-        occ_a, occ_b = self._mo.occupation
-        return np.sum(occ_a), np.sum(occ_b)
-
-    @property
     def ao(self):
         """Atomic orbital instance."""
         return self._ao
@@ -470,6 +464,11 @@ class MolecularOrbitals(object):
         the columns represent the basis coefficients of each molecular orbital.
         """
         return self._coeffs_a, self._coeffs_b
+
+    @property
+    def nelectrons(self):
+        """Number of alpha and beta electrons."""
+        return np.sum(self._occs_a), np.sum(self._occs_b)
 
     def compute_dm(self, spin="ab", index=None):
         """Return HORTON density matrix object corresponding to the specified spin orbitals.

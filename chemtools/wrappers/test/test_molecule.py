@@ -95,7 +95,7 @@ def check_molecule_basics(mol):
     """Check expected basic attributes of HortonWaveFunction class."""
     # check basic numerics
     assert_equal(mol.natom, 5)
-    assert_equal(mol.nelectrons, (5, 5))
+    assert_equal(mol.mo.nelectrons, (5, 5))
     # assert_equal(mol.ao.nbasis, 34)
     assert_equal(mol.numbers, [6, 1, 1, 1, 1])
     assert_equal(mol.pseudo_numbers, [6, 1, 1, 1, 1])
@@ -337,7 +337,7 @@ def test_molecule_basic_fchk_uhf_o2():
     # print mol.nelectrons
     # check basic numerics
     assert_equal(mol.natom, 2)
-    assert_equal(mol.nelectrons, (9, 7))
+    assert_equal(mol.mo.nelectrons, (9, 7))
     assert_equal(mol.ao.nbasis, 44)
     assert_equal(mol.numbers, [8, 8])
     assert_equal(mol.pseudo_numbers, [8, 8])

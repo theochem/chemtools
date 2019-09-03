@@ -81,9 +81,9 @@ class MOTBasedTool(object):
         return self._molecule.numbers
 
     @property
-    @doc_inherit(Molecule, 'nelectrons')
+    @doc_inherit(MolecularOrbitals, 'nelectrons')
     def nelectrons(self):
-        return self._molecule.nelectrons
+        return self._molecule.mo.nelectrons
 
     @property
     @doc_inherit(MolecularOrbitals, 'homo_index')
