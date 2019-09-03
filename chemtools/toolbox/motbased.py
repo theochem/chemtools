@@ -81,11 +81,6 @@ class MOTBasedTool(object):
         return self._molecule.numbers
 
     @property
-    @doc_inherit(Molecule, 'nbasis')
-    def nbasis(self):
-        return self._molecule.nbasis
-
-    @property
     @doc_inherit(Molecule, 'nelectrons')
     def nelectrons(self):
         return self._molecule.nelectrons

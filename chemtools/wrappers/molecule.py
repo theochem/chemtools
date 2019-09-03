@@ -141,15 +141,15 @@ class Molecule(object):
         return self._numbers
 
     @property
-    def nbasis(self):
-        """Number of basis functions."""
-        return self._ao.nbasis
-
-    @property
     def nelectrons(self):
         """Number of alpha and beta electrons."""
         occ_a, occ_b = self._mo.occupation
         return np.sum(occ_a), np.sum(occ_b)
+
+    @property
+    def ao(self):
+        """Atomic orbital instance."""
+        return self._ao
 
     @property
     def mo(self):
@@ -159,7 +159,7 @@ class Molecule(object):
     def compute_orbital_overlap(self):
         """Return the overlap matrix of molecular orbitals."""
         # make linear algebra factory
-        lf = DenseLinalgFactory(self.nbasis)
+        lf = DenseLinalgFactory(self.ao.nbasis)
         # compute overlap matrix
         arr = self._iodata.obasis.compute_overlap(lf)._array
         return arr

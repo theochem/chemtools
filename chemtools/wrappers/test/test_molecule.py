@@ -96,7 +96,7 @@ def check_molecule_basics(mol):
     # check basic numerics
     assert_equal(mol.natom, 5)
     assert_equal(mol.nelectrons, (5, 5))
-    # assert_equal(mol.nbasis, 34)
+    # assert_equal(mol.ao.nbasis, 34)
     assert_equal(mol.numbers, [6, 1, 1, 1, 1])
     assert_equal(mol.pseudo_numbers, [6, 1, 1, 1, 1])
     assert_equal(mol.mo.homo_index, (5, 5))
@@ -338,7 +338,7 @@ def test_molecule_basic_fchk_uhf_o2():
     # check basic numerics
     assert_equal(mol.natom, 2)
     assert_equal(mol.nelectrons, (9, 7))
-    assert_equal(mol.nbasis, 44)
+    assert_equal(mol.ao.nbasis, 44)
     assert_equal(mol.numbers, [8, 8])
     assert_equal(mol.pseudo_numbers, [8, 8])
     assert_equal(mol.mo.homo_index, (9, 7))
@@ -395,11 +395,11 @@ def test_molecule_density_matrix_index_fchk_uhf_ch4():
     assert_raises(ValueError, mol.compute_dm, "a", [[1]])
     assert_raises(ValueError, mol.compute_dm, "a", [0])
     # one index
-    for i in range(1, mol.nbasis + 1):
+    for i in range(1, mol.ao.nbasis + 1):
         assert np.allclose(dm_full[i - 1, i - 1], mol.mo.compute_dm("a", i)._array)
     # multiple indices
-    for i in range(1, mol.nbasis + 1):
-        for j in range(1, mol.nbasis + 1):
+    for i in range(1, mol.ao.nbasis + 1):
+        for j in range(1, mol.ao.nbasis + 1):
             # NOTE: indices can be repeated
             indices = np.array([i -1, j - 1])
             assert np.allclose(dm_full[indices[:, None], indices[None, :]],

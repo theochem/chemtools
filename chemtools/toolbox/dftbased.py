@@ -120,7 +120,7 @@ class DFTBasedTool(object):
         occ_a, occ_b = self._molecule.mo.occupation
         energy_a, energy_b = self._molecule.mo.energy
         # compute density of each alpha and beta orbital on grid points
-        index = np.arange(1, self._molecule.nbasis + 1)
+        index = np.arange(1, self._molecule.ao.nbasis + 1)
         ip_a = self._compute_orbital_expression(index, spin='a') ** 2
         ip_b = self._compute_orbital_expression(index, spin='b') ** 2
         # compute local ionization potential of alpha and beta orbitals
@@ -212,7 +212,7 @@ class DFTBasedTool(object):
         spin_mu_a, spin_mu_b = self.compute_spin_chemical_potential(temperature)
         energy_a, energy_b = self._molecule.mo.energy
         # compute density of each alpha and beta orbital on grid points
-        index = np.arange(1, self._molecule.nbasis + 1)
+        index = np.arange(1, self._molecule.ao.nbasis + 1)
         dens_a = self._compute_orbital_expression(index, spin='a') ** 2
         dens_b = self._compute_orbital_expression(index, spin='b') ** 2
         # compute temperature-dependent density of alpha and beta orbitals
@@ -257,7 +257,7 @@ class DFTBasedTool(object):
         spin_mu_a, spin_mu_b = self.compute_spin_chemical_potential(temperature)
         energy_a, energy_b = self._molecule.mo.energy
         # compute density of each alpha and beta orbital on grid points
-        index = np.arange(1, self._molecule.nbasis + 1)
+        index = np.arange(1, self._molecule.ao.nbasis + 1)
         dens_a = self._compute_orbital_expression(index, spin='a') ** 2
         dens_b = self._compute_orbital_expression(index, spin='b') ** 2
         # compute temperature-dependent density of alpha and beta orbitals
