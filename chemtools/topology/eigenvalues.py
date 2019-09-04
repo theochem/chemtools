@@ -38,8 +38,8 @@ class EigenValueTool(object):
 
         Parameters
         ----------
-        eigenvalues : np.ndarray
-            A two-dimensional array recording the eigenvalues of each point in a row.
+        eigenvalues : np.ndarray(N, 3)
+            A 2-D array recording the eigenvalues at each :math:`N` point.
         eps : float, optional
             The error bound for being a zero eigenvalue.
 
@@ -53,15 +53,15 @@ class EigenValueTool(object):
 
     @property
     def eigenvalues(self):
-        r"""Eigenvalues of points."""
+        r"""Eigenvalues."""
         return self._eigenvalues
 
     @property
     def ellipticity(self):
-        r"""Ellipticity of electron density.
+        r"""Ellipticity.
 
-        .. math::
-           \frac{\lambda_\text{min}}{\lambda_\text{min-1}} - 1
+        .. math:: \frac{\lambda_\text{min}}{\lambda_\text{min-1}} - 1
+
         """
         # get the two smallest eigenvalues
         index = np.argsort(self.eigenvalues, axis=1)[:, :2]
@@ -74,11 +74,12 @@ class EigenValueTool(object):
 
     @property
     def bond_descriptor(self):
-        r"""Bond descriptor defined as the ratio of average of positive and negative eigenvalues.
+        r"""Bond descriptor which is the ratio of average of positive and negative eigenvalues.
 
         .. math::
            \frac{\left(\frac{\sum_{\lambda_k > 0} \lambda_k}{\sum_{\lambda_k > 0} 1}\right)}
                 {\left(\frac{\sum_{\lambda_k < 0} \lambda_k}{\sum_{\lambda_k < 0} 1}\right)}
+
         """
         # compute numerator
         pos_mask = (self.eigenvalues > self._eps).astype(int)
@@ -90,10 +91,10 @@ class EigenValueTool(object):
 
     @property
     def eccentricity(self):
-        r"""Eccentricity (essentially the condition number) of the set of eigenvalues.
+        r"""Eccentricity (essentially the condition number).
 
-        .. math ::
-            \sqrt{\frac{\lambda_\text{max}}{\lambda_\text{min}}}
+        .. math :: \sqrt{\frac{\lambda_\text{max}}{\lambda_\text{min}}}
+
         """
         ratio = np.amax(self.eigenvalues, axis=1) / np.amin(self.eigenvalues, axis=1)
         # set negative values to None
@@ -102,31 +103,28 @@ class EigenValueTool(object):
 
     @property
     def index(self):
-        r"""Index of critical point which is the number of negative-curvature directions.
+        r"""Index which is the number of negative-curvature directions.
 
-        .. math::
-           \sum_{\lambda_k < 0} 1
+        .. math:: \sum_{\lambda_k < 0} 1
+
         """
         return np.sum(self._eigenvalues < -self._eps, axis=1)
 
     @property
     def rank(self):
-        r"""Rank of the critical point.
+        r"""Rank which is the number of positive eigenvalues.
 
-        The rank of a critical point is the number of positive eigenvalues.
-        This is used to classify critical points on it's stability (trajectories going in or out).
+        .. math:: \sum_{\lambda_i > 0} 1
 
-        .. math::
-            \sum_{\lambda_i > 0} 1
         """
         return np.sum(np.abs(self._eigenvalues) > self._eps, axis=1)
 
     @property
     def signature(self):
-        r"""Signature of point(s) which is the difference of number of positive & negative values.
+        r"""Signature which is the difference of number of positive & negative eigenvalues.
 
-        .. math::
-            \sum_{\lambda_k > 0.} 1 - \sum_{\lambda_k < 0.} 1
+        .. math:: \sum_{\lambda_k > 0.} 1 - \sum_{\lambda_k < 0.} 1
+
         """
         result = np.sum(self.eigenvalues > self._eps, axis=1)
         result -= np.sum(self.eigenvalues < -self._eps, axis=1)
@@ -134,7 +132,7 @@ class EigenValueTool(object):
 
     @property
     def morse(self):
-        r"""Rank and signature of the critical point.
+        r"""Rank and signature.
 
         .. math::
             \left(\sum_{\lambda_k > 0} 1, \sum_{\lambda_k > 0.}1 - \sum_{\lambda_k < 0.} 1\right)

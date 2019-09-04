@@ -64,7 +64,7 @@ class TopologicalTool(Topology):
 
         Parameters
         ----------
-        molecule : instance of `Molecule` class.
+        molecule : `Molecule`
             Instance of `Molecular` class.
         spin : str, optional
             The type of occupied spin orbitals; options are "a", "b" & "ab".

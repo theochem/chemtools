@@ -47,13 +47,13 @@ def test_critical_point_h2o():
     top = TopologicalTool.from_molecule(mol, points=cub.points)
     # check NA
     assert len(top.nna) == 3
-    assert sum([np.allclose(top.nna[0].point, point, rtol=0.0) for point in nna]) == 1
-    assert sum([np.allclose(top.nna[1].point, point, rtol=0.0) for point in nna]) == 1
-    assert sum([np.allclose(top.nna[2].point, point, rtol=0.0) for point in nna]) == 1
+    assert sum([np.allclose(top.nna[0].coordinate, c, rtol=0.0) for c in nna]) == 1
+    assert sum([np.allclose(top.nna[1].coordinate, c, rtol=0.0) for c in nna]) == 1
+    assert sum([np.allclose(top.nna[2].coordinate, c, rtol=0.0) for c in nna]) == 1
     # check BCP
     assert len(top.bcp) == 2
-    assert sum([np.allclose(top.bcp[0].point, point, rtol=0.0) for point in bcp]) == 1
-    assert sum([np.allclose(top.bcp[1].point, point, rtol=0.0) for point in bcp]) == 1
+    assert sum([np.allclose(top.bcp[0].coordinate, c, rtol=0.0) for c in bcp]) == 1
+    assert sum([np.allclose(top.bcp[1].coordinate, c, rtol=0.0) for c in bcp]) == 1
     # check total number of CP
     assert len(top.rcp) == 0
     assert len(top.ccp) == 0
@@ -73,13 +73,13 @@ def test_critical_point_li2():
     top = TopologicalTool.from_molecule(mol, points=cub.points)
     # check NA
     assert len(top.nna) == 3
-    assert sum([np.allclose(top.nna[0].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
-    assert sum([np.allclose(top.nna[1].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
-    assert sum([np.allclose(top.nna[2].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
+    assert sum([np.allclose(top.nna[0].coordinate, c, rtol=0.0, atol=1.0e-5) for c in nna]) == 1
+    assert sum([np.allclose(top.nna[1].coordinate, c, rtol=0.0, atol=1.0e-5) for c in nna]) == 1
+    assert sum([np.allclose(top.nna[2].coordinate, c, rtol=0.0, atol=1.0e-5) for c in nna]) == 1
     # check BCP
     assert len(top.bcp) == 2
-    assert sum([np.allclose(top.bcp[0].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
-    assert sum([np.allclose(top.bcp[1].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
+    assert sum([np.allclose(top.bcp[0].coordinate, c, rtol=0.0, atol=1.0e-5) for c in bcp]) == 1
+    assert sum([np.allclose(top.bcp[1].coordinate, c, rtol=0.0, atol=1.0e-5) for c in bcp]) == 1
     # check total number of CP
     assert len(top.rcp) == 0
     assert len(top.ccp) == 0
@@ -99,23 +99,23 @@ def test_critical_point_cyclopropenium_oxide():
     top = TopologicalTool.from_molecule(mol, points=cub.points)
     # check NA
     assert len(top.nna) == 6
-    assert sum([np.allclose(top.nna[0].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
-    assert sum([np.allclose(top.nna[1].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
-    assert sum([np.allclose(top.nna[2].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
-    assert sum([np.allclose(top.nna[3].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
-    assert sum([np.allclose(top.nna[4].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
-    assert sum([np.allclose(top.nna[5].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
+    assert sum([np.allclose(top.nna[0].coordinate, c, rtol=0.0, atol=1.0e-5) for c in nna]) == 1
+    assert sum([np.allclose(top.nna[1].coordinate, c, rtol=0.0, atol=1.0e-5) for c in nna]) == 1
+    assert sum([np.allclose(top.nna[2].coordinate, c, rtol=0.0, atol=1.0e-5) for c in nna]) == 1
+    assert sum([np.allclose(top.nna[3].coordinate, c, rtol=0.0, atol=1.0e-5) for c in nna]) == 1
+    assert sum([np.allclose(top.nna[4].coordinate, c, rtol=0.0, atol=1.0e-5) for c in nna]) == 1
+    assert sum([np.allclose(top.nna[5].coordinate, c, rtol=0.0, atol=1.0e-5) for c in nna]) == 1
     # check BCP
     assert len(top.bcp) == 6
-    assert sum([np.allclose(top.bcp[0].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
-    assert sum([np.allclose(top.bcp[1].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
-    assert sum([np.allclose(top.bcp[2].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
-    assert sum([np.allclose(top.bcp[3].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
-    assert sum([np.allclose(top.bcp[4].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
-    assert sum([np.allclose(top.bcp[5].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
+    assert sum([np.allclose(top.bcp[0].coordinate, c, rtol=0.0, atol=1.0e-5) for c in bcp]) == 1
+    assert sum([np.allclose(top.bcp[1].coordinate, c, rtol=0.0, atol=1.0e-5) for c in bcp]) == 1
+    assert sum([np.allclose(top.bcp[2].coordinate, c, rtol=0.0, atol=1.0e-5) for c in bcp]) == 1
+    assert sum([np.allclose(top.bcp[3].coordinate, c, rtol=0.0, atol=1.0e-5) for c in bcp]) == 1
+    assert sum([np.allclose(top.bcp[4].coordinate, c, rtol=0.0, atol=1.0e-5) for c in bcp]) == 1
+    assert sum([np.allclose(top.bcp[5].coordinate, c, rtol=0.0, atol=1.0e-5) for c in bcp]) == 1
     # check RCP
     assert len(top.rcp) == 1
-    assert sum([np.allclose(top.rcp[0].point, point, rtol=0.0, atol=1.0e-5) for point in rcp]) == 1
+    assert sum([np.allclose(top.rcp[0].coordinate, c, rtol=0.0, atol=1.0e-5) for c in rcp]) == 1
     # check total number of CP
     assert len(top.ccp) == 0
     assert len(top.cps) == 13
@@ -135,34 +135,34 @@ def test_critical_point_c4h4():
     top = TopologicalTool.from_molecule(mol, points=cub.points)
     # check NA
     assert len(top.nna) == 8
-    assert sum([np.allclose(top.nna[0].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
-    assert sum([np.allclose(top.nna[1].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
-    assert sum([np.allclose(top.nna[2].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
-    assert sum([np.allclose(top.nna[3].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
-    assert sum([np.allclose(top.nna[4].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
-    assert sum([np.allclose(top.nna[5].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
-    assert sum([np.allclose(top.nna[6].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
-    assert sum([np.allclose(top.nna[7].point, point, rtol=0.0, atol=1.0e-5) for point in nna]) == 1
+    assert sum([np.allclose(top.nna[0].coordinate, c, rtol=0.0, atol=1.0e-5) for c in nna]) == 1
+    assert sum([np.allclose(top.nna[1].coordinate, c, rtol=0.0, atol=1.0e-5) for c in nna]) == 1
+    assert sum([np.allclose(top.nna[2].coordinate, c, rtol=0.0, atol=1.0e-5) for c in nna]) == 1
+    assert sum([np.allclose(top.nna[3].coordinate, c, rtol=0.0, atol=1.0e-5) for c in nna]) == 1
+    assert sum([np.allclose(top.nna[4].coordinate, c, rtol=0.0, atol=1.0e-5) for c in nna]) == 1
+    assert sum([np.allclose(top.nna[5].coordinate, c, rtol=0.0, atol=1.0e-5) for c in nna]) == 1
+    assert sum([np.allclose(top.nna[6].coordinate, c, rtol=0.0, atol=1.0e-5) for c in nna]) == 1
+    assert sum([np.allclose(top.nna[7].coordinate, c, rtol=0.0, atol=1.0e-5) for c in nna]) == 1
     # check BCP
     assert len(top.bcp) == 10
-    assert sum([np.allclose(top.bcp[0].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
-    assert sum([np.allclose(top.bcp[2].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
-    assert sum([np.allclose(top.bcp[3].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
-    assert sum([np.allclose(top.bcp[4].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
-    assert sum([np.allclose(top.bcp[5].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
-    assert sum([np.allclose(top.bcp[6].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
-    assert sum([np.allclose(top.bcp[7].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
-    assert sum([np.allclose(top.bcp[8].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
-    assert sum([np.allclose(top.bcp[9].point, point, rtol=0.0, atol=1.0e-5) for point in bcp]) == 1
+    assert sum([np.allclose(top.bcp[0].coordinate, c, rtol=0.0, atol=1.0e-5) for c in bcp]) == 1
+    assert sum([np.allclose(top.bcp[2].coordinate, c, rtol=0.0, atol=1.0e-5) for c in bcp]) == 1
+    assert sum([np.allclose(top.bcp[3].coordinate, c, rtol=0.0, atol=1.0e-5) for c in bcp]) == 1
+    assert sum([np.allclose(top.bcp[4].coordinate, c, rtol=0.0, atol=1.0e-5) for c in bcp]) == 1
+    assert sum([np.allclose(top.bcp[5].coordinate, c, rtol=0.0, atol=1.0e-5) for c in bcp]) == 1
+    assert sum([np.allclose(top.bcp[6].coordinate, c, rtol=0.0, atol=1.0e-5) for c in bcp]) == 1
+    assert sum([np.allclose(top.bcp[7].coordinate, c, rtol=0.0, atol=1.0e-5) for c in bcp]) == 1
+    assert sum([np.allclose(top.bcp[8].coordinate, c, rtol=0.0, atol=1.0e-5) for c in bcp]) == 1
+    assert sum([np.allclose(top.bcp[9].coordinate, c, rtol=0.0, atol=1.0e-5) for c in bcp]) == 1
     # check RCP
     assert len(top.rcp) == 4
-    assert sum([np.allclose(top.rcp[0].point, point, rtol=0.0, atol=1.0e-5) for point in rcp]) == 1
-    assert sum([np.allclose(top.rcp[1].point, point, rtol=0.0, atol=1.0e-5) for point in rcp]) == 1
-    assert sum([np.allclose(top.rcp[2].point, point, rtol=0.0, atol=1.0e-5) for point in rcp]) == 1
-    assert sum([np.allclose(top.rcp[3].point, point, rtol=0.0, atol=1.0e-5) for point in rcp]) == 1
+    assert sum([np.allclose(top.rcp[0].coordinate, c, rtol=0.0, atol=1.0e-5) for c in rcp]) == 1
+    assert sum([np.allclose(top.rcp[1].coordinate, c, rtol=0.0, atol=1.0e-5) for c in rcp]) == 1
+    assert sum([np.allclose(top.rcp[2].coordinate, c, rtol=0.0, atol=1.0e-5) for c in rcp]) == 1
+    assert sum([np.allclose(top.rcp[3].coordinate, c, rtol=0.0, atol=1.0e-5) for c in rcp]) == 1
     # check CCP
     assert len(top.ccp) == 1
-    assert sum([np.allclose(top.ccp[0].point, point, rtol=0.0, atol=1.0e-5) for point in ccp]) == 1
+    assert sum([np.allclose(top.ccp[0].coordinate, c, rtol=0.0, atol=1.0e-5) for c in ccp]) == 1
     # check total number of CP
     assert len(top.cps) == 23
     assert top.poincare_hopf_equation
