@@ -21,7 +21,7 @@
 #
 # --
 # pragma pylint: disable=wrong-import-position
-"""Module for topological analysis of Quantum Chemistry Output Files."""
+"""Module for topological analysis of scalar fields."""
 
 
 import numpy as np
@@ -29,10 +29,11 @@ import numpy as np
 from chemtools.wrappers.molecule import Molecule
 from chemtools.utils.cube import UniformGrid
 from chemtools.topology.critical import Topology
+from chemtools.outputs.vmd import print_vmd_script_topology
 
 
 class TopologicalTool(Topology):
-    """Topological Analysis of Electron Density."""
+    """Topological Analysis of Scalar Functions."""
 
     def __init__(self, func_dens, func_grad, func_hess, points, coordinates=None):
         """Initialize class.
@@ -103,6 +104,23 @@ class TopologicalTool(Topology):
         """
         molecule = Molecule.from_file(fname)
         return cls.from_molecule(molecule, spin=spin, index=index, points=points)
+
+    def generate_scripts(self, fname, radius=0.2):
+        """Generate VMD script to visualize critical points & gradient path.
+
+        Parameters
+        ----------
+        fname : str
+            The name of the VMD script file.
+        radius : float, optional
+            Radius of spheres representing the critical points.
+
+        """
+        cps = {'gray': [nna.coordinate for nna in self.nna],
+               'blue': [bcp.coordinate for bcp in self.bcp],
+               'green': [rcp.coordinate for rcp in self.rcp],
+               'red': [ccp.coordinate for ccp in self.ccp]}
+        print_vmd_script_topology(fname, cps, radius=radius)
 
     @staticmethod
     def _wrapper_compute_density(molecule, spin, index):

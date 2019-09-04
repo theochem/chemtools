@@ -632,3 +632,37 @@ def print_vmd_script_vector_field(scriptfile, xyz, vector_centers, vector_direct
     output += _vmd_script_vector_field(vector_centers, unit_vecs, weights)
     with open(scriptfile, 'w') as f:
         f.write(output)
+
+
+def print_vmd_script_topology(fname, points, radius=0.2):
+    """Generate VMD script for visualizing critical points & gradient path.
+
+    Parameters
+    ----------
+    fname : str
+        The name of the VMD script file.
+    points : dict
+        Dictionary of color (key) and coordinates (values) of critical points.
+    radius : float, optional
+        Radius of spheres representing the critical points.
+
+    """
+    output = ('#!/usr/local/bin/vmd\n'
+              '#\n'
+              '# Display settings\n'
+              'display shadow off\n'
+              'axes location Off\n'
+              'light 2 on\n'
+              'light 3 on\n'
+              'color Display Background white\n'
+              '#\n'
+              '# Critical Points\n')
+    for color, coords in points.items():
+        output += 'draw color {}\n'.format(color)
+        for coord in coords:
+            output += 'draw sphere {% .6f % .6f % .6f} radius %f\n' % tuple(list(coord) + [radius])
+    # write output
+    if not fname.endswith('.vmd'):
+        fname += '.vmd'
+    with open(fname, 'w') as f:
+        f.write(output)
