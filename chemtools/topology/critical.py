@@ -26,7 +26,7 @@ r"""Functionality for finding critical points of any scalar function."""
 import warnings
 import numpy as np
 
-from scipy.spatial import KDTree
+from scipy.spatial import cKDTree
 
 from chemtools.topology.eigenvalues import EigenValueTool
 
@@ -89,10 +89,10 @@ class Topology(object):
             raise ValueError("Argument coords should be a 2D-array with 3 columns.")
         if coords is not None:
             self._coords = coords
-            self._kdtree = KDTree(np.vstack((self._coords, self._points)))
+            self._kdtree = cKDTree(np.vstack((self._coords, self._points)))
         else:
-            self._coords = []
-            self._kdtree = KDTree(points)
+            self._coords = None
+            self._kdtree = cKDTree(points)
 
         self.func = func
         self.grad = func_grad
@@ -141,7 +141,7 @@ class Topology(object):
             Cartesian coordinates of points.
 
         """
-        self._kdtree = KDTree(np.vstack((self._kdtree.data, points)))
+        self._kdtree = cKDTree(np.vstack((self._kdtree.data, points)))
 
     def find_critical_points(self):
         """Find and store the critical points."""
