@@ -136,19 +136,19 @@ class Topology(object):
             # use central point as initial guess for critical point finding
             if index < len(self._coords) or np.all(point_norm < neigh_norm):
                 try:
-                    cp_point = self._root_vector_func(point.copy())
-                except Exception as _:
+                    coord = self._root_vector_func(point.copy())
+                except RuntimeError as _:
                     continue
                 # add critical point if it is new
-                if not np.any([np.linalg.norm(cp_point - cp.coordinate) < 1.e-3 for cp in self.cps]):
-                    dens = self.func(cp_point)
-                    grad = self.grad(cp_point)
+                if not np.any([np.linalg.norm(coord - cp.coordinate) < 1.e-3 for cp in self.cps]):
+                    dens = self.func(coord)
+                    grad = self.grad(coord)
                     # skip critical point if its dens & grad are zero
                     if abs(dens) < 1.e-4 and np.all(abs(grad) < 1.e-4):
                         continue
                     # compute rank & signature of critical point
-                    eigenvals, eigenvecs = np.linalg.eigh(self.hess(cp_point))
-                    cp = CriticalPoint(cp_point, eigenvals, eigenvecs, 1e-4)
+                    eigenvals, eigenvecs = np.linalg.eigh(self.hess(coord))
+                    cp = CriticalPoint(coord, eigenvals, eigenvecs, 1e-4)
                     self._cps.setdefault((cp.rank[0], cp.signature[0]), []).append(cp)
         # check Poincare–Hopf equation
         if not self.poincare_hopf_equation:
