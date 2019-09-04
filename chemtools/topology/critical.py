@@ -28,33 +28,7 @@ import numpy as np
 
 from scipy.spatial import cKDTree
 
-from chemtools.topology.eigenvalues import EigenValueTool
-
-
-class CriticalPoint(EigenValueTool):
-    """Critical Point Class."""
-
-    def __init__(self, coordinate, eigenvalues, eigenvectors, eps=1e-15):
-        r"""Initialize class.
-
-        Parameters
-        ----------
-        coordinate : np.ndarray(3,)
-            Cartesian coordinate of critical point.
-        eigenvalues : np.ndarray(3,)
-            Eigenvalues of hessian function evaluated at the critical point.
-        eigenvectors : np.ndarray(3, 3)
-            Eigenvectors of hessian function evaluated at the critical point.
-
-        """
-        super(CriticalPoint, self).__init__(eigenvalues[np.newaxis, :], eps=eps)
-        self._coord = coordinate
-        self._eigenvectors = eigenvectors
-
-    @property
-    def coordinate(self):
-        """Cartesian coordinate of critical point."""
-        return self._coord
+from chemtools.topology.eigenvalues import CriticalPoint
 
 
 class Topology(object):

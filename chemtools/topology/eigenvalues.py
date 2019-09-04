@@ -27,7 +27,7 @@ import warnings
 import numpy as np
 
 
-__all__ = ["EigenValueTool"]
+__all__ = ["EigenValueTool", "CriticalPoint"]
 
 
 class EigenValueTool(object):
@@ -144,3 +144,29 @@ class EigenValueTool(object):
         if np.any(np.abs(self.eigenvalues) < self._eps):
             warnings.warn("Near catastrophic eigenvalue (close to zero) been found.")
         return np.hstack([self.rank[:, np.newaxis], self.signature[:, np.newaxis]])
+
+
+class CriticalPoint(EigenValueTool):
+    """Critical Point Class."""
+
+    def __init__(self, coordinate, eigenvalues, eigenvectors, eps=1e-15):
+        r"""Initialize class.
+
+        Parameters
+        ----------
+        coordinate : np.ndarray(3,)
+            Cartesian coordinate of critical point.
+        eigenvalues : np.ndarray(3,)
+            Eigenvalues of hessian function evaluated at the critical point.
+        eigenvectors : np.ndarray(3, 3)
+            Eigenvectors of hessian function evaluated at the critical point.
+
+        """
+        super(CriticalPoint, self).__init__(eigenvalues[np.newaxis, :], eps=eps)
+        self._coord = coordinate
+        self._eigenvectors = eigenvectors
+
+    @property
+    def coordinate(self):
+        """Cartesian coordinate of critical point."""
+        return self._coord
