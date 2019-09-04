@@ -28,7 +28,7 @@ import numpy as np
 
 from scipy.spatial import cKDTree
 
-from chemtools.topology.eigenvalues import CriticalPoint
+from chemtools.topology.point import CriticalPoint
 
 
 class Topology(object):

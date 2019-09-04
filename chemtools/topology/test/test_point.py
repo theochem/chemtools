@@ -27,7 +27,7 @@ import warnings
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_raises, assert_equal
 
-from chemtools.topology.eigenvalues import EigenValueTool
+from chemtools.topology.point import EigenValueTool
 try:
     from importlib_resources import path
 except ImportError:
