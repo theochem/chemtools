@@ -137,7 +137,7 @@ class Topology(object):
             if index < len(self._coords) or np.all(point_norm < neigh_norm):
                 try:
                     coord = self._root_vector_func(point.copy())
-                except RuntimeError as _:
+                except np.linalg.LinAlgError as _:
                     continue
                 # add critical point if it is new
                 if not np.any([np.linalg.norm(coord - cp.coordinate) < 1.e-3 for cp in self.cps]):
