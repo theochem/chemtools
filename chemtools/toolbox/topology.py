@@ -33,19 +33,19 @@ from chemtools.outputs.vmd import print_vmd_script_topology
 
 
 class TopologicalTool(Topology):
-    """Topological Analysis of Scalar Functions."""
+    """Topological analysis of scalar functions."""
 
     def __init__(self, func_dens, func_grad, func_hess, points, coordinates=None):
-        """Initialize class.
+        """Initialize class for topological analysis of arbitrary scalar function.
 
         Parameters
         ----------
         func_dens : callable
-            The function to compute the scalar density value at a given point.
+            The function to compute the scalar value at a given point.
         func_grad : callable
-            The function to compute the gradient of density at a given point.
-        func_hess : callale
-            The function to compute the hessian of density at a given point.
+            The function to compute the gradient of scalar function at a given point.
+        func_hess : callable
+            The function to compute the hessian of scalar function at a given point.
         points : np.ndarray
             Cartesian coordinates of points used for critical point search.
         coordinates : np.ndarray, optional
@@ -61,7 +61,7 @@ class TopologicalTool(Topology):
 
     @classmethod
     def from_molecule(cls, molecule, spin="ab", index=None, points=None):
-        """Initialize class from ``Molecule`` object.
+        """Initialize class from `Molecule` object for topological analysis of electron density.
 
         Parameters
         ----------
@@ -86,7 +86,7 @@ class TopologicalTool(Topology):
 
     @classmethod
     def from_file(cls, fname, spin="ab", index=None, points=None):
-        """Initialize class using wave-function file.
+        """Initialize class from wave-function file for topological analysis of electron density.
 
         Parameters
         ----------
