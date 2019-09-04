@@ -657,10 +657,12 @@ def print_vmd_script_topology(fname, points, radius=0.2):
               'color Display Background white\n'
               '#\n'
               '# Critical Points\n')
-    for color, coords in points.items():
+    for color, coordinates in points.items():
         output += 'draw color {}\n'.format(color)
-        for coord in coords:
-            output += 'draw sphere {% .6f % .6f % .6f} radius %f\n' % tuple(list(coord) + [radius])
+        for coord in coordinates:
+            coord = '% .6f % .6f % .6f' % tuple(coord)
+            # resolution determines how many polygons are used in the approximation of a sphere
+            output += 'draw sphere {%s} radius %f resolution 36\n' % (coord, radius)
     # write output
     if not fname.endswith('.vmd'):
         fname += '.vmd'
