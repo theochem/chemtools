@@ -44,14 +44,6 @@ For general inquiries, please contact:
    | L8S 4M1 Hamilton, ON, Canada
    | ayers@mcmaster.ca
 
-**Esteban Vöhringer-Martinez**
-   | The Vöhringer-Martinez group
-   | Departamento de Físico-Química
-   | Facultad de Ciencias Químicas
-   | Universidad de Concepción
-   | Concepción, Chile
-   | evohringer@udec.cl
-
 **Toon Verstraelen**
    | `Center for Molecular Modeling (CMM) <http://molmod.ugent.be/>`_
    | `Ghent University <http://www.ugent.be/>`_
