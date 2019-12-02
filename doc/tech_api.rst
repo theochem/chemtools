@@ -48,12 +48,6 @@ Toolbox Module
 
 * Orbital Based Tools
 
-  * :class:`Orbital Local Tool <toolbox.orbsbased.OrbitalLocalTool>`
-
-
-Molecular Orbital (MO) Theory Module
-====================================
-
 * :class:`Molecular Orbtital Theory Based Tool <toolbox.motbased.MOTBasedTool>`
 
 
@@ -101,7 +95,7 @@ Density-Based Module
 Topological Analysis
 ====================
 
-  * :class:`Eigenvalue Descriptors <topology.eigenvalues.EigenValueTool>`
+  * :class:`Eigenvalue Descriptors <topology.point.EigenValueTool>`
 
 
 Wrappers Module
@@ -130,7 +124,7 @@ Output Module
 Utilities
 =========
 
-* :func:`plane_mesh <utils.mesh.plane_mesh>`
+* :func:`mesh_plane <utils.mesh.mesh_plane>`
 
 
 
@@ -147,7 +141,6 @@ Utilities
       toolbox.interactions.ELF
       toolbox.interactions.LOL
       toolbox.kinetic.KED
-      toolbox.orbsbased.OrbitalLocalTool
       denstools.densbased.DensTool
       denstools.densbased.DensGradTool
       denstools.densbased.DensGradLapTool
@@ -168,7 +161,7 @@ Utilities
       conceptual.linear.LinearCondensedTool
       conceptual.quadratic.QuadraticCondensedTool
       conceptual.mixed.MixedCondensedTool
-      topology.eigenvalues.EigenValueTool
+      topology.point.EigenValueTool
       wrappers.molecule.Molecule
       wrappers.grid.MolecularGrid
       outputs.vmd.print_vmd_script_nci
@@ -177,5 +170,5 @@ Utilities
       outputs.vmd.print_vmd_script_vector_field
       outputs.plot.plot_scatter
       utils.cube.UniformGrid
-      utils.mesh.plane_mesh
+      utils.mesh.mesh_plane
 
