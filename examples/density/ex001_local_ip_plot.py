@@ -40,4 +40,4 @@ print_vmd_script_isosurface(fname + '.vmd', rhoname, colorfile=lipname, isosurf=
 # when running the script on your machine.
 from tools.rug import plot_existing_image
 
-plot_existing_image('local_ip.jpeg')
+plot_existing_image('local_ip.jpg')
