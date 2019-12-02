@@ -88,37 +88,37 @@ class MOTBasedTool(object):
     @property
     @doc_inherit(MolecularOrbitals, 'homo_index')
     def homo_index(self):
-        return self._molecule.homo_index
+        return self._molecule.mo.homo_index
 
     @property
     @doc_inherit(MolecularOrbitals, 'lumo_index')
     def lumo_index(self):
-        return self._molecule.lumo_index
+        return self._molecule.mo.lumo_index
 
     @property
     @doc_inherit(MolecularOrbitals, 'homo_energy')
     def homo_energy(self):
-        return self._molecule.homo_energy
+        return self._molecule.mo.homo_energy
 
     @property
     @doc_inherit(MolecularOrbitals, 'lumo_energy')
     def lumo_energy(self):
-        return self._molecule.lumo_energy
+        return self._molecule.mo.lumo_energy
 
     @property
     @doc_inherit(MolecularOrbitals, 'occupation')
     def orbital_occupation(self):
-        return self._molecule.orbital_occupation
+        return self._molecule.mo.occupation
 
     @property
     @doc_inherit(MolecularOrbitals, 'energy')
     def orbital_energy(self):
-        return self._molecule.orbital_energy
+        return self._molecule.mo.energy
 
     @property
     @doc_inherit(MolecularOrbitals, 'coefficient')
     def orbital_coefficient(self):
-        return self._molecule.orbital_coefficient
+        return self._molecule.mo.coefficient
 
     @doc_inherit(Molecule, 'compute_density_matrix')
     def compute_density_matrix(self, spin='ab'):
@@ -207,7 +207,7 @@ class MOTBasedTool(object):
 
         if index is None:
             spin_index = {'a': 0, 'b': 1}
-            index = range(1, self.homo_index[spin_index[spin]] + 1)
+            index = range(1, self._molecule.mo.homo_index[spin_index[spin]] + 1)
         else:
             index = [index]
 
