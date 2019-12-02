@@ -32,12 +32,12 @@ cub.generate_cube(lipname, lip_a + lip_b)
 #    To visualize the iso-surface, use command: $ vmd -e fname.vmd
 
 print_vmd_script_isosurface(fname + '.vmd', rhoname, colorfile=lipname, isosurf=0.002,
-                            scalemin=-1.0, scalemax=mol.homo_energy[0])
+                            scalemin=-1.0, scalemax=mol.mo.homo_energy[0])
 
 
 # DISCARD BELOW:
 # the code below is for displaying the ELF image on the website, you should remove it
 # when running the script on your machine.
-# from tools.rug import plot_existing_image
+from tools.rug import plot_existing_image
 
-# plot_existing_image('esp_scl2.png')
+plot_existing_image('local_ip.jpeg')
