@@ -31,8 +31,6 @@ the quantitative output of electronic structure theory calculations can be expre
 chemical language. ChemTools provides easy-to-use core functionality to compute fundamental
 descriptors of conceptual quantum chemistry, together with a flexible set
 of utilities allowing scientists to easily test their own discoveries.
-ChemTools is designed as a module of the `HORTON package <http://theochem.github.io/horton/>`_,
-but can also be used independently to post-process output files of many standard quantum chemistry programs.
 
 Motivated by our interests and our assessment of which portions of the conceptual quantum
 chemistry community are most underserved, the current version of ChemTools emphasizes on
