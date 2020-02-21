@@ -43,14 +43,15 @@ The following dependencies will be necessary for ChemTools to build properly,
 Installation
 ------------
 
-To install HORTON with conda:
+To install HORTON and Git-LFS with conda:
 ```bash
 conda install -c theochem horton=2.1.0
+conda install -c conda-forge git-lfs
 ```
 
 To install chemtools:
 ```bash
-pip install .
+pip install -e .
 ```
 
 Check our website for more detailed
