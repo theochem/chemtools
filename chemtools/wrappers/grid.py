@@ -33,7 +33,7 @@ __all__ = ['MolecularGrid']
 class MolecularGrid(object):
     """Becke-Lebedev molecular grid for numerical integrations."""
 
-    def __init__(self, coordinates, numbers, pseudo_numbers, specification='medium', k=3, rotate=False):
+    def __init__(self, coordinates, numbers, pseudo_numbers, specs='medium', k=3, rotate=False):
         """Initialize class.
 
         Parameters
@@ -44,7 +44,7 @@ class MolecularGrid(object):
             Atomic number of `M` atoms in the molecule.
         pseudo_numbers : np.ndarray, shape=(M,)
             Pseudo-number of `M` atoms in the molecule.
-        specification : str, optional
+        specs : str, optional
             Specification of grid. Either choose from ['coarse', 'medium', 'fine', 'veryfine',
             'ultrafine', 'insane'] or provide a string of 'rname:rmin:rmax:nrad:nang' format.
             Here 'rname' denotes the type of radial grid and can be chosen from ['linear', 'exp',
@@ -64,11 +64,10 @@ class MolecularGrid(object):
         self._pseudo_numbers = pseudo_numbers
         self._k = k
         self._rotate = rotate
-        self.specification = specification
+        self.specs = specs
 
         self._grid = BeckeMolGrid(self.coordinates, self.numbers, self.pseudo_numbers,
-                                  agspec=self.specification, k=k,
-                                  random_rotate=rotate, mode='keep')
+                                  agspec=self.specs, k=k, random_rotate=rotate, mode='keep')
 
     @classmethod
     def from_molecule(cls, molecule, specification='medium', k=3, rotate=False):
