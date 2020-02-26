@@ -24,6 +24,7 @@
 
 
 import numpy as np
+import itertools
 
 from horton import BeckeMolGrid, ProAtomDB
 from horton.scripts.wpart import wpart_schemes
@@ -37,13 +38,30 @@ __all__ = ['DensPart']
 class DensPart(object):
 
     def __init__(self, coordinates, numbers, pseudo_numbers, density, grid, scheme="h", **kwargs):
+        """Initialize class.
 
+        Parameters
+        ----------
+        coordinates : np.ndarray, shape=(M, 3)
+            Cartesian coordinates of `M` atoms in the molecule.
+        numbers : np.ndarray, shape=(M,)
+            Atomic number of `M` atoms in the molecule.
+        pseudo_numbers : np.ndarray, shape=(M,)
+            Pseudo-number of `M` atoms in the molecule.
+        density : np.ndarray, shape=(N,)
+            Total density to be partitioned.
+        grid : BeckeMolGrid
+            Instance of BeckeMolGrid numerical integration grid.
+        scheme : str
+            Type of atoms-in-molecule partitioning scheme.
+
+        """
         wpart = wpart_schemes[scheme]
         # make proatom database
         if scheme.lower() not in ["mbis", "b"]:
             if "proatomdb" not in kwargs.keys():
                 proatomdb = ProAtomDB.from_refatoms(numbers)
-            kwargs["proatomdb"] = proatomdb
+                kwargs["proatomdb"] = proatomdb
         # partition
         self.part = wpart(coordinates, numbers, pseudo_numbers, grid, density, **kwargs)
         self.part.do_all()
@@ -57,9 +75,24 @@ class DensPart(object):
 
     @classmethod
     def from_molecule(cls, mol, scheme=None, grid=None, spin="ab", **kwargs):
+        """Initialize class given a Molecule instance.
+
+        Parameters
+        ----------
+        mol : Molecule
+            Instance of Molecule class.
+        scheme : str
+            Type of atoms-in-molecule partitioning scheme.
+        grid : BeckeMolGrid
+            Instance of BeckeMolGrid numerical integration grid.
+        spin : str
+           Type of occupied spin orbitals; choose either "a" (for alpha), "b" (for beta),
+           and "ab" (for alpha + beta).
+
+        """
         if grid is None:
             grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
-                                agspec="fine", random_rotate=False, mode='keep')
+                                agspec="fine", random_rotate=False, mode='keep', k=3)
         else:
             check_molecule_grid(mol, grid)
         # compute molecular electron density
@@ -72,50 +105,67 @@ class DensPart(object):
 
     @classmethod
     def from_file(cls, fname, scheme=None, grid=None, spin="ab", **kwargs):
-        """Initialize class given a file.
+        """Initialize class given a wave-function file.
 
         Parameters
         ----------
         fname : str
             Path to molecule's files.
-        grid
-        spin
-
-        Returns
-        -------
+        scheme : str
+            Type of atoms-in-molecule partitioning scheme.
+        grid : BeckeMolGrid
+            Instance of BeckeMolGrid integration grid.
+        spin : str
+           Type of occupied spin orbitals; choose either "a" (for alpha), "b" (for beta),
+           and "ab" (for alpha + beta).
 
         """
-        # load molecule & make/check grid
         mol = Molecule.from_file(fname)
-        print('MOL = ', mol)
         return cls.from_molecule(mol, scheme=scheme, grid=grid, spin=spin, **kwargs)
 
-    def condense_to_atoms(self, property):
+    def condense_to_atoms(self, property, w_power=1):
         condensed = np.zeros(self.part.natom)
         for index in range(self.part.natom):
             at_grid = self.part.get_grid(index)
             at_weight = self.part.cache.load("at_weights", index)
             wcor = self.part.get_wcor(index)
             local_prop = self.part.to_atomic_grid(index, property)
-            condensed[index] = at_grid.integrate(at_weight, local_prop, wcor)
+            condensed[index] = at_grid.integrate(at_weight**w_power, local_prop, wcor)
+        return condensed
+
+    def condense_to_fragments(self, property, fragments, w_power=1):
+        # TODO: check fragment
+
+        if fragments is None:
+            fragments = [[index] for index in range(self.part.natom)]
+        condensed = np.zeros(len(fragments))
+        for index, frag in enumerate(fragments):
+            weight = np.zeros(self.grid.points.shape[0])
+            for item in frag:
+                weight += self.part.cache.load("at_weights", item)
+            share = self.grid.integrate(weight**w_power, property)
+            condensed[index] = share
         return condensed
 
 
-def check_molecule_grid(molecule, grid):
-    """
+def check_molecule_grid(mol, grid):
+    """Check that molecule and grid represent the same system.
 
     Parameters
     ----------
-    molecule
-    grid
-
-    Returns
-    -------
+    mol : Molecule
+        Instance of Molecule class.
+    grid : BeckeMolGrid
+        Instance of BeckeMolGrid numerical integration grid.
 
     """
-    if not np.max(abs(grid.coordinates - molecule.coordinates)) < 1.e-6:
-        raise ValueError("Argument molecule & grid should have the same coordinates.")
-    if not np.max(abs(grid.numbers - molecule.numbers)) < 1.e-6:
+    if isinstance(grid, BeckeMolGrid):
+        centers = grid.centers
+    else:
+        centers = grid.coordinates
+    if not np.max(abs(centers - mol.coordinates)) < 1.e-6:
+        raise ValueError("Argument molecule & grid should have the same coordinates/centers.")
+    if not np.max(abs(grid.numbers - mol.numbers)) < 1.e-6:
         raise ValueError("Arguments molecule & grid should have the same numbers.")
-    if not np.max(abs(grid.pseudo_numbers - molecule.pseudo_numbers)) < 1.e-6:
+    if not np.max(abs(grid.pseudo_numbers - mol.pseudo_numbers)) < 1.e-6:
         raise ValueError("Arguments molecule & grid should have the same pseudo_numbers.")
