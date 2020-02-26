@@ -139,7 +139,7 @@ def get_molecular_grid(molecule, grid=None):
         number = get_matching_attr(molecule, "numbers", 1.e-8)
         pseudo = get_matching_attr(molecule, "pseudo_numbers", 1.e-8)
         coords = get_matching_attr(molecule, "coordinates", 1.e-4)
-        grid = MolecularGrid(coords, number, pseudo, specification="insane", rotate=False)
+        grid = MolecularGrid(coords, number, pseudo, specs="insane", rotate=False)
     return grid
 
 

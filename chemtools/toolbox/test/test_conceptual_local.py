@@ -121,7 +121,7 @@ def check_local_reactivity(model, energy_model, grid, n0):
 def test_local_linear_from_file_fmo_ch4_uhf_ccpvdz_fchk():
     # atomic coordinates and numbers of CH4
     coord, nums = get_data_ch4()
-    grid = MolecularGrid(coord, nums, nums, specification='insane', rotate=False)
+    grid = MolecularGrid(coord, nums, nums, specs='insane', rotate=False)
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file_path:
     # check from_file passing a grid
     # check from_file given as a list passing a grid
@@ -136,7 +136,7 @@ def test_local_linear_from_molecule_fmo_ch4_uhf_ccpvdz_fchk():
     coord, nums = get_data_ch4()
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file_path:
         molecule = Molecule.from_file(file_path)
-    grid = MolecularGrid(coord, nums, nums, specification='insane', rotate=False)
+    grid = MolecularGrid(coord, nums, nums, specs='insane', rotate=False)
     # check from_molecule passing a grid
     model = LocalConceptualDFT.from_molecule(molecule, "linear", grid.points)
     check_local_reactivity(model, "linear", grid, 10)
@@ -148,7 +148,7 @@ def test_local_linear_from_molecule_fmo_ch4_uhf_ccpvdz_fchk():
 def test_local_linear_from_file_fmo_ch4_uhf_ccpvdz_wfn():
     # atomic coordinates and numbers of CH4
     coord, nums = get_data_ch4()
-    grid = MolecularGrid(coord, nums, nums, specification='insane', rotate=False)
+    grid = MolecularGrid(coord, nums, nums, specs='insane', rotate=False)
     with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as file_path:
     # check from_file passing a grid
     # check from_file given as a list passing a grid
@@ -163,7 +163,7 @@ def test_local_linear_from_molecule_fmo_ch4_uhf_ccpvdz_wfn():
     coord, nums = get_data_ch4()
     with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as file_path:
         molecule = Molecule.from_file(file_path)
-    grid = MolecularGrid(coord, nums, nums, specification='insane', rotate=False)
+    grid = MolecularGrid(coord, nums, nums, specs='insane', rotate=False)
     # check from_molecule passing a grid
     model = LocalConceptualDFT.from_molecule(molecule, "linear", grid.points)
     check_local_reactivity(model, "linear", grid, 10)
@@ -177,7 +177,7 @@ def test_local_quadratic_from_file_fmo_ch4_uhf_ccpvdz_fchk():
     coord, nums = get_data_ch4()
     # ip = -E(homo) & ea = E(lumo) & eta = ip - ea
     # eta = -(-5.43101269E-01) - (-1.93295185E-01)
-    grid = MolecularGrid(coord, nums, nums, specification='insane', rotate=False)
+    grid = MolecularGrid(coord, nums, nums, specs='insane', rotate=False)
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file_path:
     # check from_file passing grid
     # check from_file given as a list passing grid
@@ -194,7 +194,7 @@ def test_local_quadratic_from_molecule_fmo_ch4_uhf_ccpvdz_fchk():
     # eta = -(-5.43101269E-01) - (-1.93295185E-01)
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file_path:
         molecule = Molecule.from_file(file_path)
-    grid = MolecularGrid(coord, nums, nums, specification='insane', rotate=False)
+    grid = MolecularGrid(coord, nums, nums, specs='insane', rotate=False)
     # check from_molecule passing grid
     model = LocalConceptualDFT.from_molecule(molecule, "quadratic", grid.points)
     check_local_reactivity(model, "quadratic", grid, 10)
@@ -208,7 +208,7 @@ def test_local_quadratic_from_file_fmo_ch4_uhf_ccpvdz_wfn():
     coord, nums = get_data_ch4()
     # ip = -E(homo) & ea = E(lumo) & eta = ip - ea
     # eta = -(-5.43101269E-01) - (-1.93295185E-01)
-    grid = MolecularGrid(coord, nums, nums, specification='insane', rotate=False)
+    grid = MolecularGrid(coord, nums, nums, specs='insane', rotate=False)
     with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as file_path:
     # check from_file passing grid
     # check from_file given as a list passing grid
@@ -225,7 +225,7 @@ def test_local_quadratic_from_molecule_fmo_ch4_uhf_ccpvdz_wfn():
     # eta = -(-5.43101269E-01) - (-1.93295185E-01)
     with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as file_path:
         molecule = Molecule.from_file(file_path)
-    grid = MolecularGrid(coord, nums, nums, specification='insane', rotate=False)
+    grid = MolecularGrid(coord, nums, nums, specs='insane', rotate=False)
     # check from_molecule passing grid
     model = LocalConceptualDFT.from_molecule(molecule, "quadratic", grid.points)
     check_local_reactivity(model, "quadratic", grid, 10)
