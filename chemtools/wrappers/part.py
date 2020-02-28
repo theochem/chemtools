@@ -24,18 +24,19 @@
 
 
 import numpy as np
-import itertools
 
-from horton import BeckeMolGrid, ProAtomDB
+from horton import ProAtomDB
 from horton.scripts.wpart import wpart_schemes
 
 from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers.grid import MolecularGrid
 
 
 __all__ = ['DensPart']
 
 
 class DensPart(object):
+    """Density-based Atoms-in-Molecules Partitioning Class."""
 
     def __init__(self, coordinates, numbers, pseudo_numbers, density, grid, scheme="h", **kwargs):
         """Initialize class.
@@ -83,16 +84,16 @@ class DensPart(object):
             Instance of Molecule class.
         scheme : str
             Type of atoms-in-molecule partitioning scheme.
-        grid : BeckeMolGrid
-            Instance of BeckeMolGrid numerical integration grid.
+        grid : MolecularGrid
+            Instance of MolecularGrid numerical integration grid.
         spin : str
            Type of occupied spin orbitals; choose either "a" (for alpha), "b" (for beta),
            and "ab" (for alpha + beta).
 
         """
         if grid is None:
-            grid = BeckeMolGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
-                                agspec="fine", random_rotate=False, mode='keep', k=3)
+            grid = MolecularGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
+                                 specs="fine", rotate=False, k=3)
         else:
             check_molecule_grid(mol, grid)
         # compute molecular electron density
@@ -113,8 +114,8 @@ class DensPart(object):
             Path to molecule's files.
         scheme : str
             Type of atoms-in-molecule partitioning scheme.
-        grid : BeckeMolGrid
-            Instance of BeckeMolGrid integration grid.
+        grid : MolecularGrid
+            Instance of MolecularGrid integration grid.
         spin : str
            Type of occupied spin orbitals; choose either "a" (for alpha), "b" (for beta),
            and "ab" (for alpha + beta).
@@ -155,15 +156,11 @@ def check_molecule_grid(mol, grid):
     ----------
     mol : Molecule
         Instance of Molecule class.
-    grid : BeckeMolGrid
-        Instance of BeckeMolGrid numerical integration grid.
+    grid : MolecularGrid
+        Instance of MolecularGrid numerical integration grid.
 
     """
-    if isinstance(grid, BeckeMolGrid):
-        centers = grid.centers
-    else:
-        centers = grid.coordinates
-    if not np.max(abs(centers - mol.coordinates)) < 1.e-6:
+    if not np.max(abs(grid.coordinates - mol.coordinates)) < 1.e-6:
         raise ValueError("Argument molecule & grid should have the same coordinates/centers.")
     if not np.max(abs(grid.numbers - mol.numbers)) < 1.e-6:
         raise ValueError("Arguments molecule & grid should have the same numbers.")
