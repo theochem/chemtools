@@ -70,14 +70,14 @@ class MolecularGrid(object):
                                   agspec=self.specs, k=k, random_rotate=rotate, mode='keep')
 
     @classmethod
-    def from_molecule(cls, molecule, specification='medium', k=3, rotate=False):
+    def from_molecule(cls, molecule, specs='medium', k=3, rotate=False):
         """Initialize the class given an instance of Molecule.
 
         Parameters
         ----------
         molecule : instance of Molecule
             Instance of Molecule class.
-        specification : str, optional
+        specs : str, optional
             Specification of grid. Either choose from ['coarse', 'medium', 'fine', 'veryfine',
             'ultrafine', 'insane'] or provide a string of 'rname:rmin:rmax:nrad:nang' format.
             Here 'rname' denotes the type of radial grid and can be chosen from ['linear', 'exp',
@@ -95,17 +95,17 @@ class MolecularGrid(object):
         if not isinstance(molecule, Molecule):
             raise TypeError('Argument molecule should be an instance of Molecule class.')
         coords, nums, pnums = molecule.coordinates, molecule.numbers, molecule.pseudo_numbers
-        return cls(coords, nums, pnums, specification, k, rotate)
+        return cls(coords, nums, pnums, specs, k, rotate)
 
     @classmethod
-    def from_file(cls, fname, specification='medium', k=3, rotate=False):
+    def from_file(cls, fname, specs='medium', k=3, rotate=False):
         """Initialize the class given an instance of Molecule.
 
         Parameters
         ----------
         fname : str
             Path to molecule's files.
-        specification : str, optional
+        specs : str, optional
             Specification of grid. Either choose from ['coarse', 'medium', 'fine', 'veryfine',
             'ultrafine', 'insane'] or provide a string of 'rname:rmin:rmax:nrad:nang' format.
             Here 'rname' denotes the type of radial grid and can be chosen from ['linear', 'exp',
@@ -121,7 +121,7 @@ class MolecularGrid(object):
 
         """
         mol = Molecule.from_file(fname)
-        return cls.from_molecule(mol, specification, k, rotate)
+        return cls.from_molecule(mol, specs, k, rotate)
 
     def __getattr__(self, item):
         return getattr(self._grid, item)

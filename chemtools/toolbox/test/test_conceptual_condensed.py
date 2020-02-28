@@ -115,7 +115,7 @@ def test_condense_linear_from_file_fmr_h_ch4_fchk():
         model1 = CondensedConceptualDFT.from_file(fname, "linear", "FMR", "h")
         model2 = CondensedConceptualDFT.from_file([fname], "linear", "FMR", "h")
         mol = Molecule.from_file(fname)
-        grid = MolecularGrid.from_molecule(mol, specification='insane', rotate=False)
+        grid = MolecularGrid.from_molecule(mol, specs='insane', rotate=False)
         model3 = CondensedConceptualDFT.from_file(fname, "linear", "FMR", "h", grid=grid)
         model4 = CondensedConceptualDFT.from_file([fname], "linear", "FMR", "h", grid=grid)
     expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
