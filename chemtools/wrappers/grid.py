@@ -23,6 +23,8 @@
 """Grid Wrapper Module."""
 
 
+import numpy as np
+
 from horton import BeckeMolGrid
 from chemtools.wrappers.molecule import Molecule
 
@@ -127,6 +129,11 @@ class MolecularGrid(object):
         return getattr(self._grid, item)
 
     @property
+    def center(self):
+        """Cartesian coordinates of atomic centers."""
+        return self._coordinates
+
+    @property
     def coordinates(self):
         """Cartesian coordinates of atomic centers."""
         return self._coordinates
@@ -156,7 +163,7 @@ class MolecularGrid(object):
         """Integration weight of grid points."""
         return self._grid.weights
 
-    def integrate(self, value):
+    def integrate(self, *value):
         """Integrate the property evaluated on the grid points.
 
         Parameters
@@ -165,6 +172,13 @@ class MolecularGrid(object):
            Property value evaluated on the grid points.
 
         """
+        # temporary hack because of HORTON
+        if type(value) is not np.ndarray:
+            temp = value[0]
+            for item in value[1:]:
+                if item is not None:
+                    temp = temp * item
+            value = temp
         if value.ndim != 1:
             raise ValueError('Argument value should be a 1D array.')
         if value.shape != (self.npoints,):

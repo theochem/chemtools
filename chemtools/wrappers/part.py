@@ -63,9 +63,10 @@ class DensPart(object):
             if "proatomdb" not in kwargs.keys():
                 proatomdb = ProAtomDB.from_refatoms(numbers)
                 kwargs["proatomdb"] = proatomdb
+            kwargs["local"] = False
         # partition
         self.part = wpart(coordinates, numbers, pseudo_numbers, grid, density, **kwargs)
-        self.part.do_all()
+        self.part.do_charges()
 
         self.grid = grid
         self.density = density
@@ -129,16 +130,19 @@ class DensPart(object):
         for index in range(self.part.natom):
             at_grid = self.part.get_grid(index)
             at_weight = self.part.cache.load("at_weights", index)
-            wcor = self.part.get_wcor(index)
+            # wcor = self.part.get_wcor(index)
             local_prop = self.part.to_atomic_grid(index, property)
-            condensed[index] = at_grid.integrate(at_weight**w_power, local_prop, wcor)
+            condensed[index] = at_grid.integrate(at_weight**w_power * local_prop)
         return condensed
 
-    def condense_to_fragments(self, property, fragments, w_power=1):
-        # TODO: check fragment
-
+    def condense_to_fragments(self, property, fragments=None, w_power=1):
         if fragments is None:
             fragments = [[index] for index in range(self.part.natom)]
+        else:
+            # check fragments
+            segments = sorted([item for frag in fragments for item in frag])
+            if segments != range(self.numbers):
+                raise ValueError("Items in Fragments should uniquely represent all atoms.")
         condensed = np.zeros(len(fragments))
         for index, frag in enumerate(fragments):
             weight = np.zeros(self.grid.points.shape[0])
