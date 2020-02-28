@@ -173,7 +173,7 @@ class MolecularGrid(object):
 
         """
         # temporary hack because of HORTON
-        if type(value) is not np.ndarray:
+        if not isinstance(value, np.ndarray):
             temp = value[0]
             for item in value[1:]:
                 if item is not None:
