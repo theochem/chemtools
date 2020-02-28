@@ -125,17 +125,17 @@ class DensPart(object):
         mol = Molecule.from_file(fname)
         return cls.from_molecule(mol, scheme=scheme, grid=grid, spin=spin, **kwargs)
 
-    def condense_to_atoms(self, property, w_power=1):
+    def condense_to_atoms(self, value, w_power=1):
         condensed = np.zeros(self.part.natom)
         for index in range(self.part.natom):
             at_grid = self.part.get_grid(index)
             at_weight = self.part.cache.load("at_weights", index)
             # wcor = self.part.get_wcor(index)
-            local_prop = self.part.to_atomic_grid(index, property)
+            local_prop = self.part.to_atomic_grid(index, value)
             condensed[index] = at_grid.integrate(at_weight**w_power * local_prop)
         return condensed
 
-    def condense_to_fragments(self, property, fragments=None, w_power=1):
+    def condense_to_fragments(self, value, fragments=None, w_power=1):
         if fragments is None:
             fragments = [[index] for index in range(self.part.natom)]
         else:
@@ -148,7 +148,7 @@ class DensPart(object):
             weight = np.zeros(self.grid.points.shape[0])
             for item in frag:
                 weight += self.part.cache.load("at_weights", item)
-            share = self.grid.integrate(weight**w_power, property)
+            share = self.grid.integrate(weight ** w_power, value)
             condensed[index] = share
         return condensed
 
