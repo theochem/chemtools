@@ -27,50 +27,54 @@ from chemtools.wrappers.molecule import Molecule
 
 
 class EOS(object):
-    def __init__(self, molecule, denspart, grid):
+    def __init__(self, molecule, part, grid):
         self.molecule = molecule
-        self.denspart = denspart
+        self.part = part
         self.grid = grid
 
     @classmethod
-    def from_molecule(cls, molecule, denspart, grid):
+    def from_molecule(cls, molecule, part, grid):
         """Initialize class from `Molecule` object.
 
         Parameters
         ----------
         molecule : `Molecule`
             Instance of `Molecular` class.
-        denspart : `DensPart`
+        part : `DensPart`
             Instance of `DensPart` class.
-        grid : instance of `MolecularGrid`, optional
+        grid : `MolecularGrid`
             Molecular numerical integration grid.
 
         """
-        return cls(molecule, denspart, grid)
+        return cls(molecule, part, grid)
 
     @classmethod
-    def from_file(cls, fname, denspart, grid):
+    def from_file(cls, fname, part, grid):
         """Initialize class using wave-function file.
 
         Parameters
         ----------
         fname : str
             A string representing the path to a molecule's fname.
-        denspart : `DensPart`
+        part : `DensPart`
             Instance of `DensPart` class.
-        grid : instance of `MolecularGrid`, optional
+        grid : `MolecularGrid`
             Molecular numerical integration grid.
 
         """
         molecule = Molecule.from_file(fname)
-        return cls.from_molecule(molecule, denspart, grid)
+        return cls.from_molecule(molecule, part, grid)
 
-    def compute_fragment_overlap(self, index, fragment=None):
-        # compute MO overlap matrix for the atom specified with index
+    def compute_fragment_overlap(self, fragments=None, spin='a'):
+        # compute MO overlap matrix for fragments
+        pass
+
+    def compute_fragment_occupation(self, fragments=None, spin='a'):
+        # compute occupation for fragments
         pass
 
     def compute_oxidation_state(self, fragments=None):
-        # if fragments=None, EOS is computed for each atom
+        # compute oxidation state for fragments
         pass
 
     def compute_effective_orbitals(self):

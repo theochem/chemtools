@@ -23,21 +23,64 @@
 """Test chemtools.toolbox.oxidation."""
 
 
+import numpy as np
+
 from chemtools.wrappers.molecule import Molecule
 from chemtools.wrappers.part import DensPart
 from chemtools.toolbox.oxidation import EOS
+
+from numpy.testing import assert_equal, assert_almost_equal
+
 try:
     from importlib_resources import path
 except ImportError:
     from importlib.resources import path
 
 
-def test_eos_h2o():
-    # test against Apost
+def test_eos_h_h2o_3fragments():
+    # test against APOST-3D (version 3.1)
     with path('chemtools.data.examples', 'h2o.fchk') as file_path:
         mol = Molecule.from_file(file_path)
+        # make proatom & pass it to Denspart
         part = DensPart.from_molecule(mol, scheme="h")
         eos = EOS.from_molecule(mol, part, part.grid)
+    # test occupations
+    occupation_o = np.array([0.9950, 0.8933, 0.7876, 0.5591, 0.5384])
+    occupation_h = np.array([0.1860, 0.0219, 0.0135, 0.0, 0.0])
+    result = eos.compute_fragment_occupation()
+    # assert_almost_equal(occupation_o, result[0], decimal=3)
+    # assert_almost_equal(occupation_h, result[1], decimal=3)
+    # assert_almost_equal(occupation_h, result[2], decimal=3)
+    # test oxidation states
+    # assert_equal(eos.compute_oxidation_state(), [-2.0, 1.0, 1.0])
 
-    # test oxidation state of each atom and then fragments
-    # use eos.compute_oxidation_state(fragments)
+
+def test_eos_h_h2o_2fragments():
+    # test against APOST-3D (version 3.1)
+    with path('chemtools.data.examples', 'h2o.fchk') as file_path:
+        mol = Molecule.from_file(file_path)
+        # make proatom & pass it to Denspart
+        part = DensPart.from_molecule(mol, scheme="h")
+        eos = EOS.from_molecule(mol, part, part.grid)
+    # test occupations
+    occs_f1 = np.array([0.9975, 0.9680, 0.9184, 0.8895, 0.5958])
+    occs_f2 = np.array([0.1860, 0.0219, 0.0135])
+    result = eos.compute_fragment_occupation()
+    # assert_almost_equal(occs_f1, result[0], decimal=3)
+    # assert_almost_equal(occs_f2, result[1], decimal=3)
+    # test oxidation states
+    # assert_equal(eos.compute_oxidation_state(), [-1.0, 1.0])
+
+
+def test_eos_h_h2o_1fragments():
+    # test against APOST-3D (version 3.1)
+    with path('chemtools.data.examples', 'h2o.fchk') as file_path:
+        mol = Molecule.from_file(file_path)
+        # make proatom & pass it to Denspart
+        part = DensPart.from_molecule(mol, scheme="h")
+        eos = EOS.from_molecule(mol, part, part.grid)
+    # test occupations
+    occs = np.array([1.0000, 1.0000, 1.0000, 1.0000, 1.0000])
+    # assert_almost_equal(occs, eos.compute_fragment_occupation([[0, 1, 2]]), decimal=3)
+    # test oxidation states
+    # assert_equal(eos.compute_oxidation_state(), [0.0])
