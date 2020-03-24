@@ -141,7 +141,8 @@ class DensPart(object):
         else:
             # check fragments
             segments = sorted([item for frag in fragments for item in frag])
-            if segments != range(self.numbers):
+            segments = np.array(segments)
+            if segments.size != self.numbers.size:
                 raise ValueError("Items in Fragments should uniquely represent all atoms.")
         condensed = np.zeros(len(fragments))
         for index, frag in enumerate(fragments):
@@ -164,7 +165,7 @@ def check_molecule_grid(mol, grid):
         Instance of MolecularGrid numerical integration grid.
 
     """
-    if not np.max(abs(grid.coordinates - mol.coordinates)) < 1.e-6:
+    if not np.max(abs(grid.centers - mol.coordinates)) < 1.e-6:
         raise ValueError("Argument molecule & grid should have the same coordinates/centers.")
     if not np.max(abs(grid.numbers - mol.numbers)) < 1.e-6:
         raise ValueError("Arguments molecule & grid should have the same numbers.")

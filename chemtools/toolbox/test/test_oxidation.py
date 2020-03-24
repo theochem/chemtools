@@ -25,6 +25,7 @@
 
 import numpy as np
 
+from chemtools.wrappers.grid import MolecularGrid
 from chemtools.wrappers.molecule import Molecule
 from chemtools.wrappers.part import DensPart
 from chemtools.toolbox.oxidation import EOS
@@ -77,10 +78,12 @@ def test_eos_h_h2o_1fragments():
     with path('chemtools.data.examples', 'h2o.fchk') as file_path:
         mol = Molecule.from_file(file_path)
         # make proatom & pass it to Denspart
-        part = DensPart.from_molecule(mol, scheme="h")
-        eos = EOS.from_molecule(mol, part, part.grid)
+        grid =MolecularGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
+                  specs='power:5e-8:20:40:146', rotate=False, k=4)
+        part = DensPart.from_molecule(mol, scheme="h", grid=grid, local=False)
+        eos = EOS.from_molecule(mol, part, grid)
     # test occupations
     occs = np.array([1.0000, 1.0000, 1.0000, 1.0000, 1.0000])
-    # assert_almost_equal(occs, eos.compute_fragment_occupation([[0, 1, 2]]), decimal=3)
+    assert_almost_equal(occs, eos.compute_fragment_occupation([[0, 1, 2]]), decimal=3)
     # test oxidation states
     # assert_equal(eos.compute_oxidation_state(), [0.0])
