@@ -31,3 +31,4 @@ from chemtools.toolbox.dftbased import DFTBasedTool
 from chemtools.toolbox.densbased import DensityLocalTool
 from chemtools.toolbox.interactions import NCI, ELF, LOL
 from chemtools.toolbox.topology import TopologicalTool
+from chemtools.toolbox.oxidation import EOS
