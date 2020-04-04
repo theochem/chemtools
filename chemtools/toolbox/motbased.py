@@ -34,16 +34,22 @@ from chemtools.wrappers.molecule import Molecule, MolecularOrbitals
 class MOTBasedTool(object):
     """Molecular Orbital Theory Based Descriptive Tools."""
 
-    def __init__(self, molecule):
+    def __init__(self, mo, ao, numbers):
         r"""Initialize class from Molecule instance.
 
         Parameters
         ----------
-        molecule : Molecule
-            An instance of `Molecule` class.
+        mo : MolecularOrbitals
+            An instance of `MolecularOrbitals` class.
+        ao : AtomicOrbitals
+            An instance of `AtomicOrbitals` class.
+        numbers : np.ndarray
+            Atomic numbers of orbital centers.
 
         """
-        self._molecule = molecule
+        self._mo = mo
+        self._ao = ao
+        self._numbers = numbers
 
     @classmethod
     def from_molecule(cls, molecule):
@@ -55,7 +61,7 @@ class MOTBasedTool(object):
             An instance of `Molecule` class.
 
         """
-        return cls(molecule)
+        return cls(molecule.mo, molecule.ao, molecule.numbers)
 
     @classmethod
     def from_file(cls, fname):
@@ -67,70 +73,56 @@ class MOTBasedTool(object):
             Path to molecule's wave-function file.
 
         """
-        molecule = Molecule.from_file(fname)
-        return cls.from_molecule(molecule)
-
-    @property
-    @doc_inherit(Molecule, 'coordinates')
-    def coordinates(self):
-        return self._molecule.coordinates
+        return cls.from_molecule(Molecule.from_file(fname))
 
     @property
     @doc_inherit(Molecule, 'numbers')
     def numbers(self):
-        return self._molecule.numbers
+        return self._numbers
 
     @property
     @doc_inherit(MolecularOrbitals, 'nelectrons')
     def nelectrons(self):
-        return self._molecule.mo.nelectrons
+        return self._mo.nelectrons
 
     @property
     @doc_inherit(MolecularOrbitals, 'homo_index')
     def homo_index(self):
-        return self._molecule.mo.homo_index
+        return self._mo.homo_index
 
     @property
     @doc_inherit(MolecularOrbitals, 'lumo_index')
     def lumo_index(self):
-        return self._molecule.mo.lumo_index
+        return self._mo.lumo_index
 
     @property
     @doc_inherit(MolecularOrbitals, 'homo_energy')
     def homo_energy(self):
-        return self._molecule.mo.homo_energy
+        return self._mo.homo_energy
 
     @property
     @doc_inherit(MolecularOrbitals, 'lumo_energy')
     def lumo_energy(self):
-        return self._molecule.mo.lumo_energy
+        return self._mo.lumo_energy
 
     @property
     @doc_inherit(MolecularOrbitals, 'occupation')
     def orbital_occupation(self):
-        return self._molecule.mo.occupation
+        return self._mo.occupation
 
     @property
     @doc_inherit(MolecularOrbitals, 'energy')
     def orbital_energy(self):
-        return self._molecule.mo.energy
+        return self._mo.energy
 
     @property
     @doc_inherit(MolecularOrbitals, 'coefficient')
     def orbital_coefficient(self):
-        return self._molecule.mo.coefficient
-
-    @doc_inherit(Molecule, 'compute_density_matrix')
-    def compute_density_matrix(self, spin='ab'):
-        return self._molecule.compute_density_matrix(spin=spin)
+        return self._mo.coefficient
 
     @doc_inherit(Molecule, 'compute_molecular_orbital')
     def compute_orbital_expression(self, points, spin='ab', index=None):
         return self._molecule.compute_molecular_orbital(points, spin, index)
-
-    @doc_inherit(Molecule, 'compute_density')
-    def compute_density(self, points, spin='ab', index=None):
-        return self._molecule.compute_density(points, spin, index)
 
     def compute_charges(self, scheme="mulliken"):
         """Return the partial charges at each atom using the given population analysis method.
@@ -152,12 +144,11 @@ class MOTBasedTool(object):
             If scheme is not "wiberg-mayer".
 
         """
-        coeff_ab_mo_alpha, coeff_ab_mo_beta = self._molecule.mo.coefficient
-        occupations_alpha, occupations_beta = self._molecule.mo.occupation
-        olp_ab_ab = self._molecule.ao.compute_overlap()
-        atomic_charges = self._molecule.numbers
-        num_atoms = len(self._molecule.numbers)
-        ab_atom_indices = self._molecule._ind_basis_center
+        coeff_ab_mo_alpha, coeff_ab_mo_beta = self._mo.coefficient
+        occupations_alpha, occupations_beta = self._mo.occupation
+        olp_ab_ab = self._ao.compute_overlap()
+        num_atoms = len(self._numbers)
+        ab_atom_indices = self._ao.center_index
 
         orbpart_alpha = OrbitalPartitionTools(
             coeff_ab_mo_alpha, occupations_alpha, olp_ab_ab, num_atoms, ab_atom_indices
@@ -174,7 +165,7 @@ class MOTBasedTool(object):
         else:
             raise ValueError("`scheme` must be one of 'mulliken' or 'lowdin'.")
 
-        return atomic_charges - pop
+        return self._numbers - pop
 
     def compute_bond_orders(self, scheme="wiberg-mayer"):
         """Return the bond order for each pair of atoms.
@@ -251,7 +242,7 @@ class MOTBasedTool(object):
 
         if index is None:
             spin_index = {'a': 0, 'b': 1}
-            index = range(1, self._molecule.mo.homo_index[spin_index[spin]] + 1)
+            index = range(1, self._mo.homo_index[spin_index[spin]] + 1)
         else:
             index = [index]
 
