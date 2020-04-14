@@ -462,6 +462,9 @@ class MolecularOrbitals(object):
         """Number of alpha and beta electrons."""
         return np.sum(self._occs_a), np.sum(self._occs_b)
 
+    def compute_overlap(self):
+        return NotImplementedError
+
     def compute_dm(self, spin="ab", index=None):
         """Return HORTON density matrix object corresponding to the specified spin orbitals.
 
@@ -507,7 +510,7 @@ class MolecularOrbitals(object):
 
 
 class AtomicOrbitals(object):
-    """Gaussian Basis Set."""
+    """Gaussian Basis Functions or Atomic Orbitals."""
 
     def __init__(self, basis):
         self._basis = basis
@@ -543,7 +546,11 @@ class AtomicOrbitals(object):
         return self._basis.nbasis
 
     def compute_overlap(self):
-        """Return the overlap matrix of molecular orbitals."""
+        r"""Return overlap matrix :math:`\mathbf{S}` of atomic orbitals.
+
+        .. math:: [\mathbf{S}]_ij = int \phi_i(\mathbf{r}) \phi_j(\mathbf{r}) d\mathbf{r}
+
+        """
         # make linear algebra factory
         lf = DenseLinalgFactory(self.nbasis)
         # compute overlap matrix
