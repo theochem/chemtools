@@ -24,6 +24,8 @@
 """Orbital-Based Local Tools."""
 
 
+import numpy as np
+
 from chemtools.utils.utils import doc_inherit
 from chemtools.utils.cube import UniformGrid
 from chemtools.orbstools.partition import OrbitalPartitionTools
@@ -144,24 +146,24 @@ class MOTBasedTool(object):
             If scheme is not "wiberg-mayer".
 
         """
-        coeff_ab_mo_alpha, coeff_ab_mo_beta = self._mo.coefficient
-        occupations_alpha, occupations_beta = self._mo.occupation
-        olp_ab_ab = self._ao.compute_overlap()
-        num_atoms = len(self._numbers)
-        ab_atom_indices = self._ao.center_index
-
-        orbpart_alpha = OrbitalPartitionTools(
-            coeff_ab_mo_alpha, occupations_alpha, olp_ab_ab, num_atoms, ab_atom_indices
-        )
-        orbpart_beta = OrbitalPartitionTools(
-            coeff_ab_mo_beta, occupations_beta, olp_ab_ab, num_atoms, ab_atom_indices
-        )
-        if scheme == "mulliken":
-            pop = orbpart_alpha.mulliken_populations()
-            pop += orbpart_beta.mulliken_populations()
-        elif scheme == "lowdin":
-            pop = orbpart_alpha.lowdin_populations()
-            pop += orbpart_beta.lowdin_populations()
+        if scheme == 'mulliken':
+            ao_center_index = self._ao.center_index
+            nbasis = self._ao.nbasis
+            natoms = len(self._numbers)
+            w = np.zeros((natoms, nbasis, nbasis))
+            for index, arr in enumerate(w):
+                for i in range(nbasis):
+                    for j in range(nbasis):
+                        ci, cj = ao_center_index[i], ao_center_index[j]
+                        if ci == cj == index:
+                            arr[i, j] = 1.0
+                        elif ci == index or cj == index:
+                            arr[i, j] = 0.5
+            dm = self._mo.compute_dm()._array
+            s = self._ao.compute_overlap()
+            pop = np.zeros(natoms)
+            for i in range(natoms):
+                pop[i] = np.sum(s * w[i] * dm)
         else:
             raise ValueError("`scheme` must be one of 'mulliken' or 'lowdin'.")
 
@@ -189,9 +191,9 @@ class MOTBasedTool(object):
         """
         coeff_ab_mo_alpha, coeff_ab_mo_beta = self.orbital_coefficient
         occupations_alpha, occupations_beta = self.orbital_occupation
-        olp_ab_ab = self._molecule.ao.compute_overlap()
-        num_atoms = len(self._molecule.numbers)
-        ab_atom_indices = self._molecule._ind_basis_center
+        olp_ab_ab = self._ao.compute_overlap()
+        num_atoms = len(self._numbers)
+        ab_atom_indices = self._ao.center_index
 
         orbpart_alpha = OrbitalPartitionTools(
             coeff_ab_mo_alpha, occupations_alpha, olp_ab_ab, num_atoms, ab_atom_indices
