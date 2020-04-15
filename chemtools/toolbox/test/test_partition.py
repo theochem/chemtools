@@ -34,25 +34,29 @@ except ImportError:
 from chemtools.toolbox.motbased import MOTBasedTool
 
 
-def test_compute_charges():
-    """Test MOTBasedTool.compute_charges.
-
-    Results are compared with those generated from Gaussian. The system is H2O UB3LYP/aug-cc-pVDZ,
-    singlet, and at zero net charge. The following the its coordinates:
-
-    O 0.0159484498, 0.0170042791, 0.0238579956
-    H -0.772778442, 0.561446550, 1.57501231
-    H 1.29850109, 1.26951236, -0.309113326
-
-    """
-    with path("chemtools.data.examples", "h2o.fchk") as fname:
+def test_populations_mulliken_h2o():
+    # Test against Gaussian
+    with path("chemtools.data", "h2o_q+0_ub3lyp_ccpvtz.fchk") as fname:
         mot = MOTBasedTool.from_file(str(fname))
-    assert np.allclose(
-        np.array([-0.166945, 0.083473, 0.083473]),
-        mot.compute_charges(),
-        atol=1e-6,
-    )
+    mulliken = np.array([-4.32227787E-01, 2.16114060E-01, 2.16113727E-01])
+    assert np.allclose(mulliken, mot.compute_charges(), atol=1e-6)
     assert_raises(ValueError, mot.compute_charges, "bad type")
+
+
+def test_populations_mulliken_h2o_cation():
+    # Test against Gaussian
+    with path("chemtools.data", "h2o_q+1_ub3lyp_ccpvtz.fchk") as fname:
+        mot = MOTBasedTool.from_file(str(fname))
+    mulliken = np.array([3.49417097E-01, 3.25291762E-01, 3.25291141E-01])
+    assert np.allclose(mulliken, mot.compute_charges(), atol=1e-6)
+
+
+def test_populations_mulliken_h2o_anion():
+    # Test against Gaussian
+    with path("chemtools.data", "h2o_q-1_ub3lyp_ccpvtz.fchk") as fname:
+        mot = MOTBasedTool.from_file(str(fname))
+    mulliken = np.array([-2.64833827E-01, -3.67583325E-01, -3.67582849E-01])
+    assert np.allclose(mulliken, mot.compute_charges(), atol=1e-6)
 
 
 def test_compute_bond_order():
