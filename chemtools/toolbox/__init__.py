@@ -25,7 +25,7 @@
 
 from chemtools.toolbox.conceptual import GlobalConceptualDFT, LocalConceptualDFT
 from chemtools.toolbox.conceptual import CondensedConceptualDFT
-from chemtools.toolbox.motbased import MOTBasedTool
+from chemtools.toolbox.motbased import OrbPart
 from chemtools.toolbox.kinetic import KED
 from chemtools.toolbox.dftbased import DFTBasedTool
 from chemtools.toolbox.densbased import DensityLocalTool

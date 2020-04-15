@@ -28,7 +28,7 @@
 import numpy as np
 
 from chemtools.wrappers.molecule import Molecule
-from chemtools.toolbox.motbased import MOTBasedTool
+from chemtools.toolbox.motbased import OrbPart
 from chemtools.scripts.common import help_cube, load_molecule_and_grid
 
 
@@ -136,7 +136,7 @@ def main_mot(args):
             index = index[0]
 
     # build model
-    mot = MOTBasedTool.from_molecule(mol)
+    mot = OrbPart.from_molecule(mol)
 
     # dump files for visualization
     if args.output is None:

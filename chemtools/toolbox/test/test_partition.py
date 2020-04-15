@@ -21,42 +21,45 @@
 #
 # --
 # pragma pylint: disable=invalid-name
-"""Test chemtools.toolbox.motbased.MOTBasedTool.compute_populations"""
+"""Test chemtools.toolbox.motbased.OrbPart"""
 
 
 import numpy as np
-from numpy.testing import assert_raises
+from numpy.testing import assert_raises, assert_allclose
 try:
     from importlib_resources import path
 except ImportError:
     from importlib.resources import path
 
-from chemtools.toolbox.motbased import MOTBasedTool
+from chemtools.wrappers.molecule import Molecule
+from chemtools.toolbox.motbased import OrbPart
 
 
 def test_populations_mulliken_h2o():
     # Test against Gaussian
     with path("chemtools.data", "h2o_q+0_ub3lyp_ccpvtz.fchk") as fname:
-        mot = MOTBasedTool.from_file(str(fname))
+        assert_raises(ValueError, OrbPart.from_file, str(fname), 'bad type')
+        mot = OrbPart.from_file(str(fname))
     mulliken = np.array([-4.32227787E-01, 2.16114060E-01, 2.16113727E-01])
-    assert np.allclose(mulliken, mot.compute_charges(), atol=1e-6)
-    assert_raises(ValueError, mot.compute_charges, "bad type")
+    assert_allclose(mot.charges, mulliken, rtol=1.e-6, atol=0.)
 
 
 def test_populations_mulliken_h2o_cation():
     # Test against Gaussian
     with path("chemtools.data", "h2o_q+1_ub3lyp_ccpvtz.fchk") as fname:
-        mot = MOTBasedTool.from_file(str(fname))
+        mot = OrbPart.from_file(str(fname), 'mulliken')
     mulliken = np.array([3.49417097E-01, 3.25291762E-01, 3.25291141E-01])
-    assert np.allclose(mulliken, mot.compute_charges(), atol=1e-6)
+    assert np.allclose(mulliken, mot.charges, atol=1e-6)
 
 
 def test_populations_mulliken_h2o_anion():
     # Test against Gaussian
     with path("chemtools.data", "h2o_q-1_ub3lyp_ccpvtz.fchk") as fname:
-        mot = MOTBasedTool.from_file(str(fname))
+        mol = Molecule.from_file(str(fname))
+    assert_raises(ValueError, OrbPart.from_molecule, mol, 'muliken')
+    mot = OrbPart.from_molecule(mol)
     mulliken = np.array([-2.64833827E-01, -3.67583325E-01, -3.67582849E-01])
-    assert np.allclose(mulliken, mot.compute_charges(), atol=1e-6)
+    assert np.allclose(mulliken, mot.charges, atol=1e-6)
 
 
 def test_compute_bond_order():
@@ -71,7 +74,7 @@ def test_compute_bond_order():
 
     """
     with path("chemtools.data.examples", "h2o.fchk") as fname:
-        mot = MOTBasedTool.from_file(str(fname))
+        mot = OrbPart.from_file(str(fname))
 
     bond_order = np.array(
         [[0.0, 1.059127, 1.059127], [1.059127, 0.0, -0.008082], [1.059127, -0.008082, 0.0]]

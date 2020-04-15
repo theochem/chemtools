@@ -21,7 +21,7 @@
 #
 # --
 # pragma pylint: disable=invalid-name
-"""Orbital-Based Local Tools."""
+"""Orbital-Based Population Analysis."""
 
 
 import numpy as np
@@ -31,10 +31,10 @@ from chemtools.orbstools.partition import OrbitalPartitionTools
 from chemtools.wrappers.molecule import Molecule, MolecularOrbitals
 
 
-class MOTBasedTool(object):
-    """Molecular Orbital Theory Based Descriptive Tools."""
+class OrbPart(object):
+    """Orbital Partitioning or Population Analysis Class."""
 
-    def __init__(self, mo, ao, numbers):
+    def __init__(self, mo, ao, numbers, scheme='mulliken'):
         r"""Initialize class from Molecule instance.
 
         Parameters
@@ -45,83 +45,90 @@ class MOTBasedTool(object):
             An instance of `AtomicOrbitals` class.
         numbers : np.ndarray
             Atomic numbers of orbital centers.
+        scheme : str
+            Type of population analysis scheme.
 
         """
         self._mo = mo
         self._ao = ao
         self._numbers = numbers
+        self._scheme = scheme
+        # compute weights
+        if scheme == 'mulliken':
+            weight = self._compute_weights_mulliken()
+        elif scheme == 'lowdin':
+            raise NotImplementedError
+        else:
+            raise ValueError("`scheme` must be one of 'mulliken' or 'lowdin'.")
+        # compute atomic populations
+        dm = self._mo.compute_dm()._array
+        olp = self._ao.compute_overlap()
+        self._pops = np.zeros(len(self._numbers))
+        for i in range(len(self._numbers)):
+            self._pops[i] = np.sum(olp * weight[i] * dm)
+        self._charges = self._numbers - self._pops
 
     @classmethod
-    def from_molecule(cls, molecule):
+    def from_molecule(cls, molecule, scheme='mulliken'):
         """Initialize class from Molecule instance.
 
         Parameters
         ----------
         molecule : Molecule
             An instance of `Molecule` class.
+        scheme : str
+            Type of population analysis scheme.
 
         """
-        return cls(molecule.mo, molecule.ao, molecule.numbers)
+        return cls(molecule.mo, molecule.ao, molecule.numbers, scheme=scheme)
 
     @classmethod
-    def from_file(cls, fname):
+    def from_file(cls, fname, scheme='mulliken'):
         """Initialize class from wave-function file.
 
         Parameters
         ----------
         fname : str
             Path to molecule's wave-function file.
+        scheme : str
+            Type of population analysis scheme.
 
         """
-        return cls.from_molecule(Molecule.from_file(fname))
+        return cls.from_molecule(Molecule.from_file(fname), scheme=scheme)
 
     @property
     @doc_inherit(Molecule, 'numbers')
     def numbers(self):
         return self._numbers
 
-    def compute_charges(self, scheme="mulliken"):
-        """Return the partial charges at each atom using the given population analysis method.
+    @property
+    def scheme(self):
+        return self._scheme
 
-        Parameters
-        ----------
-        scheme : {"lowdin", "mulliken"}
-            Type of population analysis.
-            Default is Mulliken population analysis.
+    @property
+    def charges(self):
+        """"""
+        return self._charges
 
-        Returns
-        -------
-        populations : np.ndarray(N,)
-            Number of electrons in each atom according the population analysis.
+    @property
+    def populations(self):
+        """np.ndarray(N,) : Number of electrons in each atom."""
+        return self._pops
 
-        Raises
-        ------
-        ValueError
-            If scheme is not "wiberg-mayer".
-
-        """
-        if scheme == 'mulliken':
-            ao_center_index = self._ao.center_index
-            nbasis = self._ao.nbasis
-            natoms = len(self._numbers)
-            w = np.zeros((natoms, nbasis, nbasis))
-            for index, arr in enumerate(w):
-                for i in range(nbasis):
-                    for j in range(nbasis):
-                        ci, cj = ao_center_index[i], ao_center_index[j]
-                        if ci == cj == index:
-                            arr[i, j] = 1.0
-                        elif ci == index or cj == index:
-                            arr[i, j] = 0.5
-            dm = self._mo.compute_dm()._array
-            s = self._ao.compute_overlap()
-            pop = np.zeros(natoms)
-            for i in range(natoms):
-                pop[i] = np.sum(s * w[i] * dm)
-        else:
-            raise ValueError("`scheme` must be one of 'mulliken' or 'lowdin'.")
-
-        return self._numbers - pop
+    def _compute_weights_mulliken(self):
+        """Return the weights defined based on Mulliken population analysis."""
+        ao_center_index = self._ao.center_index
+        nbasis = self._ao.nbasis
+        w = np.zeros((len(self._numbers), nbasis, nbasis))
+        for index, arr in enumerate(w):
+            for i in range(nbasis):
+                for j in range(nbasis):
+                    ci, cj = ao_center_index[i], ao_center_index[j]
+                    if ci == cj == index:
+                        arr[i, j] = 1.0
+                    elif ci == index or cj == index:
+                        arr[i, j] = 0.5
+        return w
 
     def compute_bond_orders(self, scheme="wiberg-mayer"):
         """Return the bond order for each pair of atoms.
@@ -143,8 +150,8 @@ class MOTBasedTool(object):
             If scheme is not "wiberg-mayer".
 
         """
-        coeff_ab_mo_alpha, coeff_ab_mo_beta = self.orbital_coefficient
-        occupations_alpha, occupations_beta = self.orbital_occupation
+        coeff_ab_mo_alpha, coeff_ab_mo_beta = self._mo.coefficient
+        occupations_alpha, occupations_beta = self._mo.occupation
         olp_ab_ab = self._ao.compute_overlap()
         num_atoms = len(self._numbers)
         ab_atom_indices = self._ao.center_index
