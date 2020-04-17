@@ -110,12 +110,12 @@ def check_local_reactivity(model, energy_model, grid, n0):
         assert_almost_equal(grid.integrate(model.ff_plus), 1., decimal=4)
         assert_almost_equal(grid.integrate(model.ff_minus), 1., decimal=4)
         assert_almost_equal(grid.integrate(model.ff_zero), 1., decimal=4)
+        assert_equal(model.softness, None)
+        assert_equal(model.hyper_softness, None)
     if energy_model == "quadratic":
         assert_almost_equal(grid.integrate(model.dual_descriptor), 0., decimal=4)
-        # assert_almost_equal(grid.integrate(model.softness(1./eta)), 1./eta, decimal=4)
-        # assert_almost_equal(grid.integrate(model.softness(1./eta, 10.3)), 1./eta, decimal=4)
-        # assert_almost_equal(grid.integrate(model.softness(1./eta, 9.1)), 1./eta, decimal=4)
-        # assert_almost_equal(grid.integrate(model.hyper_softness(eta)), 0., decimal=3)
+        assert_almost_equal(grid.integrate(model.softness), 1.0 / 0.736396, decimal=4)
+        assert_almost_equal(grid.integrate(model.hyper_softness), 0., decimal=3)
 
 
 def test_local_linear_from_file_fmo_ch4_uhf_ccpvdz_fchk():
@@ -123,9 +123,9 @@ def test_local_linear_from_file_fmo_ch4_uhf_ccpvdz_fchk():
     coord, nums = get_data_ch4()
     grid = MolecularGrid(coord, nums, nums, specs='insane', rotate=False)
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file_path:
-    # check from_file passing a grid
-    # check from_file given as a list passing a grid
+        # check from_file passing a grid
         model1 = LocalConceptualDFT.from_file(file_path, "linear", grid.points)
+        # check from_file given as a list passing a grid
         model2 = LocalConceptualDFT.from_file([file_path], "linear", grid.points)
     check_local_reactivity(model1, "linear", grid, 10)
     check_local_reactivity(model2, "linear", grid, 10)
@@ -150,9 +150,9 @@ def test_local_linear_from_file_fmo_ch4_uhf_ccpvdz_wfn():
     coord, nums = get_data_ch4()
     grid = MolecularGrid(coord, nums, nums, specs='insane', rotate=False)
     with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as file_path:
-    # check from_file passing a grid
-    # check from_file given as a list passing a grid
+        # check from_file passing a grid
         model1 = LocalConceptualDFT.from_file(file_path, "linear", grid.points)
+        # check from_file given as a list passing a grid
         model2 = LocalConceptualDFT.from_file([file_path], "linear", grid.points)
     check_local_reactivity(model1, "linear", grid, 10)
     check_local_reactivity(model2, "linear", grid, 10)
@@ -179,9 +179,9 @@ def test_local_quadratic_from_file_fmo_ch4_uhf_ccpvdz_fchk():
     # eta = -(-5.43101269E-01) - (-1.93295185E-01)
     grid = MolecularGrid(coord, nums, nums, specs='insane', rotate=False)
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file_path:
-    # check from_file passing grid
-    # check from_file given as a list passing grid
+        # check from_file passing grid
         model1 = LocalConceptualDFT.from_file(file_path, "quadratic", grid.points)
+        # check from_file given as a list passing grid
         model2 = LocalConceptualDFT.from_file([file_path], "quadratic", grid.points)
     check_local_reactivity(model1, "quadratic", grid, 10)
     check_local_reactivity(model2, "quadratic", grid, 10)
@@ -210,9 +210,9 @@ def test_local_quadratic_from_file_fmo_ch4_uhf_ccpvdz_wfn():
     # eta = -(-5.43101269E-01) - (-1.93295185E-01)
     grid = MolecularGrid(coord, nums, nums, specs='insane', rotate=False)
     with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as file_path:
-    # check from_file passing grid
-    # check from_file given as a list passing grid
+        # check from_file passing grid
         model1 = LocalConceptualDFT.from_file(file_path, "quadratic", grid.points)
+        # check from_file given as a list passing grid
         model2 = LocalConceptualDFT.from_file([file_path], "quadratic", grid.points)
     check_local_reactivity(model1, "quadratic", grid, 10)
     check_local_reactivity(model2, "quadratic", grid, 10)

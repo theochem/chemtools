@@ -74,7 +74,7 @@ except ImportError:
 #     assert_raises(ValueError, CondensedConceptualDFT.from_file, fnames, "linear", "FMR", "esp")
 
 
-def check_condensed_reactivity(model, energy_model, pop_0, pop_p, pop_m, n0):
+def check_condensed_reactivity(model, energy_model, pop_0, pop_p, pop_m, n0, eta=None):
     """Check expected condensed reactivity descriptors."""
     # check print statement
     assert_equal(type(model.__repr__()), str)
@@ -104,9 +104,13 @@ def check_condensed_reactivity(model, energy_model, pop_0, pop_p, pop_m, n0):
         assert_almost_equal(np.sum(model.ff_plus), 1., decimal=2)
         assert_almost_equal(np.sum(model.ff_zero), 1., decimal=2)
         assert_almost_equal(np.sum(model.ff_minus), 1.0, decimal=2)
+        assert_equal(model.softness, None)
+        assert_equal(model.hyper_softness, None)
     if energy_model == "quadratic":
         # check condensed dual descriptor
         assert_almost_equal(np.sum(model.dual_descriptor), 0.0, decimal=2)
+        assert_almost_equal(np.sum(model.softness), 1.0 / eta, decimal=3)
+        assert_almost_equal(np.sum(model.hyper_softness), 0.0, decimal=3)
 
 
 def test_condense_linear_from_file_fmr_h_ch4_fchk():
@@ -120,13 +124,13 @@ def test_condense_linear_from_file_fmr_h_ch4_fchk():
         model4 = CondensedConceptualDFT.from_file([fname], "linear", "FMR", "h", grid=grid)
     expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
     # check using fname given as a string
-    check_condensed_reactivity(model1, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model1, "linear", expected, None, None, 10, 0.736396)
     # check using fname given as a list
-    check_condensed_reactivity(model2, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model2, "linear", expected, None, None, 10, 0.736396)
     # check using fname as a string & passing grid
-    check_condensed_reactivity(model3, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model3, "linear", expected, None, None, 10, 0.736396)
     # check using fname as a list & passing grid
-    check_condensed_reactivity(model4, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model4, "linear", expected, None, None, 10, 0.736396)
 
 
 def test_condense_linear_from_molecule_fmr_h_ch4_fchk():
@@ -136,17 +140,17 @@ def test_condense_linear_from_molecule_fmr_h_ch4_fchk():
     expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
     # check from_molecule
     model = CondensedConceptualDFT.from_molecule(mol, "linear", "FMR", "h")
-    check_condensed_reactivity(model, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
     # check from_molecule given as a list
     model = CondensedConceptualDFT.from_molecule([mol], "linear", "FMR", "h")
-    check_condensed_reactivity(model, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
     # check from_molecule & passing grid
     grid = MolecularGrid(mol.coordinates, mol.numbers, mol.pseudo_numbesr, 'insane', 3, False)
     model = CondensedConceptualDFT.from_molecule(mol, "linear", "FMR", "h", grid=grid)
-    check_condensed_reactivity(model, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
     # check from_molecule given as a list & passing grid
     model = CondensedConceptualDFT.from_molecule([mol], "linear", "FMR", "h", grid=grid)
-    check_condensed_reactivity(model, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
 
 
 def test_condense_linear_from_file_fmr_h_ch4_wfn():
@@ -160,14 +164,14 @@ def test_condense_linear_from_file_fmr_h_ch4_wfn():
         model4 = CondensedConceptualDFT.from_file([fname], "linear", "FMR", "h", grid=grid)
     expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
     # check using fname given as a string
-    check_condensed_reactivity(model1, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model1, "linear", expected, None, None, 10, 0.736396)
     # check using fname given as a list
-    check_condensed_reactivity(model2, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model2, "linear", expected, None, None, 10, 0.736396)
     # check using fname as a string & passing grid
     mol = Molecule.from_file(fname)
-    check_condensed_reactivity(model3, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model3, "linear", expected, None, None, 10, 0.736396)
     # check using fname as a list & passing grid
-    check_condensed_reactivity(model4, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model4, "linear", expected, None, None, 10, 0.736396)
 
 
 def test_condense_linear_from_molecule_fmr_h_ch4_wfn():
@@ -177,17 +181,17 @@ def test_condense_linear_from_molecule_fmr_h_ch4_wfn():
     expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
     # check from_molecule
     model = CondensedConceptualDFT.from_molecule(mol, "linear", "FMR", "h")
-    check_condensed_reactivity(model, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
     # check from_molecule given as a list
     model = CondensedConceptualDFT.from_molecule([mol], "linear", "FMR", "h")
-    check_condensed_reactivity(model, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
     # check from_molecule & passing grid
     grid = MolecularGrid(mol.coordinates, mol.numbers, mol.pseudo_numbesr, 'insane', 3, False)
     model = CondensedConceptualDFT.from_molecule(mol, "linear", "FMR", "h", grid=grid)
-    check_condensed_reactivity(model, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
     # check from_molecule given as a list & passing grid
     model = CondensedConceptualDFT.from_molecule([mol], "linear", "FMR", "h", grid=grid)
-    check_condensed_reactivity(model, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
 
 
 def test_condense_linear_from_file_fmr_mbis_ch4_fchk():
@@ -201,13 +205,13 @@ def test_condense_linear_from_file_fmr_mbis_ch4_fchk():
         model4 = CondensedConceptualDFT.from_file([fname], "linear", "FMR", "mbis", grid=grid)
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
     # check using fname given as a string
-    check_condensed_reactivity(model1, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model1, "linear", expected, None, None, 10, 0.736396)
     # check using fname given as a list
-    check_condensed_reactivity(model2, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model2, "linear", expected, None, None, 10, 0.736396)
     # check using fname as a string & passing grid
-    check_condensed_reactivity(model3, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model3, "linear", expected, None, None, 10, 0.736396)
     # check using fname as a list & passing grid
-    check_condensed_reactivity(model4, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model4, "linear", expected, None, None, 10, 0.736396)
 
 
 def test_condense_linear_from_molecule_fmr_mbis_ch4_fchk():
@@ -217,17 +221,17 @@ def test_condense_linear_from_molecule_fmr_mbis_ch4_fchk():
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
     # check from_molecule
     model = CondensedConceptualDFT.from_molecule(mol, "linear", "FMR", "mbis")
-    check_condensed_reactivity(model, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
     # check from_molecule given as a list
     model = CondensedConceptualDFT.from_molecule([mol], "linear", "FMR", "mbis")
-    check_condensed_reactivity(model, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
     # check from_molecule & passing grid
     grid = MolecularGrid(mol.coordinates, mol.numbers, mol.pseudo_numbesr, 'insane', 3, False)
     model = CondensedConceptualDFT.from_molecule(mol, "linear", "FMR", "mbis", grid=grid)
-    check_condensed_reactivity(model, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
     # check from_molecule given as a list & passing grid
     model = CondensedConceptualDFT.from_molecule([mol], "linear", "FMR", "mbis", grid=grid)
-    check_condensed_reactivity(model, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
 
 
 def test_condense_linear_from_file_fmr_mbis_ch4_wfn():
@@ -237,9 +241,9 @@ def test_condense_linear_from_file_fmr_mbis_ch4_wfn():
         model2 = CondensedConceptualDFT.from_file([fname], "linear", "FMR", "mbis")
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
     # check using fname given as a string
-    check_condensed_reactivity(model1, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model1, "linear", expected, None, None, 10, 0.736396)
     # check using fname given as a list
-    check_condensed_reactivity(model2, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model2, "linear", expected, None, None, 10, 0.736396)
 
 
 def test_condense_linear_from_molecule_fmr_mbis_ch4_wfn():
@@ -249,17 +253,17 @@ def test_condense_linear_from_molecule_fmr_mbis_ch4_wfn():
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
     # check from_molecule
     model = CondensedConceptualDFT.from_molecule(mol, "linear", "FMR", "mbis")
-    check_condensed_reactivity(model, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
     # check from_molecule given as a list
     model = CondensedConceptualDFT.from_molecule([mol], "linear", "FMR", "mbis")
-    check_condensed_reactivity(model, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
     # check from_molecule & passing grid
     grid = MolecularGrid(mol.coordinates, mol.numbers, mol.pseudo_numbesr, 'insane', 3, False)
     model = CondensedConceptualDFT.from_molecule(mol, "linear", "FMR", "mbis", grid=grid)
-    check_condensed_reactivity(model, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
     # check from_molecule given as a list & passing grid
     model = CondensedConceptualDFT.from_molecule([mol], "linear", "FMR", "mbis", grid=grid)
-    check_condensed_reactivity(model, "linear", expected, None, None, 10)
+    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
 
 
 def test_condense_quadratic_from_file_fmr_mbis_ch4_fchk():
@@ -273,13 +277,13 @@ def test_condense_quadratic_from_file_fmr_mbis_ch4_fchk():
         model4 = CondensedConceptualDFT.from_file([fname], "quadratic", "FMR", "mbis", grid=grid)
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
     # check using fname given as a string
-    check_condensed_reactivity(model1, "quadratic", expected, None, None, 10)
+    check_condensed_reactivity(model1, "quadratic", expected, None, None, 10, 0.736396)
     # check using fname given as a list
-    check_condensed_reactivity(model2, "quadratic", expected, None, None, 10)
+    check_condensed_reactivity(model2, "quadratic", expected, None, None, 10, 0.736396)
     # check using fname as a string & passing grid
-    check_condensed_reactivity(model3, "quadratic", expected, None, None, 10)
+    check_condensed_reactivity(model3, "quadratic", expected, None, None, 10, 0.736396)
     # check using fname given as a list
-    check_condensed_reactivity(model4, "quadratic", expected, None, None, 10)
+    check_condensed_reactivity(model4, "quadratic", expected, None, None, 10, 0.736396)
 
 
 def test_condense_quadratic_from_molecule_fmr_mbis_ch4_fchk():
@@ -289,17 +293,17 @@ def test_condense_quadratic_from_molecule_fmr_mbis_ch4_fchk():
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
     # check from_molecule
     model = CondensedConceptualDFT.from_molecule(mol, "quadratic", "FMR", "mbis")
-    check_condensed_reactivity(model, "quadratic", expected, None, None, 10)
+    check_condensed_reactivity(model, "quadratic", expected, None, None, 10, 0.736396)
     # check from_molecule given as a list
     model = CondensedConceptualDFT.from_molecule([mol], "quadratic", "FMR", "mbis")
-    check_condensed_reactivity(model, "quadratic", expected, None, None, 10)
+    check_condensed_reactivity(model, "quadratic", expected, None, None, 10, 0.736396)
     # check from_molecule & passing grid
     grid = MolecularGrid(mol.coordinates, mol.numbers, mol.pseudo_numbesr, 'insane', 3, False)
     model = CondensedConceptualDFT.from_molecule(mol, "quadratic", "FMR", "mbis", grid=grid)
-    check_condensed_reactivity(model, "quadratic", expected, None, None, 10)
+    check_condensed_reactivity(model, "quadratic", expected, None, None, 10, 0.736396)
     # check from_molecule given as a list & passing grid
     model = CondensedConceptualDFT.from_molecule([mol], "quadratic", "FMR", "mbis", grid=grid)
-    check_condensed_reactivity(model, "quadratic", expected, None, None, 10)
+    check_condensed_reactivity(model, "quadratic", expected, None, None, 10, 0.736396)
 
 
 def test_condense_quadratic_from_file_fmr_mbis_ch4_wfn():
@@ -309,9 +313,9 @@ def test_condense_quadratic_from_file_fmr_mbis_ch4_wfn():
         model2 = CondensedConceptualDFT.from_file([fname], "quadratic", "FMR", "mbis")
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
     # check using fname given as a string
-    check_condensed_reactivity(model1, "quadratic", expected, None, None, 10)
+    check_condensed_reactivity(model1, "quadratic", expected, None, None, 10, 0.736396)
     # check using fname given as a list
-    check_condensed_reactivity(model2, "quadratic", expected, None, None, 10)
+    check_condensed_reactivity(model2, "quadratic", expected, None, None, 10, 0.736396)
 
 
 def test_condense_quadratic_from_molecule_fmr_mbis_ch4_wfn():
@@ -321,10 +325,10 @@ def test_condense_quadratic_from_molecule_fmr_mbis_ch4_wfn():
     expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
     # check from_molecule given as a string
     model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "FMR", "mbis")
-    check_condensed_reactivity(model, "quadratic", expected, None, None, 10)
+    check_condensed_reactivity(model, "quadratic", expected, None, None, 10, 0.736396)
     # check from_molecule given as a list
     model = CondensedConceptualDFT.from_molecule([molecule], "quadratic", "FMR", "mbis")
-    check_condensed_reactivity(model, "quadratic", expected, None, None, 10)
+    check_condensed_reactivity(model, "quadratic", expected, None, None, 10, 0.736396)
 
 
 def test_condense_from_file_fd_rmf_esp_h2o_fchk():
@@ -339,9 +343,9 @@ def test_condense_from_file_fd_rmf_esp_h2o_fchk():
                 # check from_file linear
                 model1 = CondensedConceptualDFT.from_file(fname, "linear", "RMF", "esp")
                 model2 = CondensedConceptualDFT.from_file(fname, "quadratic", "RMF", "esp")
-    check_condensed_reactivity(model1, "linear", expected_0, expected_p, expected_m, 10)
+    check_condensed_reactivity(model1, "linear", expected_0, expected_p, expected_m, 10, 0.572546)
     # check from_file quadratic
-    check_condensed_reactivity(model2, "quadratic", expected_0, expected_p, expected_m, 10)
+    check_condensed_reactivity(model2, "quadratic", expected_0, expected_p, expected_m, 10, 0.572546)
 
 
 def test_condense_from_molecule_fd_rmf_esp_h2o_fchk():
@@ -358,10 +362,10 @@ def test_condense_from_molecule_fd_rmf_esp_h2o_fchk():
         molecule.append(Molecule.from_file(file3))
     # check from_molecule linear
     model = CondensedConceptualDFT.from_molecule(molecule, "linear", "RMF", "esp")
-    check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 10)
+    check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 10, 0.572546)
     # check from_molecule quadratic
     model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "RMF", "esp")
-    check_condensed_reactivity(model, "quadratic", expected_0, expected_p, expected_m, 10)
+    check_condensed_reactivity(model, "quadratic", expected_0, expected_p, expected_m, 10, 0.572546)
 
 
 def test_condense_from_file_fd_rmf_npa_h2o_fchk():
@@ -376,9 +380,9 @@ def test_condense_from_file_fd_rmf_npa_h2o_fchk():
                 # check from_file linear
                 model1 = CondensedConceptualDFT.from_file(fname, "linear", "RMF", "npa")
                 model2 = CondensedConceptualDFT.from_file(fname, "quadratic", "RMF", "npa")
-    check_condensed_reactivity(model1, "linear", expected_0, expected_p, expected_m, 10)
+    check_condensed_reactivity(model1, "linear", expected_0, expected_p, expected_m, 10, 0.572546)
     # check from_file quadratic
-    check_condensed_reactivity(model2, "quadratic", expected_0, expected_p, expected_m, 10)
+    check_condensed_reactivity(model2, "quadratic", expected_0, expected_p, expected_m, 10, 0.572546)
 
 
 def test_condense_from_molecule_fd_rmf_npa_h2o_fchk():
@@ -395,10 +399,10 @@ def test_condense_from_molecule_fd_rmf_npa_h2o_fchk():
         molecule.append(Molecule.from_file(file3))
     # check from_molecule linear
     model = CondensedConceptualDFT.from_molecule(molecule, "linear", "RMF", "npa")
-    check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 10)
+    check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 10, 0.572546)
     # check from_molecule quadratic
     model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "RMF", "npa")
-    check_condensed_reactivity(model, "quadratic", expected_0, expected_p, expected_m, 10)
+    check_condensed_reactivity(model, "quadratic", expected_0, expected_p, expected_m, 10, 0.572546)
 
 
 def test_condense_from_file_fd_rmf_mulliken_h2o_fchk():
@@ -413,9 +417,9 @@ def test_condense_from_file_fd_rmf_mulliken_h2o_fchk():
                 model1 = CondensedConceptualDFT.from_file(fname, "linear", "RMF", "mulliken")
                 model2 = CondensedConceptualDFT.from_file(fname, "quadratic", "RMF", "mulliken")
     # check from_file linear
-    check_condensed_reactivity(model1, "linear", expected_0, expected_p, expected_m, 10)
+    check_condensed_reactivity(model1, "linear", expected_0, expected_p, expected_m, 10, 0.572546)
     # check from_file quadratic
-    check_condensed_reactivity(model2, "quadratic", expected_0, expected_p, expected_m, 10)
+    check_condensed_reactivity(model2, "quadratic", expected_0, expected_p, expected_m, 10, 0.572546)
 
 
 def test_condense_from_molecule_fd_rmf_mulliken_h2o_fchk():
@@ -432,10 +436,10 @@ def test_condense_from_molecule_fd_rmf_mulliken_h2o_fchk():
         molecule.append(Molecule.from_file(file3))
     # check from_molecule linear
     model = CondensedConceptualDFT.from_molecule(molecule, "linear", "RMF", "mulliken")
-    check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 10)
+    check_condensed_reactivity(model, "linear", expected_0, expected_p, expected_m, 10, 0.572546)
     # check from_molecule quadratic
     model = CondensedConceptualDFT.from_molecule(molecule, "quadratic", "RMF", "mulliken")
-    check_condensed_reactivity(model, "quadratic", expected_0, expected_p, expected_m, 10)
+    check_condensed_reactivity(model, "quadratic", expected_0, expected_p, expected_m, 10, 0.572546)
 
 
 # def test_condense_linear_from_file_fd_rmf_h_ch2o_fchk():

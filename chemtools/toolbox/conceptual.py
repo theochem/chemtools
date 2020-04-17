@@ -49,7 +49,7 @@ except ImportError:
 class BaseConceptualDFT(object):
     """Base class for conceptual density functional theory (DFT) analysis."""
 
-    def __init__(self, dict_values, dict_models, model, coordinates, numbers):
+    def __init__(self, dict_values, dict_models, model, coordinates, numbers, **kwargs):
         r"""
         Initialize class.
 
@@ -93,7 +93,7 @@ class BaseConceptualDFT(object):
                              "#electrons={1}".format(self._model, dict_values.keys()))
 
         # make an instance of global tool
-        self._tool = dict_models[self._model](dict_values)
+        self._tool = dict_models[self._model](dict_values, **kwargs)
 
         # print screen information
         self._log_init()
@@ -263,7 +263,8 @@ class LocalConceptualDFT(BaseConceptualDFT):
           the geometries and atomic numbers of all molecules need to be the same.
     """
 
-    def __init__(self, dict_density, model="quadratic", coordinates=None, numbers=None):
+    def __init__(self, dict_density, model="quadratic", coordinates=None, numbers=None,
+                 n_max=None, global_softness=None):
         r"""
         Initialize class.
 
@@ -280,6 +281,11 @@ class LocalConceptualDFT(BaseConceptualDFT):
             Atomic coordinates of atomic centers.
         numbers : ndarray, optional
             Atomic number of atomic centers.
+        n_max : float, optional
+            Maximum number of electrons that system can accept, i.e. :math:`N_{\text{max}}`.
+            See :attr:`BaseGlobalTool.n_max`.
+        global_softness : float, optional
+            Global softness. See :attr:`BaseGlobalTool.softness`.
 
         """
         # available models for local tools
@@ -291,8 +297,9 @@ class LocalConceptualDFT(BaseConceptualDFT):
             elif value.shape != shape:
                 raise ValueError("Argument dict_density should have density arrays (values) "
                                  "with the same shape! {0} != {1}".format(value.shape, shape))
+        kwargs = {"n_max": n_max, "global_softness": global_softness}
         super(LocalConceptualDFT, self).__init__(dict_density, dict_models, model,
-                                                 coordinates, numbers)
+                                                 coordinates, numbers, **kwargs)
 
     def __repr__(self):
         """Print table of available class attributes and methods."""
@@ -354,10 +361,11 @@ class LocalConceptualDFT(BaseConceptualDFT):
         #     # make molecular grid which also checks for matching atomic numbers & coordinates
         #     grid = get_molecular_grid(molecule, grid=None)
         #     points, numbers, coords = grid.points, grid.numbers, grid.centers
-        numbers = get_matching_attr(molecule, "numbers", 1.e-8)
-        coords = get_matching_attr(molecule, "coordinates", 1.e-4)
+        # get atomic number, coordinates, N_max, and global softness
+        gcdft = GlobalConceptualDFT.from_molecule(molecule, model)
+        coords, nums, n_max, s = gcdft.coordinates, gcdft.numbers, gcdft.n_max, gcdft.softness
         dict_dens = get_dict_density(molecule, points)
-        return cls(dict_dens, model, coords, numbers)
+        return cls(dict_dens, model, coords, nums, n_max, s)
 
 
 class CondensedConceptualDFT(BaseConceptualDFT):
@@ -373,7 +381,8 @@ class CondensedConceptualDFT(BaseConceptualDFT):
           of molecular response (approach='RMF').
     """
 
-    def __init__(self, dict_population, model="quadratic", coordinates=None, numbers=None):
+    def __init__(self, dict_population, model="quadratic", coordinates=None, numbers=None,
+                 n_max=None, global_softness=None):
         r"""
         Initialize class.
 
@@ -390,12 +399,18 @@ class CondensedConceptualDFT(BaseConceptualDFT):
             Atomic coordinates of atomic centers.
         numbers : ndarray, optional
             Atomic number of atomic centers.
+        n_max : float, optional
+            Maximum number of electrons that system can accept, i.e. :math:`N_{\text{max}}`.
+            See :attr:`BaseGlobalTool.n_max`.
+        global_softness : float, optional
+            Global softness. See :attr:`BaseGlobalTool.softness`.
 
         """
         # available models for local tools
         dict_models = {"linear": LinearCondensedTool, "quadratic": QuadraticCondensedTool}
+        kwargs = {"n_max": n_max, "global_softness": global_softness}
         super(CondensedConceptualDFT, self).__init__(dict_population, dict_models, model,
-                                                     coordinates, numbers)
+                                                     coordinates, numbers, **kwargs)
 
     def __repr__(self):
         """Print table of available class attributes and methods."""
@@ -462,9 +477,9 @@ class CondensedConceptualDFT(BaseConceptualDFT):
         # check type of grid
         if "grid" in kwargs.keys() and not isinstance(kwargs["grid"], MolecularGrid):
             raise ValueError("Currently, only 'MolecularGrid' is supported for condensing!")
-        # get atomic number & coordinates
-        numbers = get_matching_attr(molecule, "numbers", 1.e-8)
-        coords = get_matching_attr(molecule, "coordinates", 1.e-4)
+        # get atomic number, coordinates, N_max, and global softness
+        gcdft = GlobalConceptualDFT.from_molecule(molecule, model)
+        coords, nums, n_max, s = gcdft.coordinates, gcdft.numbers, gcdft.n_max, gcdft.softness
         # get dictionary of populations
         dict_pops = get_dict_population(molecule, approach, scheme, **kwargs)
-        return cls(dict_pops, model, coords, numbers)
+        return cls(dict_pops, model, coords, nums, n_max, s)
