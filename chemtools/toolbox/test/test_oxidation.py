@@ -57,20 +57,24 @@ def test_eos_h_h2o_3fragments():
     eos = _get_eos('h2o_q+0_ub3lyp_ccpvtz.fchk', 'h')
     occs_o = np.array([0.9948, 0.8953, 0.7958, 0.5573, 0.5348])
     occs_h = np.array([0.1858, 0.0194, 0.0126, 0.0030, 0.0])
-    # test occupations default fragments
+    # test occupations for alpha & beta orbitals using default fragments
     result = eos.compute_fragment_occupation(spin='a')
-    assert_almost_equal(occs_o, result[0], decimal=3)
-    assert_almost_equal(occs_h, result[1], decimal=2)
-    assert_almost_equal(occs_h, result[2], decimal=2)
+    assert result.shape == (3, 5)
+    assert_almost_equal(np.array([occs_o, occs_h, occs_h]), result, decimal=3)
+    result = eos.compute_fragment_occupation(spin='b')
+    assert result.shape == (3, 5)
+    assert_almost_equal(np.array([occs_o, occs_h, occs_h]), result, decimal=3)
     # test oxidation states default fragments
     assert_equal([-2.0, 1.0, 1.0], eos.compute_oxidation_state())
     assert_approx_equal(84.895, eos.reliability, significant=3)
 
-    # test occupations given 3 fragments
+    # test occupations for alpha & beta orbitals given 3 fragments
     result = eos.compute_fragment_occupation([[0], [1], [2]], spin='a')
-    assert_almost_equal(occs_o, result[0], decimal=2)
-    assert_almost_equal(occs_h, result[1], decimal=2)
-    assert_almost_equal(occs_h, result[2], decimal=2)
+    assert result.shape == (3, 5)
+    assert_almost_equal(np.array([occs_o, occs_h, occs_h]), result, decimal=3)
+    result = eos.compute_fragment_occupation([[0], [1], [2]], spin='b')
+    assert result.shape == (3, 5)
+    assert_almost_equal(np.array([occs_o, occs_h, occs_h]), result, decimal=3)
     # test oxidation states given 3 fragments
     assert_equal([-2.0, 1.0, 1.0], eos.compute_oxidation_state([[0], [1], [2]]))
     assert_approx_equal(84.895, eos.reliability, significant=3)
@@ -81,10 +85,13 @@ def test_eos_h_h2o_2fragments():
     eos = _get_eos('h2o_q+0_ub3lyp_ccpvtz.fchk', 'h')
     occs_f1 = np.array([0.9974, 0.9678, 0.9194, 0.8942, 0.5931])
     occs_f2 = np.array([0.1859, 0.0194, 0.0126, 0.0030, 0.000])
-    # test occupations
+    # test occupations for alpha & beta orbitals
     result = eos.compute_fragment_occupation([[0, 1], [2]], spin='a')
-    assert_almost_equal(occs_f1, result[0], decimal=3)
-    assert_almost_equal(occs_f2, result[1], decimal=2)
+    assert result.shape == (2, 5)
+    assert_almost_equal(np.array([occs_f1, occs_f2]), result, decimal=3)
+    result = eos.compute_fragment_occupation([[0, 1], [2]], spin='b')
+    assert result.shape == (2, 5)
+    assert_almost_equal(np.array([occs_f1, occs_f2]), result, decimal=3)
     # test oxidation states
     assert_equal([-1.0, 1.0], eos.compute_oxidation_state([[0, 1], [2]]))
     assert_approx_equal(90.726, eos.reliability, significant=3)
@@ -94,11 +101,13 @@ def test_eos_h_h2o_1fragments():
     # test against APOST-3D (version 3.1)
     eos = _get_eos('h2o_q+0_ub3lyp_ccpvtz.fchk', 'h')
     occs = np.array([1.0000, 1.0000, 1.0000, 1.0000, 0.9999])
-    # test occupations
+    # test occupations for alpha & beta orbitals
     result = eos.compute_fragment_occupation([[0, 1, 2]], spin='a')
-    assert_almost_equal(occs, result[0], decimal=3)
+    assert result.shape == (1, 5)
+    assert_almost_equal(np.array([occs]), result, decimal=3)
     result = eos.compute_fragment_occupation([[0, 1, 2]], spin='b')
-    assert_almost_equal(occs, result[0], decimal=3)
+    assert result.shape == (1, 5)
+    assert_almost_equal(np.array([occs]), result, decimal=3)
     # test oxidation states
     assert_equal([0.0], eos.compute_oxidation_state([[0, 1, 2]]))
     assert_approx_equal(100.0, eos.reliability, significant=7)
