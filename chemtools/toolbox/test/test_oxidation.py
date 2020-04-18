@@ -102,3 +102,43 @@ def test_eos_h_h2o_1fragments():
     # test occupations & oxidation states for alpha & beta orbitals
     check_oxidation_states(eos, occs, [[0, 1, 2]], 'a', [0.0], 100.0, decimal=3)
     check_oxidation_states(eos, occs, [[0, 1, 2]], 'b', [0.0], 100.0, decimal=3)
+
+
+def test_eos_hi_h2o_3fragments():
+    # test against APOST-3D (version 3.1)
+    eos = _get_eos('h2o_q+0_ub3lyp_ccpvtz.fchk', 'hi')
+    charges = np.array([-0.90460, 0.45225, 0.45228])
+    occs = np.array([[0.9972, 0.9431, 0.8837, 0.6757, 0.6483],
+                     [0.1023, 0.0, 0.0, 0.0, 0.0], [0.1023, 0.0, 0.0, 0.0, 0.0]])
+    # test atomic charges
+    assert_almost_equal(charges, eos.part.charges, decimal=2)
+    # test occupations for alpha & beta orbitals using default fragments
+    check_oxidation_states(eos, occs, None, 'a', [-2.0, 1.0, 1.0], 100.0, decimal=2)
+    check_oxidation_states(eos, occs, None, 'b', [-2.0, 1.0, 1.0], 100.0, decimal=2)
+    # test occupations for alpha & beta orbitals given 3 fragments
+    check_oxidation_states(eos, occs, [[0], [1], [2]], 'a', [-2.0, 1.0, 1.0], 100.0, decimal=2)
+    check_oxidation_states(eos, occs, [[0], [1], [2]], 'b', [-2.0, 1.0, 1.0], 100.0, decimal=2)
+
+
+def test_eos_hi_h2o_2fragments():
+    # test against APOST-3D (version 3.1)
+    eos = _get_eos('h2o_q+0_ub3lyp_ccpvtz.fchk', 'hi')
+    charges = np.array([-0.90460, 0.45225, 0.45228])
+    occs = np.array([[0.9986, 0.9813, 0.9535, 0.9408, 0.6933], [0.1023, 0.0, 0.0, 0.0, 0.0]])
+    # test atomic charges
+    assert_almost_equal(charges, eos.part.charges, decimal=2)
+    # test occupations & oxidation states for alpha & beta orbitals
+    check_oxidation_states(eos, occs, [[0, 1], [2]], 'a', [-1.0, 1.0], 100.0, decimal=2)
+    check_oxidation_states(eos, occs, [[0, 1], [2]], 'b', [-1.0, 1.0], 100.0, decimal=2)
+
+
+def test_eos_hi_h2o_1fragments():
+    # test against APOST-3D (version 3.1)
+    eos = _get_eos('h2o_q+0_ub3lyp_ccpvtz.fchk', 'hi')
+    charges = np.array([-0.90460, 0.45225, 0.45228])
+    occs = np.array([[1.0000, 1.0000, 1.0000, 1.0000, 0.9999]])
+    # test atomic charges
+    assert_almost_equal(charges, eos.part.charges, decimal=2)
+    # test occupations & oxidation states for alpha & beta orbitals
+    check_oxidation_states(eos, occs, [[0, 1, 2]], 'a', [0.0], 100.0, decimal=3)
+    check_oxidation_states(eos, occs, [[0, 1, 2]], 'b', [0.0], 100.0, decimal=3)
