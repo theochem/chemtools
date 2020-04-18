@@ -65,9 +65,12 @@ def check_oxidation_states(eos, occs, fragments, spin, oxidations, reliability, 
 def test_eos_h_h2o_3fragments():
     # test against APOST-3D (version 3.1)
     eos = _get_eos('h2o_q+0_ub3lyp_ccpvtz.fchk', 'h')
+    charges = np.array([-0.302250, 0.151138, 0.151185])
     occs = np.array([[0.9948, 0.8953, 0.7958, 0.5573, 0.5348],
                      [0.1858, 0.0194, 0.0126, 0.0030, 0.0],
                      [0.1858, 0.0194, 0.0126, 0.0030, 0.0]])
+    # test atomic charges
+    assert_almost_equal(charges, eos.part.charges, decimal=3)
     # test occupations for alpha & beta orbitals using default fragments
     check_oxidation_states(eos, occs, None, 'a', [-2.0, 1.0, 1.0], 84.895, decimal=3)
     check_oxidation_states(eos, occs, None, 'b', [-2.0, 1.0, 1.0], 84.895, decimal=3)
@@ -79,8 +82,11 @@ def test_eos_h_h2o_3fragments():
 def test_eos_h_h2o_2fragments():
     # test against APOST-3D (version 3.1)
     eos = _get_eos('h2o_q+0_ub3lyp_ccpvtz.fchk', 'h')
+    charges = np.array([-0.302250, 0.151138, 0.151185])
     occs = np.array([[0.9974, 0.9678, 0.9194, 0.8942, 0.5931],
                      [0.1859, 0.0194, 0.0126, 0.0030, 0.000]])
+    # test atomic charges
+    assert_almost_equal(charges, eos.part.charges, decimal=3)
     # test occupations & oxidation states for alpha & beta orbitals
     check_oxidation_states(eos, occs, [[0, 1], [2]], 'a', [-1.0, 1.0], 90.726, decimal=3)
     check_oxidation_states(eos, occs, [[0, 1], [2]], 'b', [-1.0, 1.0], 90.726, decimal=3)
@@ -89,7 +95,10 @@ def test_eos_h_h2o_2fragments():
 def test_eos_h_h2o_1fragments():
     # test against APOST-3D (version 3.1)
     eos = _get_eos('h2o_q+0_ub3lyp_ccpvtz.fchk', 'h')
+    charges = np.array([-0.302250, 0.151138, 0.151185])
     occs = np.array([[1.0000, 1.0000, 1.0000, 1.0000, 0.9999]])
+    # test atomic charges
+    assert_almost_equal(charges, eos.part.charges, decimal=3)
     # test occupations & oxidation states for alpha & beta orbitals
     check_oxidation_states(eos, occs, [[0, 1, 2]], 'a', [0.0], 100.0, decimal=3)
     check_oxidation_states(eos, occs, [[0, 1, 2]], 'b', [0.0], 100.0, decimal=3)
