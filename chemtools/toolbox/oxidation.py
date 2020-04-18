@@ -72,6 +72,11 @@ class EOS(object):
         molecule = Molecule.from_file(fname)
         return cls.from_molecule(molecule, part, grid)
 
+    @property
+    def reliability(self):
+        """float : Reliability index of oxidation state assignment."""
+        return self._reliability
+
     def compute_fragment_overlap(self, fragments=None, spin='ab'):
         # compute MO overlap matrix for fragments
 

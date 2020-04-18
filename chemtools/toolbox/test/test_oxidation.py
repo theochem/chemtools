@@ -32,7 +32,7 @@ from chemtools.toolbox.oxidation import EOS
 from horton import ProAtomDB
 
 import glob as glob
-from numpy.testing import assert_equal, assert_almost_equal
+from numpy.testing import assert_equal, assert_almost_equal, assert_approx_equal
 
 try:
     from importlib_resources import path
@@ -64,6 +64,7 @@ def test_eos_h_h2o_3fragments():
     assert_almost_equal(occs_h, result[2], decimal=2)
     # test oxidation states default fragments
     assert_equal([-2.0, 1.0, 1.0], eos.compute_oxidation_state())
+    assert_approx_equal(84.895, eos.reliability, significant=3)
 
     # test occupations given 3 fragments
     result = eos.compute_fragment_occupation([[0], [1], [2]], spin='a')
@@ -72,6 +73,7 @@ def test_eos_h_h2o_3fragments():
     assert_almost_equal(occs_h, result[2], decimal=2)
     # test oxidation states given 3 fragments
     assert_equal([-2.0, 1.0, 1.0], eos.compute_oxidation_state([[0], [1], [2]]))
+    assert_approx_equal(84.895, eos.reliability, significant=3)
 
 
 def test_eos_h_h2o_2fragments():
@@ -85,6 +87,7 @@ def test_eos_h_h2o_2fragments():
     assert_almost_equal(occs_f2, result[1], decimal=2)
     # test oxidation states
     assert_equal([-1.0, 1.0], eos.compute_oxidation_state([[0, 1], [2]]))
+    assert_approx_equal(90.726, eos.reliability, significant=3)
 
 
 def test_eos_h_h2o_1fragments():
@@ -98,3 +101,4 @@ def test_eos_h_h2o_1fragments():
     assert_almost_equal(occs, result[0], decimal=3)
     # test oxidation states
     assert_equal([0.0], eos.compute_oxidation_state([[0, 1, 2]]))
+    assert_approx_equal(100.0, eos.reliability, significant=7)
