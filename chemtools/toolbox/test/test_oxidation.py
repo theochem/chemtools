@@ -49,7 +49,7 @@ def _get_eos(filename, scheme):
         mol = Molecule.from_file(file_path)
     grid = MolecularGrid.from_molecule(mol, specs='power:5e-8:20:40:146', k=4, rotate=False)
     part = DensPart.from_molecule(mol, scheme=scheme, grid=grid, local=False, proatomdb=proatomdb)
-    return EOS.from_molecule(mol, part, grid)
+    return EOS(mol, part)
 
 
 def check_oxidation_states(eos, occs, fragments, spin, oxidations, reliability, decimal=3):

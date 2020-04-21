@@ -32,15 +32,17 @@ import itertools
 
 
 class EOS(object):
-    def __init__(self, molecule, part, grid):
+    def __init__(self, molecule, part):
+        if not isinstance(part, DensPart):
+            raise TypeError('Argument part should be an instance of DensPart class.')
+
         self.molecule = molecule
         self.part = part
-        self.grid = grid
         self._frags = None
         self._reliability = None
 
     @classmethod
-    def from_molecule(cls, molecule, part, grid):
+    def from_molecule(cls, molecule, scheme, grid=None, proatomdb=None):
         """Initialize class from `Molecule` object.
 
         Parameters
@@ -53,10 +55,12 @@ class EOS(object):
             Molecular numerical integration grid.
 
         """
-        return cls(molecule, part, grid)
+        part = DensPart.from_molecule(molecule, scheme=scheme, grid=grid, local=False,
+                                      proatomdb=proatomdb)
+        return cls(molecule, part)
 
     @classmethod
-    def from_file(cls, fname, part, grid):
+    def from_file(cls, fname, scheme, grid=None, proatomdb=None):
         """Initialize class using wave-function file.
 
         Parameters
@@ -70,7 +74,7 @@ class EOS(object):
 
         """
         molecule = Molecule.from_file(fname)
-        return cls.from_molecule(molecule, part, grid)
+        return cls.from_molecule(molecule, scheme=scheme, grid=grid, proatomdb=proatomdb)
 
     @property
     def reliability(self):
@@ -93,7 +97,7 @@ class EOS(object):
         else:
             self._frags = fragments
 
-        orbitals = self.molecule.compute_molecular_orbital(self.grid.points, spin=spin).T
+        orbitals = self.molecule.compute_molecular_orbital(self.part.grid.points, spin=spin).T
 
         # generating qij array for each atom/fragment
         arr = np.zeros((len(self._frags), ne, ne))
@@ -114,15 +118,6 @@ class EOS(object):
 
         # diagonalize overlap matrix
         _, s, _ = np.linalg.svd(arr)
-
-        np.set_printoptions(suppress=True)
-        print 'alpha occupations', s
-        # for i in s_a:
-        # print i
-
-#      print 'beta occupations'
-#      for i in s_b:
-#        print i
 
         return s
 
