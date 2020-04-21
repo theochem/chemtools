@@ -156,7 +156,7 @@ class EOS(object):
             while sorted_alpha[nalpha-1][1] == sorted_alpha[lumo_a][1]:
                 lumo_a += 1
 
-            self._reliability = 100 * (sorted_alpha[nalpha-1][0] - sorted_alpha[lumo_a][0] + 0.5)
+            self._reliability = 100 * min(1, sorted_alpha[nalpha-1][0] - sorted_alpha[lumo_a][0] + 0.5)
 
         return oxidation
 
