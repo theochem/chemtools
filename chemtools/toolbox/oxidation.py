@@ -23,12 +23,11 @@
 """Module for Oxidation State."""
 
 
-from chemtools.wrappers.molecule import Molecule
-from chemtools.wrappers.grid import MolecularGrid
-from chemtools.wrappers.part import DensPart
-
-import numpy as np
 import itertools
+import numpy as np
+
+from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers.part import DensPart
 
 
 class EOS(object):
@@ -78,7 +77,7 @@ class EOS(object):
 
     @property
     def reliability(self):
-        """float : Reliability index of oxidation state assignment."""
+        """Reliability index of oxidation state assignment."""
         return self._reliability
 
     def compute_fragment_overlap(self, fragments=None, spin='ab'):
@@ -148,10 +147,10 @@ class EOS(object):
         lumo_a = nalpha
         self._reliability = 100.00
         if len(self._frags) != 1:
-            while sorted_alpha[nalpha-1][1] == sorted_alpha[lumo_a][1]:
+            while sorted_alpha[nalpha - 1][1] == sorted_alpha[lumo_a][1]:
                 lumo_a += 1
 
-            self._reliability = 100 * min(1, sorted_alpha[nalpha-1][0] - sorted_alpha[lumo_a][0] + 0.5)
+            self._reliability *= min(1, sorted_alpha[nalpha - 1][0] - sorted_alpha[lumo_a][0] + 0.5)
 
         return oxidation
 
