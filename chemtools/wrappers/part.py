@@ -60,7 +60,7 @@ class DensPart(object):
         wpart = wpart_schemes[scheme]
         # make proatom database
         if scheme.lower() not in ["mbis", "b"]:
-            if "proatomdb" not in kwargs.keys():
+            if "proatomdb" not in kwargs.keys() or kwargs['proatomdb'] is None:
                 proatomdb = ProAtomDB.from_refatoms(numbers)
                 kwargs["proatomdb"] = proatomdb
             kwargs["local"] = False
