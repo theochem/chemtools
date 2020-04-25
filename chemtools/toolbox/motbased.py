@@ -198,7 +198,7 @@ class MOTBasedTool(object):
         """
         coeff_ab_mo_alpha, coeff_ab_mo_beta = self.orbital_coefficient
         occupations_alpha, occupations_beta = self.orbital_occupation
-        olp_ab_ab = self.orbital_overlap
+        olp_ab_ab = self._molecule.ao.compute_overlap()
         num_atoms = len(self._molecule.numbers)
         ab_atom_indices = self._molecule._ind_basis_center
 
