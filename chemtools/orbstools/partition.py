@@ -6,7 +6,7 @@ from chemtools.orbstools.orthogonalization import power_symmetric
 from chemtools.orbstools.quasi import project
 
 
-class OrbitalPartitionTools:
+class OrbitalPartitionTools(object):
     r"""Class for tools related to orbital partitioning.
 
     Attributes
@@ -119,38 +119,28 @@ class OrbitalPartitionTools:
         """
         # pylint: disable=R0912,R0915
 
-        if not (
-            isinstance(coeff_ab_mo, np.ndarray)
-            and coeff_ab_mo.ndim == 2
-            and coeff_ab_mo.dtype == float
-        ):
+        if not (isinstance(coeff_ab_mo, np.ndarray) and coeff_ab_mo.ndim == 2 and
+                coeff_ab_mo.dtype == float):
             raise TypeError(
                 "Transformation matrix from atomic basis functions to molecular orbitals must be a "
                 "two-dimensional numpy array of floats."
             )
-        if not (
-            isinstance(occupations, np.ndarray)
-            and occupations.ndim == 1
-            and occupations.dtype in [float, int]
-        ):
+        if not (isinstance(occupations, np.ndarray) and occupations.ndim == 1 and
+                occupations.dtype in [float, int]):
             raise TypeError(
                 "Molecular orbital occupation numbers must be not a one-dimensional numpy array of "
                 "floats or ints."
             )
-        if not (
-            isinstance(olp_ab_ab, np.ndarray) and olp_ab_ab.ndim == 2 and olp_ab_ab.dtype == float
-        ):
+        if not (isinstance(olp_ab_ab, np.ndarray) and olp_ab_ab.ndim == 2 and
+                olp_ab_ab.dtype == float):
             raise TypeError(
                 "Overlap of the atomic basis functions must be a two-dimensional numpy array of "
                 "floats."
             )
         if not isinstance(num_atoms, int):
             raise TypeError("Number of atoms must be an integer.")
-        if not (
-            isinstance(ab_atom_indices, np.ndarray)
-            and ab_atom_indices.ndim == 1
-            and ab_atom_indices.dtype == int
-        ):
+        if not (isinstance(ab_atom_indices, np.ndarray) and ab_atom_indices.ndim == 1 and
+                ab_atom_indices.dtype == int):
             raise TypeError(
                 "Atom indices of each atomic basis function must be a one-dimensional numpy array "
                 "of integers with size equal to the number of atomic basis functions."
@@ -324,11 +314,8 @@ class OrbitalPartitionTools:
             #     weights[ab_atom_indices == i] = 0.5
             #     atom_weights[i] = weights[:, None] + weights[None, :]
         else:
-            if not (
-                isinstance(atom_weights, np.ndarray)
-                and atom_weights.ndim == 3
-                and atom_weights.dtype in [float, int]
-            ):
+            if not (isinstance(atom_weights, np.ndarray) and atom_weights.ndim == 3 and
+                    atom_weights.dtype in [float, int]):
                 raise TypeError(
                     "Orbital weights for the atoms must be a 3-dimensional numpy array of "
                     "ints/floats."
@@ -511,4 +498,5 @@ class OrbitalPartitionTools:
         the bond order for both of the spins must be added together.
 
         """
+        # pylint: disable=C0103
         return 2 * self.bond_order_wiberg_mayer

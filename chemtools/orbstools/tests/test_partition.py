@@ -4,11 +4,11 @@ try:
 except ImportError:
     from importlib.resources import path
 
+import numpy as np
+from numpy.testing import assert_raises
 from chemtools.orbstools.partition import OrbitalPartitionTools
 from chemtools.orbstools.orthogonalization import power_symmetric
 from chemtools.orbstools.quasi import project
-import numpy as np
-from numpy.testing import assert_raises
 
 
 def test_init():
@@ -423,6 +423,7 @@ def test_transform_orbitals():
 
 def test_mulliken_populations_newbasis():
     """Test orbstools.partition.OrbitalPartitionTools.mulliken_populations with a new basis."""
+    # pylint: disable=C0103
     with path("chemtools.data", "naclo4_coeff_ab_mo.npy") as fname:
         coeff_ab_mo = np.load(str(fname))
     with path("chemtools.data", "naclo4_olp_ab_ab.npy") as fname:
@@ -543,6 +544,7 @@ def test_bond_order_wiberg_mayer_unrestricted():
     H 1.29850109, 1.26951236, -0.309113326
 
     """
+    # pylint: disable=C0103
     with path("chemtools.data", "h2o_coeff_ab_mo_alpha.npy") as fname:
         coeff_ab_mo_alpha = np.load(str(fname))
     with path("chemtools.data", "h2o_coeff_ab_mo_beta.npy") as fname:
