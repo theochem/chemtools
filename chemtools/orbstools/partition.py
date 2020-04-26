@@ -434,7 +434,7 @@ class OrbitalPartitionTools:
 
         Parameters
         ----------
-        atom_weights : np.ndarray(A, K, K)
+        atom_weights : np.ndarray(A, A, K, K)
             Weights of the atomic orbital pairs for the atoms. In other words, this weight controls
             the amount of electrons associated with an atomic orbital pair that will be attributed
             to an atom.
@@ -455,23 +455,21 @@ class OrbitalPartitionTools:
         raw_pops = self.olp_ab_ab.dot(density)
 
         if atom_weights is None:
-            num_ab = self.olp_ab_ab.shape[0]
             # NOTE: creating this numpy array is quite memory intensive. Since nothing here will
             # ever be a computational bottleneck, it will be smarter to use a for loop incorporating
             # the next two parts (weights and density) together. However, we keep these two parts
             # separated to make it easier to implement different weight paradigms.
-            atom_weights = np.zeros((num_atoms, num_atoms, num_ab, num_ab))
-            ab_atom_indices_separated = ab_atom_indices[None, :] == np.arange(num_atoms)[:, None]
-            atom_weights += (ab_atom_indices_separated.astype(float) * 0.5)[:, None, :, None]
-            atom_weights += (ab_atom_indices_separated.astype(float) * 0.5)[None, :, None, :]
+            atom_weights = ab_atom_indices[None, :] == np.arange(num_atoms)[:, None]
+            atom_weights = atom_weights.astype(float)
+            atom_weights = atom_weights[:, None, :, None] * atom_weights[None, :, None, :]
             # code above is equivalent to the following:
             # for i in range(num_atoms):
             #     for j in range(num_atoms):
             #         weights_row = np.zeros(num_ab)
-            #         weights_row[ab_atom_indices == i] = 0.5
+            #         weights_row[ab_atom_indices == i] = 1
             #         weights_col = np.zeros(num_ab)
-            #         weights_col[ab_atom_indices == j] = 0.5
-            #         atom_weights[i, j] = weights_row[:, None] + weights_col[None, :]
+            #         weights_col[ab_atom_indices == j] = 1
+            #         atom_weights[i, j] = weights_row[:, None] * weights_col[None, :]
         else:
             if not (
                 isinstance(atom_weights, np.ndarray)
@@ -506,12 +504,9 @@ class OrbitalPartitionTools:
                     "diagonal (along the first two dimensions) must result in 1's."
                 )
 
-        bond_order = np.sum(atom_weights * raw_pops, axis=(2, 3))
-        bond_order += bond_order.transpose()
+        bond_order = np.sum(atom_weights * raw_pops * raw_pops.T, axis=(2, 3))
+        bond_order -= np.diag(np.diag(bond_order))
 
-        raise NotImplementedError(
-            "Notes need to be double checked for the correct normalization of weights"
-        )
         return bond_order
 
     @property
