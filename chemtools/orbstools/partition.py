@@ -429,18 +429,8 @@ class OrbitalPartitionTools:
         new_orbpart = self.transform_orbitals(coeff_ab_oab, self.ab_atom_indices)
         return new_orbpart.mulliken_populations(atom_weights=atom_weights)
 
-    def bond_order(self, atom_weights=None):
+    def bond_order(self):
         """Return the bond order.
-
-        Parameters
-        ----------
-        atom_weights : np.ndarray(A, A, K, K)
-            Weights of the atomic orbital pairs for the atoms. In other words, this weight controls
-            the amount of electrons associated with an atomic orbital pair that will be attributed
-            to an atom.
-            `A` is the number of atoms and `K` is the number of atomic orbitals.
-            Default is the Mulliken partitioning scheme where two orbitals that belong to the given
-            atom is 1, only one orbital that belong to the given atoms is 0.5, and no orbitals is 0.
 
         Returns
         -------
@@ -454,57 +444,23 @@ class OrbitalPartitionTools:
         density = (self.coeff_ab_mo * self.occupations[None, :]).dot(self.coeff_ab_mo.T)
         raw_pops = self.olp_ab_ab.dot(density)
 
-        if atom_weights is None:
-            # NOTE: creating this numpy array is quite memory intensive. Since nothing here will
-            # ever be a computational bottleneck, it will be smarter to use a for loop incorporating
-            # the next two parts (weights and density) together. However, we keep these two parts
-            # separated to make it easier to implement different weight paradigms.
-            atom_weights = ab_atom_indices[None, :] == np.arange(num_atoms)[:, None]
-            atom_weights = atom_weights.astype(float)
-            atom_weights = atom_weights[:, None, :, None] * atom_weights[None, :, None, :]
-            # code above is equivalent to the following:
-            # for i in range(num_atoms):
-            #     for j in range(num_atoms):
-            #         weights_row = np.zeros(num_ab)
-            #         weights_row[ab_atom_indices == i] = 1
-            #         weights_col = np.zeros(num_ab)
-            #         weights_col[ab_atom_indices == j] = 1
-            #         atom_weights[i, j] = weights_row[:, None] * weights_col[None, :]
-        else:
-            if not (
-                isinstance(atom_weights, np.ndarray)
-                and atom_weights.ndim == 4
-                and atom_weights.dtype in [float, int]
-            ):
-                raise TypeError(
-                    "Orbital weights for the atoms must be a 4-dimensional numpy array of "
-                    "ints/floats."
-                )
-            if not (atom_weights.shape[0] == num_atoms and atom_weights.shape[1] == num_atoms):
-                raise ValueError(
-                    "First and second dimensions of the orbital weights for the pairs of atoms must"
-                    " be equal to the number of atoms."
-                )
-            if atom_weights.shape[2:] != self.olp_ab_ab.shape:
-                raise ValueError(
-                    "Third and fourth dimension of the orbital weights for the pairs of atoms must "
-                    "be equal to the number of atomic orbitals."
-                )
-            if not np.allclose(atom_weights, np.swapaxes(np.swapaxes(atom_weights, 0, 1), 2, 3)):
-                raise ValueError(
-                    "Orbital weights for each pair of atoms must be symmetric, i.e. `atom_weights` "
-                    "must be symmetric with respect to the interchange of the third and fourth "
-                    "indices."
-                )
-            if not np.allclose(
-                np.sum(atom_weights[np.arange(num_atoms), np.arange(num_atoms)], axis=0), 1
-            ):
-                raise ValueError(
-                    "Orbital weights for the pairs of atoms must be normalized, i.e. sum over the "
-                    "diagonal (along the first two dimensions) must result in 1's."
-                )
+        # NOTE: creating this numpy array is quite memory intensive. Since nothing here will
+        # ever be a computational bottleneck, it will be smarter to use a for loop incorporating
+        # the next two parts (weights and density) together. However, we keep these two parts
+        # separated to make it easier to implement different weight paradigms.
+        bond_weights = ab_atom_indices[None, :] == np.arange(num_atoms)[:, None]
+        bond_weights = bond_weights.astype(float)
+        bond_weights = bond_weights[:, None, :, None] * bond_weights[None, :, None, :]
+        # code above is equivalent to the following:
+        # for i in range(num_atoms):
+        #     for j in range(num_atoms):
+        #         weights_row = np.zeros(num_ab)
+        #         weights_row[ab_atom_indices == i] = 1
+        #         weights_col = np.zeros(num_ab)
+        #         weights_col[ab_atom_indices == j] = 1
+        #         bond_weights[i, j] = weights_row[:, None] * weights_col[None, :]
 
-        bond_order = np.sum(atom_weights * raw_pops * raw_pops.T, axis=(2, 3))
+        bond_order = np.sum(bond_weights * raw_pops * raw_pops.T, axis=(2, 3))
         bond_order -= np.diag(np.diag(bond_order))
 
         return bond_order
