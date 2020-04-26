@@ -3,9 +3,8 @@ import numpy as np
 from chemtools.orbstools import orthogonalization as orth
 
 
-def _check_input(
-    olp_ab_ab=None, olp_aao_ab=None, olp_aao_aao=None, coeff_ab_mo=None, indices_span=None
-):
+def _check_input(olp_ab_ab=None, olp_aao_ab=None, olp_aao_aao=None, coeff_ab_mo=None,
+                 indices_span=None):
     """Check the inputs.
 
     Parameters
@@ -62,11 +61,8 @@ def _check_input(
             raise TypeError("Given coefficient matrix is not a two-dimensional numpy array.")
 
     if olp_ab_ab is not None:
-        if not (
-            isinstance(olp_ab_ab, np.ndarray)
-            and olp_ab_ab.ndim == 2
-            and olp_ab_ab.shape[0] == olp_ab_ab.shape[1]
-        ):
+        if not (isinstance(olp_ab_ab, np.ndarray) and olp_ab_ab.ndim == 2 and
+                olp_ab_ab.shape[0] == olp_ab_ab.shape[1]):
             raise TypeError(
                 "Given overlap matrix for atomic basis is not a two-dimensional square numpy array."
             )
@@ -85,11 +81,8 @@ def _check_input(
             )
 
     if olp_aao_aao is not None:
-        if not (
-            isinstance(olp_aao_aao, np.ndarray)
-            and olp_aao_aao.ndim == 2
-            and olp_aao_aao.shape[0] == olp_aao_aao.shape[1]
-        ):
+        if not (isinstance(olp_aao_aao, np.ndarray) and olp_aao_aao.ndim == 2 and
+                olp_aao_aao.shape[0] == olp_aao_aao.shape[1]):
             raise TypeError(
                 "Given overlap matrix for AAO is not a two dimensional square numpy array."
             )
@@ -100,39 +93,27 @@ def _check_input(
         if not np.all(orth.eigh(olp_aao_aao)[0] >= 0):
             raise ValueError("Given overlap matrix for AAO is not positive semidefinite.")
 
-    if (
-        coeff_ab_mo is not None
-        and olp_aao_ab is not None
-        and coeff_ab_mo.shape[0] != olp_aao_ab.shape[1]
-    ):
+    if (coeff_ab_mo is not None and olp_aao_ab is not None and
+            coeff_ab_mo.shape[0] != olp_aao_ab.shape[1]):
         raise ValueError(
             "Number of rows of the `coeff_ab_mo` is not equal to the number of columns of "
             "`olp_aao_ab`."
         )
-    if (
-        olp_ab_ab is not None
-        and olp_aao_ab is not None
-        and olp_ab_ab.shape[0] != olp_aao_ab.shape[1]
-    ):
+    if (olp_ab_ab is not None and olp_aao_ab is not None and
+            olp_ab_ab.shape[0] != olp_aao_ab.shape[1]):
         raise ValueError(
             "Number of rows of the `olp_ab_ab` is not equal to the number of columns of "
             "`olp_aao_ab`."
         )
-    if (
-        coeff_ab_mo is not None
-        and olp_ab_ab is not None
-        and coeff_ab_mo.shape[0] != olp_ab_ab.shape[0]
-    ):
+    if (coeff_ab_mo is not None and olp_ab_ab is not None and
+            coeff_ab_mo.shape[0] != olp_ab_ab.shape[0]):
         raise ValueError(
             "Number of rows of the `coeff_ab_mo` is not equal to the number of rows/columns of "
             "`olp_ab_ab`."
         )
 
-    if (
-        olp_aao_ab is not None
-        and olp_aao_aao is not None
-        and olp_aao_ab.shape[0] != olp_aao_aao.shape[0]
-    ):
+    if (olp_aao_ab is not None and olp_aao_aao is not None and
+            olp_aao_ab.shape[0] != olp_aao_aao.shape[0]):
         raise ValueError(
             "Number of rows of the `olp_aao_ab` is not equal to the number of rows/columns of "
             "`olp_ab_ab`."
@@ -147,11 +128,8 @@ def _check_input(
             )
 
     if indices_span is not None:
-        if not (
-            isinstance(indices_span, np.ndarray)
-            and indices_span.ndim == 1
-            and indices_span.dtype == bool
-        ):
+        if not (isinstance(indices_span, np.ndarray) and indices_span.ndim == 1 and
+                indices_span.dtype == bool):
             raise TypeError(
                 "`indices_span` must be given as a one-dimensional numpy array of dtype bool."
             )
@@ -188,11 +166,8 @@ def project(olp_one_one, olp_one_two):
         basis set 1.
 
     """
-    if not (
-        isinstance(olp_one_one, np.ndarray)
-        and olp_one_one.ndim == 2
-        and olp_one_one.shape[0] == olp_one_one.shape[1]
-    ):
+    if not (isinstance(olp_one_one, np.ndarray) and olp_one_one.ndim == 2 and
+            olp_one_one.shape[0] == olp_one_one.shape[1]):
         raise TypeError("`olp_one_one` must be a two-dimensional square numpy array.")
     if not (isinstance(olp_one_two, np.ndarray) and olp_one_two.ndim == 2):
         raise TypeError("`olp_one_two` must be a two-dimensional numpy array.")

@@ -1,7 +1,7 @@
 """Tests for orbtools.orthogonalization."""
-import chemtools.orbstools.orthogonalization as orth
 import numpy as np
 from numpy.testing import assert_raises
+import chemtools.orbstools.orthogonalization as orth
 
 
 def test_eigh():
@@ -39,6 +39,7 @@ def test_eigh():
 
 def test_svd():
     """Test orbstools.orthogonalization.svd."""
+    # pylint: disable=C0103
     assert_raises(TypeError, orth.svd, np.random.rand(3, 3).tolist())
     assert_raises(TypeError, orth.svd, np.random.rand(3, 3, 3))
     matrix = np.random.rand(10, 10)

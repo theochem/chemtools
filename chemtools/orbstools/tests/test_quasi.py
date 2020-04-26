@@ -4,10 +4,10 @@ try:
 except ImportError:
     from importlib.resources import path
 
-from chemtools.orbstools.partition import OrbitalPartitionTools
-from chemtools.orbstools.quasi import _check_input, make_mmo, project, quambo, quao
 import numpy as np
 from numpy.testing import assert_raises
+from chemtools.orbstools.partition import OrbitalPartitionTools
+from chemtools.orbstools.quasi import _check_input, make_mmo, project, quambo, quao
 
 
 def test_project():
@@ -46,12 +46,14 @@ def test_project():
 
 
 def normalize(olp, coeff):
+    """Helper function for normalizing orbital coefficients."""
     norm = np.diag(coeff.T.dot(olp).dot(coeff))
     return coeff * norm ** (-0.5)
 
 
 def test_check_input():
     """Test the orbstools.quasi._check_input."""
+    # pylint: disable=R0915
     # olp_ab_ab
     coeff_prim_ab = np.random.rand(10, 10)
     olp_ab_ab = coeff_prim_ab.T.dot(np.identity(10)).dot(coeff_prim_ab)
@@ -277,7 +279,6 @@ def test_quambo():
 
 def test_quao():
     """Test orbstools.quasi.quambo against literature value for Mulliken populations.
-
 
     References
     ----------
