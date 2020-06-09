@@ -312,7 +312,7 @@ def get_dict_population(molecule, approach, scheme, **kwargs):
     wpart = wpart_schemes[scheme]
     # make proatom database
     if scheme.lower() not in ["mbis", "b"]:
-        if "proatomdb" not in kwargs.keys():
+        if "proatomdb" not in kwargs.keys() or kwargs["proatomdb"] is None:
             proatomdb = ProAtomDB.from_refatoms(mol0.numbers)
         kwargs["proatomdb"] = proatomdb
 
