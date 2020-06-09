@@ -341,6 +341,8 @@ def get_dict_population(molecule, approach, scheme, **kwargs):
                 mol = dict_mols[nelec]
                 grid = get_molecular_grid(molecule, None)
                 dens = molecule.compute_density(grid.points, "ab", None)
+            else:
+                mol = mol0
             parts = wpart(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                           grid, dens, **kwargs)
 
