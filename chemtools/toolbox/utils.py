@@ -314,7 +314,7 @@ def get_dict_population(molecule, approach, scheme, **kwargs):
     if scheme.lower() not in ["mbis", "b"]:
         if "proatomdb" not in kwargs.keys() or kwargs["proatomdb"] is None:
             proatomdb = ProAtomDB.from_refatoms(mol0.numbers)
-        kwargs["proatomdb"] = proatomdb
+            kwargs["proatomdb"] = proatomdb
 
     # check or generate molecular grid
     grid = get_molecular_grid(molecule, kwargs.pop("grid", None))
