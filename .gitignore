@@ -72,3 +72,4 @@ examples/*/*.cube
 # Ignore testing output
 .coverage
 qaworkdir
+.vscode/settings.json
