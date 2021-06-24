@@ -72,3 +72,6 @@ examples/*/*.cube
 # Ignore testing output
 .coverage
 qaworkdir
+
+# Ignore vscode folders
+.vscode/

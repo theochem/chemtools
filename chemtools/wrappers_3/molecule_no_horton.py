@@ -44,7 +44,14 @@ class Molecule:
     """ Molecule class based on IOData, gbasis, and grid"""
 
     def __init__(self, iodata):
+        """
+        Initialize class.
 
+        Parameters
+        ----------
+        iodata : iodata.iodata.IOData
+           An instance of iodata.iodata.IOData object.
+        """
         self._iodata = iodata
         self._coords = self._iodata.atcoords
         self._numbers = self._iodata.atnums
@@ -125,17 +132,18 @@ class AtomicOrbitals:
     def from_file(cls, fname):
         return cls.from_molecule(Molecule.from_file(str(fname)))
 
+    # WONT WORK WITH MIXED COORDINATES DUE TO A GBASIS BUG!!!
     def compute_overlap(self):
         r"""Return overlap matrix :math:`\mathbf{S}` of atomic orbitals.
 
         .. math:: [\mathbf{S}]_ij = int \phi_i(\mathbf{r}) \phi_j(\mathbf{r}) d\mathbf{r}
 
         """
-        return overlap_integral(self._basis, coord_type="spherical")
+        return overlap_integral(self._basis, coord_type=self._coord_type)
 
     def compute_orbitals(self, points):
 
-        return evaluate_basis(self._basis, points, coord_type="spherical")
+        return evaluate_basis(self._basis, points, coord_type=self._coord_type)
 
     def compute_density(self, dm, points):
         """Return electron density evaluated on the a set of points.
@@ -149,7 +157,7 @@ class AtomicOrbitals:
 
         """
         return evaluate_density(dm, self._basis, points,
-                                coord_type="spherical")
+                                coord_type=self._coord_type)
 
     def compute_gradient(self, dm, points):
         """Return gradient of the electron density evaluated on the a set of points.
@@ -163,7 +171,7 @@ class AtomicOrbitals:
 
         """
         return evaluate_density_gradient(dm, self._basis, points,
-                                         coord_type="spherical")
+                                         coord_type=self._coord_type)
 
     def compute_hessian(self, dm, points):
         """Return hessian of the electron density evaluated on the a set of points.
@@ -177,7 +185,7 @@ class AtomicOrbitals:
 
         """
         return evaluate_density_hessian(dm, self._basis, points,
-                                        coord_type="spherical")
+                                        coord_type=self._coord_type)
 
     def compute_esp(self, dm, points, coordinates, charges):
         """Return electrostatic potential evaluated on the a set of points.
@@ -205,7 +213,7 @@ class AtomicOrbitals:
 
         """
         return evaluate_posdef_kinetic_energy_density(
-            dm, self._basis, points, coord_type="spherical")
+            dm, self._basis, points, coord_type=self._coord_type)
 
 class MolecularOrbitals:
     pass
