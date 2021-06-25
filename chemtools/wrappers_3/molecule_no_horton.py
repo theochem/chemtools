@@ -58,12 +58,12 @@ class Molecule:
         self._dm = self._iodata.one_rdms['scf']
 
         if hasattr(self._iodata, "obasis"):
-            self._ao = AtomicOrbitals.from_molecule(self)
+            self._ao = AtomicOrbitals.from_molecule(self._iodata)
         else:
             self._ao = None
 
         if hasattr(self._iodata, "mo"):
-            self._mo = MolecularOrbitals.from_molecule(self)
+            self._mo = MolecularOrbitals.from_molecule(self._iodata)
         else:
             self._mo = None
 
@@ -102,6 +102,14 @@ class Molecule:
     def mo(self):
         """Molecular orbital instance."""
         return self._mo
+
+    def computer_molecular_orbital(self, points):
+        self._check_arguments(points)
+        if self.mo:
+            tf = (self._iodata.mo.coeffs * self._iodata.mo.occs).dot(self._iodata.mo.coeffs.T)
+            return self._ao.compute_orbitals(points, transform=tf)
+        else:
+            raise ValueError("mo attribute cannot be empty or None")
 
     def compute_gradient(self, points):
         r"""Return gradient of the electron density.
@@ -203,9 +211,22 @@ class AtomicOrbitals:
             raise NotImplementedError("GBasis does not support mixed coordinate types yet.")
 
 
-    def compute_orbitals(self, points):
+    def compute_orbitals(self, points, transform=None):
+        """ Evaluate Orbitals
 
-        return evaluate_basis(self._basis, points, coord_type=self._coord_type)
+        Parameters
+        ----------
+        points : ndarray
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
+        transform : np.ndarray(K_orbs, K_cont)
+            Transformation matrix from contractions in the given coordinate system (e.g. AO) to
+            linear combinations of contractions (e.g. MO).
+            Transformation is applied to the left.
+            Rows correspond to the linear combinationes (i.e. MO) and the columns correspond to the
+            contractions (i.e. AO).
+        """
+        return evaluate_basis(self._basis, points, transform=transform,
+                              coord_type=self._coord_type)
 
     def compute_density(self, dm, points):
         """Return electron density evaluated on the a set of points.
