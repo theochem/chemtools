@@ -55,6 +55,7 @@ class Molecule:
         self._iodata = iodata
         self._coords = self._iodata.atcoords
         self._numbers = self._iodata.atnums
+        self._dm = self._iodata.one_rdms['scf']
 
         if hasattr(self._iodata, "obasis"):
             self._ao = AtomicOrbitals.from_molecule(self)
@@ -96,6 +97,47 @@ class Molecule:
     def ao(self):
         """Atomic orbital instance"""
         return self._ao
+
+    @property
+    def mo(self):
+        """Molecular orbital instance."""
+        return self._mo
+
+    def compute_gradient(self, points):
+        r"""Return gradient of the electron density.
+
+        Parameters
+        ----------
+        points : ndarray
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
+
+        """
+        self._check_argument(points)
+        return self._ao.compute_gradient(self._dm, points)
+
+    def compute_hessian(self, points):
+        r"""Return hessian of the electron density.
+
+        Parameters
+        ----------
+        points : ndarray
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
+
+        """
+        self._check_argument(points)
+        return self._ao.compute_hessian(self._dm, points)
+
+    def compute_laplacian(self, points):
+        r"""Return Laplacian of the electron density.
+
+        Parameters
+        ----------
+        points : ndarray
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
+
+        """
+        hess = self.compute_hessian(points)
+        return np.trace(hess, axis1=1, axis2=2)
 
     def _check_arguments(self, points):
         """Check given arguments.
