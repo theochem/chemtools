@@ -61,6 +61,11 @@ class Molecule:
         else:
             self._ao = None
 
+        if hasattr(self._iodata, "mo"):
+            self._mo = MolecularOrbitals.from_molecule(self)
+        else:
+            self._mo = None
+
     @classmethod
     def from_file(cls, fname):
         try:
@@ -111,13 +116,7 @@ class Molecule:
             raise AttributeError("Molecular Orbitals information is needed!")
 
 class AtomicOrbitals:
-
-    # TODO: Check whether mol has mol.one_rdms['scf']?
-    # Add docs where needed
-
-    # Include basis as an argument for computing properties?
-
-    # Include new functionality (e.g. Laplassian of density)?
+    """Gaussian Basis Function or Atomic Orbitals"""
 
     def __init__(self, basis, coord_type):
         self._basis = basis
@@ -125,11 +124,27 @@ class AtomicOrbitals:
 
     @classmethod
     def from_molecule(cls, mol):
+        """Initialize class given an instance of `Molecule`.
+
+        Parameters
+        ----------
+        mol : Molecule
+            An instance of `Molecule` class.
+
+        """
         basis, coord_type = from_iodata(mol)
         return cls(basis, coord_type)
 
     @classmethod
     def from_file(cls, fname):
+        """Initialize class given a file.
+
+        Parameters
+        ----------
+        fname : str
+            Path to molecule"s files.
+
+        """
         return cls.from_molecule(Molecule.from_file(str(fname)))
 
     def compute_overlap(self):
@@ -221,4 +236,86 @@ class AtomicOrbitals:
             dm, self._basis, points, coord_type=self._coord_type)
 
 class MolecularOrbitals:
-    pass
+    """Molecular orbital class. """
+
+    def __init__(self, occs_a, occs_b, energy_a, energy_b, coeffs_a, coeffs_b):
+        self._occs_a, self._occs_b = occs_a, occs_b
+        self._energy_a, self._energy_b = energy_a, energy_b
+        self._coeffs_a, self._coeffs_b = coeffs_a, coeffs_b
+
+    @classmethod
+    def from_molecule(cls, mol):
+        """Initialize class given an instance of `Molecule`.
+
+        Parameters
+        ----------
+        mol : Molecule
+            An instance of `Molecule` class.
+
+        """
+        if hasattr(mol, "mo") and mol.mo is not None:
+            occs_a, occs_b = mol.mo.occsa, mol.mo.occsb
+            energy_a, energy_b = mol.mo.energiesa, mol.mo.energiesb
+            coeffs_a, coeffs_b = mol.mo.coeffsa, mol.mo.coeffsb
+            return cls(occs_a, occs_b, energy_a, energy_b, coeffs_a, coeffs_b)
+
+    @classmethod
+    def from_file(cls, fname):
+        """initialize class given a file.
+
+        parameters
+        ----------
+        fname : str
+            path to molecule"s files.
+
+        """
+        return cls.from_molecule(Molecule.from_file(fname))
+
+    @property
+    def homo_index(self):
+        """Index of alpha and beta HOMO orbital."""
+        index_a = np.argwhere(self._occs_a == 0.)[0, 0]
+        index_b = np.argwhere(self._occs_b == 0.)[0, 0]
+        return index_a, index_b
+
+    @property
+    def lumo_index(self):
+        """Index of alpha and beta LUMO orbital."""
+        return self.homo_index[0] + 1, self.homo_index[1] + 1
+
+    @property
+    def homo_energy(self):
+        """Energy of alpha and beta HOMO orbital."""
+        return self._energy_a[self.homo_index[0] - 1], self._energy_b[self.homo_index[1] - 1]
+
+    @property
+    def lumo_energy(self):
+        """Energy of alpha and beta LUMO orbital."""
+        return self._energy_a[self.lumo_index[0] - 1], self._energy_b[self.lumo_index[1] - 1]
+
+    @property
+    def occupation(self):
+        """Orbital occupation of alpha and beta electrons."""
+        return self._occs_a, self._occs_b
+
+    @property
+    def energy(self):
+        """Orbital energy of alpha and beta electrons."""
+        return self._energy_a, self._energy_b
+
+    @property
+    def coefficient(self):
+        """Orbital coefficient of alpha and beta electrons.
+
+        The alpha and beta orbital coefficients are each storied in a 2d-array in which
+        the columns represent the basis coefficients of each molecular orbital.
+        """
+        return self._coeffs_a, self._coeffs_b
+
+    @property
+    def nelectrons(self):
+        """Number of alpha and beta electrons."""
+        return np.sum(self._occs_a), np.sum(self._occs_b)
+
+    def compute_overlap(self):
+        return NotImplementedError
