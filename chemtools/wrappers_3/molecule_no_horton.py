@@ -132,14 +132,19 @@ class AtomicOrbitals:
     def from_file(cls, fname):
         return cls.from_molecule(Molecule.from_file(str(fname)))
 
-    # WONT WORK WITH MIXED COORDINATES DUE TO A GBASIS BUG!!!
     def compute_overlap(self):
         r"""Return overlap matrix :math:`\mathbf{S}` of atomic orbitals.
 
         .. math:: [\mathbf{S}]_ij = int \phi_i(\mathbf{r}) \phi_j(\mathbf{r}) d\mathbf{r}
 
         """
-        return overlap_integral(self._basis, coord_type=self._coord_type)
+        # check if the coordinate types are mixed
+        check_coords = all(elmt == self._coord_type[0] for elmt in self._coord_type)
+        if check_coords:
+            return overlap_integral(self._basis, coord_type=self._coord_type)
+        else:
+            raise NotImplementedError("GBasis does not support mixed coordinate types yet.")
+
 
     def compute_orbitals(self, points):
 
