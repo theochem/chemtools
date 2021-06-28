@@ -154,6 +154,55 @@ class Molecule:
         hess = self.compute_hessian(points)
         return np.trace(hess, axis1=1, axis2=2)
 
+    def compute_esp(self, points, charges):
+        r"""Return molecular electrostatic potential.
+
+        The molecular electrostatic potential at point :math:`\mathbf{r}` is caused by the
+        electron density :math:`\rho` of the specified spin orbitals and set of point charges
+        :math:`\{q_A\}_{A=1}^{N_\text{atoms}}` placed at the position of the nuclei. i.e,
+
+        .. math::
+           V \left(\mathbf{r}\right) =
+             \sum_{A=1}^{N_\text{atoms}} \frac{q_A}{\rvert \mathbf{R}_A - \mathbf{r} \lvert} -
+             \int \frac{\rho \left(\mathbf{r}"\right)}{\rvert \mathbf{r}" - \mathbf{r} \lvert}
+                  d\mathbf{r}"
+
+        Parameters
+        ----------
+        points : ndarray
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
+        charges : np.ndarray, optional
+           Array with shape (n,) representing the point charges at the position of the nuclei.
+           When ``None``, the pseudo numbers are used.
+        """
+        self._check_arguments(points)
+        if self.mo:
+            tf = (self._iodata.mo.coeffs * self._iodata.mo.occs).dot(self._iodata.mo.coeffs.T)
+            return self._ao.compute_esp(self._dm, points, self.coordinates,
+                                        charges, transform=tf)
+        else:
+            raise ValueError("mo attribute cannot be empty or None")
+
+    def compute_ked(self, points):
+        r"""Return positive definite or Lagrangian kinetic energy density.
+
+        .. math::
+           \tau_\text{PD} \left(\mathbf{r}\right) =
+           \tfrac{1}{2} \sum_i^N n_i \rvert \nabla \phi_i \left(\mathbf{r}\right) \lvert^2
+
+        Parameters
+        ----------
+        points : ndarray
+           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
+
+        """
+        self._check_arguments(points)
+        if self.mo:
+            tf = (self._iodata.mo.coeffs * self._iodata.mo.occs).dot(self._iodata.mo.coeffs.T)
+            return self._ao.compute_ked(self._dm, points, transform=tf)
+        else:
+            raise ValueError("mo attribute cannot be empty or None")
+
     def _check_arguments(self, points):
         """Check given arguments.
 
@@ -289,9 +338,10 @@ class AtomicOrbitals:
 
         """
         return electrostatic_potential(self._basis, dm, points,
-                                       coordinates, charges)
+                                       coordinates, charges, transform=transform,
+                                       coord_type=self._coord_type)
 
-    def compute_ked(self, dm, points):
+    def compute_ked(self, dm, points, transform=None):
         """Return positive definite kinetic energy density evaluated on the a set of points.
 
         Parameters
@@ -302,8 +352,9 @@ class AtomicOrbitals:
            Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
 
         """
-        return evaluate_posdef_kinetic_energy_density(
-            dm, self._basis, points, coord_type=self._coord_type)
+        return evaluate_posdef_kinetic_energy_density(dm, self._basis, points,
+                                                      transform=transform,
+                                                      coord_type=self._coord_type)
 
 class MolecularOrbitals:
     """Molecular orbital class. """
