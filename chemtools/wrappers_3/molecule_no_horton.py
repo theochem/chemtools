@@ -103,11 +103,18 @@ class Molecule:
         """Molecular orbital instance."""
         return self._mo
 
-    def computer_molecular_orbital(self, points):
+    def compute_molecular_orbital(self, points):
         self._check_arguments(points)
         if self.mo:
             tf = (self._iodata.mo.coeffs * self._iodata.mo.occs).dot(self._iodata.mo.coeffs.T)
             return self._ao.compute_orbitals(points, transform=tf)
+        else:
+            raise ValueError("mo attribute cannot be empty or None")
+
+    def compute_density(self, points):
+        if self.mo:
+            tf = (self._iodata.mo.coeffs * self._iodata.mo.occs).dot(self._iodata.mo.coeffs.T)
+            return self._ao.compute_density(self._dm, points, transform=tf)
         else:
             raise ValueError("mo attribute cannot be empty or None")
 
@@ -120,7 +127,7 @@ class Molecule:
            Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
 
         """
-        self._check_argument(points)
+        self._check_arguments(points)
         return self._ao.compute_gradient(self._dm, points)
 
     def compute_hessian(self, points):
@@ -132,7 +139,7 @@ class Molecule:
            Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
 
         """
-        self._check_argument(points)
+        self._check_arguments(points)
         return self._ao.compute_hessian(self._dm, points)
 
     def compute_laplacian(self, points):
@@ -228,7 +235,7 @@ class AtomicOrbitals:
         return evaluate_basis(self._basis, points, transform=transform,
                               coord_type=self._coord_type)
 
-    def compute_density(self, dm, points):
+    def compute_density(self, dm, points, transform=None):
         """Return electron density evaluated on the a set of points.
 
         Parameters
@@ -239,7 +246,7 @@ class AtomicOrbitals:
            Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
 
         """
-        return evaluate_density(dm, self._basis, points,
+        return evaluate_density(dm, self._basis, points, transform=transform,
                                 coord_type=self._coord_type)
 
     def compute_gradient(self, dm, points):
@@ -270,7 +277,7 @@ class AtomicOrbitals:
         return evaluate_density_hessian(dm, self._basis, points,
                                         coord_type=self._coord_type)
 
-    def compute_esp(self, dm, points, coordinates, charges):
+    def compute_esp(self, dm, points, coordinates, charges, transform=None):
         """Return electrostatic potential evaluated on the a set of points.
 
         Parameters
