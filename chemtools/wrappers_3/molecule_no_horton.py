@@ -264,7 +264,7 @@ class AtomicOrbitals:
         if check_coords:
             return overlap_integral(self._basis, coord_type=self._coord_type)
         else:
-            raise NotImplementedError("GBasis does not support mixed coordinate types yet.")
+            raise NotImplementedError("Mixed coordinate types are not supported yet.")
 
 
     def compute_orbitals(self, points, transform=None):
@@ -326,6 +326,7 @@ class AtomicOrbitals:
         return evaluate_density_hessian(dm, self._basis, points,
                                         coord_type=self._coord_type)
 
+    #TODO: the original compute esp had an option for pseudo numbers if charges=None?
     def compute_esp(self, dm, points, coordinates, charges, transform=None):
         """Return electrostatic potential evaluated on the a set of points.
 
