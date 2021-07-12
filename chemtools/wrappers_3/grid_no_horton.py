@@ -24,11 +24,11 @@
 from grid.becke import BeckeWeights
 from grid.molgrid import MolGrid
 from grid.onedgrid import HortonLinear
-
+from chemtools.wrappers_3.molecule_no_horton import Molecule
 
 __all__ = ['MolecularGrid']
 
-
+#TODO: How to implement integrate and compute spherical average functions?
 class MolecularGrid:
     """Becke-Lebedev molecular grid for numerical integrations."""
 
@@ -50,12 +50,16 @@ class MolecularGrid:
                                             onedg, self._points_of_angular, becke)
 
     @classmethod
-    def from_molecule(cls):
-        pass
+    def from_molecule(cls, molecule, specs='medium', k=3, rotate=False):
+        if not isinstance(molecule, Molecule):
+            raise TypeError('Argument molecule should be an instance of Molecule class.')
+        coords, nums, pnums = molecule.coordinates, molecule.numbers, molecule.pseudo_numbers
+        return cls(coords, nums, pnums, specs, k, rotate)
 
     @classmethod
-    def from_file(cls):
-        pass
+    def from_file(cls, fname, specs='medium', k=3, rotate=False):
+        mol = Molecule.from_file(fname)
+        return cls.from_molecule(mol, specs, k, rotate)
 
     @property
     def center(self):
