@@ -33,7 +33,7 @@ class MolecularGrid:
     """Becke-Lebedev molecular grid for numerical integrations."""
 
     def __init__(self, coordinates, numbers, pseudo_numbers,
-                 specs='medium', k=3, rotate=False):
+                 specs='medium', k=3, points_of_angular=110, rotate=False):
 
         self._coordinates = coordinates
         self._numbers = numbers
@@ -41,7 +41,7 @@ class MolecularGrid:
         self._k = k
         self._rotate = rotate
         self._specs = specs
-        self._points_of_angular = None
+        self._points_of_angular = points_of_angular
 
         onedg = HortonLinear(100)
         becke = BeckeWeights(order=self._k)

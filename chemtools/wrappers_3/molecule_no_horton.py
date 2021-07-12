@@ -55,6 +55,7 @@ class Molecule:
         self._iodata = iodata
         self._coords = self._iodata.atcoords
         self._numbers = self._iodata.atnums
+        self._pseudo_numbers = self._iodata.atcorenums
         self._dm = self._iodata.one_rdms['scf']
 
         if hasattr(self._iodata, "obasis"):
@@ -92,6 +93,11 @@ class Molecule:
     def numbers(self):
         """Atomic numbers of atomic centres."""
         return self._numbers
+
+    @property
+    def pseudo_numbers(self):
+        """Pseudo numbers of atomic centres."""
+        return self._pseudo_numbers
 
     @property
     def ao(self):
@@ -154,7 +160,7 @@ class Molecule:
         hess = self.compute_hessian(points)
         return np.trace(hess, axis1=1, axis2=2)
 
-    def compute_esp(self, points, charges):
+    def compute_esp(self, points, charges=None):
         r"""Return molecular electrostatic potential.
 
         The molecular electrostatic potential at point :math:`\mathbf{r}` is caused by the
@@ -176,6 +182,13 @@ class Molecule:
            When ``None``, the pseudo numbers are used.
         """
         self._check_arguments(points)
+
+        if charges is None:
+            charges = self.pseudo_numbers
+        elif not isinstance(charges, np.ndarray) or charges.shape != self.numbers.shape:
+            raise ValueError("Argument charges should be a 1d-array "
+                             "with {0} shape.".format(self.numbers.shape))
+
         if self.mo:
             tf = (self._iodata.mo.coeffs * self._iodata.mo.occs).dot(self._iodata.mo.coeffs.T)
             return self._ao.compute_esp(self._dm, points, self.coordinates,
@@ -326,7 +339,6 @@ class AtomicOrbitals:
         return evaluate_density_hessian(dm, self._basis, points,
                                         coord_type=self._coord_type)
 
-    #TODO: the original compute esp had an option for pseudo numbers if charges=None?
     def compute_esp(self, dm, points, coordinates, charges, transform=None):
         """Return electrostatic potential evaluated on the a set of points.
 
