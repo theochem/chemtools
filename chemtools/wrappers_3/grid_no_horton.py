@@ -28,7 +28,7 @@ from chemtools.wrappers_3.molecule_no_horton import Molecule
 
 __all__ = ['MolecularGrid']
 
-#TODO: How to implement integrate and compute spherical average functions?
+#TODO: How to implement compute spherical average functions?
 class MolecularGrid:
     """Becke-Lebedev molecular grid for numerical integrations."""
 
@@ -95,3 +95,18 @@ class MolecularGrid:
     def weights(self):
         """Integration weight of grid points."""
         return self._grid.weights
+
+    def integrate(self, *value_arrays):
+        r""" Integrate over the whole grid for given multiple value arrays.
+
+        Product of all value_arrays will be computed element-wise then
+        integrated on the grid with its weights.
+        .. math::
+            Integral = \int w(x) \prod_i f_i(x) dx
+
+        Parameters
+        ----------
+        *value_arrays : np.ndarray(N, )
+            One or multiple value array to integrate.
+        """
+        return self._grid.integrate(*value_arrays)
