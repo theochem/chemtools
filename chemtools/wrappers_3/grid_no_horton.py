@@ -110,3 +110,6 @@ class MolecularGrid:
             One or multiple value array to integrate.
         """
         return self._grid.integrate(*value_arrays)
+
+    def compute_spherical_average(self, value):
+        raise NotImplementedError("Not yet implemented in grid")
