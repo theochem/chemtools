@@ -1,5 +1,5 @@
-import denspart
 import numpy as np
+from denspart.mbis import partition
 from molecule_no_horton import Molecule
 from grid_no_horton import MolecularGrid
 
@@ -20,11 +20,11 @@ class DensPart(object):
         self.pseudo_numbers = pseudo_numbers
         self.density = density
         self.grid = grid
-        self.part = denspart.mbis.partition(self.numbers,
-                                            self.coordinates,
-                                            self.grid,
-                                            self.density
-                                            **kwargs)
+        self.part = partition(self.numbers,
+                              self.coordinates,
+                              self.grid,
+                              self.density
+                              **kwargs)
 
     @classmethod
     def from_molecule(cls, mol, scheme=None, grid=None, **kwargs):
