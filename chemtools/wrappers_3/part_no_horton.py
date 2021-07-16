@@ -46,6 +46,12 @@ class DensPart(object):
         mol = Molecule.from_file(fname)
         return cls.from_molecule(mol, scheme=scheme, grid=grid, **kwargs)
 
+    def condense_to_atoms(self, value, w_power=1):
+        raise NotImplementedError
+
+    def condense_to_fragments(self, value, fragments=None, w_power=1):
+        raise NotImplementedError
+
 def check_molecule_grid(mol, grid):
     """Check that molecule and grid represent the same system.
 
