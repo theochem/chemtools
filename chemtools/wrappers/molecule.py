@@ -57,7 +57,11 @@ class Molecule:
         self._numbers = self._iodata.atnums
         self._pseudo_numbers = self._iodata.atcorenums
         self._nbasis = self._iodata.mo.nbasis
-        self._dm = self._iodata.one_rdms['scf']
+
+        try:
+            self._dm = self._iodata.one_rdms['scf']
+        except KeyError:
+            self._dm = None
 
         if hasattr(self._iodata, "obasis"):
             self._ao = AtomicOrbitals.from_molecule(self._iodata)
@@ -103,6 +107,11 @@ class Molecule:
     @property
     def nbasis(self):
         return self._nbasis
+
+    @property
+    def density_matrix(self):
+        """return density matrix"""
+        return self._dm
 
     @property
     def ao(self):
@@ -355,9 +364,14 @@ class AtomicOrbitals:
            Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
 
         """
-        return electrostatic_potential(self._basis, dm, points,
-                                       coordinates, charges, transform=transform,
-                                       coord_type=self._coord_type)
+
+        check_coords = all(elmt == self._coord_type[0] for elmt in self._coord_type)
+        if check_coords:
+            return electrostatic_potential(self._basis, dm, points,
+                                           coordinates, charges, transform=transform,
+                                           coord_type=self._coord_type)
+        else:
+            raise NotImplementedError("Mixed coordinate types are not supported yet.")
 
     def compute_ked(self, dm, points, transform=None):
         """Return positive definite kinetic energy density evaluated on the a set of points.
