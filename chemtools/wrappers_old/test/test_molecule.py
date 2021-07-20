@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 # ChemTools is a collection of interpretive chemical tools for
 # analyzing outputs of the quantum chemistry calculations.
@@ -22,6 +21,8 @@
 #
 # --
 """Test chemtools.wrappers.molecule."""
+
+
 import numpy as np
 from numpy.testing import assert_raises, assert_equal, assert_almost_equal
 from chemtools.wrappers import Molecule
@@ -31,16 +32,17 @@ try:
 except ImportError:
     from importlib.resources import path
 
+
 def check_molecule_raises(mol):
     """Check expected raised error messages by HortonWaveFunction class."""
     # example point array
     points = np.array([[0., 0., 0.], [1., 1., 1.]])
     # check invalid orbital spin argument
-    # assert_raises(ValueError, mol.compute_density_matrix)
-    assert_raises(ValueError, mol.compute_density, points)
-    assert_raises(ValueError, mol.compute_gradient, points)
-    assert_raises(ValueError, mol.compute_hessian, points)
-    assert_raises(ValueError, mol.compute_ked, points)
+    assert_raises(ValueError, mol.compute_density_matrix, "alphabeta")
+    assert_raises(ValueError, mol.compute_density, points, spin="alpha")
+    assert_raises(ValueError, mol.compute_gradient, points, spin="beta")
+    assert_raises(ValueError, mol.compute_hessian, points, spin="betaalpha")
+    assert_raises(ValueError, mol.compute_ked, points, spin="balpha")
     # check invalid points argument
     assert_raises(ValueError, mol.compute_molecular_orbital, [0.1, 0.5, 0.7], "a")
     assert_raises(ValueError, mol.compute_molecular_orbital, np.array([0.1, 0.5, 0.7]), "b")
@@ -69,6 +71,7 @@ def check_molecule_raises(mol):
     # check invalid charges argument
     assert_raises(ValueError, mol.compute_esp, points, charges=np.array([6., 1., 1.]))
     assert_raises(ValueError, mol.compute_esp, points, charges=[6., 1., 1., 1., 1.])
+
 
 def test_molecule_raises_fchk_uhf_ch4():
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:

@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 # ChemTools is a collection of interpretive chemical tools for
 # analyzing outputs of the quantum chemistry calculations.

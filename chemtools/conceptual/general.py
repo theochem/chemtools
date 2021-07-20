@@ -89,7 +89,8 @@ class GeneralGlobalTool(BaseGlobalTool):
                 'the number of electrons.')
         self._n_symb = n_symbol
         # store minimum and maximum number of electrons used for interpolation
-        self._n_min, self._n_max = np.min(n_energies.keys()), np.max(n_energies.keys())
+        self._n_min, self._n_max = np.min(
+            n_energies.keys()), np.max(n_energies.keys())
 
         # substitute N0 in energy expression
         if n0_symbol:
@@ -142,7 +143,8 @@ class GeneralGlobalTool(BaseGlobalTool):
         check_number_electrons(n_elec, self._n_min, self._n_max)
         # check order
         if not (isinstance(order, int) and order > 0):
-            raise ValueError("Argument order should be an integer greater than or equal to 1.")
+            raise ValueError(
+                "Argument order should be an integer greater than or equal to 1.")
         # obtain derivative expression
         deriv = self._expr.diff(self._n_symb, order)
         # evaluate derivative expression at n_elec
@@ -185,11 +187,13 @@ class GeneralGlobalTool(BaseGlobalTool):
         system_eqns = []
         d_system_eqns = []
         for n, energy in n_energies.iteritems():
-            eqn = sp.lambdify((params,), expr.subs(self._n_symb, n) - energy, 'numpy')
+            eqn = sp.lambdify((params,), expr.subs(
+                self._n_symb, n) - energy, 'numpy')
             system_eqns.append(eqn)
             d_eqn_row = []
             for p in params:
-                d_eqn = sp.lambdify((params,), expr.diff(p).subs(self._n_symb, n), 'numpy')
+                d_eqn = sp.lambdify((params,), expr.diff(
+                    p).subs(self._n_symb, n), 'numpy')
                 d_eqn_row.append(d_eqn)
             d_system_eqns.append(d_eqn_row)
 
@@ -226,7 +230,8 @@ class GeneralGlobalTool(BaseGlobalTool):
                 'The system of equations for parameters could not be solved. '
                 'message:{0}'.format(result.message))
         # make dictionary of parameter values
-        parameters = dict([(param, result.x[i]) for i, param in enumerate(params)])
+        parameters = dict([(param, result.x[i])
+                          for i, param in enumerate(params)])
         return parameters
 
     def _solve_nmax(self, guess):
@@ -234,7 +239,7 @@ class GeneralGlobalTool(BaseGlobalTool):
         d_expr = self._expr.diff(self._n_symb)
         n_max_eqn = sp.lambdify(self._n_symb, d_expr, 'numpy')
         result = root(n_max_eqn, guess)
-        print result
+        print(result)
         if result.success:
             n_max = np.asscalar(result.x)
             # n_ceil = math.ceil(n_max)
