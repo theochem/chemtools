@@ -94,7 +94,7 @@ def check_molecule_basics(mol):
     # check basic numerics
     assert_equal(mol.natom, 5)
     assert_equal(mol.mo.nelectrons, (5, 5))
-    # assert_equal(mol.ao.nbasis, 34)
+    assert_equal(mol.nbasis, 34)
     assert_equal(mol.numbers, [6, 1, 1, 1, 1])
     assert_equal(mol.pseudo_numbers, [6, 1, 1, 1, 1])
     assert_equal(mol.mo.homo_index, (5, 5))
@@ -118,11 +118,11 @@ def test_molecule_basics_fchk_uhf_ch4():
     check_molecule_basics(molecule)
     # check charges
     esp = np.array([-0.502277518, 0.125567970, 0.125569655, 0.125566743, 0.125573150])
-    assert_almost_equal(molecule.esp_charges, esp, decimal=6)
+    assert_almost_equal(molecule.atcharges['esp'], esp, decimal=6)
     npa = np.array([-0.791299253, 0.197824989, 0.197825250, 0.197824326, 0.197824689])
-    assert_almost_equal(molecule.npa_charges, npa, decimal=6)
+    assert_almost_equal(molecule.atcharges['npa'], npa, decimal=6)
     mul = np.array([-0.139702704, 0.0349253868, 0.0349266071, 0.0349235395, 0.0349271707])
-    assert_almost_equal(molecule.mulliken_charges, mul, decimal=6)
+    assert_almost_equal(molecule.atcharges['mulliken'], mul, decimal=6)
 
 
 def test_molecule_basics_wfn_ch4():

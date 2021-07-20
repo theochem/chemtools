@@ -56,6 +56,7 @@ class Molecule:
         self._coords = self._iodata.atcoords
         self._numbers = self._iodata.atnums
         self._pseudo_numbers = self._iodata.atcorenums
+        self._nbasis = self._iodata.mo.nbasis
         self._dm = self._iodata.one_rdms['scf']
 
         if hasattr(self._iodata, "obasis"):
@@ -98,6 +99,10 @@ class Molecule:
     def pseudo_numbers(self):
         """Pseudo numbers of atomic centres."""
         return self._pseudo_numbers
+
+    @property
+    def nbasis(self):
+        return self._nbasis
 
     @property
     def ao(self):
