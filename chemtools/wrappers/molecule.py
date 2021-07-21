@@ -56,6 +56,7 @@ class Molecule:
         self._coords = self._iodata.atcoords
         self._numbers = self._iodata.atnums
         self._pseudo_numbers = self._iodata.atcorenums
+        self._charges = self._iodata.atcharges
         self._nbasis = self._iodata.mo.nbasis
 
         try:
@@ -64,7 +65,10 @@ class Molecule:
             self._dm = None
 
         if hasattr(self._iodata, "obasis"):
-            self._ao = AtomicOrbitals.from_molecule(self._iodata)
+            try:
+                self._ao = AtomicOrbitals.from_molecule(self._iodata)
+            except AttributeError:
+                self._ao = None
         else:
             self._ao = None
 
@@ -103,6 +107,11 @@ class Molecule:
     def pseudo_numbers(self):
         """Pseudo numbers of atomic centres."""
         return self._pseudo_numbers
+
+    @property
+    def charges(self):
+        """Return a dict with charges"""
+        return self._charges
 
     @property
     def nbasis(self):
