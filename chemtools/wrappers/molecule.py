@@ -59,11 +59,13 @@ class Molecule:
         self._charges = self._iodata.atcharges
         self._nbasis = self._iodata.mo.nbasis
 
+        # get the density matrix
         try:
             self._dm = self._iodata.one_rdms['scf']
         except KeyError:
             self._dm = None
 
+        # get the Atomic Orbital
         if hasattr(self._iodata, "obasis"):
             try:
                 self._ao = AtomicOrbitals.from_molecule(self._iodata)
@@ -72,6 +74,7 @@ class Molecule:
         else:
             self._ao = None
 
+        # get the Molecular Orbital
         if hasattr(self._iodata, "mo"):
             self._mo = MolecularOrbitals.from_molecule(self._iodata)
         else:

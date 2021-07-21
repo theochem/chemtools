@@ -33,7 +33,7 @@ class MolecularGrid:
     """Becke-Lebedev molecular grid for numerical integrations."""
 
     def __init__(self, coordinates, numbers, pseudo_numbers,
-                 specs='medium', k=3, points_of_angular=110, rotate=False):
+                 specs='medium', k=3, rotate=False):
 
         self._coordinates = coordinates
         self._numbers = numbers
@@ -41,13 +41,14 @@ class MolecularGrid:
         self._k = k
         self._rotate = rotate
         self._specs = specs
-        self._points_of_angular = points_of_angular
 
+        # TODO: making points of angular an arg in __init__ generates an error
         onedg = HortonLinear(100)
         becke = BeckeWeights(order=self._k)
+        points_of_angular = 110
 
         self._grid = MolGrid.horton_molgrid(self.coordinates, self.numbers,
-                                            onedg, self._points_of_angular, becke)
+                                            onedg, points_of_angular, becke)
 
     @classmethod
     def from_molecule(cls, molecule, specs='medium', k=3, rotate=False):
@@ -60,6 +61,9 @@ class MolecularGrid:
     def from_file(cls, fname, specs='medium', k=3, rotate=False):
         mol = Molecule.from_file(fname)
         return cls.from_molecule(mol, specs, k, rotate)
+
+    def __getattr__(self, item):
+        return getattr(self._grid, item)
 
     @property
     def center(self):
