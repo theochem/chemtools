@@ -58,7 +58,7 @@ class MolecularGrid:
         return cls(coords, nums, pnums, specs, k, rotate)
 
     @classmethod
-    def from_file(cls, fname, specs='medium', k=3, rotate=False):
+    def from_file(cls, fname, *, specs='medium', k=3, rotate=False):
         mol = Molecule.from_file(fname)
         return cls.from_molecule(mol, specs, k, rotate)
 

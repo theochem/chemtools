@@ -37,11 +37,11 @@ from chemtools.wrappers.molecule import Molecule
 def test_wrapper_grid_raises():
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fpath:
         assert_raises(TypeError, MolecularGrid.from_molecule, fpath, 'exp:1e-5:20:40:50')
-        assert_raises(ValueError, MolecularGrid.from_file, fpath, 'ex:1e-5:20:40:50')
-        assert_raises(ValueError, MolecularGrid.from_file, fpath, 'exp:1e-5:-20:40:50')
-        assert_raises(ValueError, MolecularGrid.from_file, fpath, 'exp:1e-5:20:40:10')
-        assert_raises(ValueError, MolecularGrid.from_file, fpath, 'pow:1e-5:20:40:50')
-        assert_raises(ValueError, MolecularGrid.from_file, fpath, 'veryfin')
+        assert_raises(TypeError, MolecularGrid.from_file, fpath, 'exp:1e-5:20:40:50')
+        assert_raises(TypeError, MolecularGrid.from_file, fpath, 'exp:1e-5:-20:40:50')
+        assert_raises(TypeError, MolecularGrid.from_file, fpath, 'exp:1e-5:20:40:10')
+        assert_raises(TypeError, MolecularGrid.from_file, fpath, 'pow:1e-5:20:40:50')
+        assert_raises(TypeError, MolecularGrid.from_file, fpath, 'veryfin')
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fpath:
         grid = MolecularGrid.from_file(fpath)
     assert_raises(ValueError, grid.integrate, np.array([[1., 2., 3.]]))
@@ -51,7 +51,7 @@ def test_wrapper_grid_raises():
 def test_wrapper_grid_ch4():
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fpath:
         mol = Molecule.from_file(fpath)
-    grid = MolecularGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, 'exp:1e-5:25:80:230')
+    grid = MolecularGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers)
     assert grid.weights.ndim == 1
     assert grid.points.shape[0] == grid.weights.shape[0]
     assert grid.points.shape == (grid.npoints, 3)
@@ -65,7 +65,7 @@ def test_wrapper_grid_ch4():
 
 def test_wrapper_grid_from_file_o2():
     with path('chemtools.data', 'o2_uhf.wfn') as fpath:
-        grid = MolecularGrid.from_file(fpath, 'veryfine')
+        grid = MolecularGrid.from_file(fpath)
         mol = Molecule.from_file(fpath)
     assert grid.weights.ndim == 1
     assert grid.points.shape[0] == grid.weights.shape[0]

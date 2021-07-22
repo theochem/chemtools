@@ -11,7 +11,7 @@ class DensPart(object):
     available_schemes = ["mbis"]
 
     def __init__(self, coordinates, numbers, pseudo_numbers,
-                 density, grid, scheme="mbis", **kwargs):
+                 density, grid, scheme):
         if scheme.lower() not in DensPart.available_schemes:
             raise NotImplementedError("MBIS is currently the only supported scheme.")
         self.coordinates = coordinates
@@ -22,11 +22,10 @@ class DensPart(object):
         self.part = partition(self.numbers,
                               self.coordinates,
                               self.grid,
-                              self.density
-                              **kwargs)
+                              self.density)
 
     @classmethod
-    def from_molecule(cls, mol, scheme=None, grid=None, **kwargs):
+    def from_molecule(cls, mol, scheme, grid=None, **kwargs):
         if grid is None:
             grid = MolecularGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
                                  specs="fine", rotate=False, k=3)
@@ -35,15 +34,16 @@ class DensPart(object):
         # compute molecular electron density
         dens = mol.compute_density(grid.points)
         if mol.pseudo_numbers is None:
-            mol.pseudo_numbers = mol.numbers
+            pseudo_numbers = mol.numbers
         else:
-            mol.pseudo_numbers = mol.pseudo_numbers
-        return cls(mol.coordinates, mol.numbers, mol.pseudo_numbers, dens, grid, scheme, **kwargs)
+            pseudo_numbers = mol.pseudo_numbers
+        return cls(mol.coordinates, mol.numbers, pseudo_numbers, dens,
+                   grid, scheme, **kwargs)
 
     @classmethod
-    def from_file(cls, fname, scheme=None, grid=None, **kwargs):
+    def from_file(cls, fname, scheme, grid=None, **kwargs):
         mol = Molecule.from_file(fname)
-        return cls.from_molecule(mol, scheme=scheme, grid=grid, **kwargs)
+        return cls.from_molecule(mol, scheme, grid=grid, **kwargs)
 
     def condense_to_atoms(self, value, w_power=1):
         raise NotImplementedError
