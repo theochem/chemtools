@@ -2,10 +2,6 @@ import os,sys
 from chimerax.core.commands import run, Command, CmdDesc, RestOfLine
 from chimerax.core import errors
  
-from chimerax.map import Volume 
-from chimerax.map_data.gaussian.gaussian_grid import GaussianGrid 
-from chimerax.surface import color_electrostatic 
-
 # END MODULES
 """
 THIS SCRIPT FIRST OPENS ESP AND RHO CUBE FILES, VISUALIZES THE ISOSURFACES OF THE ESP CUBE FILE USING VOLUME VIEWER
