@@ -1,26 +1,22 @@
-import os,sys
-from chimerax.core.commands import run, Command, CmdDesc, RestOfLine
+from chimerax.core.commands import run
 from chimerax.core import errors
  
 # END MODULES
 """
 THIS SCRIPT FIRST OPENS ESP AND RHO CUBE FILES, VISUALIZES THE ISOSURFACES OF THE ESP CUBE FILE USING VOLUME VIEWER
 
-I RETURN ERRORS WHEN TRYING TO IMPLEMENT STRING LITERALS SO THAT CUBEFILE NAMES CAN BE VARIABLES
-
-
 WE NEED TO FIND A MEANS OF IMPLEMENTING FSTRING{rhoName} etc.  
+
+
+TO EXECUTE THIS SCRIPT RUN 
+' chimerax visualize.py 
+
+CURRENTLY THE INPUT *_esp.cube and *_rho.cube inputs, ISOSURFACE LEVELS, AND OUTPUT FILENAMES ARE HARD CODED 
+
 """ 
 
-espName = 'dichloropyridine26_q+0_esp.cube'
 
-rhoName = 'dichloropyridine26_q+0_esp.cube'
-
-colorFile = rhoName # ?????? 
-isosurfaceValue = '.0555'
-
-
-def VisualizeMolecule(session,espName,rhoName): 
+def VisualizeMolecule(session): 
 
     run(session, "open dichloropyridine26_q+0_esp.cube")
     run(session, "open dichloropyridine26_q+0_rho.cube")
@@ -31,7 +27,7 @@ def VisualizeMolecule(session,espName,rhoName):
     run(session, "hide #2 model") 
 # END VISUALIZEMOLECULE 
 
-def ColorElectrostaticChimera(session,espName,rhoName,colorFile): 
+def ColorElectrostaticChimera(session): 
     run(session, "hide #2 model") 
     run(session, "color gradient #1 map #2 palette rainbow")
 
@@ -44,13 +40,6 @@ def SaveMoleculeChimera(session):
 
 
 #END SAVEMOLECULECHIMERA 
-VisualizeMolecule(session,espName,rhoName)
-ColorElectrostaticChimera(session,espName,rhoName,colorFile)
+VisualizeMolecule(session)
+ColorElectrostaticChimera(session)
 SaveMoleculeChimera(session) 
-
-"""
-TODO:
-
-COLOR MAPPING FUNCTION
-SYSARGS AND STRING LITERALS 
-"""
