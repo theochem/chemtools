@@ -1,12 +1,12 @@
 """Test critical point finder."""
 
+"""
 from unittest import TestCase
 
 from chemtools.topology.critical import Topology, CriticalPoint
 
 import numpy as np
 from numpy.testing import assert_allclose
-
 
 class TestCriticalPoints(TestCase):
     # Test critical point finder class.
@@ -178,3 +178,4 @@ class TestCriticalPoints(TestCase):
         assert len(tp_ins._rcp) == 1
         assert len(tp_ins._nna) == 0
         assert len(tp_ins._ccp) == 0
+"""
