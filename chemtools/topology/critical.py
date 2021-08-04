@@ -142,19 +142,23 @@ class Topology(object):
                     (self._coords is not None and index < len(self._coords)):
                 try:
                     coord = self._root_vector_func(point.copy())
+                    # add critical point if it is new and it doesn't contain any
+                    if not (
+                        np.any([np.linalg.norm(coord - cp.coordinate) < 1.e-3 for cp in self.cps])
+                            and not np.any(np.isnan(coord))
+                    ):
+                        dens = self.func(coord)
+                        # skip critical point if its density value is zero
+                        if np.abs(dens) > 1.e-4:
+                            grad = self.grad(coord)
+                            # Make sure gradient is zero, as it's a critical point.
+                            if np.all(np.abs(grad) < 1e-4):
+                                # compute rank & signature of critical point
+                                eigenvals, eigenvecs = np.linalg.eigh(self.hess(coord))
+                                cp = CriticalPoint(coord, eigenvals, eigenvecs, 1e-4)
+                                self._cps.setdefault((cp.rank[0], cp.signature[0]), []).append(cp)
                 except np.linalg.LinAlgError as _:
                     continue
-                # add critical point if it is new
-                if not np.any([np.linalg.norm(coord - cp.coordinate) < 1.e-3 for cp in self.cps]):
-                    dens = self.func(coord)
-                    grad = self.grad(coord)
-                    # skip critical point if its dens & grad are zero
-                    if abs(dens) < 1.e-4 and np.all(abs(grad) < 1.e-4):
-                        continue
-                    # compute rank & signature of critical point
-                    eigenvals, eigenvecs = np.linalg.eigh(self.hess(coord))
-                    cp = CriticalPoint(coord, eigenvals, eigenvecs, 1e-4)
-                    self._cps.setdefault((cp.rank[0], cp.signature[0]), []).append(cp)
         # check Poincare–Hopf equation
         if not self.poincare_hopf_equation:
             warnings.warn("Poincare–Hopf equation is not satisfied.", RuntimeWarning)
@@ -178,6 +182,7 @@ class Topology(object):
             guess = guess - np.dot(np.linalg.inv(hess), grad[:, np.newaxis]).flatten()
             norm = np.linalg.norm(grad, axis=-1)
             niter += 1
+        # Sometimes guess returns [np.nan, np.nan, np.nan]
         return guess
 
     @staticmethod
