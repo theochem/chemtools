@@ -124,8 +124,7 @@ class Topology(object):
             # compute distance to 4 closest grid points
             dists, _ = self._kdtree.query(point, 4)
             # store coordinates of neighbouring polyhedron vertices surrounding the point
-            neighs[4 * index: 4 * index + 4, :] = point + np.max(dists) * \
-                                                  (self._neighbours - point)
+            neighs[4 * index: 4 * index + 4, :] = point + np.max(dists) * self._neighbours
 
         # compute the gradient norm of points & surrounding vertices
         points_norm = np.linalg.norm(self.grad(self._kdtree.data), axis=-1)
