@@ -124,9 +124,8 @@ class Topology(object):
             # compute distance to 4 closest grid points
             dists, _ = self._kdtree.query(point, 4)
             # store coordinates of neighbouring polyhedron vertices surrounding the point
-            neighs[4 * index: 4 * index + 4, :] = point + np.max(dists) * (
-               self._neighbours - point
-            )
+            neighs[4 * index: 4 * index + 4, :] = point + np.max(dists) * \
+                                                  (self._neighbours - point)
 
         # compute the gradient norm of points & surrounding vertices
         points_norm = np.linalg.norm(self.grad(self._kdtree.data), axis=-1)
@@ -143,15 +142,15 @@ class Topology(object):
                 try:
                     coord = self._root_vector_func(point.copy())
                     # add critical point if it is new and it doesn't contain any nans
-                    if not (
-                        np.any([np.linalg.norm(coord - cp.coordinate) < 1.e-3 for cp in self.cps])
-                            and not np.any(np.isnan(coord))
-                    ):
+                    new_pt = not np.any([
+                        np.linalg.norm(coord - cp.coordinate) < 1.e-3 for cp in self.cps
+                    ])
+                    if new_pt and not np.any(np.isnan(coord)):
                         dens = self.func(coord)
                         # skip critical point if its density value is zero
                         if np.abs(dens) > 1.e-4:
                             grad = self.grad(coord)
-                            # Make sure gradient is zero, as it's a critical point.
+                            # make sure gradient is zero, as it's a critical point.
                             if np.all(np.abs(grad) < 1e-4):
                                 # compute rank & signature of critical point
                                 eigenvals, eigenvecs = np.linalg.eigh(self.hess(coord))
