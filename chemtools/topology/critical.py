@@ -135,8 +135,11 @@ class Topology(object):
         for index, point in enumerate(self._kdtree.data):
             point_norm = points_norm[index]
             neigh_norm = neighs_norm[4 * index: 4 * index + 4]
-            # use central point as initial guess for critical point finding
-            if index < len(self._coords) or np.all(point_norm < neigh_norm):
+            # If the gradient at the point is less than the neighbours then run/refine it further
+            #    with root_vector_func or enumerate all the points that are the centers (if centers
+            #    aren't None).
+            if np.all(point_norm < neigh_norm) or \
+                    (self._coords is not None and index < len(self._coords)):
                 try:
                     coord = self._root_vector_func(point.copy())
                 except np.linalg.LinAlgError as _:
