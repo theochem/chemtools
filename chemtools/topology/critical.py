@@ -142,7 +142,7 @@ class Topology(object):
                     (self._coords is not None and index < len(self._coords)):
                 try:
                     coord = self._root_vector_func(point.copy())
-                    # add critical point if it is new and it doesn't contain any
+                    # add critical point if it is new and it doesn't contain any nans
                     if not (
                         np.any([np.linalg.norm(coord - cp.coordinate) < 1.e-3 for cp in self.cps])
                             and not np.any(np.isnan(coord))
