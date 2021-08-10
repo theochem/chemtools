@@ -60,12 +60,6 @@ class Molecule:
         #TODO is this equivalent to ao.nbasis?
         self._nbasis = self._iodata.mo.norba
 
-        # get the density matrix
-        try:
-            self._dm = self._iodata.one_rdms['scf']
-        except KeyError:
-            self._dm = None
-
         # get the Atomic Orbital
         if hasattr(self._iodata, "obasis"):
             try:
@@ -122,11 +116,6 @@ class Molecule:
         return self._nbasis
 
     @property
-    def density_matrix(self):
-        """return density matrix"""
-        return self._dm
-
-    @property
     def ao(self):
         """Atomic orbital instance"""
         return self._ao
@@ -136,7 +125,22 @@ class Molecule:
         """Molecular orbital instance."""
         return self._mo
 
-    def compute_molecular_orbital(self, points, *args):
+    def compute_density_matrix(self, spin="ab", index=None):
+        """Compute the density matrix array for the specified spin orbitals.
+
+        Parameters
+        ----------
+        spin : str, optional
+           The type of occupied spin orbitals. Options are "a" (for alpha), "b" (for beta), and
+           "ab" (for alpha + beta).
+        index : sequence of int, optional
+           Sequence of integers representing the occupied spin orbitals which are indexed
+           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
+
+        """
+        return self.mo.compute_dm(spin, index=index)
+
+    def compute_molecular_orbital(self, points, spin='ab', index=None):
         self._check_arguments(points)
         if self.mo:
             tf = (self._iodata.mo.coeffs * self._iodata.mo.occs).dot(self._iodata.mo.coeffs.T)
@@ -144,14 +148,15 @@ class Molecule:
         else:
             raise ValueError("mo attribute cannot be empty or None")
 
-    def compute_density(self, points, *args):
+    def compute_density(self, points, spin='ab', index=None):
+        dm = self.compute_density_matrix(spin=spin, index=index)
         if self.mo:
             tf = (self._iodata.mo.coeffs * self._iodata.mo.occs).dot(self._iodata.mo.coeffs.T)
-            return self._ao.compute_density(self._dm, points, transform=tf)
+            return self._ao.compute_density(dm, points, transform=tf)
         else:
             raise ValueError("mo attribute cannot be empty or None")
 
-    def compute_gradient(self, points, *args):
+    def compute_gradient(self, points, spin='ab', index=None):
         r"""Return gradient of the electron density.
 
         Parameters
@@ -161,9 +166,10 @@ class Molecule:
 
         """
         self._check_arguments(points)
-        return self._ao.compute_gradient(self._dm, points)
+        dm = self.compute_density_matrix(spin=spin, index=index)
+        return self._ao.compute_gradient(dm, points)
 
-    def compute_hessian(self, points, *args):
+    def compute_hessian(self, points, spin='ab', index=None):
         r"""Return hessian of the electron density.
 
         Parameters
@@ -173,9 +179,10 @@ class Molecule:
 
         """
         self._check_arguments(points)
-        return self._ao.compute_hessian(self._dm, points)
+        dm = self.compute_density_matrix(spin=spin, index=index)
+        return self._ao.compute_hessian(dm, points)
 
-    def compute_laplacian(self, points):
+    def compute_laplacian(self, points, spin='ab', index=None):
         r"""Return Laplacian of the electron density.
 
         Parameters
@@ -184,10 +191,10 @@ class Molecule:
            Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
 
         """
-        hess = self.compute_hessian(points)
+        hess = self.compute_hessian(points, spin=spin, index=index)
         return np.trace(hess, axis1=1, axis2=2)
 
-    def compute_esp(self, points, charges=None):
+    def compute_esp(self, points, spin='ab', index=None, charges=None):
         r"""Return molecular electrostatic potential.
 
         The molecular electrostatic potential at point :math:`\mathbf{r}` is caused by the
@@ -217,13 +224,14 @@ class Molecule:
                              "with {0} shape.".format(self.numbers.shape))
 
         if self.mo:
+            dm = self.compute_density_matrix(spin=spin, index=index)
             tf = (self._iodata.mo.coeffs * self._iodata.mo.occs).dot(self._iodata.mo.coeffs.T)
-            return self._ao.compute_esp(self._dm, points, self.coordinates,
+            return self._ao.compute_esp(dm, points, self.coordinates,
                                         charges, transform=tf)
         else:
             raise ValueError("mo attribute cannot be empty or None")
 
-    def compute_ked(self, points):
+    def compute_ked(self, points, spin='ab', index=None):
         r"""Return positive definite or Lagrangian kinetic energy density.
 
         .. math::
@@ -238,8 +246,9 @@ class Molecule:
         """
         self._check_arguments(points)
         if self.mo:
+            dm = self.compute_density_matrix(spin=spin, index=index)
             tf = (self._iodata.mo.coeffs * self._iodata.mo.occs).dot(self._iodata.mo.coeffs.T)
-            return self._ao.compute_ked(self._dm, points, transform=tf)
+            return self._ao.compute_ked(dm, points, transform=tf)
         else:
             raise ValueError("mo attribute cannot be empty or None")
 
