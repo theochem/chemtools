@@ -57,7 +57,8 @@ class Molecule:
         self._numbers = self._iodata.atnums
         self._pseudo_numbers = self._iodata.atcorenums
         self._charges = self._iodata.atcharges
-        self._nbasis = self._iodata.mo.nbasis
+        #TODO is this equivalent to ao.nbasis?
+        self._nbasis = self._iodata.mo.norba
 
         # get the density matrix
         try:
@@ -135,7 +136,7 @@ class Molecule:
         """Molecular orbital instance."""
         return self._mo
 
-    def compute_molecular_orbital(self, points):
+    def compute_molecular_orbital(self, points, *args):
         self._check_arguments(points)
         if self.mo:
             tf = (self._iodata.mo.coeffs * self._iodata.mo.occs).dot(self._iodata.mo.coeffs.T)
@@ -291,6 +292,43 @@ class AtomicOrbitals:
 
         """
         return cls.from_molecule(Molecule.from_file(str(fname)))
+
+    @property
+    def center_index(self):
+        # FIXME: following code is pretty hacky. it will be used for the orbital partitioning code
+        # GOBasis object stores basis set to atom and angular momentum mapping
+        # by shell and not by contraction. So it needs to be converted
+        try:
+            ind_shell_atom = np.array(self._basis.shell_map)
+            ind_shell_orbtype = np.array(self._basis.shell_types)
+
+            def num_contr(orbtype):
+                """Return the number of contractions for the given orbital type.
+
+                Parameters
+                ----------
+                orbtype : int
+                    Horton's orbital type scheme.
+                    Positive number corresponds to cartesian type and negative number corresponds to
+                    spherical types.
+
+                Returns
+                -------
+                num_contr : int
+                    Number of contractions for the given orbital type.
+
+                """
+                if orbtype < 0:
+                    return 1 + 2 * abs(orbtype)
+                return 1 + orbtype + sum(i * (i + 1) / 2 for i in range(1, orbtype + 1))
+
+            numcontr_per_shell = np.array([num_contr(i) for i in ind_shell_orbtype])
+            # Duplicate each shell information by the number of contractions in shell
+            ind_basis_center = np.repeat(ind_shell_atom, numcontr_per_shell)
+            # self._ind_basis_orbtype = np.repeat(ind_shell_orbtype, numcontr_per_shell)
+        except AttributeError:
+            pass
+        return ind_basis_center
 
     def compute_overlap(self):
         r"""Return overlap matrix :math:`\mathbf{S}` of atomic orbitals.

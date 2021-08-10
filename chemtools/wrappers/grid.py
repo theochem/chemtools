@@ -66,7 +66,7 @@ class MolecularGrid:
         return getattr(self._grid, item)
 
     @property
-    def center(self):
+    def centers(self):
         """Cartesian coordinates of atomic centers."""
         return self._coordinates
 
