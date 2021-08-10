@@ -143,14 +143,14 @@ class Molecule:
         else:
             raise ValueError("mo attribute cannot be empty or None")
 
-    def compute_density(self, points):
+    def compute_density(self, points, *args):
         if self.mo:
             tf = (self._iodata.mo.coeffs * self._iodata.mo.occs).dot(self._iodata.mo.coeffs.T)
             return self._ao.compute_density(self._dm, points, transform=tf)
         else:
             raise ValueError("mo attribute cannot be empty or None")
 
-    def compute_gradient(self, points):
+    def compute_gradient(self, points, *args):
         r"""Return gradient of the electron density.
 
         Parameters
@@ -162,7 +162,7 @@ class Molecule:
         self._check_arguments(points)
         return self._ao.compute_gradient(self._dm, points)
 
-    def compute_hessian(self, points):
+    def compute_hessian(self, points, *args):
         r"""Return hessian of the electron density.
 
         Parameters
