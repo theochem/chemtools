@@ -57,8 +57,6 @@ class Molecule:
         self._numbers = self._iodata.atnums
         self._pseudo_numbers = self._iodata.atcorenums
         self._charges = self._iodata.atcharges
-        #TODO is this equivalent to ao.nbasis?
-        self._nbasis = self._iodata.mo.norba
 
         # get the Atomic Orbital
         if hasattr(self._iodata, "obasis"):
@@ -113,7 +111,7 @@ class Molecule:
 
     @property
     def nbasis(self):
-        return self._nbasis
+        return self._iodata.mo.nbasis
 
     @property
     def ao(self):
