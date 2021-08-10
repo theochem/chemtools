@@ -461,6 +461,8 @@ class MolecularOrbitals:
             energy_a, energy_b = mol.mo.energiesa, mol.mo.energiesb
             coeffs_a, coeffs_b = mol.mo.coeffsa, mol.mo.coeffsb
             return cls(occs_a, occs_b, energy_a, energy_b, coeffs_a, coeffs_b)
+        else:
+            raise AttributeError('Passed mol is missing MO information')
 
     @classmethod
     def from_file(cls, fname):
@@ -519,6 +521,35 @@ class MolecularOrbitals:
     def nelectrons(self):
         """Number of alpha and beta electrons."""
         return np.sum(self._occs_a), np.sum(self._occs_b)
+
+    def compute_dm(self, spin='ab', index=None):
+        available_spins = ['a', 'b', 'ab']
+
+        if spin == 'a':
+            arr = np.dot(self._coeffs_a * self._occs_a, self._coeffs_a.T)
+        elif spin == 'b':
+            arr = np.dot(self._coeffs_b * self._occs_b, self._coeffs_b.T)
+        elif spin == 'ab':
+            arr = np.dot(self._coeffs_a * self._occs_a, self._coeffs_a.T) + \
+                  np.dot(self._coeffs_b * self._occs_b, self._coeffs_b.T)
+        else:
+            raise ValueError(f'Spin must be one of the following: {available_spins}')
+
+        if index is not None:
+            # convert to numpy array
+            index = np.asarray(index)
+            # check
+            if index.ndim == 0:
+                index = index.reshape(1)
+            if index.ndim >= 2:
+                raise ValueError("Indices should be given as a one-dimensional numpy array.")
+            index -= 1
+            if np.any(index < 0):
+                raise ValueError(
+                    "Indices cannot be less than 1. Note that indices start from 1."
+                )
+            arr = arr[index[:, np.newaxis], index[np.newaxis, :]]
+        return arr
 
     def compute_overlap(self):
         return NotImplementedError
