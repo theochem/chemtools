@@ -23,6 +23,7 @@ class DensPart(object):
                               self.coordinates,
                               self.grid,
                               self.density)
+        self.charges = self.part[0].charges
 
     @classmethod
     def from_molecule(cls, mol, scheme, grid=None, **kwargs):
