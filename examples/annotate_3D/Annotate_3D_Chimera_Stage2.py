@@ -65,7 +65,7 @@ def annotateChimerax(session,moleculeFile,annotationFile,attributeName,outputFil
  
 # INPUT FILES
 moleculeFile = 'dichloropyridine26_q+0.pdb' 
-annotationFile = 'test.defattr' 
+annotationFile = 'attributeFile.defattr' 
 
 # ATTRIBUTE NAME 
 attributeName = 'myFactor' 
