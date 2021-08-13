@@ -86,7 +86,7 @@ PARAMETERS :
 """
 
 
-def print_chimerax_isosurfaces(session,outFile,outSuffix, isoFile, colorFile, isoSurf, material, scalemin,scalemax,colorscheme,representation, lighting, shadows,silhouettes): 
+def print_chimerax_isosurfaces(session,outFile,outSuffix, isoFile, colorFile, isoSurf, material, scalemin,scalemax,colorscheme,representation, lighting, shadows): 
     run(session, 'open %s' % (isoFile))     # Open ESP
     run(session, 'open %s' % (colorFile))   # Open RHO 
     run(session, 'hide #2')     # Hides Colorfile from Rendering Window
@@ -102,23 +102,27 @@ def print_chimerax_isosurfaces(session,outFile,outSuffix, isoFile, colorFile, is
     #END FUNCTION
 
 # INPUT FILE VALUES HERE
-isoFile = 'dichloropyridine26_q+0_esp.cube'
-colorFile = 'dichloropyridine26_q+0_rho.cube'
+isoFile = 'dichloropyridine26_q+0_rho.cube'
+colorFile = 'dichloropyridine26_q+0_esp.cube'
 
 # OUTPUT FILENAME AND SUFFIX HERE
 outFile = isoFile[:-9]  # Removes '_esp.cube' from esp cube file to generate name
 outSuffix = 'png'      
 
 #THESE ARE DEFAULT VALUES
-isoSurf = .055
+isoSurf = .005
 material = 'shiny' 
-colorscheme = '#b800ff:#7500ff:#6500ff:#5405ff:#3000ff:#2934ff:#31ff38:#ca1313:#ca1111:#ca1818' # THIS FORMAT IS USERMADE AND NOT FOUND IN DOCUMENTATION 
+colorscheme = 'rgb'
+#colorscheme = '#ca1818:#ca1111:#ca1313:#31ff38:#2934ff:#3000ff:#5405ff:#6500ff:#7500ff:#b800ff' 
+#colorscheme = '#7500ff:#5405ff:#3138ff:#ca1111:#ca1818'
+#colorscheme = '#ff0000:#ff5c0b:#ff0303:#00aa00:#06ca1c:#0949ea#:#0521d9'
+#colorscheme = '#ca1818:#ca1313:#ca1111:#3138ff:#5405ff:#6500ff:#7500ff'
 representation = 'surface'
 lighting = 'full'
 shadows = 'False'
-scalemin = -.02 
-scalemax = .02
+scalemin = -.2 
+scalemax = .2
 
 
 # CALL FUNCTION HERE
-print_chimerax_isosurfaces(session,outFile,outSuffix,isoFile,colorFile,isoSurf,material,scalemin,scalemax,colorscheme,representation,lighting,shadows,silhouettes)
+print_chimerax_isosurfaces(session,outFile,outSuffix,isoFile,colorFile,isoSurf,material,scalemin,scalemax,colorscheme,representation,lighting,shadows)
