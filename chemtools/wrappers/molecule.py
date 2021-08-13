@@ -24,6 +24,7 @@
 
 import logging
 import numpy as np
+import iodata
 from iodata import load_one
 from gbasis.wrappers import from_iodata
 from gbasis.integrals.overlap import overlap_integral
@@ -111,7 +112,7 @@ class Molecule:
 
     @property
     def nbasis(self):
-        return self._iodata.mo.nbasis
+        return self._iodata.obasis.nbasis
 
     @property
     def ao(self):
@@ -271,9 +272,10 @@ class Molecule:
 class AtomicOrbitals:
     """Gaussian Basis Function or Atomic Orbitals"""
 
-    def __init__(self, basis, coord_type):
+    def __init__(self, basis, coord_type, mol=None):
         self._basis = basis
         self._coord_type = coord_type
+        self._mol = mol
 
     @classmethod
     def from_molecule(cls, mol):
@@ -286,7 +288,7 @@ class AtomicOrbitals:
 
         """
         basis, coord_type = from_iodata(mol)
-        return cls(basis, coord_type)
+        return cls(basis, coord_type, mol=mol)
 
     @classmethod
     def from_file(cls, fname):
@@ -301,41 +303,47 @@ class AtomicOrbitals:
         return cls.from_molecule(Molecule.from_file(str(fname)))
 
     @property
+    def nbasis(self):
+        return self._mol.obasis.nbasis
+
+    @property
     def center_index(self):
         # FIXME: following code is pretty hacky. it will be used for the orbital partitioning code
         # GOBasis object stores basis set to atom and angular momentum mapping
         # by shell and not by contraction. So it needs to be converted
-        try:
-            ind_shell_atom = np.array(self._basis.shell_map)
-            ind_shell_orbtype = np.array(self._basis.shell_types)
+        shells = AtomicShells(self._mol.obasis.shells)
+        return shells.ind_basis_center
+        # try:
+        #     ind_shell_atom = np.array(self._basis.shell_map)
+        #     ind_shell_orbtype = np.array(self._basis.shell_types)
 
-            def num_contr(orbtype):
-                """Return the number of contractions for the given orbital type.
+        #     def num_contr(orbtype):
+        #         """Return the number of contractions for the given orbital type.
 
-                Parameters
-                ----------
-                orbtype : int
-                    Horton's orbital type scheme.
-                    Positive number corresponds to cartesian type and negative number corresponds to
-                    spherical types.
+        #         Parameters
+        #         ----------
+        #         orbtype : int
+        #             Horton's orbital type scheme.
+        #             Positive number corresponds to cartesian type and negative number corresponds to
+        #             spherical types.
 
-                Returns
-                -------
-                num_contr : int
-                    Number of contractions for the given orbital type.
+        #         Returns
+        #         -------
+        #         num_contr : int
+        #             Number of contractions for the given orbital type.
 
-                """
-                if orbtype < 0:
-                    return 1 + 2 * abs(orbtype)
-                return 1 + orbtype + sum(i * (i + 1) / 2 for i in range(1, orbtype + 1))
+        #         """
+        #         if orbtype < 0:
+        #             return 1 + 2 * abs(orbtype)
+        #         return 1 + orbtype + sum(i * (i + 1) / 2 for i in range(1, orbtype + 1))
 
-            numcontr_per_shell = np.array([num_contr(i) for i in ind_shell_orbtype])
-            # Duplicate each shell information by the number of contractions in shell
-            ind_basis_center = np.repeat(ind_shell_atom, numcontr_per_shell)
-            # self._ind_basis_orbtype = np.repeat(ind_shell_orbtype, numcontr_per_shell)
-        except AttributeError:
-            pass
-        return ind_basis_center
+        #     numcontr_per_shell = np.array([num_contr(i) for i in ind_shell_orbtype])
+        #     # Duplicate each shell information by the number of contractions in shell
+        #     ind_basis_center = np.repeat(ind_shell_atom, numcontr_per_shell)
+        #     # self._ind_basis_orbtype = np.repeat(ind_shell_orbtype, numcontr_per_shell)
+        # except AttributeError:
+        #     pass
+        # return ind_basis_center
 
     def compute_overlap(self):
         r"""Return overlap matrix :math:`\mathbf{S}` of atomic orbitals.
@@ -560,3 +568,67 @@ class MolecularOrbitals:
 
     def compute_overlap(self):
         return NotImplementedError
+
+# This is ugly, but it'll do the job for now
+class AtomicShells:
+
+    def __init__(self, shell_list):
+        self._check_shell_list(shell_list)
+
+        # get this list of integer indices specifying the row
+        # in the coords array of IOData object
+        self.ind_shell_atom = np.array([np.float64(i.icenter)
+                                        for i in shell_list])
+
+        # get the contraction kind by converting from string to digit
+        self.angmom = np.array([i.angmoms[0]
+                                for i in shell_list])
+        self.contraction_kind_str = np.array([i.kinds[0]
+                                for i in shell_list])
+        self.contractions_kind_num = np.array([self.digitize(string)
+                                               for string in self.contraction_kind_str])
+
+        # get the orbital type scheme
+        self.ind_shell_orbtype = np.multiply(self.angmom, self.contractions_kind_num)
+
+
+        self.numcontr_per_shell = np.array([self.num_contr(i) for i in self.ind_shell_orbtype]).astype(int)
+        self.ind_basis_center = np.repeat(self.ind_shell_atom, self.numcontr_per_shell)
+        self.ind_basis_orbtype = np.repeat(self.ind_shell_orbtype, self.numcontr_per_shell)
+
+    def digitize(self, kind):
+        """ Convert string contraction kind to numerical.
+        Returns 1 if kind == 'c', -1 if kind == 'p'
+        """
+        if kind == 'c':
+            return 1
+        elif kind == 'p':
+            return -1
+        else:
+            raise ValueError("orbital kind must be 'c' or 'p' ")
+
+    def num_contr(self, orbtype):
+        """Return the number of contractions for the given orbital type.
+
+        Parameters
+        ----------
+        orbtype : int
+            Horton's orbital type scheme.
+            Positive number corresponds to cartesian type and negative number corresponds to
+            spherical types.
+
+        Returns
+        -------
+        num_contr : int
+            Number of contractions for the given orbital type.
+
+        """
+        if orbtype < 0:
+            return 1 + 2 * abs(orbtype)
+        return 1 + orbtype + sum(i * (i + 1) / 2 for i in range(1, orbtype + 1))
+
+    def _check_shell_list(self, shell_list):
+        if not isinstance(shell_list, list):
+            raise TypeError(f'You must pass a list. {type(shell_list)} was passed')
+        if not all(isinstance(shell, iodata.basis.Shell) for shell in shell_list):
+            raise TypeError('All elements of the list must be of type iodata.basis.Shell')
