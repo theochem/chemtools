@@ -13,23 +13,24 @@ ChimeraX can be found here, with stable and nightly releases :
 
 https://www.cgl.ucsf.edu/chimerax/download.html
 
+
 PARAMETERS : 
     session, as is
         ChimeraX uses this to recognize to run this within the same session
 
-    outFile, string
+    outFile, str
         name of output file
 
-    outSuffix, string
+    outSuffix, str
         Suffix of output file
-        OPTIONS: 
+        Options: 
             XYZ
             PDB
             CXS (DEFAULT CHIMERAX SAVE STATE) 
             PNG
             CUBE
 
-    isoFile, string
+    isoFile, str
         Input file to create the volume isosurfaces, 
         Should have suffic *_esp.cube
 
@@ -40,19 +41,19 @@ PARAMETERS :
     isoSurf, float
        This float instructs ChimeraX to display a certain isosurface level
 
-    material, string
+    material, str
         define the material for the surface volume rendering
         OPTIONS: 
             shiny
             dull 
 
-    lighting, string
+    lighting, str
         define the lighting of the render window
         OPTIONS:
             simple
             full
 
-    shadows, string
+    shadows, str
         Define if we want to include shadows in our render
         OPTIONS
             True
@@ -61,19 +62,17 @@ PARAMETERS :
 
     scalemin, float
         Defines the minimum electrostatic potential for colorization
-        NOTE : If both scalemin and scalemax are left empty, ChimeraX will automatically attempt to compute a range, sometimes this is not necessarily accurate however
 
     scalemax, flaot
         Defines the maximum electrostatic potential for colorization
-         NOTE : If both scalemin and scalemax are left empty, ChimeraX will automatically attempt to compute a range, sometimes this is not necessarily accurate however
 
-    representation, string
+    representation, str
         defines how the isosurfaces should be rendered
         OPTIONS: 
             surface (default and recommended) 
             mesh 
 
-    colorscheme, float, or color1:color2:color3:color(n+1)... format for custom schemes
+    colorscheme, str, or color1:color2:color3:color(n+1)... format for custom schemes
         defines the colorization of the color gradient function, AKA palette in ChimeraX terminology 
         OPTIONS: 
             Custom
@@ -81,16 +80,20 @@ PARAMETERS :
             red-white-blue
             grayscale
             please see https://www.rbvi.ucsf.edu/chimerax/docs/user/commands/color.html#palette-options for more options 
+    
+    END PARAMETERS
+
 """
 
+
 def print_chimerax_isosurfaces(session,outFile,outSuffix, isoFile, colorFile, isoSurf, material, scalemin,scalemax,colorscheme,representation, lighting, shadows,silhouettes): 
-    run(session, 'open %s' % (isoFile))  # Open ESP
-    run(session, 'open %s' % (colorFile)) # Open RHO 
-    run(session, 'hide #2') # Hides Colorfile from Rendering Window
-    run(session, 'volume #1 style %s level %s' % (representation , isoSurf)) # Setup Volume  
+    run(session, 'open %s' % (isoFile))     # Open ESP
+    run(session, 'open %s' % (colorFile))   # Open RHO 
+    run(session, 'hide #2')     # Hides Colorfile from Rendering Window
+    run(session, 'volume #1 style %s level %s' % (representation , isoSurf))        # Setup Volume  
     run(session, 'color gradient #1 map #2 palette %s range %s,%s' % (colorscheme , scalemin , scalemax)) 
-    run(session, 'material %s' % (material)) # establish surface material 
-    run(session, 'lighting %s' % (lighting)) 
+    run(session, 'material %s' % (material))        # establish surface material 
+    run(session, 'lighting %s' % (lighting))        #establish lighting and shadows
     run(session, 'lighting shadows %s' % (shadows))
     
     # SAVE  OUTFILE.OUTSUFFIX 
@@ -103,19 +106,18 @@ isoFile = 'dichloropyridine26_q+0_esp.cube'
 colorFile = 'dichloropyridine26_q+0_rho.cube'
 
 # OUTPUT FILENAME AND SUFFIX HERE
-outFile = 'test'
-outSuffix = 'cxs'
+outFile = isoFile[:-9]  # Removes '_esp.cube' from esp cube file to generate name
+outSuffix = 'png'      
 
 #THESE ARE DEFAULT VALUES
 isoSurf = .055
 material = 'shiny' 
-colorscheme = '#b700ff:#8801ff:#2934ff:#31ff38:#ca1818'  # THIS IS A CUSTOM FORMAT !!! 
+colorscheme = '#b800ff:#7500ff:#6500ff:#5405ff:#3000ff:#2934ff:#31ff38:#ca1313:#ca1111:#ca1818' # THIS FORMAT IS USERMADE AND NOT FOUND IN DOCUMENTATION 
 representation = 'surface'
 lighting = 'full'
-silhouettes = 'False'
 shadows = 'False'
-scalemin = -0.2
-scalemax = 0.2
+scalemin = -.02 
+scalemax = .02
 
 
 # CALL FUNCTION HERE
