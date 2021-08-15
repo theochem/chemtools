@@ -62,9 +62,11 @@ PARAMETERS :
 
     scalemin, float
         Defines the minimum electrostatic potential for colorization
+        NOTE: If both  scalemin and scalemax are set to 'compute', ChimeraX can determine the best minima and maxima to use
 
     scalemax, flaot
         Defines the maximum electrostatic potential for colorization
+        NOTE: If both scalemin and scalemax are set to 'compute,' ChimeraX can determine the best minima and maxima to use 
 
     representation, str
         defines how the isosurfaces should be rendered
@@ -91,7 +93,10 @@ def print_chimerax_isosurfaces(session,outFile,outSuffix, isoFile, colorFile, is
     run(session, 'open %s' % (colorFile))   # Open RHO 
     run(session, 'hide #2')     # Hides Colorfile from Rendering Window
     run(session, 'volume #1 style %s level %s' % (representation , isoSurf))        # Setup Volume  
-    run(session, 'color gradient #1 map #2 palette %s range %s,%s' % (colorscheme , scalemin , scalemax)) 
+    if scalemin != 'compute' and scalemax != 'compute': 
+        run(session, 'color gradient #1 map #2 palette %s range %s,%s' %(colorscheme, scalemin, scalemax))
+    else:
+        run(session, 'color gradient #1 map #2 palette %s' % (colorscheme))# , scalemin , scalemax)) 
     run(session, 'material %s' % (material))        # establish surface material 
     run(session, 'lighting %s' % (lighting))        #establish lighting and shadows
     run(session, 'lighting shadows %s' % (shadows))
@@ -102,17 +107,17 @@ def print_chimerax_isosurfaces(session,outFile,outSuffix, isoFile, colorFile, is
     #END FUNCTION
 
 # INPUT FILE VALUES HERE
-isoFile = 'dichloropyridine26_q+0_rho.cube'
-colorFile = 'dichloropyridine26_q+0_esp.cube'
+isoFile = 'acrolein_q+0_rho.cube'
+colorFile = 'acrolein_q+0_esp.cube'
 
 # OUTPUT FILENAME AND SUFFIX HERE
 outFile = isoFile[:-9]  # Removes '_esp.cube' from esp cube file to generate name
 outSuffix = 'png'      
 
 #THESE ARE DEFAULT VALUES
-isoSurf = .005
+isoSurf = .009
 material = 'shiny' 
-colorscheme = 'rgb'
+colorscheme = 'rainbow'
 #colorscheme = '#ca1818:#ca1111:#ca1313:#31ff38:#2934ff:#3000ff:#5405ff:#6500ff:#7500ff:#b800ff' 
 #colorscheme = '#7500ff:#5405ff:#3138ff:#ca1111:#ca1818'
 #colorscheme = '#ff0000:#ff5c0b:#ff0303:#00aa00:#06ca1c:#0949ea#:#0521d9'
@@ -120,8 +125,8 @@ colorscheme = 'rgb'
 representation = 'surface'
 lighting = 'full'
 shadows = 'False'
-scalemin = -.2 
-scalemax = .2
+scalemin = 'compute'
+scalemax = 'compute' 
 
 
 # CALL FUNCTION HERE
