@@ -111,12 +111,6 @@ class Molecule:
         return self._charges
 
     @property
-    #TODO: nbasis is present in both Molecule and AtomicOrbitals
-    # Decided where it's more appropriate to keep
-    def nbasis(self):
-        return self._iodata.obasis.nbasis
-
-    @property
     def ao(self):
         """Atomic orbital instance"""
         return self._ao
@@ -305,8 +299,6 @@ class AtomicOrbitals:
         return cls.from_molecule(Molecule.from_file(str(fname)))
 
     @property
-    #TODO: nbasis is present in both Molecule and AtomicOrbitals
-    # Decided where it's more appropriate to keep
     def nbasis(self):
         return self._mol.obasis.nbasis
 
