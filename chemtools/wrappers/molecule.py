@@ -111,6 +111,8 @@ class Molecule:
         return self._charges
 
     @property
+    #TODO: nbasis is present in both Molecule and AtomicOrbitals
+    # Decided where it's more appropriate to keep
     def nbasis(self):
         return self._iodata.obasis.nbasis
 
@@ -303,6 +305,8 @@ class AtomicOrbitals:
         return cls.from_molecule(Molecule.from_file(str(fname)))
 
     @property
+    #TODO: nbasis is present in both Molecule and AtomicOrbitals
+    # Decided where it's more appropriate to keep
     def nbasis(self):
         return self._mol.obasis.nbasis
 
@@ -569,7 +573,6 @@ class MolecularOrbitals:
     def compute_overlap(self):
         return NotImplementedError
 
-# This is ugly, but it'll do the job for now
 class AtomicShells:
 
     def __init__(self, shell_list):
@@ -577,24 +580,23 @@ class AtomicShells:
 
         # get this list of integer indices specifying the row
         # in the coords array of IOData object
-        self.ind_shell_atom = np.array([np.float64(i.icenter)
-                                        for i in shell_list])
+        self.ind_shell_atom = self.get_obj_prop(shell_list, 'icenter')
+        self.angmoms = self.get_obj_prop(shell_list, 'angmoms', index=0)
+        # IOData store contraction kinds either 'c' for cartesian or
+        # 'p' for pure
+        self.contr_kind_str = self.get_obj_prop(shell_list, 'kinds', index=0)
+        self.ind_basis_center, self.ind_basis_orbtype = self.get_orbital_partitioning(self.ind_shell_atom,
+                                                                                      self.angmoms,
+                                                                                      self.contr_kind_str)
 
-        # get the contraction kind by converting from string to digit
-        self.angmom = np.array([i.angmoms[0]
-                                for i in shell_list])
-        self.contraction_kind_str = np.array([i.kinds[0]
-                                for i in shell_list])
-        self.contractions_kind_num = np.array([self.digitize(string)
-                                               for string in self.contraction_kind_str])
-
-        # get the orbital type scheme
-        self.ind_shell_orbtype = np.multiply(self.angmom, self.contractions_kind_num)
-
-
-        self.numcontr_per_shell = np.array([self.num_contr(i) for i in self.ind_shell_orbtype]).astype(int)
-        self.ind_basis_center = np.repeat(self.ind_shell_atom, self.numcontr_per_shell)
-        self.ind_basis_orbtype = np.repeat(self.ind_shell_orbtype, self.numcontr_per_shell)
+    def get_obj_prop(self, lst:list, attr:str, index=None):
+        """ Return attributes of objects that are stored in a list.
+        Possible to return an index, if the object attribute is subscriptable """
+        if index is not None:
+            prop_list = [getattr(i, attr)[index] for i in lst]
+        else:
+            prop_list = [getattr(i, attr) for i in lst]
+        return np.array(prop_list)
 
     def digitize(self, kind):
         """ Convert string contraction kind to numerical.
@@ -626,6 +628,19 @@ class AtomicShells:
         if orbtype < 0:
             return 1 + 2 * abs(orbtype)
         return 1 + orbtype + sum(i * (i + 1) / 2 for i in range(1, orbtype + 1))
+
+    def get_orbital_partitioning(self, center_indices, angmoms, contr_kind_str):
+        # convert the contr kind from str to int
+        contr_kind_num = np.array([self.digitize(i) for i in contr_kind_str])
+        # get the orbital type scheme
+        ind_shell_orbtype = np.multiply(angmoms, contr_kind_num)
+        # get the number of contractions per shell
+        numcontr_per_shell = np.array([self.num_contr(i) for i in ind_shell_orbtype]).astype(int)
+
+        ind_basis_center = np.repeat(center_indices, numcontr_per_shell)
+        ind_basis_orbtype = np.repeat(ind_shell_orbtype, numcontr_per_shell)
+
+        return ind_basis_center, ind_basis_orbtype
 
     def _check_shell_list(self, shell_list):
         if not isinstance(shell_list, list):
