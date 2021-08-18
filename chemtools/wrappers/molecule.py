@@ -540,8 +540,7 @@ class AtomicShells:
         # in the coords array of IOData object
         self.ind_shell_atom = self.get_obj_prop(shell_list, 'icenter')
         self.angmoms = self.get_obj_prop(shell_list, 'angmoms', index=0)
-        # IOData store contraction kinds either 'c' for cartesian or
-        # 'p' for pure
+        # IOData store contraction kinds either 'c' for cartesian or 'p' for pure
         self.contr_kind_str = self.get_obj_prop(shell_list, 'kinds', index=0)
         self.ind_basis_center, self.ind_basis_orbtype = self.get_orbital_partitioning(self.ind_shell_atom,
                                                                                       self.angmoms,

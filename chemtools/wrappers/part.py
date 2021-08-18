@@ -47,10 +47,35 @@ class DensPart(object):
         return cls.from_molecule(mol, scheme, grid=grid, **kwargs)
 
     def condense_to_atoms(self, value, w_power=1):
+        # promodel, atomic_grids = self.part
+        # condensed = np.zeros(promodel.natom)
+        # for index in range(promodel.natom):
+        #     at_grid = atomic_grids[index]
+        #     at_weight = atomic_grids[index].weights
+        #     local_prop = promodel.compute_proatom(index, value)
+        #     condensed[index] = at_grid.integrate(at_weight**w_power * local_prop)
+        # return condensed
         raise NotImplementedError
 
     def condense_to_fragments(self, value, fragments=None, w_power=1):
-        raise NotImplementedError
+        promodel, atomic_grids = self.part
+        if fragments is None:
+            fragments = [[index] for index in range(promodel.natom)]
+        else:
+            # check fragments
+            segments = sorted([item for frag in fragments for item in frag])
+            segments = np.array(segments)
+            if segments.size != self.numbers.size:
+                raise ValueError("Items in Fragments should uniquely represent all atoms.")
+        condensed = np.zeros(len(fragments))
+        for index, frag in enumerate(fragments):
+            weight = np.zeros(self.grid.points.shape[0])
+            for item in frag:
+                weight += atomic_grids[item]
+                # weight += self.part.cache.load("at_weights", item)
+            share = self.grid.integrate(weight ** w_power, value)
+            condensed[index] = share
+        return condensed
 
 def check_molecule_grid(mol, grid):
     """Check that molecule and grid represent the same system.

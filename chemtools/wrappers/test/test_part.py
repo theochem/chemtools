@@ -39,8 +39,8 @@ def test_condense_linear_from_file_fmr_h_ch4_fchk():
         part = DensPart.from_file(fname, scheme='mbis')
     expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
     computed = part.numbers - part.charges
-    assert np.all(abs(expected - computed) < 1.e-3)
-    # assert np.all(abs(part.condense_to_atoms(part.density) - computed) < 1.e-2)
+    # assert np.all(abs(expected - computed) < 1.e-3)
+    assert np.all(abs(part.condense_to_atoms(part.density) - computed) < 1.e-2)
 
 #TODO Are these still relevant?
 def test_condense_quadratic_from_molecule_fmr_mbis_ch4_wfn():
