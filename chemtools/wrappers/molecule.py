@@ -532,6 +532,8 @@ class MolecularOrbitals:
         return NotImplementedError
 
 class AtomicShells:
+    """ Class for working with and extracting information from
+    iodata.basis.Shell objects"""
 
     def __init__(self, shell_list):
         self._check_shell_list(shell_list)
