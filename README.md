@@ -8,6 +8,14 @@ All work pertaining to objectives has been linked within the Results section.
 
 
 ## Introduction
+OpenChem wishes to implement a means of visualizing Chemtools data. Such
+means include exploring viable alternatives to Visualizing Molecular
+Dynamics as a visualization platfrom. Further visualization goals
+include the plotting of gradient vector fields and annotation of
+molecules. Additionally, ChimeraX, developed by the University of
+California, San Francisco, was chosen as a general purpose alternative
+for VMD, with regards to visualizing isosurfaces as well as molecular
+annotations.
 
 
 ## Goals
@@ -148,6 +156,13 @@ and the RDKit visualization is complete.
 ### Administrative
 
 ### Converting IOData Output into Chemical JSON 
+In order to improve interoperability with Avogadro2, it will be
+necessary to be able to output IOData and Chemtools data into a
+\"Chemical JSON\" a form of JSON file that outlines chemical information
+such as bonds, atoms, as well as charge and molecular/atomic orbital
+data. While the formatting of basic data such as bonds and atoms is
+nontrivial, considerable work will have to be done to correctly format
+quantum chemistry data.
 
 ### Molecular Graphs
 
