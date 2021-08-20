@@ -163,7 +163,7 @@ and the RDKit visualization is complete.
 ![Acrolein, Annotated Using IOData Derived Electrostatic Potential
 Charges](acroleinerror.png){width="3in"}
 :::
-
+<img src="acroleinerror.png" alt="Acrolein Visualization despite IOData error" width="200" />
 
 
 ### Discrepancies between VMD and ChimeraX 
@@ -173,12 +173,12 @@ levels between both ChimeraX and VMD. For the example
 `isoSurf` to .003, however, in ChimeraX, this will produce a noticeable
 uncolored void that can be corrected when setting `isoSurf` to .005.
 
-<center>
+
+
   ![Example of Volume discrepancy, .003 (left) and .005 (right) in
 ChimeraX Rainbow Palette](vmdfail.png "fig:"){width="2in"} ![Example of
 Volume discrepancy, .003 (left) and .005 (right) in ChimeraX Rainbow
 Palette](vmdcorrect.png "fig:"){width="1.925in"}
-</center>
 
 
 
