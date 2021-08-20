@@ -113,11 +113,11 @@ be assigned iteratively.
 </center>
 
 ### Plotting of Vector and Scalar Qualities of Molecules 
-Jupyter Notebook of Both Vector and Scalar Qualities
+[Jupyter Notebook of Both Vector and Scalar Qualities](https://github.com/nwoodweb/chemtools/blob/master/examples/plotting/2D_Plotting_Gradient.ipynb)
 
-Python Script of Field Plot
+[Python Script of Field Plot](https://github.com/nwoodweb/chemtools/blob/master/examples/plotting/plotVectorField.py)
 
-Python Script of Contour Plot
+[Python Script of Contour Plot](https://github.com/nwoodweb/chemtools/blob/master/examples/plotting/plotScalarContour.py)
 
 A Jupyter Notebook and function `plotVectorFieldOverPlane` were made
 that is capable of plotting gradient vector fields. This was performed
