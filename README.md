@@ -182,8 +182,8 @@ While debug and deprecated code has been removed, parameters for functions need 
 There is a discrepancy between appropriate values to display isosurface
 levels between both ChimeraX and VMD. For the example
 2,6-dichloropyridine, the previous VMD example recommends setting
-`isoSurf` to .003, however, in ChimeraX, this will produce a noticeable
-uncolored void that can be corrected when setting `isoSurf` to .005.
+`isoSurf` to .003 (left), however, in ChimeraX, this will produce a noticeable
+uncolored void that can be corrected when setting `isoSurf` to .005 (right).
 
 
 <img src="vmdfail.png" alt="isoSurf=.003" width="200" /> <img src="vmdcorrect.png" alt="AisoSurf=.005" width="200" />
