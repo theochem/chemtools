@@ -82,8 +82,8 @@ loaded into ChimeraX. Once loaded, ChimeraX can visualize the B Factor
 using its labeling utilities.
 
 ::: center
-![3D Annotation of 2,6-Dichloropyridine With Electrostatic Potential
-Charges](3dannotate.png){width="3in"}
+<img src="3dannotate.png" alt="3D Annotation with ESP Charges of 2,6-dichloropyridine" width="200"/>
+
 :::
 
 
