@@ -1,55 +1,55 @@
+import iodata
+from iodata import load_one, dump_one 
+
 def Annotate3D(inFile):
-    """
-    This script allows one to take an input file, and output a pdb file with a B Factors column filled with desired data values.
-    This pdb can then be visualized using ChimeraX  
     
-    CONDA ENVIRONMENT
-
-        This function will only work within a Anaconda Environment that contains qc-iodata, which can be found here
-
-            https://iodata.readthedocs.io/en/latest/install.html
-
-    TO VIEW ANNOTATIONS IN CHIMERAX 
-        DOWNLOAD CHIMERAX 
+    """
+    This script allows one to take an input file, generates an intermediate PDB file, then writes data values to the B Factor Column of the intermediate to produce the final output PDB
+    
+    To View Annotations In ChimeraX 
+    -------------------------------
+        Download Chimerax
+        -----------------
             Nightly and Stable Releases of ChimeraX can be found below, courtesy of University of California San Francisco
             
             https://www.cgl.ucsf.edu/chimerax/download.html
             
-        VISUALIZE ANNOTATIONS
+        Visualizing Annotation
+        ----------------------
             1. Open ChimeraX
-            2. Either enter into the ChimeraX Command Line open outFile.pdb or use File > Open from the uppermost toolbar 
-            3. Once the PDB has been loaded, run from ChimeraX Command Line label #1 atoms attribute bfactor or use Actions > Label > Atoms > Other > Bfactor, from the afforementioned toolbar 
+            2. Either enter into the ChimeraX command line `open outFile.pdb` or use File > Open from the uppermost toolbar 
+            3. Once the PDB has been loaded, run from ChimeraX command line `label #1 atoms attribute bfactor` or use Actions > Label > Atoms > Other > Bfactor, from the afforementioned toolbar 
     
-    END VIEWING INSTRUCTIONS
+    Yields 
+    ------
+    This function produces a PDB File (outFile), which can then be viewed in ChimeraX
     
-    PARAMETERS
-        inFile, str
+    Parameters
+    ----------
+    
+        inFile : str
             This represents the input file, which should be a Gaussian CheckPoint File, also known as *.fchk
           
-        interFile, str
-            This is the intermediate PDB File in which B Factor Values are written into, it is named 'intermediate.pdb'
-        
-        outFile, str
-            This is the final PDB File in which our B Factor Values are written into, originating from interFile
-            This is the file we open in ChimeraX
-            
-        title, str
-            Title of the molecule
-        
-        workingBFactor, IOData call
+        workingBFactor : IOData call
             This represents the data we wish to write to PDB B Factor Column and annotate.
             While this example uses the IOData Call atcharges['esp'][:] to input electrostatic potential charges, it can be other values
             IOData calls can be found here:
                 
                 https://iodata.readthedocs.io/en/latest/index.html
                 
-    END PARAMETERS 
+        interFile : str
+            This is the intermediate PDB File in which B Factor Values are written into, it is named 'intermediate.pdb'
+        
+        outFile : str
+            This is the final PDB File in which our B Factor Values are written into, originating from interFile
+            This is the file we open in ChimeraX
+            
+        title : str
+            Title of the molecule
+        
+    --------------            
+    End Parameters 
      """
-    
-    # DEPENDENCIES
-    import iodata
-    from iodata import load_one, dump_one 
-    # END DEPENDENCIES
     
     inFile = 'dichloropyridine26_q+0.fchk'
     interFile = 'intermediate.pdb'
@@ -77,10 +77,8 @@ def Annotate3D(inFile):
     dump_one(loadInput,interFile)
     
     # END FUNCTION 
-
-
-
-# EXAMPLE OF Annotate3D(inFile using 2,6-Dichloropyridinedef Annotate3D(inFile):
+    
+# EXAMPLE OF Annotate3D(inFile) using 2,6-Dichloropyridine
 inFile = 'dichloropyridine26_q+0.fchk' 
 
 Annotate3D(inFile) 
