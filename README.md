@@ -174,6 +174,8 @@ levels between both ChimeraX and VMD. For the example
 uncolored void that can be corrected when setting `isoSurf` to .005.
 
 
+<img src="vmdfail.png" alt="isoSurf=.003" width="200" /> <img src="vmdcorrect.png" alt="AisoSurf=.005" width="200" />
+
 
   ![Example of Volume discrepancy, .003 (left) and .005 (right) in
 ChimeraX Rainbow Palette](vmdfail.png "fig:"){width="2in"} ![Example of
