@@ -8,6 +8,14 @@ All work pertaining to objectives has been linked within the Results section.
 
 
 ## Introduction
+OpenChem wishes to implement a means of visualizing Chemtools data. Such
+means include exploring viable alternatives to Visualizing Molecular
+Dynamics as a visualization platfrom. Further visualization goals
+include the plotting of gradient vector fields and annotation of
+molecules. Additionally, ChimeraX, developed by the University of
+California, San Francisco, was chosen as a general purpose alternative
+for VMD, with regards to visualizing isosurfaces as well as molecular
+annotations.
 
 
 ## Goals
@@ -53,7 +61,8 @@ Environment:
     and `scalemax` parameters within the script
 
 ### 3D Annotation of Molecules
-
+[Jupyter Notebook of 3D Annotation](https://github.com/nwoodweb/chemtools/blob/master/examples/annotate_3D/3DimensionAnnotation.ipynb)
+[Python Script of 3D Annotation](https://github.com/nwoodweb/chemtools/blob/master/examples/annotate_3D/3DimensionAnnotation.py)
 
 IOData can output to Protein Data Bank (PDB) files, a text file that
 enumerates monomer and a atomic data, such as element, XYZ cartesian
@@ -73,7 +82,13 @@ Factors when an intermediate PDB file is opened using IOData function
 loaded into ChimeraX. Once loaded, ChimeraX can visualize the B Factor
 using its labeling utilities.
 
+<center>
+<img src="3dannotate.png" alt="3D Annotation with ESP Charges of 2,6-dichloropyridine" width="200"/>
+</center>
+
 ### 2D Annotation of Molecules
+[Jupyter Notebook of 2D Annotation](https://github.com/nwoodweb/chemtools/blob/master/examples/annotate_2D/2DAnnotate.ipynb)
+[Python Script of 2D Annotation](https://github.com/nwoodweb/chemtools/blob/master/examples/annotate_2D/2DAnnotate.py)
 
 IOData is used to dump an XYZ and PDB files from the original Gaussian
 Checkpoint (fchk) file. XYZ files are capable of being converted to
@@ -91,6 +106,11 @@ using RDKit's `Compute2DCoords` and then force the PDB to assume the
 visualization stile of the afforementioned SMILES string using
 `AssignBondOrdersFromTemplate`. Afterwards, the charges from IOData can
 be assigned iteratively.
+
+
+<center>
+<img src="test11.png" alt="2D Annotation with ESP Charges of 2,6-dichloropyridine" width="200"/>
+</center>
 
 ### Plotting of Vector and Scalar Qualities of Molecules 
 Jupyter Notebook of Both Vector and Scalar Qualities
@@ -139,15 +159,41 @@ the following error
 
 Despite this error, IOData still dumps the necessary XYZ and PDB Files,
 and the RDKit visualization is complete.
+::: center
+![Acrolein, Annotated Using IOData Derived Electrostatic Potential
+Charges](acroleinerror.png){width="3in"}
+:::
+
 
 
 ### Discrepancies between VMD and ChimeraX 
+There is a discrepancy between appropriate values to display isosurface
+levels between both ChimeraX and VMD. For the example
+2,6-dichloropyridine, the previous VMD example recommends setting
+`isoSurf` to .003, however, in ChimeraX, this will produce a noticeable
+uncolored void that can be corrected when setting `isoSurf` to .005.
+
+<center>
+  ![Example of Volume discrepancy, .003 (left) and .005 (right) in
+ChimeraX Rainbow Palette](vmdfail.png "fig:"){width="2in"} ![Example of
+Volume discrepancy, .003 (left) and .005 (right) in ChimeraX Rainbow
+Palette](vmdcorrect.png "fig:"){width="1.925in"}
+</center>
+
+
 
 ### Molecular Graphs 
 ## Moving Forward
 ### Administrative
 
 ### Converting IOData Output into Chemical JSON 
+In order to improve interoperability with Avogadro2, it will be
+necessary to be able to output IOData and Chemtools data into a
+\"Chemical JSON\" a form of JSON file that outlines chemical information
+such as bonds, atoms, as well as charge and molecular/atomic orbital
+data. While the formatting of basic data such as bonds and atoms is
+nontrivial, considerable work will have to be done to correctly format
+quantum chemistry data.
 
 ### Molecular Graphs
 
