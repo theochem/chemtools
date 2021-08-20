@@ -7,13 +7,13 @@ This project was prepared under the advisory of Dr. Farnaz Heidar-Zadeh, Dr. Pau
 
 
 ## Goals
-	### 3D Annotation of Molecules 
+### 3D Annotation of Molecules 
 
-	### 2D Annotation of Molecules
+### 2D Annotation of Molecules
 
-	### Plotting of Vector and Scalar Qualities of Molecules 
+### Plotting of Vector and Scalar Qualities of Molecules 
 
-	### Visualizing Electrostatic Potential Isosurfaces 
+### Visualizing Electrostatic Potential Isosurfaces 
 ## Results
 
 ## Post Mortem
