@@ -81,6 +81,12 @@ Factors when an intermediate PDB file is opened using IOData function
 loaded into ChimeraX. Once loaded, ChimeraX can visualize the B Factor
 using its labeling utilities.
 
+::: center
+![3D Annotation of 2,6-Dichloropyridine With Electrostatic Potential
+Charges](3dannotate.png){width="3in"}
+:::
+
+
 ### 2D Annotation of Molecules
 
 IOData is used to dump an XYZ and PDB files from the original Gaussian
@@ -99,6 +105,12 @@ using RDKit's `Compute2DCoords` and then force the PDB to assume the
 visualization stile of the afforementioned SMILES string using
 `AssignBondOrdersFromTemplate`. Afterwards, the charges from IOData can
 be assigned iteratively.
+
+::: center
+![2D Annotation of 2,6-Dichloropyridine, Using Electrostatic Potential
+Charges](test11.png){width="3in"}
+:::
+
 
 ### Plotting of Vector and Scalar Qualities of Molecules 
 Jupyter Notebook of Both Vector and Scalar Qualities
@@ -147,6 +159,11 @@ the following error
 
 Despite this error, IOData still dumps the necessary XYZ and PDB Files,
 and the RDKit visualization is complete.
+::: center
+![Acrolein, Annotated Using IOData Derived Electrostatic Potential
+Charges](acroleinerror.png){width="3in"}
+:::
+
 
 
 ### Discrepancies between VMD and ChimeraX 
