@@ -153,6 +153,32 @@ and the RDKit visualization is complete.
 
 
 ## Special Thanks
+I would like to extend great thanks to the following individuals for
+assisting and granting me flexibility:
+
+-   Farnaz Heidar Zadeh, Professor Queens University
+
+-   Paul Ayers, Professor University of Toronto
+
+-   Esteban Vohringer Martinez, Professor Universidad de Concepciòn
+
+-   Victor Canogil
+
+-   Toon Vestralen
+
+-   Gabriella S.D.
+
+-   Ali Tehrani
+
+-   Geoff Hutchinson, Avogadro2 Lead
+
+
+-   Elaine Meng, PhD, ChimeraX Development Team, University of
+    California San Francisco
+
+-   Anthony Schaefer, PhD, ChimeraX Development Team, University of
+    California San Francisco
+
 
 ## Works Cited
 
