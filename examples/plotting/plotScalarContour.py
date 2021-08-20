@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 from chemtools import Molecule 
+
 def plotScalarFunctionContourPlot(inFile, step_size=0.3, title= 'Contour Plot'):
     """
     This script will plot a vector quality of a molecule as a gradient plot
@@ -97,7 +98,7 @@ def plotScalarFunctionContourPlot(inFile, step_size=0.3, title= 'Contour Plot'):
     plt.show()
     #END FUNCTION
 
-
+# Example using 2,6-Dichloropyridine
 inFile = 'dichloropyridine26_q+0.fchk'
 
 plotScalarFunctionContourPlot(inFile, step_size=0.3, title= 'Contour Plot')  
