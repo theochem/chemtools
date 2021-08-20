@@ -1,8 +1,27 @@
+from iodata import load_one, dump_one
+    
+import glob
+import os
+    
+import numpy as np
+import pandas as pd
+    
+from chemml.chem import Molecule
+
+from rdkit import Chem
+from rdkit.Chem import AllChem
+from rdkit.Chem.rdchem import Atom
+from rdkit.Chem import Draw
+from rdkit.Chem.Draw import rdMolDraw2D
+from rdkit.Chem.Draw import MolToImage
+from rdkit.Chem.Draw import DrawingOptions
+    
 def annotation2D(inputName):
     """
     This function is designed to consolidate what is necessary to use RDKit to visualize molecular data onto a 2D representation of a molecule
     
-    CONDA ENVIRONMENT
+    Conda Environment
+    -----------------
         This function requires a conda environment containing
             1. Pandas
             2. Numpy
@@ -10,11 +29,21 @@ def annotation2D(inputName):
             4. OS
             5. Chemml
             6. RDKit 
-    
-    PARAMETERS:
+    Yields
+    ------
+        This function produces a PNG image of our input molecule (inFile), annotated with our assigned values (annotateValue)
+    Parameters
+    ----------
         inputName, str
             The file name of the Gaussian Checkpoint *.fchk file that will be processed
         
+        annotateValue : IOData Call
+            This represents the value that we want to annotate our molecule with.
+            While annotateValue does not necessarily need to be an IOData Call, this example uses IOData's atcharges['esp'][:]
+            IOData Examples can be found here
+            
+                https://iodata.readthedocs.io/en/latest/index.html
+            
         xyzName, str
             Derived from inputName
             This represents the name of the intermediate XYZ File in which the SMILES format is extracted from
@@ -57,31 +86,9 @@ def annotation2D(inputName):
             This represents our RDKit object being visualized
             MolDraw2DCairo is used to output to PNG
             
-        
-    END PARAMETERS
-
+    -------------- 
+    End Parameters
     """
-
-    #DEPENDENCIES 
-    from iodata import load_one, dump_one
-    
-    import glob
-    import os
-    
-    import numpy as np
-    import pandas as pd
-    
-    from chemml.chem import Molecule
-
-    from rdkit import Chem
-    from rdkit.Chem import AllChem
-    from rdkit.Chem.rdchem import Atom
-    from rdkit.Chem import Draw
-    from rdkit.Chem.Draw import rdMolDraw2D
-    from rdkit.Chem.Draw import MolToImage
-    from rdkit.Chem.Draw import DrawingOptions
-    
-    # END DEPENDENCIES
     
     loadInput = load_one(inputName) 
 
@@ -100,6 +107,7 @@ def annotation2D(inputName):
     # EDIT annotateValue TO CHANGE ANNOTATIONS 
     annotateValue = loadInput.atcharges['esp'][:] #EDITABLE 
 
+    # Extract SMILES String from XYZ Intermediate
     xyz_files = glob.glob(xyzName)
     mol = Molecule('dichloropyridine26_q+0.xyz', 'xyz')
 
@@ -120,22 +128,23 @@ def annotation2D(inputName):
     print(smiles)
     print(" ")
     
+    # Force PDB Intermediate Bond Orders to SMILES String 
     chem = Chem.MolFromPDBFile(pdbName, sanitize=True)
     template = Chem.MolFromSmiles(smiles)
     AllChem.Compute2DCoords(chem)
     tempMol = AllChem.AssignBondOrdersFromTemplate(template,chem)
 
-    # THE FOLLOWING STEPS WILL VISUALIZE OUR MOLECULE
+    # Visualize Molecule
     
     drawMolecule = rdMolDraw2D.MolDraw2DCairo(300, 300)
     rdMolDraw2D.PrepareAndDrawMolecule(drawMolecule, chem)
     drawMolecule.drawOptions().addStereoAnnotation = True
     
-    # NOW WE CAN ANNOTATE OUR MOLECULE
+    # Annotate Molecule
     for i, atom in enumerate(tempMol.GetAtoms()):
         atom.SetProp("atomNote", f"{np.round(float(annotateValue[i]),3)}") 
     
-    # OUTPUT VISUALIZATION TO FILE 
+    # Output Visualization to File
     Chem.Draw.MolToFile(tempMol,imageName) 
     print(" ")
     print(f"The molecule {molName} has been annotated and output as file {imageName}")
@@ -143,6 +152,7 @@ def annotation2D(inputName):
     #END FUNCTION 
 
 
+# Example using 2,6-Dichloropyridine
 inputName = 'dichloropyridine26_q+0.fchk'
 annotation2D(inputName)
 
