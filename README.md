@@ -19,11 +19,24 @@ Furthermore, all commits can be found here.
 ### Plotting of Vector and Scalar Qualities of Molecules 
 
 ### Visualizing Electrostatic Potential Isosurfaces 
+
+### Molecular Graphs of Bond and Ring Critical Points 
+
 ## Results
 
 ## Post Mortem
+### IOData Error in 2D Annotations 
 
+### Discrepancies between VMD and ChimeraX 
+
+### Molecular Graphs 
 ## Moving Forward
+### Administrative
+
+### Converting IOData Output into Chemical JSON 
+
+### Molecular Graphs
+
 
 ## Special Thanks
 
