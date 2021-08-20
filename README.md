@@ -81,11 +81,9 @@ Factors when an intermediate PDB file is opened using IOData function
 loaded into ChimeraX. Once loaded, ChimeraX can visualize the B Factor
 using its labeling utilities.
 
-::: center
+<center>
 <img src="3dannotate.png" alt="3D Annotation with ESP Charges of 2,6-dichloropyridine" width="200"/>
-
-:::
-
+</center>
 
 ### 2D Annotation of Molecules
 
@@ -106,11 +104,10 @@ visualization stile of the afforementioned SMILES string using
 `AssignBondOrdersFromTemplate`. Afterwards, the charges from IOData can
 be assigned iteratively.
 
-::: center
-![2D Annotation of 2,6-Dichloropyridine, Using Electrostatic Potential
-Charges](test11.png){width="3in"}
-:::
 
+<center>
+<img src="test11.png" alt="2D Annotation with ESP Charges of 2,6-dichloropyridine" width="200"/>
+</center>
 
 ### Plotting of Vector and Scalar Qualities of Molecules 
 Jupyter Notebook of Both Vector and Scalar Qualities
@@ -173,12 +170,12 @@ levels between both ChimeraX and VMD. For the example
 `isoSurf` to .003, however, in ChimeraX, this will produce a noticeable
 uncolored void that can be corrected when setting `isoSurf` to .005.
 
-::: center
-![Example of Volume discrepancy, .003 (left) and .005 (right) in
+<center>
+  ![Example of Volume discrepancy, .003 (left) and .005 (right) in
 ChimeraX Rainbow Palette](vmdfail.png "fig:"){width="2in"} ![Example of
 Volume discrepancy, .003 (left) and .005 (right) in ChimeraX Rainbow
 Palette](vmdcorrect.png "fig:"){width="1.925in"}
-:::
+</center>
 
 
 
