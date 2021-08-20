@@ -1,10 +1,28 @@
 # Google Summer of Code 2021: Exploring Alternative Visualizations for OpenChem QCDevs
-Nathan Wood, Year 4 Undergraduate, University of Florida
+Nathan Wood, Year 4 Undergraduate, Microbiology and Cell Science, University of Florida
 
 This project was prepared under the advisory of Dr. Farnaz Heidar-Zadeh, Dr. Paul Ayers, and Dr. Esteban Vohringer-Martinez 
 
 ## Note: Submitted Work
 All work pertaining to objectives has been linked within the Results section.
+
+For ease of access, links can also be found below:
+
+[Python Function of ChimeraX Isosurface Visualization](https://github.com/nwoodweb/chemtools/blob/master/examples/esp/chimerax_vis_esp.py)
+
+[Jupyter Notebook of 3D Annotation](https://github.com/nwoodweb/chemtools/blob/master/examples/annotate_3D/3DimensionAnnotation.ipynb)
+
+[Python Script of 3D Annotation](https://github.com/nwoodweb/chemtools/blob/master/examples/annotate_3D/3DimensionAnnotation.py)
+
+[Jupyter Notebook of 2D Annotation](https://github.com/nwoodweb/chemtools/blob/master/examples/annotate_2D/2DAnnotate.ipynb)
+
+[Python Script of 2D Annotation](https://github.com/nwoodweb/chemtools/blob/master/examples/annotate_2D/2DAnnotate.py)
+
+[Jupyter Notebook of Both Vector and Scalar Qualities](https://github.com/nwoodweb/chemtools/blob/master/examples/plotting/2D_Plotting_Gradient.ipynb)
+
+[Python Script of Field Plot](https://github.com/nwoodweb/chemtools/blob/master/examples/plotting/plotVectorField.py)
+
+[Python Script of Contour Plot](https://github.com/nwoodweb/chemtools/blob/master/examples/plotting/plotScalarContour.py)
 
 
 ## Introduction
@@ -37,6 +55,7 @@ annotations.
 
 ## Results
 ### Visualizing Electrostatic Potential Isosurfaces
+
 [Python function can be found here](https://github.com/nwoodweb/chemtools/blob/master/examples/esp/chimerax_vis_esp.py)
 
 A script, consolidated as function `print_chimerax_isosurfaces`, has
@@ -61,7 +80,9 @@ Environment:
     and `scalemax` parameters within the script
 
 ### 3D Annotation of Molecules
+
 [Jupyter Notebook of 3D Annotation](https://github.com/nwoodweb/chemtools/blob/master/examples/annotate_3D/3DimensionAnnotation.ipynb)
+
 [Python Script of 3D Annotation](https://github.com/nwoodweb/chemtools/blob/master/examples/annotate_3D/3DimensionAnnotation.py)
 
 IOData can output to Protein Data Bank (PDB) files, a text file that
@@ -87,7 +108,9 @@ using its labeling utilities.
 </center>
 
 ### 2D Annotation of Molecules
+
 [Jupyter Notebook of 2D Annotation](https://github.com/nwoodweb/chemtools/blob/master/examples/annotate_2D/2DAnnotate.ipynb)
+
 [Python Script of 2D Annotation](https://github.com/nwoodweb/chemtools/blob/master/examples/annotate_2D/2DAnnotate.py)
 
 IOData is used to dump an XYZ and PDB files from the original Gaussian
@@ -113,11 +136,12 @@ be assigned iteratively.
 </center>
 
 ### Plotting of Vector and Scalar Qualities of Molecules 
-Jupyter Notebook of Both Vector and Scalar Qualities
 
-Python Script of Field Plot
+[Jupyter Notebook of Both Vector and Scalar Qualities](https://github.com/nwoodweb/chemtools/blob/master/examples/plotting/2D_Plotting_Gradient.ipynb)
 
-Python Script of Contour Plot
+[Python Script of Field Plot](https://github.com/nwoodweb/chemtools/blob/master/examples/plotting/plotVectorField.py)
+
+[Python Script of Contour Plot](https://github.com/nwoodweb/chemtools/blob/master/examples/plotting/plotScalarContour.py)
 
 A Jupyter Notebook and function `plotVectorFieldOverPlane` were made
 that is capable of plotting gradient vector fields. This was performed
@@ -133,6 +157,7 @@ by:
 -   Visualizing the vector quality as a gradient vector field \"Quiver
     Plot\"
 
+<img src="dichlorgradient.png" alt="Gradient Vector Field of 2,6-Dichloropyridine" width="200"/>
 
 To plot a scalar quality, in this case electron density, we want to
 
@@ -143,28 +168,15 @@ To plot a scalar quality, in this case electron density, we want to
 
 -   Visualizing the scalar quality as a contour plot, with our
     `scalarFunc` representing the level curves
+    
+<img src="contour.png" alt="Contour Plot for Electron Densityof 2,6-Dichloropyridine" width="200"/>
 
 
 
 ## Post Mortem
-### IOData Error in 2D Annotations 
-When working with other molecules, such as Acrolein, IOData will throw
-the following error
 
-                Exception ignored in: <function LineIterator.__del__ at 0x7fd2980ec440>
-                Traceback (most recent call last):
-                  File "/home/woodn/.conda/envs/chemml_env/lib/python3.7/site-packages/iodata/utils.py", line 80, in __del__
-                    self.f.close()
-                AttributeError: 'LineIterator' object has no attribute 'f'
-
-Despite this error, IOData still dumps the necessary XYZ and PDB Files,
-and the RDKit visualization is complete.
-::: center
-![Acrolein, Annotated Using IOData Derived Electrostatic Potential
-Charges](acroleinerror.png){width="3in"}
-:::
-
-
+### Administrative
+While debug and deprecated code has been removed, parameters for functions need to be explicitly detailed
 
 ### Discrepancies between VMD and ChimeraX 
 There is a discrepancy between appropriate values to display isosurface
@@ -173,18 +185,18 @@ levels between both ChimeraX and VMD. For the example
 `isoSurf` to .003, however, in ChimeraX, this will produce a noticeable
 uncolored void that can be corrected when setting `isoSurf` to .005.
 
-<center>
-  ![Example of Volume discrepancy, .003 (left) and .005 (right) in
-ChimeraX Rainbow Palette](vmdfail.png "fig:"){width="2in"} ![Example of
-Volume discrepancy, .003 (left) and .005 (right) in ChimeraX Rainbow
-Palette](vmdcorrect.png "fig:"){width="1.925in"}
-</center>
 
-
+<img src="vmdfail.png" alt="isoSurf=.003" width="200" /> <img src="vmdcorrect.png" alt="AisoSurf=.005" width="200" />
 
 ### Molecular Graphs 
+The original goal of visualizing molecular graphs detailing the critical points of bonds and ring structures was not fulfilled
+
+
 ## Moving Forward
 ### Administrative
+1. Code that has been consolidated into functions should have a more detailed explanation of use and parameters
+2. Future GSOC internships should make further use of correspondence
+methods such as Email, Github threads, Slack, and Zoom.
 
 ### Converting IOData Output into Chemical JSON 
 In order to improve interoperability with Avogadro2, it will be
@@ -196,7 +208,7 @@ nontrivial, considerable work will have to be done to correctly format
 quantum chemistry data.
 
 ### Molecular Graphs
-
+There remains the need to implement a means to visualize bond and ring critical points. 
 
 ## Special Thanks
 I would like to extend great thanks to the following individuals for
@@ -210,7 +222,7 @@ assisting and granting me flexibility:
 
 -   Victor Canogil
 
--   Toon Vestralen
+-   Toon Vestraelen
 
 -   Gabriella S.D.
 
@@ -218,14 +230,8 @@ assisting and granting me flexibility:
 
 -   Geoff Hutchinson, Avogadro2 Lead
 
-
 -   Elaine Meng, PhD, ChimeraX Development Team, University of
     California San Francisco
 
 -   Anthony Schaefer, PhD, ChimeraX Development Team, University of
     California San Francisco
-
-
-## Works Cited
-
-
