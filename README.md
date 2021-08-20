@@ -28,6 +28,27 @@ All work pertaining to objectives has been linked within the Results section.
   We wish to implement a means of visualizing the bond and ring critical points of a given molecule.
 
 ## Results
+### Visualizing Electrostatic Potential Isosurfaces
+A script, consolidated as function `print_chimerax_isosurfaces`, has
+been written, and accomplishes the following actions within the ChimeraX
+Environment:
+
+-   Open our surfaces file, generically named `*_rho.cube`
+
+-   Open our map file, which allows us to color the surfaces,
+    generically named `*_esp.cube`
+
+-   Set to isosurface levels to visualize
+
+-   Set the lighting, shadows, surface material appearance (ie dull or
+    shiny), and representation (ie sufraces or meshes)
+
+-   Set a color palette, both custom or built into ChimeraX
+
+-   Set the minimum `scalemin` and maximum `scalemax` value range for
+    colorizng the surfaces, or allow ChimeraX to determine the most
+    suitable range using the string `'compute'` for both the `scalemin`
+    and `scalemax` parameters within the script
 
 ## Post Mortem
 ### IOData Error in 2D Annotations 
