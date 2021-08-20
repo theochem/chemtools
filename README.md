@@ -61,7 +61,8 @@ Environment:
     and `scalemax` parameters within the script
 
 ### 3D Annotation of Molecules
-
+[Jupyter Notebook of 3D Annotation](https://github.com/nwoodweb/chemtools/blob/master/examples/annotate_3D/3DimensionAnnotation.ipynb)
+[Python Script of 3D Annotation](https://github.com/nwoodweb/chemtools/blob/master/examples/annotate_3D/3DimensionAnnotation.py)
 
 IOData can output to Protein Data Bank (PDB) files, a text file that
 enumerates monomer and a atomic data, such as element, XYZ cartesian
@@ -86,6 +87,8 @@ using its labeling utilities.
 </center>
 
 ### 2D Annotation of Molecules
+[Jupyter Notebook of 2D Annotation](https://github.com/nwoodweb/chemtools/blob/master/examples/annotate_2D/2DAnnotate.ipynb)
+[Python Script of 2D Annotation](https://github.com/nwoodweb/chemtools/blob/master/examples/annotate_2D/2DAnnotate.py)
 
 IOData is used to dump an XYZ and PDB files from the original Gaussian
 Checkpoint (fchk) file. XYZ files are capable of being converted to
