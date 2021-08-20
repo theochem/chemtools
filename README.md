@@ -3,6 +3,11 @@ Nathan Wood, Year 4 Undergraduate, University of Florida
 
 This project was prepared under the advisory of Dr. Farnaz Heidar-Zadeh, Dr. Paul Ayers, and Dr. Esteban Vohringer-Martinez 
 
+## Note: Submitted Work
+All work pertaining to objectives has been linked within the Results section.
+
+Furthermore, all commits can be found here. 
+
 ## Introduction
 
 
