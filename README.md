@@ -6,13 +6,14 @@ This project was prepared under the advisory of Dr. Farnaz Heidar-Zadeh, Dr. Pau
 ## Note: Submitted Work
 All work pertaining to objectives has been linked within the Results section.
 
-Furthermore, all commits can be found here. 
 
 ## Introduction
 
 
 ## Goals
+
 ### 3D Annotation of Molecules 
+  We wish to examine alternatives to Visualizing Molecular Dynamics (VMD) to visualize isosurfaces of molecules computed by Chemtools. Examples of VMD Alternatives include Avogadro/Avogadro2, ChimeraX, IQMol, JMol/JSMol, and PyMOL. 
 
 ### 2D Annotation of Molecules
 
