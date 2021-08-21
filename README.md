@@ -214,19 +214,17 @@ There remains the need to implement a means to visualize bond and ring critical 
 I would like to extend great thanks to the following individuals for
 assisting and granting me flexibility:
 
--   Farnaz Heidar Zadeh, Professor Queens University
+-   Farnaz Heidar Zadeh, Professor, Queens University
 
--   Paul Ayers, Professor University of Toronto
+-   Paul Ayers, Professor, McMaster University 
 
--   Esteban Vohringer Martinez, Professor Universidad de Concepciòn
+-   Esteban Vohringer Martinez, Professor, Universidad de Concepciòn
 
--   Victor Canogil
+-   Toon Vestraelen, Professor, Ghent University
 
--   Toon Vestraelen
+-   Gabriella Sánchez-Dìaz, McMaster University
 
--   Gabriella S.D.
-
--   Ali Tehrani
+-   Ali Tehrani, McMaster University 
 
 -   Geoff Hutchinson, Avogadro2 Lead
 
