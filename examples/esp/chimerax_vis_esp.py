@@ -42,6 +42,7 @@ def print_chimerax_isosurfaces(session,outFile,outSuffix, isoFile, colorFile, is
         colorFile : str
             Input file to use as a color map
             should have suffix *_rho.cube
+            Note: If colorizing is not needed or colorFile is not present, please use colorFile = None 
         
         isoSurf : float
             This float instructs ChimeraX to display a certain isosurface level
@@ -95,14 +96,20 @@ def print_chimerax_isosurfaces(session,outFile,outSuffix, isoFile, colorFile, is
     """
 
     run(session, 'open %s' % (isoFile))     # Open ESP
-    run(session, 'open %s' % (colorFile))   # Open RHO 
-    run(session, 'hide #2')     # Hides Colorfile from Rendering Window
     run(session, 'volume #1 style %s level %s' % (representation , isoSurf))        # Setup Volume  
-    if scalemin != 'compute' and scalemax != 'compute': 
-        run(session, 'color gradient #1 map #2 palette %s range %s,%s' %(colorscheme, scalemin, scalemax))
+
+    if colorFile == None :
+        print("No ColorFile")
+
     else:
-        run(session, 'color gradient #1 map #2 palette %s' % (colorscheme))
-        
+        run(session, 'open %s' % (colorFile))   # Open RHO
+        run(session, 'hide #2')     # Hides Colorfile from Rendering Window
+
+        if scalemin != 'compute' and scalemax != 'compute':
+            run(session, 'color gradient #1 map #2 palette %s range %s,%s' %(colorscheme, scalemin, scalemax))
+        else:
+            run(session, 'color gradient #1 map #2 palette %s' % (colorscheme))
+
     run(session, 'material %s' % (material))        # Establish surface material 
     run(session, 'lighting %s' % (lighting))        #Establish lighting and shadows
     run(session, 'lighting shadows %s' % (shadows))  # Set Shadows
