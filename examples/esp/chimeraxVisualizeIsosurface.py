@@ -97,10 +97,12 @@ def print_chimerax_isosurfaces(session,outFile,outSuffix, isoFile, colorFile, is
 
     run(session, 'open %s' % (isoFile))     # Open ESP
     run(session, 'volume #1 style %s level %s' % (representation , isoSurf))        # Setup Volume  
-
+    
+    # colorFile specified as None, will render without colorization 
     if colorFile == None :
         print("No ColorFile")
 
+    # ColorFile Present 
     else:
         run(session, 'open %s' % (colorFile))   # Open RHO
         run(session, 'hide #2')     # Hides Colorfile from Rendering Window
@@ -110,6 +112,7 @@ def print_chimerax_isosurfaces(session,outFile,outSuffix, isoFile, colorFile, is
         else:
             run(session, 'color gradient #1 map #2 palette %s' % (colorscheme))
 
+    # Rendering Options 
     run(session, 'material %s' % (material))        # Establish surface material 
     run(session, 'lighting %s' % (lighting))        #Establish lighting and shadows
     run(session, 'lighting shadows %s' % (shadows))  # Set Shadows
@@ -120,7 +123,6 @@ def print_chimerax_isosurfaces(session,outFile,outSuffix, isoFile, colorFile, is
     #END FUNCTION
 
 # This Example uses 2,6-Dichloropyridine
-    
 # INPUT FILE VALUES HERE
 isoFile = 'dichloropyridine26_q+0_rho.cube'
 colorFile = 'dichloropyridine26_q+0_esp.cube'
