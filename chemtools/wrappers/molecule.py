@@ -135,10 +135,23 @@ class Molecule:
         """
         return self.mo.compute_dm(spin, index=index)
 
+    def compute_transform(self, spin='ab'):
+        spin_list = ['a', 'b', 'ab']
+        if spin not in spin_list:
+            raise ValueError(f"spin passed must be one of the follownig: {spin_list}")
+
+        if spin == 'a':
+            tf = (self.mo._coeffs_a * self.mo._occs_a).dot(self.mo._coeffs_a.T)
+        elif spin == 'b':
+            tf = (self.mo._coeffs_b * self.mo._occs_b).dot(self.mo._coeffs_b.T)
+        else:
+            tf = (self._iodata.mo.coeffs * self._iodata.mo.occs).dot(self._iodata.mo.coeffs.T)
+        return tf
+
     def compute_molecular_orbital(self, points, spin='ab', index=None):
         self._check_arguments(points)
         if self.mo:
-            tf = (self._iodata.mo.coeffs * self._iodata.mo.occs).dot(self._iodata.mo.coeffs.T)
+            tf = self.compute_transform(spin=spin)
             return self._ao.compute_orbitals(points, transform=tf)
         else:
             raise ValueError("mo attribute cannot be empty or None")
@@ -314,12 +327,7 @@ class AtomicOrbitals:
         .. math:: [\mathbf{S}]_ij = int \phi_i(\mathbf{r}) \phi_j(\mathbf{r}) d\mathbf{r}
 
         """
-        # check if the coordinate types are mixed
-        check_coords = all(elmt == self._coord_type[0] for elmt in self._coord_type)
-        if check_coords:
-            return overlap_integral(self._basis, coord_type=self._coord_type)
-        else:
-            raise NotImplementedError("Mixed coordinate types are not supported yet.")
+        return overlap_integral(self._basis, coord_type=self._coord_type)
 
     def compute_orbitals(self, points, transform=None):
         """ Evaluate Orbitals
@@ -392,13 +400,9 @@ class AtomicOrbitals:
 
         """
 
-        check_coords = all(elmt == self._coord_type[0] for elmt in self._coord_type)
-        if check_coords:
-            return electrostatic_potential(self._basis, dm, points,
-                                           coordinates, charges, transform=transform,
-                                           coord_type=self._coord_type)
-        else:
-            raise NotImplementedError("Mixed coordinate types are not supported yet.")
+        return electrostatic_potential(self._basis, dm, points,
+                                        coordinates, charges, transform=transform,
+                                        coord_type=self._coord_type)
 
     def compute_ked(self, dm, points, transform=None):
         """Return positive definite kinetic energy density evaluated on the a set of points.

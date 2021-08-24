@@ -219,40 +219,39 @@ def test_molecule_density_matrix_fchk_uhf_ch4():
     assert_almost_equal(dm_array_ab[18, 19:], 2*expected_19, decimal=5)
     assert_almost_equal(dm_array_ab[28, 29:], 2*expected_29, decimal=5)
 
-#TODO Mixed coordinates are not supported by gbasis yet
-# def test_molecule_esp_fchk_uhf_ch4():
-#     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
-#         mol = Molecule.from_file(fname)
-#     # check esp against Gaussian (printed in log file)
-#     # check esp at the position of each nuclei (1.e-14 is added to avoid division by zero)
-#     # excluding the nucleus itself.
-#     point = mol.coordinates[0].reshape(1, 3) + 1.e-14
-#     charge = np.array([0., 1., 1., 1., 1.])
-#     assert_almost_equal(mol.compute_esp(point, charges=charge), [-14.745629], decimal=5)
-#     point = mol.coordinates[1].reshape(1, 3) + 1.e-14
-#     charge = np.array([6., 0., 1., 1., 1.])
-#     assert_almost_equal(mol.compute_esp(point, charges=charge), [-1.116065], decimal=5)
-#     point = mol.coordinates[2].reshape(1, 3) + 1.e-14
-#     charge = np.array([6., 1., 0., 1., 1.])
-#     assert_almost_equal(mol.compute_esp(point, charges=charge), [-1.116065], decimal=5)
-#     point = mol.coordinates[3].reshape(1, 3) + 1.e-14
-#     charge = np.array([6., 1., 1., 0., 1.])
-#     assert_almost_equal(mol.compute_esp(point, charges=charge), [-1.116067], decimal=5)
-#     point = mol.coordinates[4].reshape(1, 3) + 1.e-14
-#     charge = np.array([6., 1., 1., 1., 0.])
-#     assert_almost_equal(mol.compute_esp(point, charges=charge), [-1.116065], decimal=5)
-#     # check esp at non-nuclei points
-#     points = np.array([[ 0.5,  0.5,  0.5],
-#                        [-0.5, -0.5, -0.5],
-#                        [-0.5,  0.5,  0.5],
-#                        [-0.5, -0.5,  0.5],
-#                        [-0.5,  0.5, -0.5],
-#                        [ 0.5, -0.5, -0.5],
-#                        [ 0.5, -0.5,  0.5],
-#                        [ 0.5,  0.5, -0.5]]) / 0.529177
-#     expected_esp = np.array([0.895650, 0.237257, 0.234243, 0.708301,
-#                              0.499083, 0.479275, 0.241434, 0.235102])
-#     assert_almost_equal(mol.compute_esp(points), expected_esp, decimal=5)
+def test_molecule_esp_fchk_uhf_ch4():
+    with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
+        mol = Molecule.from_file(fname)
+    # check esp against Gaussian (printed in log file)
+    # check esp at the position of each nuclei (1.e-14 is added to avoid division by zero)
+    # excluding the nucleus itself.
+    point = mol.coordinates[0].reshape(1, 3) + 1.e-14
+    charge = np.array([0., 1., 1., 1., 1.])
+    assert_almost_equal(mol.compute_esp(point, charges=charge), [-14.745629], decimal=5)
+    point = mol.coordinates[1].reshape(1, 3) + 1.e-14
+    charge = np.array([6., 0., 1., 1., 1.])
+    assert_almost_equal(mol.compute_esp(point, charges=charge), [-1.116065], decimal=5)
+    point = mol.coordinates[2].reshape(1, 3) + 1.e-14
+    charge = np.array([6., 1., 0., 1., 1.])
+    assert_almost_equal(mol.compute_esp(point, charges=charge), [-1.116065], decimal=5)
+    point = mol.coordinates[3].reshape(1, 3) + 1.e-14
+    charge = np.array([6., 1., 1., 0., 1.])
+    assert_almost_equal(mol.compute_esp(point, charges=charge), [-1.116067], decimal=5)
+    point = mol.coordinates[4].reshape(1, 3) + 1.e-14
+    charge = np.array([6., 1., 1., 1., 0.])
+    assert_almost_equal(mol.compute_esp(point, charges=charge), [-1.116065], decimal=5)
+    # check esp at non-nuclei points
+    points = np.array([[ 0.5,  0.5,  0.5],
+                       [-0.5, -0.5, -0.5],
+                       [-0.5,  0.5,  0.5],
+                       [-0.5, -0.5,  0.5],
+                       [-0.5,  0.5, -0.5],
+                       [ 0.5, -0.5, -0.5],
+                       [ 0.5, -0.5,  0.5],
+                       [ 0.5,  0.5, -0.5]]) / 0.529177
+    expected_esp = np.array([0.895650, 0.237257, 0.234243, 0.708301,
+                             0.499083, 0.479275, 0.241434, 0.235102])
+    assert_almost_equal(mol.compute_esp(points), expected_esp, decimal=5)
 
 #TODO All of the gaussian/fortran test fail numerically
 
@@ -264,14 +263,14 @@ def check_molecule_against_gaussian_ch4(mol):
         points, dens, grad = data["points"], data["dens"], data["grad"]
         lap, hess_xx, esp = data["lap"], data["hess_xx"], data["esp"]
     # check density, gradient, esp & hessian
-#    assert_almost_equal(mol.compute_density(points, "ab"), dens, decimal=5)
+        # assert_almost_equal(mol.compute_density(points, "ab"), dens, decimal=5)
 #    assert_almost_equal(mol.compute_density(points, "a"), 0.5 * dens, decimal=5)
 #    assert_almost_equal(mol.compute_density(points, "b"), 0.5 * dens, decimal=5)
-    assert_almost_equal(mol.compute_gradient(points, "ab"), grad, decimal=5)
+        assert_almost_equal(mol.compute_gradient(points, "ab"), grad, decimal=5)
 #TODO next line fails - mixed coordinates not supported
-#    assert_almost_equal(mol.compute_esp(points, "ab"), esp, decimal=5)
-    assert_almost_equal(mol.compute_laplacian(points, "ab", None), lap, decimal=5)
-    assert_almost_equal(mol.compute_hessian(points, "ab", None)[:, 0, 0], hess_xx, decimal=5)
+        # assert_almost_equal(mol.compute_esp(points, "ab"), esp, decimal=5)
+        assert_almost_equal(mol.compute_laplacian(points, "ab", None), lap, decimal=5)
+        assert_almost_equal(mol.compute_hessian(points, "ab", None)[:, 0, 0], hess_xx, decimal=5)
 #    # density computed by summing squared mo expressions
 #    assert_almost_equal(mol.compute_density(points, "ab", range(1, 6)), dens, decimal=5)
 #    assert_almost_equal(mol.compute_density(points, "a", range(1, 6)), 0.5 * dens, decimal=5)
@@ -314,8 +313,8 @@ def check_molecule_against_fortran_ch4(mol):
 #   assert_almost_equal(mol.compute_density(points, "a", range(1, 6)), 0.5 * dens, decimal=6)
 #   assert_almost_equal(mol.compute_density(points, "b", range(1, 6)), 0.5 * dens, decimal=6)
     # check mo expression
-#   assert_almost_equal(mol.compute_molecular_orbital(points, "a", 8)[:, 0], exp8, decimal=6)
-#   assert_almost_equal(mol.compute_molecular_orbital(points, "b", 8)[:, 0], exp8, decimal=6)
+    # assert_almost_equal(mol.compute_molecular_orbital(points, "a", 8)[:, 0], exp8, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, "b", 8)[:, 0], exp8, decimal=6)
 #   assert_almost_equal(mol.compute_molecular_orbital(points, "a", 9)[:, 0], exp9, decimal=6)
 #   assert_almost_equal(mol.compute_molecular_orbital(points, "b", 9)[:, 0], exp9, decimal=6)
 #   # check positive definite ke
@@ -424,7 +423,7 @@ def test_molecule_horton_h2o():
     assert np.allclose(mol.compute_hessian(points), data["nuc_hess"], rtol=0., atol=1.e-6)
 #TODO the next line fails - assertion error
 #    assert np.allclose(mol.compute_ked(points), data["nuc_ked_pd"], rtol=0., atol=1.e-6)
-#TODO the next line fails - mixed coordinates 
+#TODO the next line fails - mixed coordinates
 #    assert np.allclose(mol.compute_esp(points), data["nuc_esp"], rtol=0., atol=1.e-6)
     # check properties computed on a grid against HORTON
 #TODO the next line fails - assertion error
@@ -433,7 +432,7 @@ def test_molecule_horton_h2o():
     assert np.allclose(mol.compute_hessian(data["points"]), data["hess"], rtol=0., atol=1.e-6)
 #TODO the next line fails - assertion error
 #    assert np.allclose(mol.compute_ked(data["points"]), data["ked_pd"], rtol=0., atol=1.e-6)
-#TODO the next line fails - mixed coordinates 
+#TODO the next line fails - mixed coordinates
 #    assert np.allclose(mol.compute_esp(data["points"]), data["esp"], rtol=0., atol=1.e-6)
 
 
@@ -459,5 +458,5 @@ def test_molecule_horton_ch4():
     assert np.allclose(mol.compute_hessian(data["points"]), data["hess"], rtol=0., atol=1.e-6)
 #TODO the next line fails - assertion error
 #    assert np.allclose(mol.compute_ked(data["points"]), data["ked_pd"], rtol=0., atol=1.e-6)
-#TODO the next line fails - mixed coordinates 
+#TODO the next line fails - mixed coordinates
 #    assert np.allclose(mol.compute_esp(data["points"]), data["esp"], rtol=0., atol=1.e-6)
