@@ -304,9 +304,9 @@ def check_molecule_against_fortran_ch4(mol):
         points, exp8, exp9 = data["points"], data["orb_08"], data["orb_09"]
         dens, grad, ke = data["dens"], data["grad"], data["ked_pd"]
     # check density & gradient
-#   assert_almost_equal(mol.compute_density(points, "ab", None), dens, decimal=6)
+    # assert_almost_equal(mol.compute_density(points, "ab", None), dens, decimal=6)
     assert_almost_equal(mol.compute_gradient(points, "ab", None), grad, decimal=6)
-#   assert_almost_equal(mol.compute_density(points, "a", None), 0.5 * dens, decimal=6)
+    assert_almost_equal(mol.compute_density(points, "a", None), 0.5 * dens, decimal=6)
 #   assert_almost_equal(mol.compute_density(points, "b", None), 0.5 * dens, decimal=6)
    # check density computed by summing squared mo expressions
 #   assert_almost_equal(mol.compute_density(points, "ab", range(1, 6)), dens, decimal=6)
@@ -314,7 +314,7 @@ def check_molecule_against_fortran_ch4(mol):
 #   assert_almost_equal(mol.compute_density(points, "b", range(1, 6)), 0.5 * dens, decimal=6)
     # check mo expression
     # assert_almost_equal(mol.compute_molecular_orbital(points, "a", 8)[:, 0], exp8, decimal=6)
-    assert_almost_equal(mol.compute_molecular_orbital(points, "b", 8)[:, 0], exp8, decimal=6)
+    # assert_almost_equal(mol.compute_molecular_orbital(points, "b", 8)[:, 0], exp8, decimal=6)
 #   assert_almost_equal(mol.compute_molecular_orbital(points, "a", 9)[:, 0], exp9, decimal=6)
 #   assert_almost_equal(mol.compute_molecular_orbital(points, "b", 9)[:, 0], exp9, decimal=6)
 #   # check positive definite ke

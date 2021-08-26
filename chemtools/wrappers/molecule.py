@@ -141,9 +141,9 @@ class Molecule:
             raise ValueError(f"spin passed must be one of the follownig: {spin_list}")
 
         if spin == 'a':
-            tf = (self.mo._coeffs_a * self.mo._occs_a).dot(self.mo._coeffs_a.T)
+            tf = (self.mo.coeffs_a * self.mo.occs_a).dot(self.mo.coeffs_a.T)
         elif spin == 'b':
-            tf = (self.mo._coeffs_b * self.mo._occs_b).dot(self.mo._coeffs_b.T)
+            tf = (self.mo.coeffs_b * self.mo.occs_b).dot(self.mo.coeffs_b.T)
         else:
             tf = (self._iodata.mo.coeffs * self._iodata.mo.occs).dot(self._iodata.mo.coeffs.T)
         return tf
@@ -159,7 +159,7 @@ class Molecule:
     def compute_density(self, points, spin='ab', index=None):
         dm = self.compute_density_matrix(spin=spin, index=index)
         if self.mo:
-            tf = (self._iodata.mo.coeffs * self._iodata.mo.occs).dot(self._iodata.mo.coeffs.T)
+            tf = self.compute_transform(spin=spin)
             return self._ao.compute_density(dm, points, transform=tf)
         else:
             raise ValueError("mo attribute cannot be empty or None")
@@ -423,9 +423,9 @@ class MolecularOrbitals:
     """Molecular orbital class. """
 
     def __init__(self, occs_a, occs_b, energy_a, energy_b, coeffs_a, coeffs_b):
-        self._occs_a, self._occs_b = occs_a, occs_b
-        self._energy_a, self._energy_b = energy_a, energy_b
-        self._coeffs_a, self._coeffs_b = coeffs_a, coeffs_b
+        self.occs_a, self.occs_b = occs_a, occs_b
+        self.energy_a, self.energy_b = energy_a, energy_b
+        self.coeffs_a, self.coeffs_b = coeffs_a, coeffs_b
 
     @classmethod
     def from_molecule(cls, mol):
@@ -460,8 +460,8 @@ class MolecularOrbitals:
     @property
     def homo_index(self):
         """Index of alpha and beta HOMO orbital."""
-        index_a = np.argwhere(self._occs_a == 0.)[0, 0]
-        index_b = np.argwhere(self._occs_b == 0.)[0, 0]
+        index_a = np.argwhere(self.occs_a == 0.)[0, 0]
+        index_b = np.argwhere(self.occs_b == 0.)[0, 0]
         return index_a, index_b
 
     @property
@@ -472,22 +472,22 @@ class MolecularOrbitals:
     @property
     def homo_energy(self):
         """Energy of alpha and beta HOMO orbital."""
-        return self._energy_a[self.homo_index[0] - 1], self._energy_b[self.homo_index[1] - 1]
+        return self.energy_a[self.homo_index[0] - 1], self.energy_b[self.homo_index[1] - 1]
 
     @property
     def lumo_energy(self):
         """Energy of alpha and beta LUMO orbital."""
-        return self._energy_a[self.lumo_index[0] - 1], self._energy_b[self.lumo_index[1] - 1]
+        return self.energy_a[self.lumo_index[0] - 1], self.energy_b[self.lumo_index[1] - 1]
 
     @property
     def occupation(self):
         """Orbital occupation of alpha and beta electrons."""
-        return self._occs_a, self._occs_b
+        return self.occs_a, self.occs_b
 
     @property
     def energy(self):
         """Orbital energy of alpha and beta electrons."""
-        return self._energy_a, self._energy_b
+        return self.energy_a, self.energy_b
 
     @property
     def coefficient(self):
@@ -496,23 +496,23 @@ class MolecularOrbitals:
         The alpha and beta orbital coefficients are each storied in a 2d-array in which
         the columns represent the basis coefficients of each molecular orbital.
         """
-        return self._coeffs_a, self._coeffs_b
+        return self.coeffs_a, self.coeffs_b
 
     @property
     def nelectrons(self):
         """Number of alpha and beta electrons."""
-        return np.sum(self._occs_a), np.sum(self._occs_b)
+        return np.sum(self.occs_a), np.sum(self.occs_b)
 
     def compute_dm(self, spin='ab', index=None):
         available_spins = ['a', 'b', 'ab']
 
         if spin == 'a':
-            arr = np.dot(self._coeffs_a * self._occs_a, self._coeffs_a.T)
+            arr = np.dot(self.coeffs_a * self.occs_a, self.coeffs_a.T)
         elif spin == 'b':
-            arr = np.dot(self._coeffs_b * self._occs_b, self._coeffs_b.T)
+            arr = np.dot(self.coeffs_b * self.occs_b, self.coeffs_b.T)
         elif spin == 'ab':
-            arr = np.dot(self._coeffs_a * self._occs_a, self._coeffs_a.T) + \
-                  np.dot(self._coeffs_b * self._occs_b, self._coeffs_b.T)
+            arr = np.dot(self.coeffs_a * self.occs_a, self.coeffs_a.T) + \
+                  np.dot(self.coeffs_b * self.occs_b, self.coeffs_b.T)
         else:
             raise ValueError(f'Spin must be one of the following: {available_spins}')
 
