@@ -23,7 +23,6 @@
 # pragma pylint: disable=invalid-name
 """Test chemtools.toolbox.motbased.OrbPart"""
 
-
 import numpy as np
 from numpy.testing import assert_raises, assert_allclose
 try:
@@ -61,7 +60,6 @@ def test_populations_mulliken_h2o_anion():
     mulliken = np.array([-2.64833827E-01, -3.67583325E-01, -3.67582849E-01])
     assert np.allclose(mulliken, mot.charges, atol=1e-6)
 
-
 def test_compute_bond_order():
     """Test MOTBasedTool.compute_bond_order.
 
@@ -77,7 +75,7 @@ def test_compute_bond_order():
         mot = OrbPart.from_file(str(fname))
 
     bond_order = np.array(
-        [[0.0, 1.059127, 1.059127], [1.059127, 0.0, -0.008082], [1.059127, -0.008082, 0.0]]
+    [[0.0, 1.059127, 1.059127], [1.059127, 0.0, -0.008082], [1.059127, -0.008082, 0.0]]
     )
 
     assert np.allclose(bond_order, mot.compute_bond_orders(), atol=1e-6)

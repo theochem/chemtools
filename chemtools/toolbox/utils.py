@@ -26,8 +26,8 @@
 
 import numpy as np
 
-from horton import ProAtomDB
-from horton.scripts.wpart import wpart_schemes
+# from horton import ProAtomDB
+# from horton.scripts.wpart import wpart_schemes
 
 from chemtools.wrappers.grid import MolecularGrid
 from chemtools.wrappers.molecule import Molecule

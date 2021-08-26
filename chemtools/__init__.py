@@ -30,10 +30,5 @@ from chemtools.conceptual import *
 from chemtools.denstools import *
 from chemtools.utils import *
 from chemtools.outputs import *
-import horton
-
-
-horton.log.head_banner = ""
-horton.log.foot_banner = ""
 
 __version__ = '0.9.0'

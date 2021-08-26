@@ -48,11 +48,10 @@ def check_molecule_raises(mol):
     assert_raises(ValueError, mol.compute_molecular_orbital, np.array([0.1, 0.5, 0.7]), "b")
     assert_raises(ValueError, mol.compute_molecular_orbital, np.array([[0.4, 0.2]]), "a")
     assert_raises(ValueError, mol.compute_molecular_orbital, np.array([[5, 10, 15]]), "b")
-    assert_raises(TypeError, mol.compute_density, [0., 0., 0.])
-    assert_raises(TypeError, mol.compute_density, np.array([0., 0., 0.]))
-    assert_raises(TypeError, mol.compute_density, np.array([[0., 0.]]))
-    #TODO Nothing is raised by the next line of code?
-    # assert_raises(ValueError, mol.compute_density, np.array([[0, 0, 0]]))
+    assert_raises(ValueError, mol.compute_density, [0., 0., 0.])
+    assert_raises(ValueError, mol.compute_density, np.array([0., 0., 0.]))
+    assert_raises(ValueError, mol.compute_density, np.array([[0., 0.]]))
+    assert_raises(ValueError, mol.compute_density, np.array([[0, 0, 0]]))
     assert_raises(ValueError, mol.compute_gradient, [.1, .2, .3])
     assert_raises(ValueError, mol.compute_gradient, np.array([.1, .2, .3]))
     assert_raises(ValueError, mol.compute_gradient, np.array([[.1, 2., .3, .4]]))
@@ -97,7 +96,6 @@ def check_molecule_basics(mol):
     # check basic numerics
     assert_equal(mol.natom, 5)
     assert_equal(mol.mo.nelectrons, (5, 5))
-    #TODO: is this the same as mol.mo.nbasis?
     # assert_equal(mol.ao.nbasis, 34)
     assert_equal(mol.numbers, [6, 1, 1, 1, 1])
     assert_equal(mol.pseudo_numbers, [6, 1, 1, 1, 1])
@@ -122,11 +120,11 @@ def test_molecule_basics_fchk_uhf_ch4():
     check_molecule_basics(molecule)
     # check charges
     esp = np.array([-0.502277518, 0.125567970, 0.125569655, 0.125566743, 0.125573150])
-    assert_almost_equal(molecule.atcharges['esp'], esp, decimal=6)
+    assert_almost_equal(molecule.esp_charges, esp, decimal=6)
     npa = np.array([-0.791299253, 0.197824989, 0.197825250, 0.197824326, 0.197824689])
-    assert_almost_equal(molecule.atcharges['npa'], npa, decimal=6)
+    assert_almost_equal(molecule.npa_charges, npa, decimal=6)
     mul = np.array([-0.139702704, 0.0349253868, 0.0349266071, 0.0349235395, 0.0349271707])
-    assert_almost_equal(molecule.atcharges['mulliken'], mul, decimal=6)
+    assert_almost_equal(molecule.mulliken_charges, mul, decimal=6)
 
 
 def test_molecule_basics_wfn_ch4():
@@ -163,11 +161,10 @@ def test_molecule_orbitals_fchk_uhf_ch4():
     assert_almost_equal(mol.mo.coefficient[1][-1, -1], 1.02960200, decimal=6)
     assert_almost_equal(mol.mo.coefficient[0][-1, -1], 1.02960200, decimal=6)
     # check overlap matrix
-    #TODO overlap can't be computed - gbasis does not support mixed coordinates yet
-    # overlap = mol.ao.compute_overlap()
-    # assert_equal(overlap.shape, (34, 34))
-    # assert_almost_equal(np.diag(overlap), np.ones(34), decimal=6)
-    # assert_almost_equal(overlap, overlap.T, decimal=6)
+    overlap = mol.ao.compute_overlap()
+    assert_equal(overlap.shape, (34, 34))
+    assert_almost_equal(np.diag(overlap), np.ones(34), decimal=6)
+    assert_almost_equal(overlap, overlap.T, decimal=6)
 
 
 def test_molecule_density_matrix_fchk_uhf_ch4():
@@ -219,6 +216,7 @@ def test_molecule_density_matrix_fchk_uhf_ch4():
     assert_almost_equal(dm_array_ab[18, 19:], 2*expected_19, decimal=5)
     assert_almost_equal(dm_array_ab[28, 29:], 2*expected_29, decimal=5)
 
+
 def test_molecule_esp_fchk_uhf_ch4():
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
         mol = Molecule.from_file(fname)
@@ -253,7 +251,6 @@ def test_molecule_esp_fchk_uhf_ch4():
                              0.499083, 0.479275, 0.241434, 0.235102])
     assert_almost_equal(mol.compute_esp(points), expected_esp, decimal=5)
 
-#TODO All of the gaussian/fortran test fail numerically
 
 def check_molecule_against_gaussian_ch4(mol):
     """Check local properties of HortonWaveFunction class against Gaussian09_C.01"s cubegen."""
@@ -263,17 +260,16 @@ def check_molecule_against_gaussian_ch4(mol):
         points, dens, grad = data["points"], data["dens"], data["grad"]
         lap, hess_xx, esp = data["lap"], data["hess_xx"], data["esp"]
     # check density, gradient, esp & hessian
-        # assert_almost_equal(mol.compute_density(points, "ab"), dens, decimal=5)
-#    assert_almost_equal(mol.compute_density(points, "a"), 0.5 * dens, decimal=5)
-#    assert_almost_equal(mol.compute_density(points, "b"), 0.5 * dens, decimal=5)
-        assert_almost_equal(mol.compute_gradient(points, "ab"), grad, decimal=5)
-#TODO next line fails - mixed coordinates not supported
-        # assert_almost_equal(mol.compute_esp(points, "ab"), esp, decimal=5)
-        assert_almost_equal(mol.compute_laplacian(points, "ab", None), lap, decimal=5)
-        assert_almost_equal(mol.compute_hessian(points, "ab", None)[:, 0, 0], hess_xx, decimal=5)
-#    # density computed by summing squared mo expressions
-#    assert_almost_equal(mol.compute_density(points, "ab", range(1, 6)), dens, decimal=5)
-#    assert_almost_equal(mol.compute_density(points, "a", range(1, 6)), 0.5 * dens, decimal=5)
+    assert_almost_equal(mol.compute_density(points, "ab"), dens, decimal=5)
+    assert_almost_equal(mol.compute_density(points, "a"), 0.5 * dens, decimal=5)
+    assert_almost_equal(mol.compute_density(points, "b"), 0.5 * dens, decimal=5)
+    assert_almost_equal(mol.compute_gradient(points, "ab"), grad, decimal=5)
+    assert_almost_equal(mol.compute_esp(points, "ab"), esp, decimal=5)
+    assert_almost_equal(mol.compute_laplacian(points, "ab", None), lap, decimal=5)
+    assert_almost_equal(mol.compute_hessian(points, "ab", None)[:, 0, 0], hess_xx, decimal=5)
+    # density computed by summing squared mo expressions
+    assert_almost_equal(mol.compute_density(points, "ab", range(1, 6)), dens, decimal=5)
+    assert_almost_equal(mol.compute_density(points, "a", range(1, 6)), 0.5 * dens, decimal=5)
 
 
 def test_molecule_grid_g09_fchk_uhf_ch4():
@@ -304,21 +300,21 @@ def check_molecule_against_fortran_ch4(mol):
         points, exp8, exp9 = data["points"], data["orb_08"], data["orb_09"]
         dens, grad, ke = data["dens"], data["grad"], data["ked_pd"]
     # check density & gradient
-    # assert_almost_equal(mol.compute_density(points, "ab", None), dens, decimal=6)
+    assert_almost_equal(mol.compute_density(points, "ab", None), dens, decimal=6)
     assert_almost_equal(mol.compute_gradient(points, "ab", None), grad, decimal=6)
     assert_almost_equal(mol.compute_density(points, "a", None), 0.5 * dens, decimal=6)
-#   assert_almost_equal(mol.compute_density(points, "b", None), 0.5 * dens, decimal=6)
-   # check density computed by summing squared mo expressions
-#   assert_almost_equal(mol.compute_density(points, "ab", range(1, 6)), dens, decimal=6)
-#   assert_almost_equal(mol.compute_density(points, "a", range(1, 6)), 0.5 * dens, decimal=6)
-#   assert_almost_equal(mol.compute_density(points, "b", range(1, 6)), 0.5 * dens, decimal=6)
+    assert_almost_equal(mol.compute_density(points, "b", None), 0.5 * dens, decimal=6)
+    # check density computed by summing squared mo expressions
+    assert_almost_equal(mol.compute_density(points, "ab", range(1, 6)), dens, decimal=6)
+    assert_almost_equal(mol.compute_density(points, "a", range(1, 6)), 0.5 * dens, decimal=6)
+    assert_almost_equal(mol.compute_density(points, "b", range(1, 6)), 0.5 * dens, decimal=6)
     # check mo expression
-    # assert_almost_equal(mol.compute_molecular_orbital(points, "a", 8)[:, 0], exp8, decimal=6)
-    # assert_almost_equal(mol.compute_molecular_orbital(points, "b", 8)[:, 0], exp8, decimal=6)
-#   assert_almost_equal(mol.compute_molecular_orbital(points, "a", 9)[:, 0], exp9, decimal=6)
-#   assert_almost_equal(mol.compute_molecular_orbital(points, "b", 9)[:, 0], exp9, decimal=6)
-#   # check positive definite ke
-#   assert_almost_equal(mol.compute_ked(points, "ab"), ke, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, "a", 8)[:, 0], exp8, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, "b", 8)[:, 0], exp8, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, "a", 9)[:, 0], exp9, decimal=6)
+    assert_almost_equal(mol.compute_molecular_orbital(points, "b", 9)[:, 0], exp9, decimal=6)
+    # check positive definite ke
+    assert_almost_equal(mol.compute_ked(points, "ab"), ke, decimal=6)
 
 
 def test_molecule_grid_fortran_fchk_uhf_ch4():
@@ -342,7 +338,7 @@ def test_molecule_basic_fchk_uhf_o2():
     # check basic numerics
     assert_equal(mol.natom, 2)
     assert_equal(mol.mo.nelectrons, (9, 7))
-    #assert_equal(mol.ao.nbasis, 44)
+    assert_equal(mol.ao.nbasis, 44)
     assert_equal(mol.numbers, [8, 8])
     assert_equal(mol.pseudo_numbers, [8, 8])
     assert_equal(mol.mo.homo_index, (9, 7))
@@ -384,7 +380,7 @@ def test_molecule_basic_fchk_uhf_o2():
     assert_almost_equal(mol.mo.homo_energy[1], orb_energy_b[6], decimal=6)
     assert_almost_equal(mol.mo.lumo_energy[0], orb_energy_a[9], decimal=6)
     assert_almost_equal(mol.mo.lumo_energy[1], orb_energy_b[7], decimal=6)
-    assert_almost_equal(mol.atcharges['mulliken'], 0.0, decimal=6)
+    assert_almost_equal(mol.mulliken_charges, 0.0, decimal=6)
     # check orbital coefficients
     assert_almost_equal(mol.mo.coefficient[0][:3, 0],
                         np.array([0.389497609, 0.333421243, 0.]), decimal=6)
@@ -394,20 +390,20 @@ def test_molecule_density_matrix_index_fchk_uhf_ch4():
     # check get_density_matrix for different values of the index/
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
         mol = Molecule.from_file(fname)
-    dm_full = mol.mo.compute_dm("a")
+    dm_full = mol.mo.compute_dm("a")._array
     # errors
     assert_raises(ValueError, mol.compute_dm, "a", [[1]])
     assert_raises(ValueError, mol.compute_dm, "a", [0])
     # one index
     for i in range(1, mol.ao.nbasis + 1):
-        assert np.allclose(dm_full[i - 1, i - 1], mol.mo.compute_dm("a", i))
+        assert np.allclose(dm_full[i - 1, i - 1], mol.mo.compute_dm("a", i)._array)
     # multiple indices
     for i in range(1, mol.ao.nbasis + 1):
         for j in range(1, mol.ao.nbasis + 1):
             # NOTE: indices can be repeated
             indices = np.array([i -1, j - 1])
             assert np.allclose(dm_full[indices[:, None], indices[None, :]],
-                               mol.mo.compute_dm("a", [i, j]))
+                               mol.mo.compute_dm("a", [i, j])._array)
 
 
 def test_molecule_horton_h2o():
@@ -417,23 +413,17 @@ def test_molecule_horton_h2o():
         mol = Molecule.from_file(fname)
     # check properties computed at nucleus against HORTON
     points = data["coords"]
-#TODO the next line fails - assertion error
-#    assert np.allclose(mol.compute_density(points), data["nuc_dens"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_density(points), data["nuc_dens"], rtol=0., atol=1.e-6)
     assert np.allclose(mol.compute_gradient(points), data["nuc_grad"], rtol=0., atol=1.e-6)
     assert np.allclose(mol.compute_hessian(points), data["nuc_hess"], rtol=0., atol=1.e-6)
-#TODO the next line fails - assertion error
-#    assert np.allclose(mol.compute_ked(points), data["nuc_ked_pd"], rtol=0., atol=1.e-6)
-#TODO the next line fails - mixed coordinates
-#    assert np.allclose(mol.compute_esp(points), data["nuc_esp"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_ked(points), data["nuc_ked_pd"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_esp(points), data["nuc_esp"], rtol=0., atol=1.e-6)
     # check properties computed on a grid against HORTON
-#TODO the next line fails - assertion error
-#    assert np.allclose(mol.compute_density(data["points"]), data["dens"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_density(data["points"]), data["dens"], rtol=0., atol=1.e-6)
     assert np.allclose(mol.compute_gradient(data["points"]), data["grad"], rtol=0., atol=1.e-6)
     assert np.allclose(mol.compute_hessian(data["points"]), data["hess"], rtol=0., atol=1.e-6)
-#TODO the next line fails - assertion error
-#    assert np.allclose(mol.compute_ked(data["points"]), data["ked_pd"], rtol=0., atol=1.e-6)
-#TODO the next line fails - mixed coordinates
-#    assert np.allclose(mol.compute_esp(data["points"]), data["esp"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_ked(data["points"]), data["ked_pd"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_esp(data["points"]), data["esp"], rtol=0., atol=1.e-6)
 
 
 def test_molecule_horton_ch4():
@@ -443,20 +433,14 @@ def test_molecule_horton_ch4():
         mol = Molecule.from_file(fname)
     # check properties computed at nucleus against HORTON
     points = data["coords"]
-#TODO the next line fails - assertion error
-#    assert np.allclose(mol.compute_density(points), data["nuc_dens"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_density(points), data["nuc_dens"], rtol=0., atol=1.e-6)
     assert np.allclose(mol.compute_gradient(points), data["nuc_grad"], rtol=0., atol=1.e-6)
     assert np.allclose(mol.compute_hessian(points), data["nuc_hess"], rtol=0., atol=1.e-6)
-#TODO the next line fails - assertion error
-#    assert np.allclose(mol.compute_ked(points), data["nuc_ked_pd"], rtol=0., atol=1.e-6)
-#TODO the next line fails - assertion error
-#    assert np.allclose(mol.compute_esp(points), data["nuc_esp"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_ked(points), data["nuc_ked_pd"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_esp(points), data["nuc_esp"], rtol=0., atol=1.e-6)
     # check properties computed on a grid against HORTON
-#TODO the next line fails - assertion error
-#    assert np.allclose(mol.compute_density(data["points"]), data["dens"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_density(data["points"]), data["dens"], rtol=0., atol=1.e-6)
     assert np.allclose(mol.compute_gradient(data["points"]), data["grad"], rtol=0., atol=1.e-6)
     assert np.allclose(mol.compute_hessian(data["points"]), data["hess"], rtol=0., atol=1.e-6)
-#TODO the next line fails - assertion error
-#    assert np.allclose(mol.compute_ked(data["points"]), data["ked_pd"], rtol=0., atol=1.e-6)
-#TODO the next line fails - mixed coordinates
-#    assert np.allclose(mol.compute_esp(data["points"]), data["esp"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_ked(data["points"]), data["ked_pd"], rtol=0., atol=1.e-6)
+    assert np.allclose(mol.compute_esp(data["points"]), data["esp"], rtol=0., atol=1.e-6)

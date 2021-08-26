@@ -8,7 +8,6 @@ from chemtools.topology.critical import Topology, CriticalPoint
 import numpy as np
 from numpy.testing import assert_allclose
 
-
 class TestCriticalPoints(TestCase):
     # Test critical point finder class.
 
