@@ -24,9 +24,12 @@
 
 
 import sys
+import pytest
 import numpy as np
 
 from numpy.testing import assert_raises, assert_allclose
+
+pytestmark = pytest.mark.skipif(sys.version_info.major != 2, reason="Requires Python 2.")
 
 if sys.version_info.major == 2:
     from chemtools.wrappers2.grid import MolecularGrid

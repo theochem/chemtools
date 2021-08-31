@@ -23,6 +23,9 @@
 """The Python 3 Wrappers Module."""
 
 
-from chemtools.wrappers3.molecule import *
-from chemtools.wrappers3.grid import *
-from chemtools.wrappers3.part import *
+import sys
+
+if sys.version_info.major != 2:
+    from chemtools.wrappers3.molecule import *
+    from chemtools.wrappers3.grid import *
+    from chemtools.wrappers3.part import *

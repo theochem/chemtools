@@ -24,13 +24,15 @@
 
 
 import sys
+import pytest
 import numpy as np
+
+pytestmark = pytest.mark.skipif(sys.version_info.major == 2, reason="Requires Python 3.")
 
 from numpy.testing import assert_raises, assert_allclose
 
-if sys.version_info.major == 2:
-    from chemtools.wrappers2.grid import MolecularGrid
-    from chemtools.wrappers2.molecule import Molecule
+if sys.version_info.major != 2:
+    from chemtools.wrappers3.grid import MolecularGrid
 
 try:
     from importlib_resources import path

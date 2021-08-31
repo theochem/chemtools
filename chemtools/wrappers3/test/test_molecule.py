@@ -24,12 +24,15 @@
 
 
 import sys
+import pytest
 import numpy as np
+
+pytestmark = pytest.mark.skipif(sys.version_info.major == 2, reason="Requires Python 3.")
 
 from numpy.testing import assert_raises, assert_equal, assert_almost_equal
 
-if sys.version_info.major == 2:
-    from chemtools.wrappers2 import Molecule
+if sys.version_info.major != 2:
+    from chemtools.wrappers3.molecule import Molecule
 
 try:
     from importlib_resources import path

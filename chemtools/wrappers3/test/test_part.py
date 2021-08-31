@@ -23,12 +23,15 @@
 
 
 import sys
+import pytest
 import numpy as np
 
-if sys.version_info.major == 2:
-    from chemtools.wrappers2.molecule import Molecule
-    from chemtools.wrappers2.part import DensPart
-    from chemtools.wrappers2.grid import MolecularGrid
+pytestmark = pytest.mark.skip(sys.version_info.major == 2, reason="Requires Python 3.")
+
+if sys.version_info.major != 2:
+    from chemtools.wrappers3.molecule import Molecule
+    from chemtools.wrappers3.part import DensPart
+    from chemtools.wrappers3.grid import MolecularGrid
 
 try:
     from importlib_resources import path
