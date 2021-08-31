@@ -26,6 +26,7 @@
 import numpy as np
 from numpy.testing import assert_allclose, assert_raises
 from chemtools.toolbox.interactions import ELF, LOL
+
 try:
     from importlib_resources import path
 except ImportError:

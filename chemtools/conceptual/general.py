@@ -89,7 +89,7 @@ class GeneralGlobalTool(BaseGlobalTool):
                 'the number of electrons.')
         self._n_symb = n_symbol
         # store minimum and maximum number of electrons used for interpolation
-        self._n_min, self._n_max = np.min(n_energies.keys()), np.max(n_energies.keys())
+        self._n_min, self._n_max = np.min(list(n_energies.keys())), np.max(list(n_energies.keys()))
 
         # substitute N0 in energy expression
         if n0_symbol:
@@ -184,7 +184,7 @@ class GeneralGlobalTool(BaseGlobalTool):
         # construct system of equations to solve
         system_eqns = []
         d_system_eqns = []
-        for n, energy in n_energies.iteritems():
+        for n, energy in n_energies.items():
             eqn = sp.lambdify((params,), expr.subs(self._n_symb, n) - energy, 'numpy')
             system_eqns.append(eqn)
             d_eqn_row = []
@@ -234,7 +234,6 @@ class GeneralGlobalTool(BaseGlobalTool):
         d_expr = self._expr.diff(self._n_symb)
         n_max_eqn = sp.lambdify(self._n_symb, d_expr, 'numpy')
         result = root(n_max_eqn, guess)
-        print result
         if result.success:
             n_max = np.asscalar(result.x)
             # n_ceil = math.ceil(n_max)

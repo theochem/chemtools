@@ -25,11 +25,14 @@
 """Molecular Orbital Theory (MOT) Script."""
 
 
+import sys
 import numpy as np
 
-from chemtools.wrappers.molecule import Molecule
 from chemtools.toolbox.motbased import OrbPart
 from chemtools.scripts.common import help_cube, load_molecule_and_grid
+
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
 
 
 description_mot = """

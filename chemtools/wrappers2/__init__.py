@@ -20,9 +20,12 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""The Wrappers Module."""
+"""The Python 2 Wrappers Module."""
 
 
-from chemtools.wrappers.molecule import *
-from chemtools.wrappers.grid import *
-from chemtools.wrappers.part import *
+import sys
+
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import *
+    from chemtools.wrappers2.grid import *
+    from chemtools.wrappers2.part import *

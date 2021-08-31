@@ -23,15 +23,21 @@
 """Test chemtools.utils.cube."""
 
 
+import sys
 import shutil
 import tempfile
 from contextlib import contextmanager
 from numpy.testing import assert_raises, assert_allclose
 import numpy as np
 
-from chemtools.wrappers.molecule import Molecule
 from chemtools.toolbox.conceptual import LocalConceptualDFT
 from chemtools.utils.cube import UniformGrid
+
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
+else:
+    from chemtools.wrappers3.molecule import Molecule
+
 try:
     from importlib_resources import path
 except ImportError:

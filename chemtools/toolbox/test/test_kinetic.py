@@ -24,12 +24,18 @@
 """Test chemtools.toolbox.kinetic."""
 
 
+import sys
 import numpy as np
 
 from numpy.testing import assert_array_almost_equal, assert_allclose, assert_raises
 
-from chemtools.wrappers.molecule import Molecule
 from chemtools.toolbox.kinetic import KED
+
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
+else:
+    from chemtools.wrappers3.molecule import Molecule
+
 try:
     from importlib_resources import path
 except ImportError:

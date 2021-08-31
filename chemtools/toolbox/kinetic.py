@@ -24,11 +24,16 @@
 """Kinetic Energy Density Module."""
 
 
+import sys
 import numpy as np
 
 from chemtools.utils.utils import doc_inherit
-from chemtools.wrappers.molecule import Molecule
 from chemtools.denstools.densbased import DensGradTool, DensGradLapTool, DensGradLapKedTool
+
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
+else:
+    from chemtools.wrappers3.molecule import Molecule
 
 
 class KED(object):

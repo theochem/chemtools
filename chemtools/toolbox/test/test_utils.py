@@ -22,14 +22,21 @@
 # --
 """Test chemtools.toolbox.utils."""
 
+
+import sys
 import numpy as np
 
 from numpy.testing import assert_raises
 
 from chemtools import UniformGrid
-from chemtools.wrappers.molecule import Molecule
 from chemtools.toolbox.utils import get_matching_attr, get_molecular_grid
 from chemtools.toolbox.utils import get_dict_energy, get_dict_density, get_dict_population
+
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
+else:
+    from chemtools.wrappers3.molecule import Molecule
+
 try:
     from importlib_resources import path
 except ImportError:

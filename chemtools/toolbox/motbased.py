@@ -24,11 +24,16 @@
 """Orbital-Based Population Analysis."""
 
 
+import sys
 import numpy as np
 
 from chemtools.utils.utils import doc_inherit
 from chemtools.orbstools.partition import OrbitalPartitionTools
-from chemtools.wrappers.molecule import Molecule, MolecularOrbitals
+
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule, MolecularOrbitals
+else:
+    from chemtools.wrappers3.molecule import Molecule, MolecularOrbitals
 
 
 class OrbPart(object):
