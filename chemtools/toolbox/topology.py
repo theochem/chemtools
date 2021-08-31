@@ -24,12 +24,15 @@
 """Module for topological analysis of scalar fields."""
 
 
+import sys
 import numpy as np
 
-from chemtools.wrappers2.molecule import Molecule
 from chemtools.utils.cube import UniformGrid
 from chemtools.topology.critical import Topology
 from chemtools.outputs.vmd import print_vmd_script_topology
+
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
 
 
 class TopologicalTool(Topology):

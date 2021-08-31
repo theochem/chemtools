@@ -24,6 +24,7 @@
 
 
 import os
+import sys
 import shutil
 import tempfile
 from contextlib import contextmanager
@@ -33,7 +34,10 @@ from numpy.testing import assert_raises, assert_equal, assert_almost_equal
 
 from chemtools.utils import UniformGrid
 from chemtools.toolbox.interactions import NCI
-from chemtools.wrappers2.molecule import Molecule
+
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
+
 try:
     from importlib_resources import path
 except ImportError:

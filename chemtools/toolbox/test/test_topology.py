@@ -23,11 +23,14 @@
 """Test chemtools.toolbox.topology."""
 
 
+import sys
 import numpy as np
 
 from chemtools.toolbox.topology import TopologicalTool
-from chemtools.wrappers2.molecule import Molecule
 from chemtools.utils.cube import UniformGrid
+
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
 
 try:
     from importlib_resources import path

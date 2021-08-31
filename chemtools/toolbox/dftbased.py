@@ -24,11 +24,13 @@
 """Density Functional Theory (DFT) Based Tools."""
 
 
+import sys
 import numpy as np
 
 from scipy.optimize import bisect
 
-from chemtools.wrappers2.molecule import Molecule
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
 
 
 class DFTBasedTool(object):

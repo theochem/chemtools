@@ -24,9 +24,9 @@
 """Module for (non)bonding interaction analysis of Quantum Chemistry Output Files."""
 
 
+import sys
 import numpy as np
 
-from chemtools.wrappers2.molecule import Molecule
 from chemtools.denstools.densbased import DensGradTool
 from chemtools.utils.utils import doc_inherit
 from chemtools.utils.cube import UniformGrid
@@ -34,6 +34,9 @@ from chemtools.outputs.plot import plot_scatter
 from chemtools.outputs.vmd import print_vmd_script_nci, print_vmd_script_isosurface
 
 from numpy.ma import masked_less
+
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
 
 
 class BaseInteraction(object):

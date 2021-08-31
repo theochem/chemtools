@@ -22,8 +22,6 @@
 # --
 """The Utility Module."""
 
-import os
-from glob import glob
 
 __all__ = ['doc_inherit']
 

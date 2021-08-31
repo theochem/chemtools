@@ -23,11 +23,13 @@
 """Module for Oxidation State."""
 
 
+import sys
 import itertools
 import numpy as np
 
-from chemtools.wrappers2.molecule import Molecule
-from chemtools.wrappers2.part import DensPart
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
+    from chemtools.wrappers2.part import DensPart
 
 
 class EOS(object):

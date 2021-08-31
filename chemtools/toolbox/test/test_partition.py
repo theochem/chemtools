@@ -24,14 +24,18 @@
 """Test chemtools.toolbox.motbased.OrbPart"""
 
 
+import sys
 import numpy as np
 from numpy.testing import assert_raises, assert_allclose
+
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
+
 try:
     from importlib_resources import path
 except ImportError:
     from importlib.resources import path
 
-from chemtools.wrappers2.molecule import Molecule
 from chemtools.toolbox.motbased import OrbPart
 
 

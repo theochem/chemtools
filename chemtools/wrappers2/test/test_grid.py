@@ -23,16 +23,19 @@
 """Test chemtools.wrappers2.grid."""
 
 
+import sys
 import numpy as np
+
+from numpy.testing import assert_raises, assert_allclose
+
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.grid import MolecularGrid
+    from chemtools.wrappers2.molecule import Molecule
+
 try:
     from importlib_resources import path
 except ImportError:
     from importlib.resources import path
-
-from numpy.testing import assert_raises, assert_allclose
-
-from chemtools.wrappers2.grid import MolecularGrid
-from chemtools.wrappers2.molecule import Molecule
 
 
 def test_wrapper_grid_raises():

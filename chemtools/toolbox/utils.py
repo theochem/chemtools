@@ -24,13 +24,15 @@
 """Utility Functions of Toolbox Module."""
 
 
+import sys
 import numpy as np
 
 from horton import ProAtomDB
 from horton.scripts.wpart import wpart_schemes
 
-from chemtools.wrappers2.grid import MolecularGrid
-from chemtools.wrappers2.molecule import Molecule
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
+    from chemtools.wrappers2.grid import MolecularGrid
 
 
 def check_arg_molecule(molecule):

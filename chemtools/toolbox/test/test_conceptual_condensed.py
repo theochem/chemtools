@@ -24,13 +24,17 @@
 """Test chemtools.analysis.conceptual.CondensedConceptualDFT."""
 
 
+import sys
 import numpy as np
 
-from numpy.testing import assert_raises, assert_equal, assert_almost_equal
+from numpy.testing import assert_equal, assert_almost_equal
 
-from chemtools.wrappers2.molecule import Molecule
-from chemtools.wrappers2.grid import MolecularGrid
 from chemtools.toolbox.conceptual import CondensedConceptualDFT
+
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
+    from chemtools.wrappers2.grid import MolecularGrid
+
 try:
     from importlib_resources import path
 except ImportError:

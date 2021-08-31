@@ -24,12 +24,16 @@
 """Test chemtools.toolbox.dftbased."""
 
 
+import sys
 import numpy as np
 
 from numpy.testing import assert_raises, assert_array_almost_equal
 
-from chemtools.wrappers2.molecule import Molecule
 from chemtools.toolbox.dftbased import DFTBasedTool
+
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
+
 try:
     from importlib_resources import path
 except ImportError:

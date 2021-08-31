@@ -27,11 +27,9 @@ This modules contains wrappers which take outputs of quantum chemistry software 
 compute various conceptual density functional theory (DFT) descriptive tools.
 """
 
-
+import sys
 import logging
 
-from chemtools.wrappers2.molecule import Molecule
-from chemtools.wrappers2.grid import MolecularGrid
 from chemtools.toolbox.utils import check_arg_molecule, get_matching_attr
 from chemtools.toolbox.utils import get_dict_energy, get_dict_density, get_dict_population
 from chemtools.conceptual.linear import LinearGlobalTool, LinearLocalTool, LinearCondensedTool
@@ -40,6 +38,11 @@ from chemtools.conceptual.quadratic import QuadraticCondensedTool
 from chemtools.conceptual.exponential import ExponentialGlobalTool
 from chemtools.conceptual.rational import RationalGlobalTool
 from chemtools.conceptual.general import GeneralGlobalTool
+
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
+    from chemtools.wrappers2.grid import MolecularGrid
+
 try:
     from pathlib2 import Path
 except ImportError:

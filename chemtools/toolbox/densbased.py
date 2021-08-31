@@ -23,9 +23,12 @@
 # pragma pylint: disable=invalid-name
 """Density-Based Local Tools."""
 
+import sys
 
-from chemtools.wrappers2.molecule import Molecule
 from chemtools.denstools.densbased import DensGradLapKedTool
+
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
 
 
 class DensityLocalTool(DensGradLapKedTool):

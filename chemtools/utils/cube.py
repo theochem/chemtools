@@ -23,10 +23,12 @@
 """The Cube Module."""
 
 
+import sys
 import logging
 import numpy as np
 
-from chemtools.wrappers2.molecule import Molecule
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
 
 try:
     from importlib_resources import path

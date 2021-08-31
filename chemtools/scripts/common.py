@@ -24,10 +24,13 @@
 """Common utility for scripts."""
 
 
+import sys
 import numpy as np
 
-from chemtools.wrappers2.molecule import Molecule
 from chemtools.utils.cube import UniformGrid
+
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
 
 
 help_cube = """

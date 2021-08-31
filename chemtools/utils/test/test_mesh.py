@@ -1,7 +1,10 @@
 """Test chemtools.utils.mesh."""
-from chemtools.utils.mesh import mesh_plane
+
+
 import numpy as np
 from numpy.testing import assert_raises
+
+from chemtools.utils.mesh import mesh_plane
 
 
 def test_plane_mesh():

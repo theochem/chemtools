@@ -22,7 +22,6 @@
 # --
 """Test chemtools.utils.utils."""
 
-import os
 
 from numpy.testing import assert_equal, assert_raises
 

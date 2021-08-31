@@ -23,9 +23,13 @@
 """Test chemtools.wrappers2.molecule."""
 
 
+import sys
 import numpy as np
+
 from numpy.testing import assert_raises, assert_equal, assert_almost_equal
-from chemtools.wrappers2 import Molecule
+
+if sys.version_info.major == 2:
+    from chemtools.wrappers2 import Molecule
 
 try:
     from importlib_resources import path

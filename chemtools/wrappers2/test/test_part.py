@@ -21,11 +21,15 @@
 #
 # --
 
+
+import sys
 import numpy as np
 
-from chemtools.wrappers2.molecule import Molecule
-from chemtools.wrappers2.part import DensPart
-from chemtools.wrappers2.grid import MolecularGrid
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
+    from chemtools.wrappers2.part import DensPart
+    from chemtools.wrappers2.grid import MolecularGrid
+
 try:
     from importlib_resources import path
 except ImportError:

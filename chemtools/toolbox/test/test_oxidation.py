@@ -23,16 +23,18 @@
 """Test chemtools.toolbox.oxidation."""
 
 
+import sys
 import glob
 import numpy as np
 from numpy.testing import assert_equal, assert_almost_equal, assert_approx_equal
 
-from horton import ProAtomDB
-from chemtools.wrappers2.grid import MolecularGrid
-from chemtools.wrappers2.molecule import Molecule
-from chemtools.wrappers2.part import DensPart
 from chemtools.toolbox.oxidation import EOS
 
+if sys.version_info.major == 2:
+    from chemtools.wrappers2.molecule import Molecule
+    from chemtools.wrappers2.grid import MolecularGrid
+    from chemtools.wrappers2.part import DensPart
+    from horton import ProAtomDB
 
 try:
     from importlib_resources import path
