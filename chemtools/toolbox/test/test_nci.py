@@ -33,7 +33,7 @@ from numpy.testing import assert_raises, assert_equal, assert_almost_equal
 
 from chemtools.utils import UniformGrid
 from chemtools.toolbox.interactions import NCI
-from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers2.molecule import Molecule
 try:
     from importlib_resources import path
 except ImportError:

@@ -28,7 +28,7 @@ import numpy as np
 
 from scipy.optimize import bisect
 
-from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers2.molecule import Molecule
 
 
 class DFTBasedTool(object):

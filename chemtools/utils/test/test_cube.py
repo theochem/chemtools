@@ -29,7 +29,7 @@ from contextlib import contextmanager
 from numpy.testing import assert_raises, assert_allclose
 import numpy as np
 
-from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers2.molecule import Molecule
 from chemtools.toolbox.conceptual import LocalConceptualDFT
 from chemtools.utils.cube import UniformGrid
 try:

@@ -24,7 +24,7 @@
 """Density-Based Local Tools."""
 
 
-from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers2.molecule import Molecule
 from chemtools.denstools.densbased import DensGradLapKedTool
 
 

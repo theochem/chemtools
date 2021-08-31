@@ -31,7 +31,7 @@ try:
 except ImportError:
     from importlib.resources import path
 
-from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers2.molecule import Molecule
 from chemtools.toolbox.motbased import OrbPart
 
 

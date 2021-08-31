@@ -26,7 +26,7 @@
 import logging
 import numpy as np
 
-from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers2.molecule import Molecule
 
 try:
     from importlib_resources import path

@@ -23,9 +23,9 @@
 
 import numpy as np
 
-from chemtools.wrappers.molecule import Molecule
-from chemtools.wrappers.part import DensPart
-from chemtools.wrappers.grid import MolecularGrid
+from chemtools.wrappers2.molecule import Molecule
+from chemtools.wrappers2.part import DensPart
+from chemtools.wrappers2.grid import MolecularGrid
 try:
     from importlib_resources import path
 except ImportError:

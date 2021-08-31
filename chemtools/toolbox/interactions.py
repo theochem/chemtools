@@ -26,7 +26,7 @@
 
 import numpy as np
 
-from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers2.molecule import Molecule
 from chemtools.denstools.densbased import DensGradTool
 from chemtools.utils.utils import doc_inherit
 from chemtools.utils.cube import UniformGrid

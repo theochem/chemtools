@@ -30,8 +30,8 @@ compute various conceptual density functional theory (DFT) descriptive tools.
 
 import logging
 
-from chemtools.wrappers.molecule import Molecule
-from chemtools.wrappers.grid import MolecularGrid
+from chemtools.wrappers2.molecule import Molecule
+from chemtools.wrappers2.grid import MolecularGrid
 from chemtools.toolbox.utils import check_arg_molecule, get_matching_attr
 from chemtools.toolbox.utils import get_dict_energy, get_dict_density, get_dict_population
 from chemtools.conceptual.linear import LinearGlobalTool, LinearLocalTool, LinearCondensedTool

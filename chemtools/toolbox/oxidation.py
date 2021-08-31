@@ -26,8 +26,8 @@
 import itertools
 import numpy as np
 
-from chemtools.wrappers.molecule import Molecule
-from chemtools.wrappers.part import DensPart
+from chemtools.wrappers2.molecule import Molecule
+from chemtools.wrappers2.part import DensPart
 
 
 class EOS(object):

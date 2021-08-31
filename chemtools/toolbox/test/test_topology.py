@@ -26,7 +26,7 @@
 import numpy as np
 
 from chemtools.toolbox.topology import TopologicalTool
-from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers2.molecule import Molecule
 from chemtools.utils.cube import UniformGrid
 
 try:

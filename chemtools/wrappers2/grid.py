@@ -26,7 +26,7 @@
 import numpy as np
 
 from horton import BeckeMolGrid
-from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers2.molecule import Molecule
 
 
 __all__ = ['MolecularGrid']

@@ -28,7 +28,7 @@ import numpy as np
 
 from numpy.testing import assert_allclose
 
-from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers2.molecule import Molecule
 from chemtools.toolbox.densbased import DensityLocalTool
 try:
     from importlib_resources import path

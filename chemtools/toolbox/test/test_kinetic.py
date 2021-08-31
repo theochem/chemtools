@@ -28,7 +28,7 @@ import numpy as np
 
 from numpy.testing import assert_array_almost_equal, assert_allclose, assert_raises
 
-from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers2.molecule import Molecule
 from chemtools.toolbox.kinetic import KED
 try:
     from importlib_resources import path

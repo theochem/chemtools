@@ -20,7 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Test chemtools.wrappers.grid."""
+"""Test chemtools.wrappers2.grid."""
 
 
 import numpy as np
@@ -31,8 +31,8 @@ except ImportError:
 
 from numpy.testing import assert_raises, assert_allclose
 
-from chemtools.wrappers.grid import MolecularGrid
-from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers2.grid import MolecularGrid
+from chemtools.wrappers2.molecule import Molecule
 
 
 def test_wrapper_grid_raises():

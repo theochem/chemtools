@@ -29,8 +29,8 @@ import numpy as np
 from horton import ProAtomDB
 from horton.scripts.wpart import wpart_schemes
 
-from chemtools.wrappers.grid import MolecularGrid
-from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers2.grid import MolecularGrid
+from chemtools.wrappers2.molecule import Molecule
 
 
 def check_arg_molecule(molecule):

@@ -27,7 +27,7 @@ import numpy as np
 from numpy.testing import assert_raises
 
 from chemtools import UniformGrid
-from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers2.molecule import Molecule
 from chemtools.toolbox.utils import get_matching_attr, get_molecular_grid
 from chemtools.toolbox.utils import get_dict_energy, get_dict_density, get_dict_population
 try:

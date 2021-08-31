@@ -23,6 +23,6 @@
 """The Wrappers Module."""
 
 
-from chemtools.wrappers.molecule import *
-from chemtools.wrappers.grid import *
-from chemtools.wrappers.part import *
+from chemtools.wrappers2.molecule import *
+from chemtools.wrappers2.grid import *
+from chemtools.wrappers2.part import *

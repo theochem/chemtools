@@ -20,12 +20,12 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Test chemtools.wrappers.molecule."""
+"""Test chemtools.wrappers2.molecule."""
 
 
 import numpy as np
 from numpy.testing import assert_raises, assert_equal, assert_almost_equal
-from chemtools.wrappers import Molecule
+from chemtools.wrappers2 import Molecule
 
 try:
     from importlib_resources import path

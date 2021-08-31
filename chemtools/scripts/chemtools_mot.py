@@ -27,7 +27,7 @@
 
 import numpy as np
 
-from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers2.molecule import Molecule
 from chemtools.toolbox.motbased import OrbPart
 from chemtools.scripts.common import help_cube, load_molecule_and_grid
 

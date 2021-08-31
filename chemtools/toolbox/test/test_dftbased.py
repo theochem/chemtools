@@ -28,7 +28,7 @@ import numpy as np
 
 from numpy.testing import assert_raises, assert_array_almost_equal
 
-from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers2.molecule import Molecule
 from chemtools.toolbox.dftbased import DFTBasedTool
 try:
     from importlib_resources import path

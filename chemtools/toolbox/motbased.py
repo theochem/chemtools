@@ -28,7 +28,7 @@ import numpy as np
 
 from chemtools.utils.utils import doc_inherit
 from chemtools.orbstools.partition import OrbitalPartitionTools
-from chemtools.wrappers.molecule import Molecule, MolecularOrbitals
+from chemtools.wrappers2.molecule import Molecule, MolecularOrbitals
 
 
 class OrbPart(object):
