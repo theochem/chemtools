@@ -20,24 +20,3 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-# pragma pylint: disable=wildcard-import
-"""The Main ChemTools Package."""
-
-import sys
-
-from chemtools.toolbox import *
-from chemtools.conceptual import *
-from chemtools.denstools import *
-from chemtools.utils import *
-from chemtools.outputs import *
-
-if sys.version_info.major == 2:
-    from chemtools.wrappers2 import *
-    import horton
-    horton.log.head_banner = ""
-    horton.log.foot_banner = ""
-else:
-    from chemtools.wrappers3 import *
-
-
-__version__ = '0.9.0'
