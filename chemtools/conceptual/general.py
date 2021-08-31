@@ -234,7 +234,6 @@ class GeneralGlobalTool(BaseGlobalTool):
         d_expr = self._expr.diff(self._n_symb)
         n_max_eqn = sp.lambdify(self._n_symb, d_expr, 'numpy')
         result = root(n_max_eqn, guess)
-        print result
         if result.success:
             n_max = np.asscalar(result.x)
             # n_ceil = math.ceil(n_max)

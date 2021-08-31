@@ -25,7 +25,7 @@
 
 import logging
 import numpy as np
-from horton import IOData, DenseLinalgFactory
+# from horton import IOData, DenseLinalgFactory
 
 try:
     from importlib_resources import path
