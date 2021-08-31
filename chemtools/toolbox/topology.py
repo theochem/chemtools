@@ -33,6 +33,8 @@ from chemtools.outputs.vmd import print_vmd_script_topology
 
 if sys.version_info.major == 2:
     from chemtools.wrappers2.molecule import Molecule
+else:
+    from chemtools.wrappers3.molecule import Molecule
 
 
 class TopologicalTool(Topology):

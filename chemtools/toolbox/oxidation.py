@@ -30,6 +30,9 @@ import numpy as np
 if sys.version_info.major == 2:
     from chemtools.wrappers2.molecule import Molecule
     from chemtools.wrappers2.part import DensPart
+else:
+    from chemtools.wrappers3.molecule import Molecule
+    from chemtools.wrappers3.part import DensPart
 
 
 class EOS(object):

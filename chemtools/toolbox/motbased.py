@@ -32,6 +32,8 @@ from chemtools.orbstools.partition import OrbitalPartitionTools
 
 if sys.version_info.major == 2:
     from chemtools.wrappers2.molecule import Molecule, MolecularOrbitals
+else:
+    from chemtools.wrappers3.molecule import Molecule, MolecularOrbitals
 
 
 class OrbPart(object):

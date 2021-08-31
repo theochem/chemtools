@@ -35,6 +35,10 @@ if sys.version_info.major == 2:
     from chemtools.wrappers2.grid import MolecularGrid
     from chemtools.wrappers2.part import DensPart
     from horton import ProAtomDB
+else:
+    from chemtools.wrappers3.molecule import Molecule
+    from chemtools.wrappers3.grid import MolecularGrid
+    from chemtools.wrappers3.part import DensPart
 
 try:
     from importlib_resources import path

@@ -42,6 +42,9 @@ from chemtools.conceptual.general import GeneralGlobalTool
 if sys.version_info.major == 2:
     from chemtools.wrappers2.molecule import Molecule
     from chemtools.wrappers2.grid import MolecularGrid
+else:
+    from chemtools.wrappers3.molecule import Molecule
+    from chemtools.wrappers3.grid import MolecularGrid
 
 try:
     from pathlib2 import Path

@@ -34,6 +34,8 @@ from chemtools.toolbox.utils import get_dict_energy, get_dict_density, get_dict_
 
 if sys.version_info.major == 2:
     from chemtools.wrappers2.molecule import Molecule
+else:
+    from chemtools.wrappers3.molecule import Molecule
 
 try:
     from importlib_resources import path
