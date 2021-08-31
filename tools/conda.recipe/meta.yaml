@@ -18,6 +18,7 @@ requirements:
     - horton
     - matplotlib
     - nose
+    - pytest
     - importlib_resources
   build:
     - python
@@ -26,6 +27,7 @@ requirements:
     - sympy
     - matplotlib
     - nose
+    - pytest
     - horton
     - git-lfs
     - sphinxcontrib-bibtex

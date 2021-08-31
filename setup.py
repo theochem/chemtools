@@ -46,7 +46,7 @@ setup(
     install_requires=[
         'numpy>=1.16', 'matplotlib', 'Pillow', 'Image', 'sympy',
         'scipy', 'importlib_resources; python_version < "3.7"',
-        'nose',
+        'nose', 'pytest',
     ],
     extras_require={
         'doc': [
