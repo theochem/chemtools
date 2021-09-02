@@ -11,7 +11,7 @@ from chemtools import  UniformGrid, Molecule, print_vmd_script_isosurface
 
 # 1. Build Molecule
 
-fname = 'dichloropyridine26_q+0'
+fname = 'dichloropyridine_q+0'
 
 mol = Molecule.from_file(fname + '.fchk')
 cub = UniformGrid.from_molecule(mol, spacing=1.0, extension=5.0)
