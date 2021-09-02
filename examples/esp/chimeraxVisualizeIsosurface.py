@@ -3,7 +3,7 @@ from chimerax.core.commands import run
 from chimerax.core import errors
 from chimerax import io
 
-def print_chimerax_isosurfaces(session,outFile,outSuffix, isoFile, colorFile, isoSurf, material='shiny', scalemin='compute',scalemax='compute',colorscheme='rainbow',representation='surface', lighting='full', shadows='False'): 
+def print_chimerax_isosurfaces(session,outFile,outSuffix, isoFile, colorFile, isoSurf, material='shiny', scalemin='compute',scalemax='compute',colorscheme='rainbow',representation='surface', lighting='full', shadows='False', negative=False): 
     """
      This script is designed to visualize the electrostatic potential isosurfaces generated from Chemtools (original file is a Gaussian Checkpoint, then processed to cube files *_esp.cube and *_rho.cube, representing the surface and map files respectively)
      
@@ -94,13 +94,17 @@ def print_chimerax_isosurfaces(session,outFile,outSuffix, isoFile, colorFile, is
     --------------
     End Parameters
     """
-
+    
     run(session, 'open %s' % (isoFile))     # Open ESP
     run(session, 'volume #1 style %s level %s' % (representation , isoSurf))        # Setup Volume  
     
     # colorFile specified as None, will render without colorization 
     if colorFile == None :
         print("No ColorFile")
+        if negative == True: 
+            isoSurfNegative = f"-{isoSurf}" 
+            run(session, 'open %s' %(isoFile)) # Open a second isoSurface file 
+            run(session, 'volume #2 style %s level %s' %(representation,isoSurfNegative))
 
     # ColorFile Present 
     else:
@@ -111,6 +115,10 @@ def print_chimerax_isosurfaces(session,outFile,outSuffix, isoFile, colorFile, is
             run(session, 'color gradient #1 map #2 palette %s range %s,%s' %(colorscheme, scalemin, scalemax))
         else:
             run(session, 'color gradient #1 map #2 palette %s' % (colorscheme))
+        if negative == True: 
+            isoSurfNegative = f"-{isoSurf}" 
+            run(session, 'open %s' %(isoFile)) # Open a second isoSurface file 
+            run(session, 'volume #3 style %s level %s' %(representation,isoSurfNegative))
 
     # Rendering Options 
     run(session, 'material %s' % (material))        # Establish surface material 
@@ -134,4 +142,4 @@ outSuffix = 'png'
 #ISOSURFACE VALUES
 isoSurf = .005
 
-print_chimerax_isosurfaces(session,outFile,outSuffix,isoFile,colorFile,isoSurf,material='shiny',scalemin='compute',scalemax='compute',colorscheme='rainbow',representation='surface',lighting='full',shadows='False')
+print_chimerax_isosurfaces(session,outFile,outSuffix,isoFile,colorFile,isoSurf,material='shiny',scalemin='compute',scalemax='compute',colorscheme='rainbow',representation='surface',lighting='full',shadows='False', negative=False)
