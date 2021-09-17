@@ -60,7 +60,7 @@ class DensPart(object):
         wpart = wpart_schemes[scheme]
         # make proatom database
         if scheme.lower() not in ["mbis", "b"]:
-            if "proatomdb" not in kwargs.keys() or kwargs['proatomdb'] is None:
+            if "proatomdb" not in list(kwargs.keys()) or kwargs['proatomdb'] is None:
                 if np.any(numbers > 18):
                     absent = list(numbers[numbers > 18])
                     raise ValueError("Pro-atom for atomic number {} does not exist!".format(absent))

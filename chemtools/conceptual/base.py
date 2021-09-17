@@ -402,13 +402,13 @@ class BaseGlobalTool(object):
         else:
             # higher-order derivatives are compute with Faa Di Bruno formula
             # list of hyper-hardneses (derivatives of energy w.r.t. N)
-            e_deriv = [self.energy_derivative(n_elec, i + 1) for i in xrange(1, order)]
-            g_deriv = [self.grand_potential_derivative(n_elec, k + 1) for k in xrange(1, order - 1)]
+            e_deriv = [self.energy_derivative(n_elec, i + 1) for i in range(1, order)]
+            g_deriv = [self.grand_potential_derivative(n_elec, k + 1) for k in range(1, order - 1)]
             if any([item is None for item in e_deriv]) or any([item is None for item in g_deriv]):
                 deriv = None
             else:
                 deriv = 0
-                for k in xrange(1, order - 1):
+                for k in range(1, order - 1):
                     deriv -= g_deriv[k - 1] * sp.bell(order - 1, k, e_deriv[:order - k])
                 deriv /= sp.bell(order - 1, order - 1, [e_deriv[0]])
         return deriv

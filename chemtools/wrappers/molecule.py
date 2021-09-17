@@ -22,15 +22,14 @@
 # --
 """Wrapper Module."""
 
-
 import logging
 import numpy as np
-from horton import IOData, DenseLinalgFactory
+from horton import IOData
+
 try:
     from importlib_resources import path
 except ImportError:
     from importlib.resources import path
-
 
 __all__ = ["Molecule"]
 
@@ -56,10 +55,44 @@ class Molecule(object):
         self._coordinates = self._iodata.coordinates
         self._numbers = self._iodata.numbers
 
-        if hasattr(self._iodata, "exp_alpha"):
+        if hasattr(self._iodata, "orb_alpha"):
             self._mo = MolecularOrbitals.from_molecule(self)
         else:
             self._mo = None
+
+        # FIXME: following code is pretty hacky. it will be used for the orbital partitioning code
+        # GOBasis object stores basis set to atom and angular momentum mapping
+        # by shell and not by contraction. So it needs to be converted
+        try:
+            ind_shell_atom = np.array(iodata.obasis.shell_map)
+            ind_shell_orbtype = np.array(iodata.obasis.shell_types)
+
+            def num_contr(orbtype):
+                """Return the number of contractions for the given orbital type.
+
+                Parameters
+                ----------
+                orbtype : int
+                    Horton's orbital type scheme.
+                    Positive number corresponds to cartesian type and negative number corresponds to
+                    spherical types.
+
+                Returns
+                -------
+                num_contr : int
+                    Number of contractions for the given orbital type.
+
+                """
+                if orbtype < 0:
+                    return 1 + 2 * abs(orbtype)
+                return 1 + orbtype + sum(i * (i + 1) // 2 for i in range(1, orbtype + 1))
+
+            numcontr_per_shell = np.array([num_contr(i) for i in ind_shell_orbtype])
+            # Duplicate each shell information by the number of contractions in shell
+            self._ind_basis_center = np.repeat(ind_shell_atom, numcontr_per_shell)
+            self._ind_basis_orbtype = np.repeat(ind_shell_orbtype, numcontr_per_shell)
+        except AttributeError:
+            pass
 
     @classmethod
     def from_file(cls, fname):
@@ -129,7 +162,7 @@ class Molecule(object):
            from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
 
         """
-        return self.mo.compute_dm(spin, index=index)._array
+        return self.mo.compute_dm(spin, index=index)
 
     def compute_molecular_orbital(self, points, spin="ab", index=None):
         """Return molecular orbitals.
@@ -161,10 +194,10 @@ class Molecule(object):
                 raise ValueError("Argument index={0} cannot be less than one!".format(index + 1))
 
         # get orbital expression of specified spin
-        if spin == 'b' and not hasattr(self._iodata, "exp_beta"):
-            exp = self._iodata.exp_alpha
+        if spin == 'b' and not hasattr(self._iodata, "orb_beta"):
+            exp = self._iodata.orb_alpha
         else:
-            exp = getattr(self._iodata, "exp_" + {'a': 'alpha', 'b': 'beta'}[spin])
+            exp = getattr(self._iodata, "orb_" + {'a': 'alpha', 'b': 'beta'}[spin])
         return self._ao.compute_orbitals(exp, points, index)
 
     def compute_density(self, points, spin="ab", index=None):
@@ -200,13 +233,13 @@ class Molecule(object):
                 mo_a = self.compute_molecular_orbital(points, "a", index)
                 mo_b = self.compute_molecular_orbital(points, "b", index)
                 # add density of alpha & beta molecular orbitals
-                np.sum(mo_a**2, axis=1, out=output)
-                output += np.sum(mo_b**2, axis=1)
+                np.sum(mo_a ** 2, axis=1, out=output)
+                output += np.sum(mo_b ** 2, axis=1)
             else:
                 # compute mo expression of specified molecular orbitals
                 mo = self.compute_molecular_orbital(points, spin, index)
                 # add density of specified molecular orbitals
-                np.sum(mo**2, axis=1, out=output)
+                np.sum(mo ** 2, axis=1, out=output)
         return output
 
     def compute_gradient(self, points, spin="ab", index=None):
@@ -359,10 +392,10 @@ class MolecularOrbitals(object):
             An instance of `Molecule` class.
 
         """
-        if hasattr(mol, "exp_beta") and mol.exp_beta is not None:
-            exp_a, exp_b = mol.exp_alpha, mol.exp_beta
+        if hasattr(mol, "orb_beta") and mol.orb_beta is not None:
+            exp_a, exp_b = mol.orb_alpha, mol.orb_beta
         else:
-            exp_a, exp_b = mol.exp_alpha, mol.exp_alpha
+            exp_a, exp_b = mol.orb_alpha, mol.orb_alpha
         occs_a, occs_b = exp_a.occupations, exp_b.occupations
         energy_a, energy_b = exp_a.energies, exp_b.energies
         coeffs_a, coeffs_b = exp_a.coeffs, exp_b.coeffs
@@ -444,13 +477,9 @@ class MolecularOrbitals(object):
            from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
 
         """
-        # temporary class because of HORTON2
-        class DM(object):
-            def __init__(self, arr):
-                self._array = arr
 
         if spin == "ab":
-            return DM(self.compute_dm("a", index)._array + self.compute_dm("b", index)._array)
+            return self.compute_dm("a", index) + self.compute_dm("b", index)
         elif spin == "a":
             arr = np.dot(self._coeffs_a * self._occs_a, self._coeffs_a.T)
         elif spin == "b":
@@ -472,7 +501,7 @@ class MolecularOrbitals(object):
                     "Indices cannot be less than 1. Note that indices start from 1."
                 )
             arr = arr[index[:, np.newaxis], index[np.newaxis, :]]
-        return DM(arr)
+        return arr
 
 
 class AtomicOrbitals(object):
@@ -555,9 +584,8 @@ class AtomicOrbitals(object):
 
         """
         # make linear algebra factory
-        lf = DenseLinalgFactory(self.nbasis)
         # compute overlap matrix
-        arr = self._basis.compute_overlap(lf)._array
+        arr = self._basis.compute_overlap()
         return arr
 
     def compute_orbitals(self, dm, points, index):

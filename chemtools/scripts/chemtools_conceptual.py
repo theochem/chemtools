@@ -198,9 +198,9 @@ def main_conceptual_condensed(args):
     prop = getattr(model, args.prop)
 
     print("")
-    print("Atomic contribution of %s for scheme=%s & approach %s:" % (args.prop,
+    print(("Atomic contribution of %s for scheme=%s & approach %s:" % (args.prop,
                                                                       args.scheme.upper(),
-                                                                      args.approach))
+                                                                      args.approach)))
     for index in range(len(model.numbers)):
-        print("% 3i   % 3i   %10.6f" % (index, model.numbers[index], prop[index]))
+        print(("% 3i   % 3i   %10.6f" % (index, model.numbers[index], prop[index])))
     print("")

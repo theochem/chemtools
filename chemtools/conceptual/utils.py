@@ -38,9 +38,9 @@ def check_dict_values(dict_values):
         Dictionary of number of electrons (keys) and corresponding property value (values).
     """
     # check length of dictionary & its keys
-    if len(dict_values) != 3 or not all([key >= 0 for key in dict_values.keys()]):
+    if len(dict_values) != 3 or not all([key >= 0 for key in list(dict_values.keys())]):
         raise ValueError("The energy model requires 3 keys corresponding to positive "
-                         "number of electrons! Given keys={0}".format(dict_values.keys()))
+                         "number of electrons! Given keys={0}".format(list(dict_values.keys())))
     # find reference number of electrons
     n_ref = sorted(dict_values.keys())[1]
     if n_ref < 1:
@@ -48,13 +48,13 @@ def check_dict_values(dict_values):
     # check that number of electrons differ by one
     if sorted(dict_values.keys()) != [n_ref - 1, n_ref, n_ref + 1]:
         raise ValueError("In current implementation, the number of electrons (keys) should "
-                         "differ by one! Given keys={0}".format(dict_values.keys()))
+                         "differ by one! Given keys={0}".format(list(dict_values.keys())))
     # check that all values have the same type
-    if not all([isinstance(value, type(dict_values[n_ref])) for value in dict_values.values()]):
+    if not all([isinstance(value, type(dict_values[n_ref])) for value in list(dict_values.values())]):
         raise ValueError("All values in dictionary should be of the same type!")
     # check size of array values are the same
     if hasattr(dict_values[n_ref], "__len__"):
-        if not all([value.shape == dict_values[n_ref].shape for value in dict_values.values()]):
+        if not all([value.shape == dict_values[n_ref].shape for value in list(dict_values.values())]):
             raise ValueError("All array values in dictionary should have the same shape!")
     # get property values
     value_m, value_0, value_p = [dict_values[n] for n in sorted(dict_values.keys())]

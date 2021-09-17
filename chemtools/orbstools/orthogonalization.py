@@ -58,17 +58,17 @@ def eigh(matrix, threshold=1e-9):
 
     neg_indices = eigval < -threshold
     if np.any(neg_indices):
-        print(
+        print((
             "WARNING: {0} eigenvalues are negative (less than the threshold {1}):\n"
             "{2}".format(np.sum(neg_indices), -threshold, eigval[neg_indices])
-        )
+        ))
 
     kept_indices = np.abs(eigval) > threshold
     if np.sum(~kept_indices) > 0:
-        print(
+        print((
             "WARNING: Discarded {0} eigenvalues because they are less than the threshold {1}:\n"
             "{2}".format(np.sum(~kept_indices), threshold, eigval[~kept_indices])
-        )
+        ))
 
     eigval, eigvec = eigval[kept_indices], eigvec[:, kept_indices]
     return eigval[::-1], eigvec[:, ::-1]
@@ -120,10 +120,10 @@ def svd(matrix, threshold=1e-9):
 
     kept_indices = sigma > threshold
     if np.sum(~kept_indices) > 0:
-        print(
+        print((
             "WARNING: Discarded {0} singular values because they are less than the threshold {1}:\n"
             "{2}".format(np.sum(~kept_indices), threshold, sigma[~kept_indices])
-        )
+        ))
 
     u, sigma, vdagger = u[:, kept_indices], sigma[kept_indices], vdagger[kept_indices, :]
 

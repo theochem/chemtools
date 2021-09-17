@@ -395,7 +395,7 @@ class UniformGrid(object):
             numbers = np.zeros(natom, int)
             pseudo_numbers = np.zeros(natom, float)
             coordinates = np.zeros((natom, 3), float)
-            for i in xrange(natom):
+            for i in range(natom):
                 numbers[i], pseudo_numbers[i], coordinates[i] = read_coordinate_line(f.readline())
                 # If the pseudo_number field is zero, we assume that no effective core
                 # potentials were used.

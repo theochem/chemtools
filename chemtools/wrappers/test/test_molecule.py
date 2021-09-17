@@ -268,8 +268,8 @@ def check_molecule_against_gaussian_ch4(mol):
     assert_almost_equal(mol.compute_laplacian(points, "ab", None), lap, decimal=5)
     assert_almost_equal(mol.compute_hessian(points, "ab", None)[:, 0, 0], hess_xx, decimal=5)
     # density computed by summing squared mo expressions
-    assert_almost_equal(mol.compute_density(points, "ab", range(1, 6)), dens, decimal=5)
-    assert_almost_equal(mol.compute_density(points, "a", range(1, 6)), 0.5 * dens, decimal=5)
+    assert_almost_equal(mol.compute_density(points, "ab", list(range(1, 6))), dens, decimal=5)
+    assert_almost_equal(mol.compute_density(points, "a", list(range(1, 6))), 0.5 * dens, decimal=5)
 
 
 def test_molecule_grid_g09_fchk_uhf_ch4():
@@ -305,9 +305,9 @@ def check_molecule_against_fortran_ch4(mol):
     assert_almost_equal(mol.compute_density(points, "a", None), 0.5 * dens, decimal=6)
     assert_almost_equal(mol.compute_density(points, "b", None), 0.5 * dens, decimal=6)
     # check density computed by summing squared mo expressions
-    assert_almost_equal(mol.compute_density(points, "ab", range(1, 6)), dens, decimal=6)
-    assert_almost_equal(mol.compute_density(points, "a", range(1, 6)), 0.5 * dens, decimal=6)
-    assert_almost_equal(mol.compute_density(points, "b", range(1, 6)), 0.5 * dens, decimal=6)
+    assert_almost_equal(mol.compute_density(points, "ab", list(range(1, 6))), dens, decimal=6)
+    assert_almost_equal(mol.compute_density(points, "a", list(range(1, 6))), 0.5 * dens, decimal=6)
+    assert_almost_equal(mol.compute_density(points, "b", list(range(1, 6))), 0.5 * dens, decimal=6)
     # check mo expression
     assert_almost_equal(mol.compute_molecular_orbital(points, "a", 8)[:, 0], exp8, decimal=6)
     assert_almost_equal(mol.compute_molecular_orbital(points, "b", 8)[:, 0], exp8, decimal=6)
@@ -390,20 +390,20 @@ def test_molecule_density_matrix_index_fchk_uhf_ch4():
     # check get_density_matrix for different values of the index/
     with path("chemtools.data", "ch4_uhf_ccpvdz.fchk") as fname:
         mol = Molecule.from_file(fname)
-    dm_full = mol.mo.compute_dm("a")._array
+    dm_full = mol.mo.compute_dm("a")
     # errors
-    assert_raises(ValueError, mol.compute_dm, "a", [[1]])
-    assert_raises(ValueError, mol.compute_dm, "a", [0])
+    assert_raises(ValueError, mol.mo.compute_dm, "a", [[1]])
+    assert_raises(ValueError, mol.mo.compute_dm, "a", [0])
     # one index
     for i in range(1, mol.ao.nbasis + 1):
-        assert np.allclose(dm_full[i - 1, i - 1], mol.mo.compute_dm("a", i)._array)
+        assert np.allclose(dm_full[i - 1, i - 1], mol.mo.compute_dm("a", i))
     # multiple indices
     for i in range(1, mol.ao.nbasis + 1):
         for j in range(1, mol.ao.nbasis + 1):
             # NOTE: indices can be repeated
             indices = np.array([i -1, j - 1])
             assert np.allclose(dm_full[indices[:, None], indices[None, :]],
-                               mol.mo.compute_dm("a", [i, j])._array)
+                               mol.mo.compute_dm("a", [i, j]))
 
 
 def test_molecule_horton_h2o():
