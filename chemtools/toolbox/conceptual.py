@@ -68,7 +68,7 @@ class BaseConceptualDFT(object):
 
         """
         # check model
-        if model.lower() not in dict_models.keys():
+        if model.lower() not in list(dict_models.keys()):
             raise ValueError("Model={0} is not available!".format(model.lower()))
         self._model = model.lower()
 
@@ -88,9 +88,9 @@ class BaseConceptualDFT(object):
             raise NotImplementedError("Model={0} is not covered yet!".format(self._model))
 
         # check number of electrons are integers
-        if not all([isinstance(item, (int, float)) for item in dict_values.keys()]):
+        if not all([isinstance(item, (int, float)) for item in list(dict_values.keys())]):
             raise ValueError("For model={0}, integer number of electrons are required! "
-                             "#electrons={1}".format(self._model, dict_values.keys()))
+                             "#electrons={1}".format(self._model, list(dict_values.keys())))
 
         # make an instance of global tool
         self._tool = dict_models[self._model](dict_values, **kwargs)
@@ -137,10 +137,10 @@ class BaseConceptualDFT(object):
             Strings specifying the path to molecule's file, or sequence of strings specifying
             path to molecule files.
         """
-        if isinstance(fnames, (str, unicode, Path)):
+        if isinstance(fnames, (str, Path)):
             # case of one file not given as a list
             molecule = Molecule.from_file(fnames)
-        elif len(fnames) == 1 and isinstance(fnames[0], (str, unicode)):
+        elif len(fnames) == 1 and isinstance(fnames[0], str):
             # case of one file given as a list
             molecule = Molecule.from_file(fnames[0])
         else:
@@ -475,7 +475,7 @@ class CondensedConceptualDFT(BaseConceptualDFT):
         # check molecule
         molecule = check_arg_molecule(molecule)
         # check type of grid
-        if "grid" in kwargs.keys() and not isinstance(kwargs["grid"], MolecularGrid):
+        if "grid" in list(kwargs.keys()) and not isinstance(kwargs["grid"], MolecularGrid):
             raise ValueError("Currently, only 'MolecularGrid' is supported for condensing!")
         # get atomic number, coordinates, N_max, and global softness
         gcdft = GlobalConceptualDFT.from_molecule(molecule, model)

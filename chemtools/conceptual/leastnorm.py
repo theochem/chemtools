@@ -26,7 +26,7 @@ This module contains the global tool class corresponding to least norm energy mo
 """
 
 import numpy as np
-from scipy.misc import factorial
+from scipy.special import factorial
 
 from chemtools.utils.utils import doc_inherit
 from chemtools.conceptual.base import BaseGlobalTool

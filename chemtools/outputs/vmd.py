@@ -592,7 +592,7 @@ def print_vmd_script_multiple_cube(scriptfile, cubes, isosurfs=None, material='O
         raise TypeError('Each iso-surface value must be a float')
 
     if colors is None:
-        colors = range(len(cubes))
+        colors = list(range(len(cubes)))
     elif not (isinstance(colors, (list, tuple)) and len(colors) == len(cubes)):
         raise TypeError('The colors must be provided as a list or tuple of the same length as the '
                         'number of cube files')
@@ -657,7 +657,7 @@ def print_vmd_script_topology(fname, points, radius=0.2):
               'color Display Background white\n'
               '#\n'
               '# Critical Points\n')
-    for color, coordinates in points.items():
+    for color, coordinates in list(points.items()):
         output += 'draw color {}\n'.format(color)
         for coord in coordinates:
             coord = '% .6f % .6f % .6f' % tuple(coord)

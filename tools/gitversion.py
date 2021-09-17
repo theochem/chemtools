@@ -23,7 +23,7 @@
 # --
 """Get the version string from the git tag."""
 
-from __future__ import print_function
+
 
 import subprocess
 

@@ -195,7 +195,7 @@ def get_dict_energy(molecule):
         for mol in molecule:
             # get number of electrons & check that it doesn't already exist
             nelec = sum(mol.mo.nelectrons)
-            if nelec in energies.keys():
+            if nelec in list(energies.keys()):
                 raise ValueError("Two molecules have {0} electrons!".format(nelec))
             # store number of electrons and energy in a dictionary
             energies[nelec] = mol.energy
@@ -239,7 +239,7 @@ def get_dict_density(molecule, points):
         for mol in molecule:
             # get number of electrons
             nelec = sum(mol.mo.nelectrons)
-            if nelec in densities.keys():
+            if nelec in list(densities.keys()):
                 raise ValueError("Two molecules have {0} electrons!".format(nelec))
             # store density for a given number of electron
             densities[nelec] = mol.compute_density(points, "ab", None)
@@ -312,7 +312,7 @@ def get_dict_population(molecule, approach, scheme, **kwargs):
     wpart = wpart_schemes[scheme]
     # make proatom database
     if scheme.lower() not in ["mbis", "b"]:
-        if "proatomdb" not in kwargs.keys():
+        if "proatomdb" not in list(kwargs.keys()):
             proatomdb = ProAtomDB.from_refatoms(mol0.numbers)
         kwargs["proatomdb"] = proatomdb
 
@@ -330,7 +330,7 @@ def get_dict_population(molecule, approach, scheme, **kwargs):
     del dict_dens[sum(mol0.mo.nelectrons)]
 
     # compute and record populations given grid in a dictionary
-    for nelec, dens in dict_dens.iteritems():
+    for nelec, dens in dict_dens.items():
 
         if approach.lower() == "fmr":
             # fragment of molecular response

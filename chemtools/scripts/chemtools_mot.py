@@ -105,25 +105,25 @@ def main_mot(args):
     lia, lib = np.array(mol.lumo_index) - 1
     ea, eb = mol.energy
     print("")
-    print("File: {0}".format(args.fname))
+    print(("File: {0}".format(args.fname)))
     # print("Charge      : % 5f" % np.sum(mol.numbers) - np.sum(ne))
     # print("Multiplicity: % 5d" % np.max(ne) - np.min(ne) + 1)
     print("")
     print("Atomic number and coordinates:")
     for index, num in enumerate(mol.numbers):
         coord = mol.coordinates[index, :]
-        print("% 2i   %10.6f   %10.6f   %10.6f" % (num, coord[0], coord[1], coord[2]))
+        print(("% 2i   %10.6f   %10.6f   %10.6f" % (num, coord[0], coord[1], coord[2])))
     print("")
     print("Information on alpha & beta electrons:")
-    print("# electrons  :  % 3.3f       % 3.3f" % mol.mo.nelectrons)
-    print("HOMO index   : % 3d        % 5d" % mol.homo_index)
+    print(("# electrons  :  % 3.3f       % 3.3f" % mol.mo.nelectrons))
+    print(("HOMO index   : % 3d        % 5d" % mol.homo_index))
     print("")
-    print("LUMO+2 index : %10.6f   %10.6f" % (ea[lia + 2], eb[lib + 2]))
-    print("LUMO+1 energy: %10.6f   %10.6f" % (ea[lia + 1], eb[lib + 1]))
-    print("LUMO   energy: %10.6f   %10.6f" % mol.lumo_energy)
-    print("HOMO   energy: %10.6f   %10.6f" % mol.homo_energy)
-    print("HOMO-1 energy: %10.6f   %10.6f" % (ea[hia - 1], eb[hib - 1]))
-    print("HOMO-2 energy: %10.6f   %10.6f" % (ea[hia - 2], eb[hib - 2]))
+    print(("LUMO+2 index : %10.6f   %10.6f" % (ea[lia + 2], eb[lib + 2])))
+    print(("LUMO+1 energy: %10.6f   %10.6f" % (ea[lia + 1], eb[lib + 1])))
+    print(("LUMO   energy: %10.6f   %10.6f" % mol.lumo_energy))
+    print(("HOMO   energy: %10.6f   %10.6f" % mol.homo_energy))
+    print(("HOMO-1 energy: %10.6f   %10.6f" % (ea[hia - 1], eb[hib - 1])))
+    print(("HOMO-2 energy: %10.6f   %10.6f" % (ea[hia - 2], eb[hib - 2])))
     print("")
 
     if args.info:

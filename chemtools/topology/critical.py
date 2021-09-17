@@ -79,7 +79,7 @@ class Topology(object):
     @property
     def cps(self):
         """Sequence of CriticalPoint instances."""
-        return [cp for cp_class in self._cps.values() for cp in cp_class]
+        return [cp for cp_class in list(self._cps.values()) for cp in cp_class]
 
     @property
     def nna(self):

@@ -212,12 +212,12 @@ def project(olp_one_one, olp_one_two):
     # Check linear dependence
     rank = np.linalg.matrix_rank(coeff_one_proj)
     if rank < coeff_one_proj.shape[1]:
-        print(
+        print((
             "Warning: There are {0} linearly dependent projections. The transformation matrix has a"
             " shape of {1} and rank of {2}".format(
                 coeff_one_proj.shape[1] - rank, coeff_one_proj.shape, rank
             )
-        )
+        ))
     return coeff_one_proj
 
 

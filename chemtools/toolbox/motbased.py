@@ -207,7 +207,7 @@ class MOTBasedTool(object):
 
         if index is None:
             spin_index = {'a': 0, 'b': 1}
-            index = range(1, self._molecule.mo.homo_index[spin_index[spin]] + 1)
+            index = list(range(1, self._molecule.mo.homo_index[spin_index[spin]] + 1))
         else:
             index = [index]
 
