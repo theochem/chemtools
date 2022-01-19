@@ -61,7 +61,7 @@ class OrbPart(object):
         else:
             raise ValueError("`scheme` must be one of 'mulliken' or 'lowdin'.")
         # compute atomic populations
-        dm = self._mo.compute_dm()._array
+        dm = self._mo.compute_dm()
         olp = self._ao.compute_overlap()
         self._pops = np.zeros(len(self._numbers))
         for i in range(len(self._numbers)):
