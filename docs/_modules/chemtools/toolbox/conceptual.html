@@ -1,0 +1,804 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>chemtools.toolbox.conceptual &mdash; ChemTools 0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../_static/chemtools_favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="ChemTools 0.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+  <style type="text/css">
+  #content {
+      position: relative;
+      }
+  #content img {
+          position: absolute;
+	      top: 0px;
+	          right: 0px;
+		  }
+  .rst-content p, .rst-content li {
+	    text-align: justify;
+	    text-justify: inter-word;
+      }
+  .tooltip {
+      position: relative;
+      /*display: inline-block;*/
+      /*border-bottom: 5px dotted black;*/
+      width: 75px;
+      /*min-width: 75px;*/
+      /*max-width: 255px;*/
+      }
+
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 180px;
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #fff;
+      text-align: left;
+      /*border-radius: 6px;*/
+      padding: 4px;
+      font-size:12px;
+      line-height: 15px;
+      /* Position the tooltip */
+      position: absolute;
+      z-index: 1;
+      }
+
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+      position: absolute;
+      /*left: -70px; -index: 99;*/
+      top: 20px;
+      }
+ </style>
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ChemTools
+          
+
+          
+            
+            <img src="../../../_static/chemtools_logo2.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_about.html">About ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_citing.html">Citing ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_license.html">Licence Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_conduct.html">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_contact.html">Contact Information</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usr_doc_installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usr_doc_quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../auto_examples/index.html">Examples Gallery</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scientific Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_conceptual.html">Conceptual Density Functional Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_dftbased.html">Density Functional Theory (DFT) Based</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_orbitaltool.html">Orbital-Based Local Descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_nci.html">Non-Covalent Interactions (NCI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_zref.html">References</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advanced Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tech_dev.html">Developer Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tech_api.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ChemTools</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div id=content>
+        <a href="https://github.com/theochem/chemtools" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+       </div>
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>chemtools.toolbox.conceptual</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for chemtools.toolbox.conceptual</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># ChemTools is a collection of interpretive chemical tools for</span>
+<span class="c1"># analyzing outputs of the quantum chemistry calculations.</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2016-2019 The ChemTools Development Team</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of ChemTools.</span>
+<span class="c1">#</span>
+<span class="c1"># ChemTools is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the GNU General Public License</span>
+<span class="c1"># as published by the Free Software Foundation; either version 3</span>
+<span class="c1"># of the License, or (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># ChemTools is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># --</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module for Conceptual Density Functional Theory Analysis of Quantum Chemistry Output Files.</span>
+
+<span class="sd">This modules contains wrappers which take outputs of quantum chemistry software and</span>
+<span class="sd">compute various conceptual density functional theory (DFT) descriptive tools.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">chemtools.wrappers.molecule</span> <span class="kn">import</span> <span class="n">Molecule</span>
+<span class="kn">from</span> <span class="nn">chemtools.wrappers.grid</span> <span class="kn">import</span> <span class="n">MolecularGrid</span>
+<span class="kn">from</span> <span class="nn">chemtools.toolbox.utils</span> <span class="kn">import</span> <span class="n">check_arg_molecule</span><span class="p">,</span> <span class="n">get_matching_attr</span>
+<span class="kn">from</span> <span class="nn">chemtools.toolbox.utils</span> <span class="kn">import</span> <span class="n">get_dict_energy</span><span class="p">,</span> <span class="n">get_dict_density</span><span class="p">,</span> <span class="n">get_dict_population</span>
+<span class="kn">from</span> <span class="nn">chemtools.conceptual.linear</span> <span class="kn">import</span> <span class="n">LinearGlobalTool</span><span class="p">,</span> <span class="n">LinearLocalTool</span><span class="p">,</span> <span class="n">LinearCondensedTool</span>
+<span class="kn">from</span> <span class="nn">chemtools.conceptual.quadratic</span> <span class="kn">import</span> <span class="n">QuadraticGlobalTool</span><span class="p">,</span> <span class="n">QuadraticLocalTool</span>
+<span class="kn">from</span> <span class="nn">chemtools.conceptual.quadratic</span> <span class="kn">import</span> <span class="n">QuadraticCondensedTool</span>
+<span class="kn">from</span> <span class="nn">chemtools.conceptual.exponential</span> <span class="kn">import</span> <span class="n">ExponentialGlobalTool</span>
+<span class="kn">from</span> <span class="nn">chemtools.conceptual.rational</span> <span class="kn">import</span> <span class="n">RationalGlobalTool</span>
+<span class="kn">from</span> <span class="nn">chemtools.conceptual.general</span> <span class="kn">import</span> <span class="n">GeneralGlobalTool</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">pathlib2</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+
+<span class="k">class</span> <span class="nc">BaseConceptualDFT</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for conceptual density functional theory (DFT) analysis.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dict_values</span><span class="p">,</span> <span class="n">dict_models</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">numbers</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dict_values : dict</span>
+<span class="sd">            Dictionary of number_electrons :math:`N` (keys) and corresponding property (values).</span>
+<span class="sd">        dict_models : dict</span>
+<span class="sd">            Dictionary of energy_models (keys) and corresponding model_object (values).</span>
+<span class="sd">        model : str</span>
+<span class="sd">            Energy model.</span>
+<span class="sd">        coordinates : ndarray</span>
+<span class="sd">            Coordinates of atomic centers.</span>
+<span class="sd">        numbers : ndarray</span>
+<span class="sd">            Atomic number of atomic centers.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check model</span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dict_models</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Model=</span><span class="si">{0}</span><span class="s2"> is not available!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="c1"># check shape of coordinates</span>
+        <span class="k">if</span> <span class="n">coordinates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">coordinates</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">coordinates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Argument coordinate should be a 2D-array with 3 columns! &quot;</span>
+                             <span class="s2">&quot;Given coordinates.shape=</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">coordinates</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+        <span class="c1"># check number of atoms given by numbers and coordinates match</span>
+        <span class="k">if</span> <span class="n">numbers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">coordinates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">numbers</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">coordinates</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Numbers &amp; coordinates should represent same number of atoms! &quot;</span>
+                             <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">!=</span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">numbers</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coordinates</span> <span class="o">=</span> <span class="n">coordinates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_numbers</span> <span class="o">=</span> <span class="n">numbers</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">==</span> <span class="s2">&quot;general&quot;</span><span class="p">:</span>
+            <span class="c1"># self._tool = select_tool[model](*args, **kwargs)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Model=</span><span class="si">{0}</span><span class="s2"> is not covered yet!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">))</span>
+
+        <span class="c1"># check number of electrons are integers</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">dict_values</span><span class="o">.</span><span class="n">keys</span><span class="p">()]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;For model=</span><span class="si">{0}</span><span class="s2">, integer number of electrons are required! &quot;</span>
+                             <span class="s2">&quot;#electrons=</span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="n">dict_values</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+
+        <span class="c1"># make an instance of global tool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span> <span class="o">=</span> <span class="n">dict_models</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">](</span><span class="n">dict_values</span><span class="p">)</span>
+
+        <span class="c1"># print screen information</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_init</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return class attribute.&quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Attribute </span><span class="si">{0}</span><span class="s2"> does not exist!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Energy model.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Cartesian coordinates of atoms.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinates</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">numbers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Atomic numbers of atoms.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_numbers</span>
+
+    <span class="k">def</span> <span class="nf">_log_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Print an initial informative message.&quot;&quot;&quot;</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(levelname)s</span><span class="s1">: </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Initialize   : </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Energy Model : </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">))</span>
+        <span class="c1"># logging.info(&quot;Reference N0  : {0}&quot;.format(self._tool.n0))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">load_file</span><span class="p">(</span><span class="n">fnames</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return `Molecule` instances corresponding to fnames.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fnames : str or Sequence of str</span>
+<span class="sd">            Strings specifying the path to molecule&#39;s file, or sequence of strings specifying</span>
+<span class="sd">            path to molecule files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">unicode</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
+            <span class="c1"># case of one file not given as a list</span>
+            <span class="n">molecule</span> <span class="o">=</span> <span class="n">Molecule</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">fnames</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">fnames</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fnames</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">unicode</span><span class="p">)):</span>
+            <span class="c1"># case of one file given as a list</span>
+            <span class="n">molecule</span> <span class="o">=</span> <span class="n">Molecule</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">fnames</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># case of multiple files</span>
+            <span class="n">molecule</span> <span class="o">=</span> <span class="p">[</span><span class="n">Molecule</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">molecule</span>
+
+
+<div class="viewcode-block" id="GlobalConceptualDFT"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptual.GlobalConceptualDFT.html#chemtools.toolbox.conceptual.GlobalConceptualDFT">[docs]</a><span class="k">class</span> <span class="nc">GlobalConceptualDFT</span><span class="p">(</span><span class="n">BaseConceptualDFT</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Global conceptual density functional theory (DFT) analysis of quantum chemistry output files.</span>
+
+<span class="sd">    Global conceptual DFT reactivity descriptors assign a single property value to the entire</span>
+<span class="sd">    molecule, :math:`P_{\text{global}}`, which describes the intrinsic reactivity of the molecule</span>
+<span class="sd">    as a whole.</span>
+
+<span class="sd">    Note: If only one molecule is provided, the frontier molecular orbital (FMO) approach is</span>
+<span class="sd">          invoked, otherwise finite difference (FD) approach is taken.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dict_values</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span> <span class="n">coordinates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">numbers</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dict_values : dict</span>
+<span class="sd">            Dictionary of number of electrons :math:`N` (key) and corresponding energy values</span>
+<span class="sd">            :math:`E(N)` (value).</span>
+<span class="sd">        model : str, optional</span>
+<span class="sd">            Energy model used to calculate global reactivity descriptors.</span>
+<span class="sd">            The available models include: &quot;linear&quot;, &quot;quadratic&quot;, &quot;exponential&quot;, &quot;rational&quot;,</span>
+<span class="sd">            and &quot;general&quot;. Please see &quot;&quot; for more information.</span>
+<span class="sd">        coordinates : ndarray, optional</span>
+<span class="sd">            Atomic coordinates of atomic centers.</span>
+<span class="sd">        numbers : ndarray, optional</span>
+<span class="sd">            Atomic number of atomic centers.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># available models for global tools</span>
+        <span class="n">dict_models</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;linear&quot;</span><span class="p">:</span> <span class="n">LinearGlobalTool</span><span class="p">,</span> <span class="s2">&quot;quadratic&quot;</span><span class="p">:</span> <span class="n">QuadraticGlobalTool</span><span class="p">,</span>
+                       <span class="s2">&quot;exponential&quot;</span><span class="p">:</span> <span class="n">ExponentialGlobalTool</span><span class="p">,</span> <span class="s2">&quot;rational&quot;</span><span class="p">:</span> <span class="n">RationalGlobalTool</span><span class="p">,</span>
+                       <span class="s2">&quot;general&quot;</span><span class="p">:</span> <span class="n">GeneralGlobalTool</span><span class="p">}</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GlobalConceptualDFT</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dict_values</span><span class="p">,</span> <span class="n">dict_models</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span>
+                                                  <span class="n">coordinates</span><span class="p">,</span> <span class="n">numbers</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Print table of available class attributes and methods.&quot;&quot;&quot;</span>
+        <span class="c1"># get list of available attributes and methods</span>
+        <span class="n">avs</span> <span class="o">=</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="p">)</span>
+        <span class="c1"># get sorted list of public attributes</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">atr</span> <span class="k">for</span> <span class="n">atr</span> <span class="ow">in</span> <span class="n">avs</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atr</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">atr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)]</span>
+        <span class="n">attrs</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;params&quot;</span><span class="p">)</span>
+        <span class="n">attrs</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="c1"># get sorted list of public methods</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">atr</span> <span class="k">for</span> <span class="n">atr</span> <span class="ow">in</span> <span class="n">avs</span> <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atr</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">atr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)]</span>
+        <span class="n">methods</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Attributes of </span><span class="si">{0}</span><span class="s2"> global model:</span><span class="se">\n</span><span class="si">{1}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;dict_energy&#39;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;__iter__&quot;</span><span class="p">):</span>
+                <span class="n">content</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2">   </span><span class="si">% .6f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">25</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;__iter__&quot;</span><span class="p">):</span>
+                <span class="n">content</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2">   [</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">25</span><span class="p">),</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">% .6f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">content</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2">   </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">25</span><span class="p">),</span> <span class="s2">&quot; ---&quot;</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Methods of </span><span class="si">{0}</span><span class="s2"> global model:</span><span class="se">\n</span><span class="si">{1}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">methods</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">content</span>
+
+<div class="viewcode-block" id="GlobalConceptualDFT.from_file"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptual.GlobalConceptualDFT.html#chemtools.toolbox.conceptual.GlobalConceptualDFT.from_file">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize class from calculation output file(s).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fname : str, sequence of str</span>
+<span class="sd">            String specifying the path to a molecule&#39;s file, or sequence of strings specifying</span>
+<span class="sd">            path to molecule files.</span>
+<span class="sd">        model : str</span>
+<span class="sd">            Energy model used to calculate global reactivity descriptors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">molecules</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_molecule</span><span class="p">(</span><span class="n">molecules</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GlobalConceptualDFT.from_molecule"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptual.GlobalConceptualDFT.html#chemtools.toolbox.conceptual.GlobalConceptualDFT.from_molecule">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_molecule</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">molecule</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize class from `Molecule` object(s).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        molecule : Molecule or Sequence of Molecule</span>
+<span class="sd">            Instance of Molecule class, or sequence of Molecule class instances.</span>
+<span class="sd">        model : str</span>
+<span class="sd">            Energy model used to calculate global reactivity descriptors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check molecule</span>
+        <span class="n">molecule</span> <span class="o">=</span> <span class="n">check_arg_molecule</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span>
+        <span class="c1"># get atomic number and atomic coordinates</span>
+        <span class="n">number</span> <span class="o">=</span> <span class="n">get_matching_attr</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="s2">&quot;numbers&quot;</span><span class="p">,</span> <span class="mf">1.e-8</span><span class="p">)</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">get_matching_attr</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="s2">&quot;coordinates&quot;</span><span class="p">,</span> <span class="mf">1.e-4</span><span class="p">)</span>
+        <span class="n">dict_energy</span> <span class="o">=</span> <span class="n">get_dict_energy</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">dict_energy</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">number</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="LocalConceptualDFT"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptual.LocalConceptualDFT.html#chemtools.toolbox.conceptual.LocalConceptualDFT">[docs]</a><span class="k">class</span> <span class="nc">LocalConceptualDFT</span><span class="p">(</span><span class="n">BaseConceptualDFT</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Local conceptual density functional theory (DFT) analysis of quantum chemistry output files.</span>
+
+<span class="sd">    Local conceptual DFT reactivity descriptors :math:`p_{\text{local}} (\mathbf{r})`, assign a</span>
+<span class="sd">    value to every point :math:`\mathbf{r}` in space which provide insight into the reactivity of</span>
+<span class="sd">    the molecule at point.</span>
+
+<span class="sd">    Note: If only one molecule is provided, the frontier molecular orbital (FMO) approach is</span>
+<span class="sd">          invoked, otherwise finite difference (FD) approach is taken. If FD approach is taken,</span>
+<span class="sd">          the geometries and atomic numbers of all molecules need to be the same.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dict_density</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span> <span class="n">coordinates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">numbers</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dict_density : dict</span>
+<span class="sd">            Dictionary of number of electrons :math:`N` (key) and corresponding density array</span>
+<span class="sd">            :math:`\rho_N(\mathbf{r})` (value).</span>
+<span class="sd">        model : str, optional</span>
+<span class="sd">            Energy model used to calculate local reactivity descriptors.</span>
+<span class="sd">            The available models include: &quot;linear&quot;, &quot;quadratic&quot;, and &quot;general&quot;.</span>
+<span class="sd">            Please see &quot;&quot; for more information.</span>
+<span class="sd">        coordinates : ndarray, optional</span>
+<span class="sd">            Atomic coordinates of atomic centers.</span>
+<span class="sd">        numbers : ndarray, optional</span>
+<span class="sd">            Atomic number of atomic centers.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># available models for local tools</span>
+        <span class="n">dict_models</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;linear&quot;</span><span class="p">:</span> <span class="n">LinearLocalTool</span><span class="p">,</span> <span class="s2">&quot;quadratic&quot;</span><span class="p">:</span> <span class="n">QuadraticLocalTool</span><span class="p">}</span>
+        <span class="c1"># check density array shape</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dict_density</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span>
+            <span class="k">elif</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">shape</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Argument dict_density should have density arrays (values) &quot;</span>
+                                 <span class="s2">&quot;with the same shape! </span><span class="si">{0}</span><span class="s2"> != </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">shape</span><span class="p">))</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LocalConceptualDFT</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dict_density</span><span class="p">,</span> <span class="n">dict_models</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span>
+                                                 <span class="n">coordinates</span><span class="p">,</span> <span class="n">numbers</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Print table of available class attributes and methods.&quot;&quot;&quot;</span>
+        <span class="c1"># get list of available attributes and methods</span>
+        <span class="n">avs</span> <span class="o">=</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="p">)</span> <span class="o">+</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c1"># get sorted list of public attributes</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">atr</span> <span class="k">for</span> <span class="n">atr</span> <span class="ow">in</span> <span class="n">avs</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atr</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">atr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)]</span>
+        <span class="n">attrs</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="c1"># remove n0, because it is both an attr of self._tool and self (duplicate)</span>
+        <span class="c1"># attrs.remove(&quot;n0&quot;)</span>
+        <span class="c1"># get sorted list of public methods</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">atr</span> <span class="k">for</span> <span class="n">atr</span> <span class="ow">in</span> <span class="n">avs</span> <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atr</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">atr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)]</span>
+        <span class="n">methods</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="s2">&quot;Attributes of </span><span class="si">{0}</span><span class="s2"> local model:</span><span class="se">\n</span><span class="si">{1}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Methods of </span><span class="si">{0}</span><span class="s2"> local model:</span><span class="se">\n</span><span class="si">{1}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">methods</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">content</span>
+
+<div class="viewcode-block" id="LocalConceptualDFT.from_file"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptual.LocalConceptualDFT.html#chemtools.toolbox.conceptual.LocalConceptualDFT.from_file">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize class from calculation output file(s).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fname : str, sequence of str</span>
+<span class="sd">            String specifying the path to a molecule&#39;s file, or sequence of strings specifying</span>
+<span class="sd">            path to molecule files.</span>
+<span class="sd">        model : str</span>
+<span class="sd">            Energy model used to calculate local reactivity descriptors.</span>
+<span class="sd">            Available models are &quot;linear&quot; and &quot;quadratic&quot;.</span>
+<span class="sd">        points : np.array</span>
+<span class="sd">            Coordinates of points on which the local properties are evaluated given as a 2D</span>
+<span class="sd">            array with 3 columns.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">molecules</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_molecule</span><span class="p">(</span><span class="n">molecules</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">points</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LocalConceptualDFT.from_molecule"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptual.LocalConceptualDFT.html#chemtools.toolbox.conceptual.LocalConceptualDFT.from_molecule">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_molecule</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">molecule</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize class from `Molecule` object(s).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        molecule : Molecule or Sequence of Molecule</span>
+<span class="sd">            Instance of Molecule class, or sequence of Molecule class instances.</span>
+<span class="sd">        model : str</span>
+<span class="sd">            Energy model used to calculate local reactivity descriptors.</span>
+<span class="sd">            Available models are &quot;linear&quot; and &quot;quadratic&quot;.</span>
+<span class="sd">        points : np.array</span>
+<span class="sd">            Coordinates of points on which the local properties are evaluated given as a 2D</span>
+<span class="sd">            array with 3 columns.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check molecule</span>
+        <span class="n">molecule</span> <span class="o">=</span> <span class="n">check_arg_molecule</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span>
+        <span class="c1"># if points is None:</span>
+        <span class="c1">#     # make molecular grid which also checks for matching atomic numbers &amp; coordinates</span>
+        <span class="c1">#     grid = get_molecular_grid(molecule, grid=None)</span>
+        <span class="c1">#     points, numbers, coords = grid.points, grid.numbers, grid.centers</span>
+        <span class="n">numbers</span> <span class="o">=</span> <span class="n">get_matching_attr</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="s2">&quot;numbers&quot;</span><span class="p">,</span> <span class="mf">1.e-8</span><span class="p">)</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">get_matching_attr</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="s2">&quot;coordinates&quot;</span><span class="p">,</span> <span class="mf">1.e-4</span><span class="p">)</span>
+        <span class="n">dict_dens</span> <span class="o">=</span> <span class="n">get_dict_density</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="n">points</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">dict_dens</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">numbers</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CondensedConceptualDFT"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptual.CondensedConceptualDFT.html#chemtools.toolbox.conceptual.CondensedConceptualDFT">[docs]</a><span class="k">class</span> <span class="nc">CondensedConceptualDFT</span><span class="p">(</span><span class="n">BaseConceptualDFT</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Condensed conceptual density functional theory (DFT) analysis of quantum chemistry output files.</span>
+
+<span class="sd">    Condensed conceptual DFT reactivity descriptors :math:`\{p_A\}_{A=1}^{N_A}`, partition the</span>
+<span class="sd">    local descriptors between atoms in molecules, and integrate it to obtain condense property.</span>
+
+<span class="sd">    Note: If only one molecule is provided, the frontier molecular orbital (FMO) approach is</span>
+<span class="sd">          invoked, otherwise finite difference (FD) approach is taken. If FD approach is taken,</span>
+<span class="sd">          the geometries and atomic numbers of all molecules can be different only for fragment</span>
+<span class="sd">          of molecular response (approach=&#39;RMF&#39;).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dict_population</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span> <span class="n">coordinates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">numbers</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dict_population : dict</span>
+<span class="sd">            Dictionary of number of electrons :math:`N` (key) and corresponding atomic population</span>
+<span class="sd">            array (value).</span>
+<span class="sd">        model : str, optional</span>
+<span class="sd">            Energy model used to calculate condensed reactivity descriptors.</span>
+<span class="sd">            The available models include: &quot;linear&quot;, &quot;quadratic&quot;, and &quot;general&quot;.</span>
+<span class="sd">            Please see &quot;&quot; for more information.</span>
+<span class="sd">        coordinates : ndarray, optional</span>
+<span class="sd">            Atomic coordinates of atomic centers.</span>
+<span class="sd">        numbers : ndarray, optional</span>
+<span class="sd">            Atomic number of atomic centers.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># available models for local tools</span>
+        <span class="n">dict_models</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;linear&quot;</span><span class="p">:</span> <span class="n">LinearCondensedTool</span><span class="p">,</span> <span class="s2">&quot;quadratic&quot;</span><span class="p">:</span> <span class="n">QuadraticCondensedTool</span><span class="p">}</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CondensedConceptualDFT</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dict_population</span><span class="p">,</span> <span class="n">dict_models</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span>
+                                                     <span class="n">coordinates</span><span class="p">,</span> <span class="n">numbers</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Print table of available class attributes and methods.&quot;&quot;&quot;</span>
+        <span class="c1"># get list of available attributes and methods</span>
+        <span class="n">avs</span> <span class="o">=</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="p">)</span>
+        <span class="c1"># get sorted list of public attributes</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">atr</span> <span class="k">for</span> <span class="n">atr</span> <span class="ow">in</span> <span class="n">avs</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atr</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">atr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)]</span>
+        <span class="n">attrs</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="n">attrs</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;n_ref&quot;</span><span class="p">)</span>
+        <span class="c1"># get sorted list of public methods</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">atr</span> <span class="k">for</span> <span class="n">atr</span> <span class="ow">in</span> <span class="n">avs</span> <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atr</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">atr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)]</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="s2">&quot;Attributes of </span><span class="si">{0}</span><span class="s2"> condensed model:</span><span class="se">\n</span><span class="si">{1}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Methods in </span><span class="si">{0}</span><span class="s2"> condensed model:</span><span class="se">\n</span><span class="si">{1}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">methods</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">content</span>
+
+<div class="viewcode-block" id="CondensedConceptualDFT.from_file"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptual.CondensedConceptualDFT.html#chemtools.toolbox.conceptual.CondensedConceptualDFT.from_file">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">approach</span><span class="o">=</span><span class="s2">&quot;FMR&quot;</span><span class="p">,</span> <span class="n">scheme</span><span class="o">=</span><span class="s2">&quot;h&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize class from calculation output file(s).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fname : str, sequence of str</span>
+<span class="sd">            String specifying the path to a molecule&#39;s file, or sequence of strings specifying</span>
+<span class="sd">            path to molecule files.</span>
+<span class="sd">        model : str</span>
+<span class="sd">            Energy model used to calculate condensed reactivity descriptors.</span>
+<span class="sd">            Available models are &quot;linear&quot; and &quot;quadratic&quot;.</span>
+<span class="sd">        approach : str, optional</span>
+<span class="sd">            Choose between &quot;FMR&quot; (fragment of molecular response) or &quot;RMF&quot;</span>
+<span class="sd">            (response of molecular fragment).</span>
+<span class="sd">        scheme : str, optional</span>
+<span class="sd">            Partitioning scheme. Options: &quot;h&quot;, &quot;hi&quot;, &quot;mbis&quot;.</span>
+<span class="sd">        kwargs : dict, optional</span>
+<span class="sd">            Extra keyword arguments required for partitioning, like &#39;grid&#39; and &#39;proatomdb&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">molecules</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_molecule</span><span class="p">(</span><span class="n">molecules</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">approach</span><span class="p">,</span> <span class="n">scheme</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CondensedConceptualDFT.from_molecule"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptual.CondensedConceptualDFT.html#chemtools.toolbox.conceptual.CondensedConceptualDFT.from_molecule">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_molecule</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">molecule</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">approach</span><span class="o">=</span><span class="s2">&quot;FMR&quot;</span><span class="p">,</span> <span class="n">scheme</span><span class="o">=</span><span class="s2">&quot;h&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize class from `Molecule` object(s).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        molecule : Molecule or Sequence of Molecule</span>
+<span class="sd">            Instance of Molecule class, or sequence of Molecule class instances.</span>
+<span class="sd">        model : str</span>
+<span class="sd">            Energy model used to calculate condensed reactivity descriptors.</span>
+<span class="sd">            Available models are &quot;linear&quot; and &quot;quadratic&quot;.</span>
+<span class="sd">        approach : str, optional</span>
+<span class="sd">            Choose between &quot;FMR&quot; (fragment of molecular response) or &quot;RMF&quot;</span>
+<span class="sd">            (response of molecular fragment).</span>
+<span class="sd">        scheme : str, optional</span>
+<span class="sd">            Partitioning scheme. Options: &quot;h&quot;, &quot;hi&quot;, &quot;mbis&quot;.</span>
+<span class="sd">        kwargs : dict, optional</span>
+<span class="sd">            Extra keyword arguments required for partitioning, like &#39;grid&#39; and &#39;proatomdb&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check molecule</span>
+        <span class="n">molecule</span> <span class="o">=</span> <span class="n">check_arg_molecule</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span>
+        <span class="c1"># check type of grid</span>
+        <span class="k">if</span> <span class="s2">&quot;grid&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">MolecularGrid</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Currently, only &#39;MolecularGrid&#39; is supported for condensing!&quot;</span><span class="p">)</span>
+        <span class="c1"># get atomic number &amp; coordinates</span>
+        <span class="n">numbers</span> <span class="o">=</span> <span class="n">get_matching_attr</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="s2">&quot;numbers&quot;</span><span class="p">,</span> <span class="mf">1.e-8</span><span class="p">)</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">get_matching_attr</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="s2">&quot;coordinates&quot;</span><span class="p">,</span> <span class="mf">1.e-4</span><span class="p">)</span>
+        <span class="c1"># get dictionary of populations</span>
+        <span class="n">dict_pops</span> <span class="o">=</span> <span class="n">get_dict_population</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="n">approach</span><span class="p">,</span> <span class="n">scheme</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">dict_pops</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">numbers</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, ChemTools Dev Team.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../../_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+  <script type='text/javascript'>
+  $(".tooltiptext").hide(); // On very first line of scripts.js file
+
+
+  $("a").hover(function () {
+    var elems = this;
+    var curClass = elems.className // current class clicked.
+    // var windowHeight = $(".rst-content").height();
+    var windowWidth = $(".rst-content").width();
+
+    var left = elems.offsetLeft;
+    var top = elems.offsetTop;
+    // var linkHeight = $(".tooltip").height();
+    // var linkWidth = $(".tooltip").width();
+    // var tooltiph = $(".tooltiptext").height();
+    var tooltipw = $(".tooltiptext").width();
+    // var bottom = windowHeight - top - tooltiph;
+    var right = windowWidth - left - tooltipw;
+
+		var isEntirelyVisible = (left + tooltipw <= windowWidth);
+    if (!isEntirelyVisible) {
+        $(".tooltiptext").css("right", "0px");
+    } else  {
+        $(".tooltiptext").css("right", "-160px");
+    }
+
+
+
+
+    $(".tooltiptext").fadeIn('fast');
+},
+
+function () {
+});
+  </script>
+</body>
+</html>

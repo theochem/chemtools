@@ -1,0 +1,723 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>chemtools.toolbox.conceptuallocal &mdash; ChemTools 0.0 文档</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../_static/chemtools_favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="索引"
+              href="../../../genindex.html"/>
+        <link rel="search" title="搜索" href="../../../search.html"/>
+    <link rel="top" title="ChemTools 0.0 文档" href="../../../index.html"/>
+        <link rel="up" title="模块代码" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+  <style type="text/css">
+  #content {
+      position: relative;
+      }
+  #content img {
+          position: absolute;
+	      top: 0px;
+	          right: 0px;
+		  }
+  .rst-content p, .rst-content li {
+	    text-align: justify;
+	    text-justify: inter-word;
+      }
+  .tooltip {
+      position: relative;
+      /*display: inline-block;*/
+      /*border-bottom: 5px dotted black;*/
+      width: 75px;
+      /*min-width: 75px;*/
+      /*max-width: 255px;*/
+      }
+
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 180px;
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #fff;
+      text-align: left;
+      /*border-radius: 6px;*/
+      padding: 4px;
+      font-size:12px;
+      line-height: 15px;
+      /* Position the tooltip */
+      position: absolute;
+      z-index: 1;
+      }
+
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+      position: absolute;
+      /*left: -70px; -index: 99;*/
+      top: 20px;
+      }
+ </style>
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ChemTools
+          
+
+          
+            
+            <img src="../../../_static/chemtools_logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_about.html">关于 ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_citing.html">引用 ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_license.html">开源许可</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_contact.html">联系方式</a></li>
+</ul>
+<p class="caption"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usr_doc_installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usr_doc_quick_start.html">快速入门</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usr_doc_tutorials.html">新手教程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../auto_examples/index.html">样例图库</a></li>
+</ul>
+<p class="caption"><span class="caption-text">科学手册</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_conceptual.html">概念密度泛函理论</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_densitytool.html">基于密度的定域描述符</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_orbitaltool.html">基于轨道的定域描述符</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_nci.html">非共价相互作用（NCI） <code class="docutils literal"><span class="pre">chemtools.tool.analysis.nci</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_zref.html">参考文献</a></li>
+</ul>
+<p class="caption"><span class="caption-text">高阶文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tech_dev.html">开发者指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tech_api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tech_derivations.html">推导</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ChemTools</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div id=content>
+        <a href="https://github.com/QuantumElephant/chemtools" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+       </div>
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">模块代码</a> &raquo;</li>
+        
+      <li>chemtools.toolbox.conceptuallocal</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>chemtools.toolbox.conceptuallocal 源代码</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># ChemTools is a collection of interpretive chemical tools for</span>
+<span class="c1"># analyzing outputs of the quantum chemistry calculations.</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2014-2015 The ChemTools Development Team</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of ChemTools.</span>
+<span class="c1">#</span>
+<span class="c1"># ChemTools is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the GNU General Public License</span>
+<span class="c1"># as published by the Free Software Foundation; either version 3</span>
+<span class="c1"># of the License, or (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># ChemTools is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># --</span>
+<span class="sd">&quot;&quot;&quot;Local Conceptual Density Functional Theory (DFT) Reactivity Tools.</span>
+
+<span class="sd">This module contains various local tool classes corresponding to</span>
+<span class="sd">linear and quadratic energy models.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABCMeta</span>
+<span class="kn">from</span> <span class="nn">chemtools.utils.utils</span> <span class="k">import</span> <span class="n">doc_inherit</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;BaseLocalTool&#39;</span><span class="p">,</span> <span class="s1">&#39;LinearLocalTool&#39;</span><span class="p">,</span> <span class="s1">&#39;QuadraticLocalTool&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="BaseLocalTool"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptuallocal.BaseLocalTool.html#chemtools.toolbox.conceptuallocal.BaseLocalTool">[文档]</a><span class="k">class</span> <span class="nc">BaseLocalTool</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class of local conceptual DFT reactivity descriptors.&quot;&quot;&quot;</span>
+
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">density_zero</span><span class="p">,</span> <span class="n">density_plus</span><span class="p">,</span> <span class="n">density_minus</span><span class="p">,</span> <span class="n">n0</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        density_zero : np.ndarray</span>
+<span class="sd">            Electron density of :math:`N_0`-electron system, i.e.</span>
+<span class="sd">            :math:`\rho_{N_0}\left(\mathbf{r}\right)`.</span>
+<span class="sd">        density_plus : np.ndarray</span>
+<span class="sd">            Electron density of :math:`(N_0 + 1)`-electron system, i.e.</span>
+<span class="sd">            :math:`\rho_{N_0 + 1}\left(\mathbf{r}\right)`.</span>
+<span class="sd">        density_minus : np.ndarray</span>
+<span class="sd">            Electron density of :math:`(N_0 - 1)`-electron system, i.e.</span>
+<span class="sd">            :math:`\rho_{N_0 - 1}\left(\mathbf{r}\right)`.</span>
+<span class="sd">        n0 : float</span>
+<span class="sd">            Reference number of electrons, i.e. :math:`N_0`, which corresponds</span>
+<span class="sd">            to the integral of density_zero over all space.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># if np.any(density_zero &lt; 0):</span>
+        <span class="c1">#     raise ValueError(&#39;Argument density_zero should be all positive!&#39;)</span>
+        <span class="c1"># if np.any(density_plus &lt; 0):</span>
+        <span class="c1">#     raise ValueError(&#39;Argument density_plus should be all positive!&#39;)</span>
+        <span class="c1"># if np.any(density_minus &lt; 0):</span>
+        <span class="c1">#     raise ValueError(&#39;Argument density_minus should be all positive!&#39;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_density_zero</span> <span class="o">=</span> <span class="n">density_zero</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_density_plus</span> <span class="o">=</span> <span class="n">density_plus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_density_minus</span> <span class="o">=</span> <span class="n">density_minus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">=</span> <span class="n">n0</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n0</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Reference number of electrons, i.e. :math:`N_0`, corresponding to density_zero.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">density_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Electron density of :math:`N_0`-electron system :math:`\rho_{N_0}(\mathbf{r})`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_zero</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">density_plus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Electron density of :math:`(N_0+1)`-electron system :math:`\rho_{N_0+1}(\mathbf{r})`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_plus</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">density_minus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Electron density of :math:`(N_0-1)`-electron system :math:`\rho_{N_0-1}(\mathbf{r})`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_minus</span></div>
+
+
+<div class="viewcode-block" id="LinearLocalTool"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptuallocal.LinearLocalTool.html#chemtools.toolbox.conceptuallocal.LinearLocalTool">[文档]</a><span class="k">class</span> <span class="nc">LinearLocalTool</span><span class="p">(</span><span class="n">BaseLocalTool</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class of local conceptual DFT reactivity descriptors based on the linear energy model.</span>
+
+<span class="sd">    Considering the interpolated linear energy expression,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       E\left(N\right) =</span>
+<span class="sd">        \begin{cases}</span>
+<span class="sd">         \left(N - N_0 + 1\right) E\left(N_0\right) - \left(N - N_0\right) E\left(N_0 - 1\right)</span>
+<span class="sd">            &amp;  N \leqslant N_0 \\</span>
+<span class="sd">         \left(N - N_0\right) E\left(N_0 + 1\right) - \left(N - N_0 - 1\right) E\left(N_0\right)</span>
+<span class="sd">            &amp;  N \geqslant N_0 \\</span>
+<span class="sd">        \end{cases} \\</span>
+
+<span class="sd">    and its derivative with respect to the number of electrons at constant external potential,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \mu\left(N\right) =</span>
+<span class="sd">        \begin{cases}</span>
+<span class="sd">         \mu^- &amp;= E\left(N_0\right) - E\left(N_0 - 1\right) = - IP &amp;&amp;  N &lt; N_0 \\</span>
+<span class="sd">         \mu^0 &amp;= 0.5 \left(E\left(N_0 + 1\right) - E\left(N_0 - 1\right)\right) = -0.5 (IP + EA)</span>
+<span class="sd">               &amp;&amp; N = N_0 \\</span>
+<span class="sd">         \mu^+ &amp;= E\left(N_0 + 1\right) - E\left(N_0\right) = - EA &amp;&amp;  N &gt; N_0 \\</span>
+<span class="sd">        \end{cases}</span>
+
+<span class="sd">    the linear local tools are obtained by taking the functional derivative of these expressions</span>
+<span class="sd">    with respect to external potential :math:`v(\mathbf{r})` at fixed number of electrons.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseLocalTool</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">density_zero</span><span class="p">,</span> <span class="n">density_plus</span><span class="p">,</span> <span class="n">density_minus</span><span class="p">,</span> <span class="n">n0</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">density_zero</span><span class="p">,</span> <span class="n">density_plus</span><span class="p">,</span> <span class="n">density_minus</span><span class="p">,</span> <span class="n">n0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ff_plus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_plus</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_zero</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ff_minus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_zero</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_minus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ff_zero</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_density_plus</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_minus</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ff_plus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fukui Function from above, :math:`f^+(\mathbf{r})`.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           f^+\left(\mathbf{r}\right) = \rho_{N_0 + 1}\left(\mathbf{r}\right) -</span>
+<span class="sd">                                        \rho_{N_0}\left(\mathbf{r}\right)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ff_plus</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ff_minus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fukui Function from below, :math:`f^-(\mathbf{r})`.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           f^-\left(\mathbf{r}\right) = \rho_{N_0}\left(\mathbf{r}\right) -</span>
+<span class="sd">                                        \rho_{N_0 - 1}\left(\mathbf{r}\right)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ff_minus</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ff_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fukui Function from center, :math:`f^0(\mathbf{r})`.</span>
+
+<span class="sd">        This is defined as the average of :attr:`ff_plus` and :attr:`ff_minus`,</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           f^0\left(\mathbf{r}\right) =</span>
+<span class="sd">           \frac{f^+\left(\mathbf{r}\right) + f^-\left(\mathbf{r}\right)}{2} =</span>
+<span class="sd">           \frac{\rho_{N_0 + 1}\left(\mathbf{r}\right) - \rho_{N_0 - 1}\left(\mathbf{r}\right)}{2}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ff_zero</span>
+
+<div class="viewcode-block" id="LinearLocalTool.density"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptuallocal.LinearLocalTool.html#chemtools.toolbox.conceptuallocal.LinearLocalTool.density">[文档]</a>    <span class="k">def</span> <span class="nf">density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number_electrons</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return linear electron density of :math:`N`-electron system, :math:`\rho_{N}(\mathbf{r})`.</span>
+
+<span class="sd">        This is defined as the functional derivative of linear energy model w.r.t.</span>
+<span class="sd">        external potential at fixed number of electrons, i.e.,</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \rho_{N}(\mathbf{r}) =</span>
+<span class="sd">            \begin{cases}</span>
+<span class="sd">             \rho_{N_0}(\mathbf{r}) + \left[\rho_{N_0}(\mathbf{r}) - \rho_{N_0 - 1}(\mathbf{r})</span>
+<span class="sd">                       \right] \left(N - N_0\right) &amp; \text{ for } N \leqslant N_0 \\</span>
+<span class="sd">             \rho_{N_0}(\mathbf{r}) + \left[\rho_{N_0 + 1}(\mathbf{r}) - \rho_{N_0}(\mathbf{r})</span>
+<span class="sd">                       \right] \left(N - N_0\right) &amp; \text{ for } N \geqslant N_0 \\</span>
+<span class="sd">            \end{cases}</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        number_electrons : float, default=None</span>
+<span class="sd">            Number of electrons. If None, the :math:`\rho_{N_0}\left(\mathbf{r}\right)` is returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_zero</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">number_electrons</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">number_electrons</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">number_electrons</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">:</span>
+                <span class="n">rho</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ff_minus</span> <span class="o">*</span> <span class="p">(</span><span class="n">number_electrons</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">number_electrons</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">:</span>
+                <span class="n">rho</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ff_plus</span> <span class="o">*</span> <span class="p">(</span><span class="n">number_electrons</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rho</span></div>
+
+<div class="viewcode-block" id="LinearLocalTool.fukui_function"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptuallocal.LinearLocalTool.html#chemtools.toolbox.conceptuallocal.LinearLocalTool.fukui_function">[文档]</a>    <span class="k">def</span> <span class="nf">fukui_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number_electrons</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return linear Fukui function of :math:`N`-electron system, :math:`f_{N}(\mathbf{r})`.</span>
+
+<span class="sd">        This is defined as the functional derivative of linear chemical potential w.r.t.</span>
+<span class="sd">        external potential at fixed number of electrons,</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           f_{N}(\mathbf{r}) =</span>
+<span class="sd">             \begin{cases}</span>
+<span class="sd">               f^-(\mathbf{r}) &amp;= \rho_{N_0}(\mathbf{r}) - \rho_{N_0 - 1}(\mathbf{r}) &amp;&amp; N &lt; N_0 \\</span>
+<span class="sd">               f^0\left(\mathbf{r}\right) &amp;= 0.5 \left(\rho_{N_0 + 1}\left(\mathbf{r}\right) -</span>
+<span class="sd">                        \rho_{N_0 - 1}\left(\mathbf{r}\right)\right) &amp;&amp; N = N_0 \\</span>
+<span class="sd">               f^+(\mathbf{r}) &amp;= \rho_{N_0 + 1}(\mathbf{r}) - \rho_{N_0}(\mathbf{r}) &amp;&amp; N &gt; N_0 \\</span>
+<span class="sd">             \end{cases}</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        number_electrons : float, default=None</span>
+<span class="sd">            Number of electrons. If None, the :math:`f^0\left(\mathbf{r}\right)` is returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">number_electrons</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">number_electrons</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ff_zero</span>
+        <span class="k">elif</span> <span class="n">number_electrons</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ff_minus</span>
+        <span class="k">elif</span> <span class="n">number_electrons</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ff_plus</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument number_electrons=</span><span class="si">{0}</span><span class="s1"> is not valid.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">number_electrons</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="LinearLocalTool.softness"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptuallocal.LinearLocalTool.html#chemtools.toolbox.conceptuallocal.LinearLocalTool.softness">[文档]</a>    <span class="k">def</span> <span class="nf">softness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_softness</span><span class="p">,</span> <span class="n">number_electrons</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return linear softness of :math:`N`-electron system, :math:`s_N(\mathbf{r})`.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           s_N\left(\mathbf{r}\right) = S \cdot f_N\left(\mathbf{r}\right) =</span>
+<span class="sd">             \begin{cases}</span>
+<span class="sd">               S \cdot f^-(\mathbf{r}) &amp; N &lt; N_0 \\</span>
+<span class="sd">               S \cdot f^0\left(\mathbf{r}\right) &amp; N = N_0 \\</span>
+<span class="sd">               S \cdot f^+(\mathbf{r}) &amp;  N &gt; N_0 \\</span>
+<span class="sd">             \end{cases}</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        global_softness : float</span>
+<span class="sd">            The value of global softness.</span>
+<span class="sd">        number_electrons : float, default=None</span>
+<span class="sd">            Number of electrons. If None, the :math:`S \cdot f^0\left(\mathbf{r}\right)`</span>
+<span class="sd">            is returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">number_electrons</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">number_electrons</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">global_softness</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ff_zero</span>
+        <span class="k">elif</span> <span class="n">number_electrons</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">global_softness</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ff_minus</span>
+        <span class="k">elif</span> <span class="n">number_electrons</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">global_softness</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ff_plus</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument number_electrons=</span><span class="si">{0}</span><span class="s1"> is not valid.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">number_electrons</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="QuadraticLocalTool"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptuallocal.QuadraticLocalTool.html#chemtools.toolbox.conceptuallocal.QuadraticLocalTool">[文档]</a><span class="k">class</span> <span class="nc">QuadraticLocalTool</span><span class="p">(</span><span class="n">BaseLocalTool</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class of local conceptual DFT reactivity descriptors based on the quadratic energy model.</span>
+
+<span class="sd">    Considering the interpolated quadratic energy expression,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       E\left(N\right) = E\left(N_0\right) &amp;+ \left(\frac{E\left(N_0 + 1\right) -</span>
+<span class="sd">                         E\left(N_0 - 1\right)}{2}\right) \left(N - N_0\right) \\</span>
+<span class="sd">                &amp;+ \left(\frac{E\left(N_0 - 1\right) - 2 E\left(N_0\right) +</span>
+<span class="sd">                   E\left(N_0 + 1\right)}{2}\right) \left(N - N_0\right)^2 \\</span>
+
+<span class="sd">    and its first and second derivatives with respect to the number of electrons at constant</span>
+<span class="sd">    external potential,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \mu\left(N\right) &amp;= \left(\frac{\partial E\left(N\right)}{\partial N}</span>
+<span class="sd">                            \right)_{v(\mathbf{r})} \\</span>
+<span class="sd">         &amp;= \left(\frac{E\left(N_0 + 1\right) - E\left(N_0 - 1\right)}{2}\right) +</span>
+<span class="sd">            \left[E\left(N_0 - 1\right) - 2 E\left(N_0\right) + E\left(N_0 + 1\right)</span>
+<span class="sd">            \right] \left(N - N_0\right) \\</span>
+<span class="sd">       \eta\left(N\right) &amp;= \left(\frac{\partial^2 E\left(N\right)}{\partial^2 N}</span>
+<span class="sd">                             \right)_{v(\mathbf{r})}</span>
+<span class="sd">         = E\left(N_0 - 1\right) - 2 E\left(N_0\right) + E\left(N_0 + 1\right)</span>
+
+<span class="sd">    the quadratic local tools are obtained by taking the functional derivative of these expressions</span>
+<span class="sd">    with respect to external potential :math:`v(\mathbf{r})` at fixed number of electrons.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseLocalTool</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">density_zero</span><span class="p">,</span> <span class="n">density_plus</span><span class="p">,</span> <span class="n">density_minus</span><span class="p">,</span> <span class="n">n0</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">density_zero</span><span class="p">,</span> <span class="n">density_plus</span><span class="p">,</span> <span class="n">density_minus</span><span class="p">,</span> <span class="n">n0</span><span class="p">)</span>
+        <span class="c1"># Fukui function and dual descriptor of N0-electron system</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ff0</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_density_plus</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_minus</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_plus</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_zero</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_minus</span>
+
+<div class="viewcode-block" id="QuadraticLocalTool.density"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptuallocal.QuadraticLocalTool.html#chemtools.toolbox.conceptuallocal.QuadraticLocalTool.density">[文档]</a>    <span class="k">def</span> <span class="nf">density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number_electrons</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return quadratic electron density of :math:`N`-electron system :math:`\rho_{N}(\mathbf{r})`.</span>
+
+<span class="sd">        This is defined as the functional derivative of quadratic energy model w.r.t.</span>
+<span class="sd">        external potential at fixed number of electrons,</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \rho_{N}(\mathbf{r}) = \rho_{N_0}\left(\mathbf{r}\right)</span>
+<span class="sd">             &amp;+ \left(\frac{\rho_{N_0 + 1}\left(\mathbf{r}\right) -</span>
+<span class="sd">                \rho_{N_0 - 1}\left(\mathbf{r}\right)}{2}\right) \left(N - N_0\right) \\</span>
+<span class="sd">             &amp;+ \left(\frac{\rho_{N_0 - 1}\left(\mathbf{r}\right) - 2</span>
+<span class="sd">                \rho_{N_0}\left(\mathbf{r}\right) + \rho_{N_0 + 1}\left(\mathbf{r}\right)}{2}\right)</span>
+<span class="sd">                \left(N - N_0\right)^2</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        number_electrons : float, default=None</span>
+<span class="sd">            Number of electrons. If None, the :math:`\rho_{N_0}\left(\mathbf{r}\right)` is returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">number_electrons</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">number_electrons</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_zero</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dN</span> <span class="o">=</span> <span class="p">(</span><span class="n">number_electrons</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">)</span>
+            <span class="n">rho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_zero</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ff0</span> <span class="o">*</span> <span class="n">dN</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df0</span> <span class="o">*</span> <span class="n">dN</span><span class="o">**</span><span class="mi">2</span>
+            <span class="k">return</span> <span class="n">rho</span></div>
+
+<div class="viewcode-block" id="QuadraticLocalTool.fukui_function"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptuallocal.QuadraticLocalTool.html#chemtools.toolbox.conceptuallocal.QuadraticLocalTool.fukui_function">[文档]</a>    <span class="k">def</span> <span class="nf">fukui_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number_electrons</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return quadratic Fukui function of :math:`N`-electron system, :math:`f_{N}(\mathbf{r})`.</span>
+
+<span class="sd">        This is defined as the functional derivative of quadratic chemical potential w.r.t.</span>
+<span class="sd">        external potential at fixed number of electrons,</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           f_{N}(\mathbf{r}) = \left(\frac{\rho_{N_0 + 1}\left(\mathbf{r}\right) -</span>
+<span class="sd">                 \rho_{N_0 - 1}\left(\mathbf{r}\right)}{2} \right) +</span>
+<span class="sd">                 \left[\rho_{N_0 - 1}\left(\mathbf{r}\right) - 2</span>
+<span class="sd">                 \rho_{N_0}\left(\mathbf{r}\right) + \rho_{N_0 + 1}\left(\mathbf{r}\right)</span>
+<span class="sd">                 \right] \left(N - N_0\right)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        number_electrons : float, default=None</span>
+<span class="sd">            Number of electrons. If None, the :math:`f_{N_0}\left(\mathbf{r}\right)` is returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">number_electrons</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">number_electrons</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ff0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ff0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df0</span> <span class="o">*</span> <span class="p">(</span><span class="n">number_electrons</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">n0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ff</span></div>
+
+<div class="viewcode-block" id="QuadraticLocalTool.dual_descriptor"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptuallocal.QuadraticLocalTool.html#chemtools.toolbox.conceptuallocal.QuadraticLocalTool.dual_descriptor">[文档]</a>    <span class="k">def</span> <span class="nf">dual_descriptor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Quadratic dual descriptor of :math:`N`-electron system, :math:`\Delta f_{N}(\mathbf{r})`.</span>
+
+<span class="sd">        This is defined as the functional derivative of quadratic chemical hardness</span>
+<span class="sd">        w.r.t. external potential at fixed number of electrons,</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \Delta f_{N}(\mathbf{r}) = \rho_{N_0 - 1}\left(\mathbf{r}\right) - 2</span>
+<span class="sd">            \rho_{N_0}\left(\mathbf{r}\right) + \rho_{N_0 + 1}\left(\mathbf{r}\right)</span>
+
+<span class="sd">        The quadratic dual descriptor is independent of the number electrons.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df0</span></div>
+
+<div class="viewcode-block" id="QuadraticLocalTool.softness"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptuallocal.QuadraticLocalTool.html#chemtools.toolbox.conceptuallocal.QuadraticLocalTool.softness">[文档]</a>    <span class="k">def</span> <span class="nf">softness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_softness</span><span class="p">,</span> <span class="n">number_electrons</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return quadratic softness of :math:`N`-electron system, :math:`s_{N}(\mathbf{r})`.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           s_N\left(\mathbf{r}\right) = S \cdot f_N\left(\mathbf{r}\right)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        global_softness : float</span>
+<span class="sd">            The value of global softness.</span>
+<span class="sd">        number_electrons : float, default=None</span>
+<span class="sd">            Number of electrons. If None, the :math:`s_{N_0}\left(\mathbf{r}\right)` is returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s_value</span> <span class="o">=</span> <span class="n">global_softness</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">fukui_function</span><span class="p">(</span><span class="n">number_electrons</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s_value</span></div>
+
+<div class="viewcode-block" id="QuadraticLocalTool.hyper_softness"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptuallocal.QuadraticLocalTool.html#chemtools.toolbox.conceptuallocal.QuadraticLocalTool.hyper_softness">[文档]</a>    <span class="k">def</span> <span class="nf">hyper_softness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_softness</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Quadratic hyper-softness of :math:`N`-electron system, :math:`s_N^{(2)}(\mathbf{r})`.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           s_N^{(2)}\left(\mathbf{r}\right) = S^2 \cdot \Delta f_N\left(\mathbf{r}\right)</span>
+
+<span class="sd">        The quadratic hyper-softness is independent of the number electrons.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        global_softness : float</span>
+<span class="sd">            The value of global softness.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s_value</span> <span class="o">=</span> <span class="n">global_softness</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dual_descriptor</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">s_value</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; 版权所有 2016, Ayers&#39; Group @ McMaster University.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.0',
+            LANGUAGE:'zh_CN',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../../_static/translations.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+  <script type='text/javascript'>
+  $(".tooltiptext").hide(); // On very first line of scripts.js file
+
+
+  $("a").hover(function () {
+    var elems = this;
+    var curClass = elems.className // current class clicked.
+    // var windowHeight = $(".rst-content").height();
+    var windowWidth = $(".rst-content").width();
+
+    var left = elems.offsetLeft;
+    var top = elems.offsetTop;
+    // var linkHeight = $(".tooltip").height();
+    // var linkWidth = $(".tooltip").width();
+    // var tooltiph = $(".tooltiptext").height();
+    var tooltipw = $(".tooltiptext").width();
+    // var bottom = windowHeight - top - tooltiph;
+    var right = windowWidth - left - tooltipw;
+
+		var isEntirelyVisible = (left + tooltipw <= windowWidth);
+    if (!isEntirelyVisible) {
+        $(".tooltiptext").css("right", "0px");
+    } else  {
+        $(".tooltiptext").css("right", "-160px");
+    }
+
+
+
+
+    $(".tooltiptext").fadeIn('fast');
+},
+
+function () {
+});
+  </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+:orphan:
+
+chemtools.utils.wrappers.HortonMolecule
+=======================================
+
+.. currentmodule:: chemtools.utils.wrappers
+
+.. autoclass:: HortonMolecule
+   :members:

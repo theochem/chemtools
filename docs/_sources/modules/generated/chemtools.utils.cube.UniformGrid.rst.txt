@@ -1,0 +1,10 @@
+:orphan:
+
+chemtools.utils.cube.UniformGrid
+================================
+
+.. currentmodule:: chemtools.utils.cube
+
+.. autoclass:: UniformGrid
+   :members:
+   :inherited-members:

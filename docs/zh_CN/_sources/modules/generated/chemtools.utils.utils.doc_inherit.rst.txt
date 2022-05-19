@@ -1,0 +1,9 @@
+:orphan:
+:noindex:
+
+chemtools.utils.utils.doc_inherit
+=================================
+
+.. currentmodule:: chemtools.utils.utils
+
+.. autofunction:: doc_inherit

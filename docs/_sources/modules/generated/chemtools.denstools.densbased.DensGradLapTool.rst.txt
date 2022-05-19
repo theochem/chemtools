@@ -1,0 +1,10 @@
+:orphan:
+
+chemtools.denstools.densbased.DensGradLapTool
+=============================================
+
+.. currentmodule:: chemtools.denstools.densbased
+
+.. autoclass:: DensGradLapTool
+   :members:
+   :inherited-members:

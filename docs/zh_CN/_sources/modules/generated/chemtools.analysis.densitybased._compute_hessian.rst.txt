@@ -1,0 +1,9 @@
+:orphan:
+:noindex:
+
+chemtools.analysis.densitybased._compute_hessian
+================================================
+
+.. currentmodule:: chemtools.analysis.densitybased
+
+.. autofunction:: _compute_hessian

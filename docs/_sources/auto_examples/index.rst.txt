@@ -1,0 +1,641 @@
+:orphan:
+
+.. _examples gallery:
+
+Examples Gallery
+################
+
+Here we demonstrate how one can use ChemTools to reproduce the results of published articles.
+
+In this section, numerious examples from published scientific articles are considered.
+This demonstrates how ChemTools makes such computations feasible.
+
+
+.. raw:: html
+
+    <div style='clear:both'></div>
+
+.. _examples_conceptual_dft:
+
+Conceptual Density Functional Theory
+------------------------------------
+
+Examples illustrating how to compute conceptual DFT reactivity descriptors.
+These examples cover :mod:`chemtools.conceptual` module.
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute global conceptual density functional theory reactivity descriptors based on the quadrat...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/conceptual/images/thumb/sphx_glr_ex001_gloabl_quadratic_energy_fmo_thumb.png
+
+        :ref:`sphx_glr_auto_examples_conceptual_ex001_gloabl_quadratic_energy_fmo.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/conceptual/ex001_gloabl_quadratic_energy_fmo
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute global conceptual density functional theory reactivity descriptors based on the quadrat...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/conceptual/images/thumb/sphx_glr_ex002_global_quadratic_energy_fd_thumb.png
+
+        :ref:`sphx_glr_auto_examples_conceptual_ex002_global_quadratic_energy_fd.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/conceptual/ex002_global_quadratic_energy_fd
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute global conceptual density functional theory reactivity descriptors based on the linear ...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/conceptual/images/thumb/sphx_glr_ex003_global_linear_energy_fmo_thumb.png
+
+        :ref:`sphx_glr_auto_examples_conceptual_ex003_global_linear_energy_fmo.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/conceptual/ex003_global_linear_energy_fmo
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute global conceptual density functional theory reactivity descriptors based on the linear ...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/conceptual/images/thumb/sphx_glr_ex004_global_linear_energy_fd_thumb.png
+
+        :ref:`sphx_glr_auto_examples_conceptual_ex004_global_linear_energy_fd.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/conceptual/ex004_global_linear_energy_fd
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute Fukui function on a cubic grid based on the linear energy model using frontier molecula...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/conceptual/images/thumb/sphx_glr_ex005_local_linear_ff_fmo_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_conceptual_ex005_local_linear_ff_fmo_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/conceptual/ex005_local_linear_ff_fmo_plot
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute Fukui function on a cubic grid based on the linear energy model using finite difference...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/conceptual/images/thumb/sphx_glr_ex006_local_linear_ff_fd_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_conceptual_ex006_local_linear_ff_fd_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/conceptual/ex006_local_linear_ff_fd_plot
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute dual descriptor on a cubic grid based on the quadratic energy model using frontier mole...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/conceptual/images/thumb/sphx_glr_ex007_local_linear_dual_fmo_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_conceptual_ex007_local_linear_dual_fmo_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/conceptual/ex007_local_linear_dual_fmo_plot
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute linear, quadratic, rational and exponential energy models for various number of electro...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/conceptual/images/thumb/sphx_glr_ex008_global_energy_models_fmo_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_conceptual_ex008_global_energy_models_fmo_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/conceptual/ex008_global_energy_models_fmo_plot
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute linear and quadratic energy models for various number of electrons using finite Differe...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/conceptual/images/thumb/sphx_glr_ex009_global_energy_models_fd_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_conceptual_ex009_global_energy_models_fd_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/conceptual/ex009_global_energy_models_fd_plot
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1. Make a 2D grid in the plane containing formaldehyde, :math:`\mathbf{CH_2O}`. 2. Build a quad...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/conceptual/images/thumb/sphx_glr_ex010_local_quadratic_ff_fmo_contour_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_conceptual_ex010_local_quadratic_ff_fmo_contour_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/conceptual/ex010_local_quadratic_ff_fmo_contour_plot
+.. raw:: html
+
+    <div style='clear:both'></div>
+
+.. _examples_dft:
+
+Density Functional Theory Based Tools
+-------------------------------------
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute average local IP and visualize it on electron density iso-surface for 2,6-dichloropyrid...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/density/images/thumb/sphx_glr_ex001_local_ip_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_density_ex001_local_ip_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/density/ex001_local_ip_plot
+.. raw:: html
+
+    <div style='clear:both'></div>
+
+.. _examples_elf:
+
+Electron Localization Function (ELF)
+------------------------------------
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute ELF and visualize it for formaldehyde.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/elf/images/thumb/sphx_glr_ex001_elf_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_elf_ex001_elf_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/elf/ex001_elf_plot
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute ELF and visualize it for water dimer.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/elf/images/thumb/sphx_glr_ex002_elf_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_elf_ex002_elf_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/elf/ex002_elf_plot
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute ELF and visualize it for formamide.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/elf/images/thumb/sphx_glr_ex003_elf_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_elf_ex003_elf_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/elf/ex003_elf_plot
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute ELF and visualize spherically averaged ELF for Kr atom using 'rational' & 'hyperbolic' ...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/elf/images/thumb/sphx_glr_ex004_elf_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_elf_ex004_elf_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/elf/ex004_elf_plot
+.. raw:: html
+
+    <div style='clear:both'></div>
+
+.. _examples_esp:
+
+Electrostatic Potential (ESP)
+-----------------------------
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute ESP and visualize it on electron density iso-surface for SCl2.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/esp/images/thumb/sphx_glr_ex001_esp_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_esp_ex001_esp_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/esp/ex001_esp_plot
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute ESP and visualize it on electron density iso-surface for 2,6-dichloropyridine.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/esp/images/thumb/sphx_glr_ex002_esp_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_esp_ex002_esp_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/esp/ex002_esp_plot
+.. raw:: html
+
+    <div style='clear:both'></div>
+
+.. _examples_lol:
+
+Localized Orbital Locator (LOL)
+-------------------------------
+
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute LOL and visualize it for formaldehyde.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/lol/images/thumb/sphx_glr_ex001_lol_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_lol_ex001_lol_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/lol/ex001_lol_plot
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute LOL and visualize it for formamide.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/lol/images/thumb/sphx_glr_ex002_lol_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_lol_ex002_lol_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/lol/ex002_lol_plot
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute LOL and visualize it for formamide, using the inverse hyperbolic transformation.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/lol/images/thumb/sphx_glr_ex003_lol_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_lol_ex003_lol_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/lol/ex003_lol_plot
+.. raw:: html
+
+    <div style='clear:both'></div>
+
+.. _examples_nci:
+
+Non-Covalent Interactions (NCI)
+-------------------------------
+
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute NCI and visualize it for water dimer.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/nci/images/thumb/sphx_glr_ex001_nci_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_nci_ex001_nci_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/nci/ex001_nci_plot
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute NCI and visualize it for formic acid dimer.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/nci/images/thumb/sphx_glr_ex002_nci_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_nci_ex002_nci_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/nci/ex002_nci_plot
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute NCI and visualize it for formic acid dimer.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/nci/images/thumb/sphx_glr_ex003_nci_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_nci_ex003_nci_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/nci/ex003_nci_plot
+.. raw:: html
+
+    <div style='clear:both'></div>
+
+.. _examples_mot:
+
+Molecular Orbital (MO) Theory Based Local Tools
+-----------------------------------------------
+
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute MO and visualize it for water.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/orbital/images/thumb/sphx_glr_ex001_mot_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_orbital_ex001_mot_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/orbital/ex001_mot_plot
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute HOMO/LUMO and visualize it for 2,6-dihydropyridine.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/orbital/images/thumb/sphx_glr_ex002_mot_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_orbital_ex002_mot_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/orbital/ex002_mot_plot
+.. raw:: html
+
+    <div style='clear:both'></div>
+
+.. _examples_topology:
+
+Topological Analysis
+--------------------
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Compute critical points and visualize it for cyclobutadiene.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/topology/images/thumb/sphx_glr_ex001_top_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_topology_ex001_top_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/topology/ex001_top_plot
+.. raw:: html
+
+    <div style='clear:both'></div>
+
+
+
+.. container:: sphx-glr-footer
+
+
+  .. container:: sphx-glr-download
+
+    :download:`Download all examples in Python source code: auto_examples_python.zip <//Users/Derrick/Documents/Project/theochem/chemtools/doc/auto_examples/auto_examples_python.zip>`
+
+
+
+  .. container:: sphx-glr-download
+
+    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//Users/Derrick/Documents/Project/theochem/chemtools/doc/auto_examples/auto_examples_jupyter.zip>`
+
+.. rst-class:: sphx-glr-signature
+
+    `Generated by Sphinx-Gallery <http://sphinx-gallery.readthedocs.io>`_

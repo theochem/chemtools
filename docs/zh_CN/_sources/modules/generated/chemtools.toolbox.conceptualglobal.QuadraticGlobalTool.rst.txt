@@ -1,0 +1,9 @@
+:orphan:
+
+chemtools.toolbox.conceptualglobal.QuadraticGlobalTool
+======================================================
+
+.. currentmodule:: chemtools.toolbox.conceptualglobal
+
+.. autoclass:: QuadraticGlobalTool
+   :members:

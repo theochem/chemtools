@@ -1,0 +1,9 @@
+:orphan:
+
+chemtools.toolbox.conceptualglobal.LinearGlobalTool
+===================================================
+
+.. currentmodule:: chemtools.toolbox.conceptualglobal
+
+.. autoclass:: LinearGlobalTool
+   :members:

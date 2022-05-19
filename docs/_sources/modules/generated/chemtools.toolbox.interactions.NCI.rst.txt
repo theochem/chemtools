@@ -1,0 +1,10 @@
+:orphan:
+
+chemtools.toolbox.interactions.NCI
+==================================
+
+.. currentmodule:: chemtools.toolbox.interactions
+
+.. autoclass:: NCI
+   :members:
+   :inherited-members:

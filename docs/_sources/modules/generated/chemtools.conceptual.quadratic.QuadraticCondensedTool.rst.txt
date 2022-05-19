@@ -1,0 +1,10 @@
+:orphan:
+
+chemtools.conceptual.quadratic.QuadraticCondensedTool
+=====================================================
+
+.. currentmodule:: chemtools.conceptual.quadratic
+
+.. autoclass:: QuadraticCondensedTool
+   :members:
+   :inherited-members:

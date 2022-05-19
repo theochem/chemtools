@@ -1,0 +1,616 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Global Descriptive Tools &mdash; ChemTools 0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/chemtools_favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="ChemTools 0.0 documentation" href="index.html"/>
+        <link rel="up" title="Conceptual Density Functional Theory" href="sci_doc_conceptual.html"/>
+        <link rel="next" title="Linear Energy Model" href="sci_doc_global_linear.html"/>
+        <link rel="prev" title="Conceptual Density Functional Theory" href="sci_doc_conceptual.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+  <style type="text/css">
+  #content {
+      position: relative;
+      }
+  #content img {
+          position: absolute;
+	      top: 0px;
+	          right: 0px;
+		  }
+  .rst-content p, .rst-content li {
+	    text-align: justify;
+	    text-justify: inter-word;
+      }
+  .tooltip {
+      position: relative;
+      /*display: inline-block;*/
+      /*border-bottom: 5px dotted black;*/
+      width: 75px;
+      /*min-width: 75px;*/
+      /*max-width: 255px;*/
+      }
+
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 180px;
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #fff;
+      text-align: left;
+      /*border-radius: 6px;*/
+      padding: 4px;
+      font-size:12px;
+      line-height: 15px;
+      /* Position the tooltip */
+      position: absolute;
+      z-index: 1;
+      }
+
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+      position: absolute;
+      /*left: -70px; -index: 99;*/
+      top: 20px;
+      }
+ </style>
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> ChemTools
+          
+
+          
+            
+            <img src="_static/chemtools_logo2.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro_about.html">About ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_citing.html">Citing ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_license.html">Licence Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_conduct.html">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_contact.html">Contact Information</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Examples Gallery</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scientific Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="sci_doc_conceptual.html">Conceptual Density Functional Theory</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Global Descriptive Tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sci_doc_global_linear.html">Linear Energy Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sci_doc_global_quadratic.html">Quadratic Energy Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sci_doc_global_rational.html">Rational Energy Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sci_doc_global_exponential.html">Exponential Energy Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sci_doc_global_general.html">General Energy Model</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sci_doc_localtool.html">Local Descriptive Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sci_doc_condensedtool.html">Condensed Descriptive Tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_dftbased.html">Density Functional Theory (DFT) Based</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_orbitaltool.html">Orbital-Based Local Descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_nci.html">Non-Covalent Interactions (NCI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_zref.html">References</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advanced Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tech_dev.html">Developer Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tech_api.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ChemTools</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div id=content>
+        <a href="https://github.com/theochem/chemtools" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+       </div>
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="sci_doc_conceptual.html">Conceptual Density Functional Theory</a> &raquo;</li>
+        
+      <li>Global Descriptive Tools</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="global-descriptive-tools">
+<span id="global-tools"></span><h1>Global Descriptive Tools<a class="headerlink" href="#global-descriptive-tools" title="Permalink to this headline">¶</a></h1>
+<p>Global descriptive tools assign a single value to the entire molecule. In other words,
+the property value <span class="math notranslate nohighlight">\(P_{\text{global}}\)</span> describes the intrinsic reactivity of the molecule
+as a whole.</p>
+<p>The simplest global reactivity descriptors are the first <strong>ionization potential</strong>
+, <span class="math notranslate nohighlight">\(IP\)</span>, and <strong>electron affinity</strong>, <span class="math notranslate nohighlight">\(EA\)</span>, of the system, measuring the system’s
+propensity to donate or accept one electron. For a system with <span class="math notranslate nohighlight">\(N_0\)</span> electrons,
+these are defined as,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}IP = E\left(N_0 - 1\right) - E\left(N_0\right) \\
+EA = E\left(N_0\right) - E\left(N_0 + 1\right)\end{split}\]</div>
+</div></blockquote>
+<p>The global reactivity indicators from conceptual DFT can be classified as either
+<a class="reference internal" href="#global-fundamental-indicators"><span class="std std-ref">fundamental</span></a> or <a class="reference internal" href="#global-derived-indicators"><span class="std std-ref">derived</span></a>.
+Before one can evaluate any of these indicators, one must select
+an energy model, <span class="math notranslate nohighlight">\(E_{\text{model}} = E\left(N; \{\alpha_1, \alpha_2, ..., \alpha_n\}\right)\)</span>,
+representing the dependence of the energy on the
+number of electrons <span class="math notranslate nohighlight">\(N\)</span>. The <span class="math notranslate nohighlight">\({\{\alpha_1, \alpha_2, ..., \alpha_n\}}\)</span> set denotes the parameters
+of the energy model which are determined by interpolating the energy expression to the known values of
+the energy for <span class="math notranslate nohighlight">\(n\)</span> different numbers of electrons,
+<span class="math notranslate nohighlight">\({\{E(N_i)\}}_{i=1}^n\)</span>. Commonly, the system with <span class="math notranslate nohighlight">\(N_0\)</span> electrons denotes the reference state,
+and the energy values for systems with <span class="math notranslate nohighlight">\(N_0 - 1\)</span>, <span class="math notranslate nohighlight">\(N_0\)</span> and <span class="math notranslate nohighlight">\(N_0 + 1\)</span> electrons,
+i.e. <span class="math notranslate nohighlight">\({\{E(N_0 - 1), E(N_0), E(N_0 + 1)\}}\)</span>, are used to find the parameters in the energy model.
+However, other values of energy can be used to parametrized the model as well. Needless to say, the number of
+energy values required to solve for the parameters depends on the complexity of the energy model,
+i.e. the number of parameters in the model.</p>
+<p>For global reactivity tools, ChemTools support the built-in and user-defined energy models listed below.
+Using the code of these models as templates, users can develop new energy models in ChemTools.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><a class="reference internal" href="sci_doc_global_linear.html#linear-energy"><span class="std std-ref">Linear Energy Model</span></a></li>
+<li><a class="reference internal" href="sci_doc_global_quadratic.html#quadratic-energy"><span class="std std-ref">Quadratic Energy Model</span></a></li>
+<li><a class="reference internal" href="sci_doc_global_exponential.html#exponential-energy"><span class="std std-ref">Exponential Energy Model</span></a></li>
+<li><a class="reference internal" href="sci_doc_global_rational.html#rational-energy"><span class="std std-ref">Rational Energy Model</span></a></li>
+<li><a class="reference internal" href="sci_doc_global_general.html#general-energy"><span class="std std-ref">General Energy Model</span></a></li>
+</ol>
+</div></blockquote>
+<p id="global-fundamental-indicators"><strong>Fundamental Global Reactivity Descriptors</strong></p>
+<p id="energy-derivatives">In the canonical ensemble, the fundamental global reactivity descriptors are the derivatives
+of the energy model with respect to the number of electrons <span class="math notranslate nohighlight">\(N\)</span> at fixed external potential
+<span class="math notranslate nohighlight">\(v(\mathbf{r})\)</span>:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\left( \frac{\partial^n E(N; \{\alpha_1, \alpha_2, ..., \alpha_n\})}{\partial N^n} \right)_{v(\mathbf{r})} \qquad n=1,2,\dots\]</div>
+</div></blockquote>
+<p>More specifically, the fundamental global reactivity indicators of the <span class="math notranslate nohighlight">\(N_0-\)</span> electron reference state
+are the first-, second- and higher-order derivatives of energy
+evaluated at <span class="math notranslate nohighlight">\(N=N_{0}\)</span>, which are called <strong>chemical potential</strong> denoted by <span class="math notranslate nohighlight">\(\mu\)</span>,
+<strong>chemical hardness</strong> denoted by <span class="math notranslate nohighlight">\(\eta\)</span>, and <span class="math notranslate nohighlight">\(n^{\text{th}}\)</span> <strong>-order hyper-hardness</strong>
+denoted by <span class="math notranslate nohighlight">\(\eta ^{(n)} \text{for } n \geq 2\)</span>, respectively:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}\mu &amp;= \left. \left( \frac{\partial E}{\partial N} \right)_{v(\mathbf{r})} \right|_{N = N_0} &amp; \\
+\eta &amp;= \left. \left( \frac{\partial^2 E}{\partial N^2} \right)_{v(\mathbf{r})} \right|_{N = N_0} &amp; \\
+\eta^{(2)} &amp;= \left. \left( \frac{\partial^{3} E}
+            {\partial N^{3}} \right)_{v(\mathbf{r})} \right|_{N = N_0} \\
+\eta^{(n)} &amp;= \left. \left( \frac{\partial^{n+1} E}
+            {\partial N^{n+1}} \right)_{v(\mathbf{r})} \right|_{N = N_0} &amp; \qquad \text{for } n \geq 2\end{split}\]</div>
+</div></blockquote>
+<p>By analogy to thermodynamics, the electronic chemical potential, <span class="math notranslate nohighlight">\(\mu\)</span>, is identified as the first derivative
+of the energy with respect to the number of electrons. <a class="tooltip" href="sci_doc_zref.html#parr1978jcp" id="id1">[3]<span class="tooltiptext">R.G. Parr, R.A. Donnelly, M.&nbsp;Levy, and W.E. Palke. Electronegativity: the density functional viewpoint. <em>J. Chem. Phys.</em>, 68(8):3801–3807, 1978.</span></a> The electronic chemical potential is always
+negative and it represents the intrinsic Lewis acidity/basicity of a system.
+Systems with very negative chemical potentials are strong Lewis acids; systems with nearly zero (but still negative)
+chemical potential are strong Lewis bases. Electrons flow from places with higher chemical potential to places with
+lower chemical potential until the chemical potential is everywhere equal.
+This motivates the definition of electronegativity <a class="tooltip" href="sci_doc_zref.html#iczkowski1961jacs" id="id2">[14]<span class="tooltiptext">R.P. Iczkowski and J.L. Margrave. Electronegativity. <em>J. Am. Chem. Soc.</em>, 83(17):3547–3551, 1961.</span></a> as the negative of the chemical potential, <span class="math notranslate nohighlight">\(\chi_e=-\mu\)</span>.</p>
+<p>The second derivative of the energy with respect to electron number is the chemical hardness, <span class="math notranslate nohighlight">\(\eta\)</span>. <a class="tooltip" href="sci_doc_zref.html#parr1983jacs" id="id3">[4]<span class="tooltiptext">R.G. Parr and R.G. Pearson. Absolute hardness: companion parameter to absolute electronegativity. <em>J. Am. Chem. Soc.</em>, 105(26):7512–7516, 1983.</span></a>
+The chemical hardness is always positive. Hard molecules have properties (e.g., the chemical potential and electron density)
+that are relatively insensitive to perturbations. In addition, according to the principle of maximum hardness,
+it is frequently (but far from universally) the case that hard systems are more stable than soft systems.
+According to the hard/soft acid/base (HSAB) principle: if all other effects are (nearly) equal, hard acids will prefer
+to react with hard bases and soft acids will prefer to react with soft bases. <a class="tooltip" href="sci_doc_zref.html#pearson1963jacs" id="id4">[15]<span class="tooltiptext">Ralph&nbsp;G. Pearson. Hard and soft acids and bases. <em>J. Am. Chem. Soc.</em>, 85(22):3533–3539, 1963.</span></a><a class="tooltip" href="sci_doc_zref.html#pearson1968jce" id="id5">[16]<span class="tooltiptext">Ralph&nbsp;G. Pearson. Hard and soft acids and bases, hsab, part 1: fundamental principles. <em>J. Chem. Educ.</em>, 45(9):581–587, 1968.</span></a><a class="tooltip" href="sci_doc_zref.html#pearson1968jceb" id="id6">[17]<span class="tooltiptext">Ralph&nbsp;G. Pearson. Hard and soft acids and bases, hsab, part ii: underlying theories. <em>J. Chem. Educ.</em>, 45(10):643–648, 1968.</span></a></p>
+<p>Higher-order derivatives of the energy with respect to electron number are called hyper-hardnesses, and are not often used.
+The third derivative, <span class="math notranslate nohighlight">\(\eta^{(2)}\)</span>, which is often simply called the hyper-hardness, appears in some contexts,
+but is typically small.</p>
+<p>ChemTools will evaluate energy derivatives to arbitrary order if those derivatives exist in the energy model you have selected.</p>
+<p>Reactivity indicators in the canonical ensemble are appropriate when the number of electrons in the system is clearly defined.
+For reactions in, or on the surface of, liquid or solid solutions, the number of electrons in the reacting molecule is determined
+by the electronic chemical potential of its environment. In these cases, and also when comparing the reactivity of molecules of
+disparate size, it is better to use reactivity descriptors from the grand canonical ensemble.</p>
+<p id="grand-potential-derivatives">In the grand canonical ensemble, <a class="tooltip" href="sci_doc_zref.html#nalewajski1982jcp" id="id7">[18]<span class="tooltiptext">R.&nbsp;F. Nalewajski and R.&nbsp;G. Parr. Legendre transforms and maxwell relations in density functional theory. <em>J. Chem. Phys.</em>, 77(1):399–407, 1982.</span></a> the fundamental global reactivity descriptors are the derivatives of the grand
+potential model <span class="math notranslate nohighlight">\(\Omega = E \left(\left\langle N \right\rangle\right) - \mu \left\langle N \right\rangle\)</span>
+with respect to the chemical potential <span class="math notranslate nohighlight">\(\mu\)</span> at fixed external potential <span class="math notranslate nohighlight">\(v(\mathbf{r})\)</span>.</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[- \left( \frac{\partial^{n+1}\Omega}{\partial\mu^{n+1}} \right)_{v(\mathbf{r})}
+      = - \left( \frac{\partial^n}{\partial\mu^n} \frac{\partial\Omega}{\partial\mu} \right)_{v(\mathbf{r})}
+      = \left( \frac{\partial^n N}{\partial \mu^n} \right)_{v(\mathbf{r})}  \qquad n=0,1,\dots\]</div>
+</div></blockquote>
+<p>More specifically, the fundamental global indicators of the <span class="math notranslate nohighlight">\(N_0-\)</span> electron reference state
+are the first-, second- and higher-order derivatives of <span class="math notranslate nohighlight">\(\Omega\)</span> with respect to <span class="math notranslate nohighlight">\(\mu\)</span>
+evaluated at the chemical potential of the <span class="math notranslate nohighlight">\(N_0-\)</span> electron system, <span class="math notranslate nohighlight">\(\mu_0=\mu\left(N_0\right)\)</span>.
+These include the number of electrons denoted by <span class="math notranslate nohighlight">\(N_0\)</span>, <strong>chemical softness</strong> denoted by <span class="math notranslate nohighlight">\(S\)</span>, and <span class="math notranslate nohighlight">\(n^{\text{th}}\)</span>
+<strong>-order hyper-softness</strong> denoted by <span class="math notranslate nohighlight">\(S^{(n)} \text{for } n \geq 2\)</span>, respectively:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}- \left. \left( \frac{\partial\Omega}{\partial\mu} \right)_{v(\mathbf{r})} \right|_{N = N_0} &amp;= N_0 \\
+S = - \left. \left( \frac{\partial^2\Omega}{\partial\mu^2} \right)_{v(\mathbf{r})} \right|_{N = N_0}
+ &amp;= \frac{1}{\eta} \\
+S^{(2)} = - \left. \left( \frac{\partial^3\Omega}{\partial\mu^3} \right)_{v(\mathbf{r})} \right|_{N = N_0}
+       &amp;= -\eta^{(2)} \cdot S^3 \\
+S^{(3)} = - \left. \left( \frac{\partial^4\Omega}{\partial\mu^4} \right)_{v(\mathbf{r})} \right|_{N = N_0}
+       &amp;= -\eta^{(3)} \cdot S^4 + 3 \left(\eta^{(2)}\right)^2 \cdot S^5 \\
+S^{(n)} = - \left. \left( \frac{\partial^{n+1}\Omega}{\partial\mu^{n+1}} \right)_{v(\mathbf{r})} \right|_{N = N_0}
+       &amp;= \frac{-\sum_{k=1}^{n-1} S^k \cdot B_{n,k}
+          \left(\eta^{(1)}, \eta^{(2)}, ..., \eta^{(n-k+1)} \right)}{B_{n,n}\left( \eta^{(1)}\right)}\end{split}\]</div>
+</div></blockquote>
+<p>The first derivative just gives back the number of electrons in the reference state. The second derivative of
+the grand potential with respect to the chemical potential gives the global chemical softness, which is just
+the reciprocal of the chemical hardness we obtained in the canonical ensemble.
+The third- and higher-order derivatives of the grand potential with respect to the chemical potential define the
+global hyper-softnesses.
+The first global hyper-softness, <span class="math notranslate nohighlight">\(S^{(2)}\)</span>, appears in a few applications, but none of these higher-order
+reactivity indicators have been explored much in literature.</p>
+<p>ChemTools will evaluate global hyper-softnesses to all orders if those derivatives exist in the energy model you
+have selected.
+Also, in ChemTools, the expressions for reactivity indicators in the grand canonical ensemble are evaluated from the
+reactivity indicators in the canonical ensemble. (This is done so that the user does not have to select a model
+for grand potential, <span class="math notranslate nohighlight">\(\Omega\)</span>, analogous to the energy model, <span class="math notranslate nohighlight">\(E\left(N\right)\)</span>, that users must
+specify in the canonical ensemble.)
+This leads to rather complicated expressions for the global hyper-softnesses, which are derived from the inverse
+function theorem for second- and higher-order derivatives.</p>
+<p id="global-derived-indicators"><strong>Derived Global Reactivity Descriptors</strong></p>
+<p>In contrast to the fundamental reactivity descriptors presented above, derived reactivity indicators are not
+response functions. Instead, they are motivated by handwaving arguments or inspired by empirical correlations.
+Many of the most important derived reactivity indicators are based on the  maximum number of electrons that can
+be accepted by the system, <span class="math notranslate nohighlight">\(N_{\text{max}}\)</span>. That is,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[N_{\text{max}} = \underbrace {\min }_N E(N)\]</div>
+</div></blockquote>
+<p>It is also convenient to define <span class="math notranslate nohighlight">\(\Delta N_{\text{max}}\)</span> as the difference between the number of electrons
+in the reference system, <span class="math notranslate nohighlight">\(N_0\)</span>, and the maximum number of bound electrons,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\Delta N_{\text{max}} = N_{\text{max}} - N_0\]</div>
+</div></blockquote>
+<p><strong>Electrophilicity Index</strong> <span class="math notranslate nohighlight">\(\omega_{\text{electrophilicity}}\)</span> measures the ability
+of an agent to accept electrons from the environment. <a class="tooltip" href="sci_doc_zref.html#parr1999jacs" id="id8">[19]<span class="tooltiptext">R.G. Parr, L.&nbsp;Von&nbsp;Szentpaly, and S.&nbsp;Liu. Absolute hardness: companion parameter to absolute electronegativity. <em>J. Am. Chem. Soc.</em>, 121(9):1922–1924, 1999.</span></a> However, in contrast to electron affinity,
+<span class="math notranslate nohighlight">\(EA\)</span>, which measures the energy lowering from adding one electron to the system, the electrophilicity index
+measures the energy lowering due to maximal electron flow (which may be either less or more than one) from the environment,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\omega_{\text{electrophilicity}} = E(N_0) - E(N_0 + \Delta N_{\text{max}}) = E(N_0) - E(N_{\text{max}})\]</div>
+</div></blockquote>
+<p>This definition is sensible for systems that can bind additional electrons, i.e. <span class="math notranslate nohighlight">\(\Delta N_{\text{max}} &gt; 0\)</span>,
+and have a positive electrophilicity as a result.
+By convention, we decided that for systems with <span class="math notranslate nohighlight">\(\Delta N_{\text{max}} &lt; 0\)</span>, the electrophilicity should be defined
+as negative. This gives an extended definition for the electrophilicity</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[{\Delta E}_{\text {electrophile}} =
+\text{sgn}\left(N_{\text{max}} - N_0\right) \times \left(E(N_0) - E(N_{\text{max}})\right)\]</div>
+</div></blockquote>
+<p>Here <span class="math notranslate nohighlight">\(\text{sgn}(x)\)</span> is the sign of the argument <span class="math notranslate nohighlight">\(x\)</span>. I.e.,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}\text{sgn}(x) =
+ \begin{cases}
+  1 \qquad &amp; x &gt; 0 \\
+  0 \qquad &amp; x = 0 \\
+  -1 \qquad &amp; x &lt; 0
+ \end{cases}\end{split}\]</div>
+</div></blockquote>
+<p>With this extended definition, larger values of <span class="math notranslate nohighlight">\(\omega_{\text{electrophilicity}}\)</span> are associated with stronger
+electrophiles, that is,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}\omega_{\text{electrophilicity}} =
+ \begin{cases}
+  \gg 0 \qquad &amp; \text{strong electrophile} \\
+  \approx 0 \qquad &amp; \text{(very) weak electrophile} \\
+  &lt; 0 \qquad &amp; \text{nucleophile/not electrophile}
+ \end{cases}\end{split}\]</div>
+</div></blockquote>
+<p><strong>Nucleophilicity Index</strong> <span class="math notranslate nohighlight">\(\omega_{\text{nucleophilicity}}\)</span> measures the capacity of a reagent to donate
+electrons to its environment. Unlike the electrophilicity, there is not a strong consensus about how one should
+define the nucleophilicity. <a class="tooltip" href="sci_doc_zref.html#domingo2016m" id="id9">[20]<span class="tooltiptext">L.R. Domingo, M.&nbsp;Rios-Gutierrez, and P.&nbsp;Perez. Applications of the conceptual density functional theory indices to organic chemistry reactivity. <em>Molecules</em>, 21(6):748, 2016.</span></a> None of the existing definitions is very convincing, perhaps because electrostatic
+interactions are often important for nucleophiles, which tend to be locally harder (because nucleophilic sites
+tend to be positively charged) than electrophiles. A reasonable definition for nucleophilicity, perhaps first
+suggested by Contreras <em>et al.</em>, is the effective ionization potential. <a class="tooltip" href="sci_doc_zref.html#contreras2003jpca" id="id10">[21]<span class="tooltiptext">R.&nbsp;Contreras, J.&nbsp;Andres, V.&nbsp;S. Safont, P.&nbsp;Campodonico, and J.&nbsp;G. Santos. A theoretical study on the relationship between nucleophilicity and ionization potentials in solution phase. <em>J. Phys. Chem. A</em>, 107(29):5588–5593, 2003.</span></a> The effective ionization potential is
+closely related to the adiabatic ionization potential: the idea is to include the effects of the environment
+(e.g. solvation, surrounding molcules) and geometric relaxation. Given the simplifications inherent in this
+description, it is usually reasonable to  simply use the vertical ionization potential,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\omega_{\text{nucleophilicity}} \sim I_{\text{eff}} \sim I\]</div>
+</div></blockquote>
+<p>Sometimes the electrofugality (which is closely related) is also identified as the nucleophilicity, <a class="tooltip" href="sci_doc_zref.html#ayers2005pccp" id="id11">[22]<span class="tooltiptext">P.W. Ayers, J.S.M. Anderson, J.I. Rodriguez, and Z.&nbsp;Jawed. Indices for predicting the quality of leaving groups. <em>Phys. Chem. Chem. Phys.</em>, 7(9):1918–1925, 2005.</span></a></p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\omega_{\text{nucleophilicity}} \sim \frac{\left(3I - A\right)^2}{8\left(I - A\right)}\]</div>
+</div></blockquote>
+<p><strong>Nucleofugality Index</strong> <span class="math notranslate nohighlight">\(\nu_{\text{nucleofugality}}\)</span> measures the ability of the system to be a nucleofuge,
+i.e., to be a leaving group which takes an electron with it.
+Nucleofugality is defined as the energetic penalty that a nucleofuge with <span class="math notranslate nohighlight">\(\Delta N_{\text{max}} &lt; 1\)</span> must pay
+when it receives an entire electron, <span class="math notranslate nohighlight">\(\Delta N = 1\)</span>, from the molecule it leaves behind,</p>
+<p>Nucleofuges with <span class="math notranslate nohighlight">\(\Delta N_{\text{max}} &gt; 1\)</span> are exceptional leaving groups that readily accept a full electron
+from their environment under almost any circumstance.
+We therefore define them so that they have negative values of nucleofugality index, motivating the extended definition</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[{\Delta E}_{\text {nucleofuge}} = \text{sgn}\left(N_0 + 1 - N_{\text{max}}\right) \times \left(E(N_0 + 1) - E(N_{\text{max}})\right)\]</div>
+</div></blockquote>
+<p>In general, small (ideally negative) values of <span class="math notranslate nohighlight">\(\nu_{\text{nucleofugality}}\)</span> are associated with better leaving groups.
+Ergo,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}\nu_{\text{nucleofugality}} =
+ \begin{cases}
+  \gg 0 \qquad &amp; \text{poor nucleofuge} \\
+  \approx 0 \qquad &amp; \text{good nucleofuge} \\
+  &lt; 0 \qquad &amp; \text{exceptional nucleofuge}
+ \end{cases}\end{split}\]</div>
+</div></blockquote>
+<p><strong>Electrofugality Index</strong> <span class="math notranslate nohighlight">\(\nu_{\text{electrofugality}}\)</span> measures the ability
+of the system for being a electrofuge, i.e., to be a leaving group which leaves an electron behind with the molecular remnant.
+Electrofugality is defined as the energetic penalty that an electrofuge with, <span class="math notranslate nohighlight">\(\Delta N_{\text{max}} &gt; -1\)</span> must
+pay when it donates an entire electron, <span class="math notranslate nohighlight">\(\Delta N = -1\)</span>, to the molecule it leaves behind,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\nu_{\text{electrofugality}} = E(N_0 - 1) - E(N_0 + \Delta N_{\text{max}}) = E(N_0 - 1) - E(N_{\text{max}})\]</div>
+</div></blockquote>
+<p>Electrofuges with <span class="math notranslate nohighlight">\(\Delta N_{\text{max}} &lt; -1\)</span> are exceptional leaving groups that eagerly donate a full electron
+to their environment. We therefore define them so that they have negative values of electrofugality index,
+motivating the extended definition</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[{\Delta E}_{\text {electrofuge}} =
+\text{sgn}\left(N_{\text{max}} - N_0 + 1\right) \times \left(E(N_0 - 1) - E(N_{\text{max}})\right)\]</div>
+</div></blockquote>
+<p>In general, small (ideally negative) values of electrofugality index are associated with better leaving groups.
+Ergo,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}\nu_{\text{electrofugality}} =
+ \begin{cases}
+  \gg 0 \qquad &amp; \text{poor electrofuge} \\
+  \approx 0 \qquad &amp; \text{good electrofuge} \\
+  &lt; 0 \qquad &amp; \text{exceptional electrofuge}
+ \end{cases}\end{split}\]</div>
+</div></blockquote>
+<p id="global-energy-models"><strong>Energy Models</strong></p>
+<p>Calculating fundamental and derived global reactivity descriptors requires that one choose a model for the dependence of the
+electronic energy on the number of electrons at fixed external potential, <span class="math notranslate nohighlight">\(v\left(\mathbf{r}\right)\)</span>.
+Details about how ChemTools evaluates global reactivity descriptors using its built-in and user-defined energy models can be found below.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_global_linear.html">Linear Energy Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_global_quadratic.html">Quadratic Energy Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_global_rational.html">Rational Energy Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_global_exponential.html">Exponential Energy Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_global_general.html">General Energy Model</a></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sci_doc_global_linear.html" class="btn btn-neutral float-right" title="Linear Energy Model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="sci_doc_conceptual.html" class="btn btn-neutral" title="Conceptual Density Functional Theory" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, ChemTools Dev Team.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+  <script type='text/javascript'>
+  $(".tooltiptext").hide(); // On very first line of scripts.js file
+
+
+  $("a").hover(function () {
+    var elems = this;
+    var curClass = elems.className // current class clicked.
+    // var windowHeight = $(".rst-content").height();
+    var windowWidth = $(".rst-content").width();
+
+    var left = elems.offsetLeft;
+    var top = elems.offsetTop;
+    // var linkHeight = $(".tooltip").height();
+    // var linkWidth = $(".tooltip").width();
+    // var tooltiph = $(".tooltiptext").height();
+    var tooltipw = $(".tooltiptext").width();
+    // var bottom = windowHeight - top - tooltiph;
+    var right = windowWidth - left - tooltipw;
+
+		var isEntirelyVisible = (left + tooltipw <= windowWidth);
+    if (!isEntirelyVisible) {
+        $(".tooltiptext").css("right", "0px");
+    } else  {
+        $(".tooltiptext").css("right", "-160px");
+    }
+
+
+
+
+    $(".tooltiptext").fadeIn('fast');
+},
+
+function () {
+});
+  </script>
+</body>
+</html>

@@ -1,0 +1,383 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>非共价相互作用（NCI） chemtools.tool.analysis.nci &mdash; ChemTools 0.0 文档</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/chemtools_favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="索引"
+              href="genindex.html"/>
+        <link rel="search" title="搜索" href="search.html"/>
+    <link rel="top" title="ChemTools 0.0 文档" href="index.html"/>
+        <link rel="next" title="参考文献" href="sci_doc_zref.html"/>
+        <link rel="prev" title="基于轨道的定域描述符" href="sci_doc_orbitaltool.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+  <style type="text/css">
+  #content {
+      position: relative;
+      }
+  #content img {
+          position: absolute;
+	      top: 0px;
+	          right: 0px;
+		  }
+  .rst-content p, .rst-content li {
+	    text-align: justify;
+	    text-justify: inter-word;
+      }
+  .tooltip {
+      position: relative;
+      /*display: inline-block;*/
+      /*border-bottom: 5px dotted black;*/
+      width: 75px;
+      /*min-width: 75px;*/
+      /*max-width: 255px;*/
+      }
+
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 180px;
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #fff;
+      text-align: left;
+      /*border-radius: 6px;*/
+      padding: 4px;
+      font-size:12px;
+      line-height: 15px;
+      /* Position the tooltip */
+      position: absolute;
+      z-index: 1;
+      }
+
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+      position: absolute;
+      /*left: -70px; -index: 99;*/
+      top: 20px;
+      }
+ </style>
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> ChemTools
+          
+
+          
+            
+            <img src="_static/chemtools_logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro_about.html">关于 ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_citing.html">引用 ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_license.html">开源许可</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_contact.html">联系方式</a></li>
+</ul>
+<p class="caption"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_quick_start.html">快速入门</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_tutorials.html">新手教程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">样例图库</a></li>
+</ul>
+<p class="caption"><span class="caption-text">科学手册</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_conceptual.html">概念密度泛函理论</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_densitytool.html">基于密度的定域描述符</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_orbitaltool.html">基于轨道的定域描述符</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">非共价相互作用（NCI） <code class="docutils literal"><span class="pre">chemtools.tool.analysis.nci</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_zref.html">参考文献</a></li>
+</ul>
+<p class="caption"><span class="caption-text">高阶文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tech_dev.html">开发者指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tech_api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tech_derivations.html">推导</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ChemTools</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div id=content>
+        <a href="https://github.com/QuantumElephant/chemtools" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+       </div>
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>非共价相互作用（NCI） <code class="docutils literal"><span class="pre">chemtools.tool.analysis.nci</span></code></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="non-covalent-interactions-nci-chemtools-tool-analysis-nci">
+<span id="nci"></span><h1>非共价相互作用（NCI） <code class="xref py py-class docutils literal"><span class="pre">chemtools.tool.analysis.nci</span></code><a class="headerlink" href="#non-covalent-interactions-nci-chemtools-tool-analysis-nci" title="永久链接至标题">¶</a></h1>
+<p>NCI（非共价相互作用）是用来辨识非共价作用并使其可视化的工具。其中非共价作用包括范德华力，氢键以及位阻效应等。这些效应指数是基于电子密度及其偏导数的。</p>
+<p>简化密度梯度是由电子密度和其一阶偏导数计算出的，</p>
+<blockquote>
+<div><div class="math">
+\[s\left(\mathbf{r}\right) = \frac{1}{2\left(3\pi ^2 \right)^{1/3}}
+\frac{\lvert \nabla \rho\left(\mathbf{r}\right) \rvert}{\rho\left(\mathbf{r}\right)^{4/3}}\]</div>
+</div></blockquote>
+<p>是一个无量纲的函数，主要用于描述均相电子分布的偏差值。在远离分子的区域，电子密度成指数型地衰减至 0，此时的简化密度梯度是一个很大的正值。而在共价键和非共价作用区域，简化梯度的值就很小，接近于 0。</p>
+<p>为了更好的研究非共价作用，我们扫描了实例中水的简化梯度 <span class="math">\(s\left(\mathbf{r}\right)\)</span> 对电子密度 <span class="math">\(\rho\left(\mathbf{r}\right)\)</span> 的图像：</p>
+<blockquote>
+<div><img alt="_images/H2O_dimer_dens_rdg.jpg" class="align-center" src="_images/H2O_dimer_dens_rdg.jpg" />
+</div></blockquote>
+<p>对于单分子，左上角密度较小，简化密度梯度较大的点对应于电子密度远离原子核的尾部区域。而在右下角点则有着较大电子密度（大约在 0.35 a.u.）却接近于0的简化密度梯度。</p>
+<p>对于双聚分子，我们可以看到一个新的结构，在低密度，低梯度的地区出现了一个尖峰，这是一个非常典型的非共价相互作用。这个特征出现的原因是因为在非共价相互作用区域，简化密度梯度（和共价键类似）退减为0，但是由于非共价作用的本质，电子密度在这个区域也是远低于普通共价键的（小于 0.05 a.u.)。</p>
+<p>电子密度拉普拉斯量的符号 <span class="math">\(\nabla^2 \rho\left(\mathbf{r}\right)\)</span> 可以用来决定相互作用的类型。首先，要计算电子密度海森矩阵（二阶微分）的三个特征值 <span class="math">\(\lambda_i\)</span> ，得到 <span class="math">\((\lambda_1 \leq \lambda_2 \leq \lambda_3)\)</span> 。在原子核处，所有的特征值都是负值，因为电子密度处于局部最大值。处于共价键时，海森矩阵的特征值中有一个为正值，其余两个为负值 <span class="math">\(( \lambda_1 &lt; 0, \lambda_2 &lt; 0, \lambda_3 &gt; 0)\)</span> 。另一方面，在某些有空间位阻亦或是受到区域原子间阻力时（例如二环[2.2.2]辛烯及环或笼状结构的零界点）会有第二个正的特征值。因此，第二个特征值的符号可以用来区分化学键 <span class="math">\((\lambda_2 &lt; 0)\)</span> 或是非键作用 <span class="math">\((\lambda_2 &gt; 0)\)</span> 。这些作用的强弱可以通过电子密度来判断：在非共价作用区域，高电子密度对应于较强的相互作用。因此，NCI方法依赖于审视简化密度梯度对 <span class="math">\(\text{sign}(\lambda_2)\rho\left(\mathbf{r}\right)\)</span> 的图像。</p>
+<blockquote>
+<div><img alt="_images/nci-sdens-vs-rdg.jpg" class="align-center" src="_images/nci-sdens-vs-rdg.jpg" />
+</div></blockquote>
+<p>这些图像可以通过ChemTools NCI工具中的 <code class="docutils literal"><span class="pre">.plot('filename')</span></code> 函数得到。</p>
+<p>二聚水分子在负电子密度区域显示了一个比较低的简化密度梯度尖峰，这表示在该区域有用于稳定结构的氢键存在。二聚甲烷分子的尖峰则非常接近0，但由于弱地色散力作用，仍然有一个负值 <span class="math">\(\text{sign}(\lambda_2)\)</span> 。另一方面，二环[2,2,2]辛烯由于空间位阻原因，在其分子的中间位置有一个正的尖峰。</p>
+<p>如果想要可视化相互作用的区域，则需要研究低简化密度梯度时的等值面。这些梯度等值面根据他们 <span class="math">\(\text{sign}(\lambda_2)\rho\left(\mathbf{r}\right)\)</span> 的值被加上了不同的颜色。 <span class="math">\(\text{sign}(\lambda_2)\rho\left(\mathbf{r}\right)\)</span> 为较大负值的区域在图中是蓝色的，表示相互吸引的非键作用，例如取向力或是氢键；而正值的红色区域则表示非键，空间位阻冲突的区域；而值接近于0的区域则表示相对较弱的非键相互作用，例如 <span class="math">\(\pi\)</span>-<span class="math">\(\pi\)</span> 重叠或是范德华力。</p>
+<blockquote>
+<div><img alt="_images/H2O-CH4-BCO-nci.jpg" src="_images/H2O-CH4-BCO-nci.jpg" />
+</div></blockquote>
+<p>在二聚水分子中，等值面在氢原子和氧原子之间形成了一个蓝色的小圆环。而在二聚甲烷分子中，等值面在两个分子间形成了某种形状的大圆环。其中绿色的部分该区域的电子密度小于二聚水分子，表示两个单分子之间色散力较弱。最后，在位阻拥挤的二环[2,2,2]辛烯中，在其中间有一个等值面，体现了碳原子的空间斥力。</p>
+<p>在ChemTools中，可以通过 <code class="docutils literal"><span class="pre">.dump_files('filename')</span></code> 函数生成这些图片。查看新手教程和样例图库了解详细方法。</p>
+<blockquote>
+<div><div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">待处理</p>
+<p class="last">Add link to tutorials and example gallery once these are in their final form.</p>
+</div>
+</div></blockquote>
+<p><strong>参考文献</strong></p>
+<ul class="simple" id="bibtex-bibliography-sci_doc_nci-0">
+<li>E.R. Johnson, S.&nbsp;Keinan, P.&nbsp;Mori-Sánchez, J.&nbsp;Contreras-García, A.J. Cohen, and W.&nbsp;Yang. Revealing noncovalent interactions. <em>J. Am. Chem. Soc.</em>, 132(18):6498–6506, 2010. <a class="reference external" href="https://doi.org/10.1021/ja100936w">doi:10.1021/ja100936w</a>.</li>
+</ul>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sci_doc_zref.html" class="btn btn-neutral float-right" title="参考文献" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="sci_doc_orbitaltool.html" class="btn btn-neutral" title="基于轨道的定域描述符" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; 版权所有 2016, Ayers&#39; Group @ McMaster University.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0',
+            LANGUAGE:'zh_CN',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/translations.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+  <script type='text/javascript'>
+  $(".tooltiptext").hide(); // On very first line of scripts.js file
+
+
+  $("a").hover(function () {
+    var elems = this;
+    var curClass = elems.className // current class clicked.
+    // var windowHeight = $(".rst-content").height();
+    var windowWidth = $(".rst-content").width();
+
+    var left = elems.offsetLeft;
+    var top = elems.offsetTop;
+    // var linkHeight = $(".tooltip").height();
+    // var linkWidth = $(".tooltip").width();
+    // var tooltiph = $(".tooltiptext").height();
+    var tooltipw = $(".tooltiptext").width();
+    // var bottom = windowHeight - top - tooltiph;
+    var right = windowWidth - left - tooltipw;
+
+		var isEntirelyVisible = (left + tooltipw <= windowWidth);
+    if (!isEntirelyVisible) {
+        $(".tooltiptext").css("right", "0px");
+    } else  {
+        $(".tooltiptext").css("right", "-160px");
+    }
+
+
+
+
+    $(".tooltiptext").fadeIn('fast');
+},
+
+function () {
+});
+  </script>
+</body>
+</html>

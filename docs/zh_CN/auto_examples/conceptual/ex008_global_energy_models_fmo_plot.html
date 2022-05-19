@@ -1,0 +1,447 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>实例8：描述能量模型（FMO方法） &mdash; ChemTools 0.0 文档</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/chemtools_favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="索引"
+              href="../../genindex.html"/>
+        <link rel="search" title="搜索" href="../../search.html"/>
+    <link rel="top" title="ChemTools 0.0 文档" href="../../index.html"/>
+        <link rel="up" title="样例图库" href="../index.html"/>
+        <link rel="next" title="实例9：描绘能量模型（FD方法）" href="ex009_global_energy_models_fd_plot.html"/>
+        <link rel="prev" title="实例7：描绘二次函数模型的对偶描述符（FMO方法）" href="ex007_local_linear_dual_fmo_plot.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+  <style type="text/css">
+  #content {
+      position: relative;
+      }
+  #content img {
+          position: absolute;
+	      top: 0px;
+	          right: 0px;
+		  }
+  .rst-content p, .rst-content li {
+	    text-align: justify;
+	    text-justify: inter-word;
+      }
+  .tooltip {
+      position: relative;
+      /*display: inline-block;*/
+      /*border-bottom: 5px dotted black;*/
+      width: 75px;
+      /*min-width: 75px;*/
+      /*max-width: 255px;*/
+      }
+
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 180px;
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #fff;
+      text-align: left;
+      /*border-radius: 6px;*/
+      padding: 4px;
+      font-size:12px;
+      line-height: 15px;
+      /* Position the tooltip */
+      position: absolute;
+      z-index: 1;
+      }
+
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+      position: absolute;
+      /*left: -70px; -index: 99;*/
+      top: 20px;
+      }
+ </style>
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> ChemTools
+          
+
+          
+            
+            <img src="../../_static/chemtools_logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro_about.html">关于 ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro_citing.html">引用 ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro_license.html">开源许可</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro_contact.html">联系方式</a></li>
+</ul>
+<p class="caption"><span class="caption-text">用户指南</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_quick_start.html">快速入门</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_tutorials.html">新手教程</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">样例图库</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#conceptual-density-functional-theory">概念密度泛函理论</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ex001_gloabl_quadratic_energy_fmo.html">实例1：基于二次函数模型的全局反应描述符（FMO方法）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ex002_global_quadratic_energy_fd.html">实例2：基于二次函数模型的全局反应描述符（FD方法）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ex003_global_linear_energy_fmo.html">实例3：基于线性函数模型的全局反应描述符（FMO方法）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ex004_global_linear_energy_fd.html">实例4：基于线性函数模型的全局反应描述符（FD方法）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ex005_local_linear_ff_fmo_plot.html">实例5：描绘线性模型的福井函数（FMO方法）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ex006_local_linear_ff_fd_plot.html">实例6：描绘线性模型的福井函数（FD方法）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ex007_local_linear_dual_fmo_plot.html">实例7：描绘二次函数模型的对偶描述符（FMO方法）</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">实例8：描述能量模型（FMO方法）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ex009_global_energy_models_fd_plot.html">实例9：描绘能量模型（FD方法）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ex010_local_quadratic_ff_fmo_contour_plot.html">实例10：二次福井函数2D等高线（FMO方法）</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#density-based-local-descriptors">基于密度的定域描述符</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#orbital-based-local-descriptors">基于轨道的定域描述符</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">科学手册</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sci_doc_conceptual.html">概念密度泛函理论</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sci_doc_densitytool.html">基于密度的定域描述符</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sci_doc_orbitaltool.html">基于轨道的定域描述符</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sci_doc_nci.html">非共价相互作用（NCI） <code class="docutils literal"><span class="pre">chemtools.tool.analysis.nci</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sci_doc_zref.html">参考文献</a></li>
+</ul>
+<p class="caption"><span class="caption-text">高阶文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tech_dev.html">开发者指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tech_api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tech_derivations.html">推导</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ChemTools</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div id=content>
+        <a href="https://github.com/QuantumElephant/chemtools" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+       </div>
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">样例图库</a> &raquo;</li>
+        
+      <li>实例8：描述能量模型（FMO方法）</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="ex8-plot-energy-models-fmo-approach">
+<span id="sphx-glr-auto-examples-conceptual-ex008-global-energy-models-fmo-plot-py"></span><h1>实例8：描述能量模型（FMO方法）<a class="headerlink" href="#ex8-plot-energy-models-fmo-approach" title="永久链接至标题">¶</a></h1>
+<ol class="arabic simple">
+<li>根据前线分子轨道理论（FMO）的方法，分别使用线性和二次函数作为甲醛分子 <span class="math">\(\mathbf{CH_2O}\)</span> 的能量模型</li>
+<li>计算在不同模型、分子数情况下体系的总能量。</li>
+<li>绘出能量对电子数的图像框架。</li>
+<li>将所选模型的能量点描绘在图像上</li>
+</ol>
+<img alt="../../_images/sphx_glr_ex008_global_energy_models_fmo_plot_001.png" class="align-center" src="../../_images/sphx_glr_ex008_global_energy_models_fmo_plot_001.png" />
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">chemtools</span> <span class="kn">import</span> <span class="n">GlobalConceptualDFT</span><span class="p">,</span> <span class="n">context</span>
+
+<span class="c1"># 1. Build linear and quadratic energy models using FMO approach</span>
+
+<span class="c1"># path to molecule&#39;s fchk file</span>
+<span class="n">file_path</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get_fn</span><span class="p">(</span><span class="s1">&#39;examples/ch2o_q+0_ub3lyp_augccpvtz.fchk&#39;</span><span class="p">)</span>
+<span class="c1"># build linear &amp; quadratic global conceptual DFT tool (one file is passed, so FMO approach is taken)</span>
+<span class="n">model_lin</span> <span class="o">=</span> <span class="n">GlobalConceptualDFT</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;linear&#39;</span><span class="p">)</span>
+<span class="n">model_qua</span> <span class="o">=</span> <span class="n">GlobalConceptualDFT</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;quadratic&#39;</span><span class="p">)</span>
+<span class="n">model_rat</span> <span class="o">=</span> <span class="n">GlobalConceptualDFT</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;rational&#39;</span><span class="p">)</span>
+<span class="n">model_exp</span> <span class="o">=</span> <span class="n">GlobalConceptualDFT</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;exponential&#39;</span><span class="p">)</span>
+
+<span class="c1"># 2. Compute energy values for various number of electrons.</span>
+
+<span class="c1"># get reference number of electrons, n0, from either linear or quadratic models</span>
+<span class="n">n0</span> <span class="o">=</span> <span class="n">model_lin</span><span class="o">.</span><span class="n">n0</span>
+<span class="c1"># sample number of electrons around n0</span>
+<span class="n">n_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n0</span> <span class="o">-</span> <span class="mf">1.1</span><span class="p">,</span> <span class="n">n0</span> <span class="o">+</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="c1"># compute linear &amp; quadratic energy values for sampled number of electrons</span>
+<span class="n">energy_lin</span> <span class="o">=</span> <span class="p">[</span><span class="n">model_lin</span><span class="o">.</span><span class="n">energy</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">n_values</span><span class="p">]</span>
+<span class="n">energy_qua</span> <span class="o">=</span> <span class="p">[</span><span class="n">model_qua</span><span class="o">.</span><span class="n">energy</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">n_values</span><span class="p">]</span>
+<span class="n">energy_rat</span> <span class="o">=</span> <span class="p">[</span><span class="n">model_rat</span><span class="o">.</span><span class="n">energy</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">n_values</span><span class="p">]</span>
+<span class="n">energy_exp</span> <span class="o">=</span> <span class="p">[</span><span class="n">model_exp</span><span class="o">.</span><span class="n">energy</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">n_values</span><span class="p">]</span>
+
+<span class="c1"># 3. Plot energy vs. number of electrons.</span>
+
+<span class="c1"># plot linear energy model</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n_values</span><span class="p">,</span> <span class="n">energy_lin</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;0.7&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span>
+         <span class="n">label</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Model&#39;</span> <span class="o">%</span> <span class="n">model_lin</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
+<span class="c1"># plot quadratic energy model</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n_values</span><span class="p">,</span> <span class="n">energy_qua</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span>
+         <span class="n">label</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Model&#39;</span> <span class="o">%</span> <span class="n">model_qua</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
+<span class="c1"># plot rational energy model</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n_values</span><span class="p">,</span> <span class="n">energy_rat</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span>
+         <span class="n">label</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Model&#39;</span> <span class="o">%</span> <span class="n">model_rat</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
+<span class="c1"># plot exponential energy model</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n_values</span><span class="p">,</span> <span class="n">energy_exp</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span>
+         <span class="n">label</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Model&#39;</span> <span class="o">%</span> <span class="n">model_exp</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
+
+<span class="c1"># 4. Plot data points used for modeling energy.</span>
+
+<span class="c1"># number of electrons used for modeling energy</span>
+<span class="n">n_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n0</span><span class="p">,</span> <span class="n">n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+<span class="c1"># compute energy values used for modeling energy</span>
+<span class="c1"># Note: any of the tools built above can be used for this purpose because</span>
+<span class="c1">#       they all have the same energy for N0 - 1, N0, and N0 + 1 electrons.</span>
+<span class="n">e_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">model_lin</span><span class="o">.</span><span class="n">energy</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">n_data</span><span class="p">]</span>
+
+<span class="c1"># plot given data points</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n_data</span><span class="p">,</span> <span class="n">e_data</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Given Data&#39;</span><span class="p">)</span>
+
+<span class="c1"># add axis label</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Number of electrons, N&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Energy, E(N)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+<span class="c1"># add title</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Frontier Molecular Orbital Approach&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+<span class="c1"># add legend &amp; remove legend frame</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="c1"># show plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  0.529 seconds)</p>
+<div class="sphx-glr-footer docutils container">
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../../_downloads/ex008_global_energy_models_fmo_plot.py" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">ex008_global_energy_models_fmo_plot.py</span></code></a></div>
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../../_downloads/ex008_global_energy_models_fmo_plot.ipynb" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">ex008_global_energy_models_fmo_plot.ipynb</span></code></a></div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="http://sphinx-gallery.readthedocs.io">Generated by Sphinx-Gallery</a></p>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ex009_global_energy_models_fd_plot.html" class="btn btn-neutral float-right" title="实例9：描绘能量模型（FD方法）" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ex007_local_linear_dual_fmo_plot.html" class="btn btn-neutral" title="实例7：描绘二次函数模型的对偶描述符（FMO方法）" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; 版权所有 2016, Ayers&#39; Group @ McMaster University.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.0',
+            LANGUAGE:'zh_CN',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../_static/translations.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+  <script type='text/javascript'>
+  $(".tooltiptext").hide(); // On very first line of scripts.js file
+
+
+  $("a").hover(function () {
+    var elems = this;
+    var curClass = elems.className // current class clicked.
+    // var windowHeight = $(".rst-content").height();
+    var windowWidth = $(".rst-content").width();
+
+    var left = elems.offsetLeft;
+    var top = elems.offsetTop;
+    // var linkHeight = $(".tooltip").height();
+    // var linkWidth = $(".tooltip").width();
+    // var tooltiph = $(".tooltiptext").height();
+    var tooltipw = $(".tooltiptext").width();
+    // var bottom = windowHeight - top - tooltiph;
+    var right = windowWidth - left - tooltipw;
+
+		var isEntirelyVisible = (left + tooltipw <= windowWidth);
+    if (!isEntirelyVisible) {
+        $(".tooltiptext").css("right", "0px");
+    } else  {
+        $(".tooltiptext").css("right", "-160px");
+    }
+
+
+
+
+    $(".tooltiptext").fadeIn('fast');
+},
+
+function () {
+});
+  </script>
+</body>
+</html>

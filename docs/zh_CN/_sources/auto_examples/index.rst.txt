@@ -1,0 +1,310 @@
+:orphan:
+
+.. _examples gallery:
+
+Examples Gallery
+################
+
+Here we demonstrate how one can use ChemTools to reproduce the results of published articles.
+
+In this section, numerious examples from published scientific articles are considered.
+This demonstrates how ChemTools makes such computations feasible.
+
+
+.. raw:: html
+
+    <div style='clear:both'></div>
+
+.. _examples_conceptual_dft:
+
+Conceptual Density Functional Theory
+------------------------------------
+
+Examples illustrating how to compute conceptual DFT reactivity descriptors.
+These examples cover :mod:`chemtools.conceptual` module.
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1. Build a quadratic energy model for formaldehyde, :math:`\mathbf{CH_2O}`,    using frontier m...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/conceptual/images/thumb/sphx_glr_ex001_gloabl_quadratic_energy_fmo_thumb.png
+
+        :ref:`sphx_glr_auto_examples_conceptual_ex001_gloabl_quadratic_energy_fmo.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/conceptual/ex001_gloabl_quadratic_energy_fmo
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1. Build a quadratic energy model for formaldehyde, :math:`\mathbf{CH_2O}`,    using finite dif...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/conceptual/images/thumb/sphx_glr_ex002_global_quadratic_energy_fd_thumb.png
+
+        :ref:`sphx_glr_auto_examples_conceptual_ex002_global_quadratic_energy_fd.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/conceptual/ex002_global_quadratic_energy_fd
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1. Build a linear energy model for formaldehyde, :math:`\mathbf{CH_2O}`,    using frontier mole...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/conceptual/images/thumb/sphx_glr_ex003_global_linear_energy_fmo_thumb.png
+
+        :ref:`sphx_glr_auto_examples_conceptual_ex003_global_linear_energy_fmo.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/conceptual/ex003_global_linear_energy_fmo
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1. Build a linear energy model for formaldehyde, :math:`\mathbf{CH_2O}`,    using finite differ...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/conceptual/images/thumb/sphx_glr_ex004_global_linear_energy_fd_thumb.png
+
+        :ref:`sphx_glr_auto_examples_conceptual_ex004_global_linear_energy_fd.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/conceptual/ex004_global_linear_energy_fd
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1. Make a Cubic grid for plotting Fukui functions. 2. Build linear energy model for Formaldehyd...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/conceptual/images/thumb/sphx_glr_ex005_local_linear_ff_fmo_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_conceptual_ex005_local_linear_ff_fmo_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/conceptual/ex005_local_linear_ff_fmo_plot
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1. Make a Cubic grid for plotting Fukui functions. 2. Build linear energy model for Formaldehyd...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/conceptual/images/thumb/sphx_glr_ex006_local_linear_ff_fd_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_conceptual_ex006_local_linear_ff_fd_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/conceptual/ex006_local_linear_ff_fd_plot
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1. Make cubic grid for plotting dual descriptor. 2. Build quadratic energy model for Formaldehy...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/conceptual/images/thumb/sphx_glr_ex007_local_linear_dual_fmo_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_conceptual_ex007_local_linear_dual_fmo_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/conceptual/ex007_local_linear_dual_fmo_plot
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1. Build a linear and quadratic energy models for formaldehyde, :math:`\mathbf{CH_2O}`,    usin...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/conceptual/images/thumb/sphx_glr_ex008_global_energy_models_fmo_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_conceptual_ex008_global_energy_models_fmo_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/conceptual/ex008_global_energy_models_fmo_plot
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1. Build a linear and quadratic energy models for formaldehyde, :math:`\mathbf{CH_2O}`,    usin...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/conceptual/images/thumb/sphx_glr_ex009_global_energy_models_fd_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_conceptual_ex009_global_energy_models_fd_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/conceptual/ex009_global_energy_models_fd_plot
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1. Make a 2D grid in the plane containing formaldehyde, :math:`\mathbf{CH_2O}`. 2. Build a quad...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/conceptual/images/thumb/sphx_glr_ex010_local_quadratic_ff_fmo_contour_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_conceptual_ex010_local_quadratic_ff_fmo_contour_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/conceptual/ex010_local_quadratic_ff_fmo_contour_plot
+.. raw:: html
+
+    <div style='clear:both'></div>
+
+.. _examples_density_tools:
+
+Density-Based Local Descriptors
+-------------------------------
+
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1. Build the NCI object for water dimmer using fchk files. 2. Dump files/scripts for visualizin...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/density/images/thumb/sphx_glr_ex001_nci_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_density_ex001_nci_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/density/ex001_nci_plot
+.. raw:: html
+
+    <div style='clear:both'></div>
+
+.. _examples_orbital_tools:
+
+Orbital-Based Local Descriptors
+-------------------------------
+
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1. Run a Hartree-Fock calculation with cc-pVDZ basis-set using HORTON. 2. Build an OrbitalLocal...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/orbital/images/thumb/sphx_glr_ex001_Kr_elf_plot_thumb.png
+
+        :ref:`sphx_glr_auto_examples_orbital_ex001_Kr_elf_plot.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/orbital/ex001_Kr_elf_plot
+.. raw:: html
+
+    <div style='clear:both'></div>
+
+
+
+.. container:: sphx-glr-footer
+
+
+  .. container:: sphx-glr-download
+
+    :download:`Download all examples in Python source code: auto_examples_python.zip <//home/tczorro/Documents/chemtools/doc/auto_examples/auto_examples_python.zip>`
+
+
+
+  .. container:: sphx-glr-download
+
+    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//home/tczorro/Documents/chemtools/doc/auto_examples/auto_examples_jupyter.zip>`
+
+.. rst-class:: sphx-glr-signature
+
+    `Generated by Sphinx-Gallery <http://sphinx-gallery.readthedocs.io>`_

@@ -1,0 +1,10 @@
+:orphan:
+
+chemtools.toolbox.kinetic.KED
+=============================
+
+.. currentmodule:: chemtools.toolbox.kinetic
+
+.. autoclass:: KED
+   :members:
+   :inherited-members:

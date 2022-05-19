@@ -1,0 +1,486 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Local Descriptive Tools &mdash; ChemTools 0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/chemtools_favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="ChemTools 0.0 documentation" href="index.html"/>
+        <link rel="up" title="Conceptual Density Functional Theory" href="sci_doc_conceptual.html"/>
+        <link rel="next" title="Linear Energy Model" href="sci_doc_local_linear.html"/>
+        <link rel="prev" title="General Energy Model" href="sci_doc_global_general.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+  <style type="text/css">
+  #content {
+      position: relative;
+      }
+  #content img {
+          position: absolute;
+	      top: 0px;
+	          right: 0px;
+		  }
+  .rst-content p, .rst-content li {
+	    text-align: justify;
+	    text-justify: inter-word;
+      }
+  .tooltip {
+      position: relative;
+      /*display: inline-block;*/
+      /*border-bottom: 5px dotted black;*/
+      width: 75px;
+      /*min-width: 75px;*/
+      /*max-width: 255px;*/
+      }
+
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 180px;
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #fff;
+      text-align: left;
+      /*border-radius: 6px;*/
+      padding: 4px;
+      font-size:12px;
+      line-height: 15px;
+      /* Position the tooltip */
+      position: absolute;
+      z-index: 1;
+      }
+
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+      position: absolute;
+      /*left: -70px; -index: 99;*/
+      top: 20px;
+      }
+ </style>
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> ChemTools
+          
+
+          
+            
+            <img src="_static/chemtools_logo2.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro_about.html">About ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_citing.html">Citing ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_license.html">Licence Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_conduct.html">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_contact.html">Contact Information</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Examples Gallery</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scientific Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="sci_doc_conceptual.html">Conceptual Density Functional Theory</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="sci_doc_globaltool.html">Global Descriptive Tools</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Local Descriptive Tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sci_doc_local_linear.html">Linear Energy Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sci_doc_local_quadratic.html">Quadratic Energy Model</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sci_doc_condensedtool.html">Condensed Descriptive Tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_dftbased.html">Density Functional Theory (DFT) Based</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_orbitaltool.html">Orbital-Based Local Descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_nci.html">Non-Covalent Interactions (NCI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_zref.html">References</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advanced Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tech_dev.html">Developer Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tech_api.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ChemTools</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div id=content>
+        <a href="https://github.com/theochem/chemtools" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+       </div>
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="sci_doc_conceptual.html">Conceptual Density Functional Theory</a> &raquo;</li>
+        
+      <li>Local Descriptive Tools</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="local-descriptive-tools">
+<span id="local-tools"></span><h1>Local Descriptive Tools<a class="headerlink" href="#local-descriptive-tools" title="Permalink to this headline">¶</a></h1>
+<p>Local descriptors, <span class="math notranslate nohighlight">\(p_{\text{local}} (\mathbf{r})\)</span>, assign a value to every point in space.
+These values then provide insight into the reactivity of the molecule at point <span class="math notranslate nohighlight">\(\mathbf{r}\)</span> in space.
+As with the <a class="reference internal" href="sci_doc_globaltool.html#global-tools"><span class="std std-ref">Global Descriptive Tools</span></a>, local reactivity descriptors may be classified as either
+<a class="reference internal" href="#local-fundamental-indicators"><span class="std std-ref">fundamental</span></a> or <a class="reference internal" href="#local-derived-indicators"><span class="std std-ref">derived</span></a>.
+Also similar to global reactivity descriptors, evaluating local descriptors requires specification of an
+appropriate model for the dependence of the electronic energy on the number of electrons, i.e., <span class="math notranslate nohighlight">\(E\left(N\right)\)</span>.
+ChemTools has built-in support for the linear and quadratic energy models, as well as the capability to compute
+the local descriptors associated with a user-defined energy model.</p>
+<p id="local-fundamental-indicators"><strong>Fundamental Local Reactivity Descriptors</strong></p>
+<p>In conceptual DFT, the fundamental local descriptors are functional derivatives of
+<a class="reference internal" href="sci_doc_globaltool.html#global-fundamental-indicators"><span class="std std-ref">fundamental global descriptive tools</span></a> with respect to local quantities, typically the
+external potential <span class="math notranslate nohighlight">\(v(\mathbf{r})\)</span>, but occasionally also the electron density <span class="math notranslate nohighlight">\(\rho(\mathbf{r})\)</span>.</p>
+<p>In the canonical ensemble, fundamental local descriptors arise by differentiating
+<a class="reference internal" href="sci_doc_globaltool.html#energy-derivatives"><span class="std std-ref">energy and its derivatives</span></a> (with respect to the number of electrons),
+with respect to the external potential <span class="math notranslate nohighlight">\(v(\mathbf{r})\)</span> at constant number of electrons <span class="math notranslate nohighlight">\(N\)</span>.</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}\rho(\mathbf{r}) = f^{(0)}(\mathbf{r}) &amp;= {\left( \frac{\delta E}{\delta v(\mathbf{r})} \right)_N} &amp;&amp; \\
+f(\mathbf{r}) = f^{(1)}(\mathbf{r}) &amp;= {\left( \frac{\delta \mu}{\delta v(\mathbf{r})} \right)_N}
+          &amp;&amp;= {\left( \frac{\delta}{\delta v(\mathbf{r})}
+              {\left( \frac{\partial E}{\partial N} \right)_{v(\mathbf{r})}} \right)_N} \\
+\Delta f(\mathbf{r}) = f^{(2)}(\mathbf{r}) &amp;= {\left( \frac{\delta \eta}{\delta v(\mathbf{r})} \right)_N}
+          &amp;&amp;= {\left( \frac{\delta}{\delta v(\mathbf{r})}
+              {\left( \frac{\partial^2 E}{\partial N^2} \right)_{v(\mathbf{r})}} \right)_N} \\
+f^{(n)}(\mathbf{r}) &amp;= {\left( \frac{\delta \eta^{(n-1)}}{\delta v(\mathbf{r})} \right)_N}
+         &amp;&amp;= {\left( \frac{\delta}{\delta v(\mathbf{r})}
+             {\left( \frac{\partial^n E}{\partial N^n} \right)_{v(\mathbf{r})}} \right)_N}\end{split}\]</div>
+</div></blockquote>
+<p>The derivative of the energy with respect to the external potential is, by the Hellmann-Feynman theorem,
+equal to the ground-state electron density, <span class="math notranslate nohighlight">\(\rho(\mathbf{r})\)</span>. <a class="tooltip" href="sci_doc_zref.html#hellmann1937" id="id1">[23]<span class="tooltiptext">H.&nbsp;Hellmann. <em>Einführung in die Quantenchemie</em>. Leipzig: Franz Deuticke, 1937.</span></a><a class="tooltip" href="sci_doc_zref.html#feynman1939pr" id="id2">[24]<span class="tooltiptext">R.P. Feynman. Forces in molecules. <em>Phys. Rev.</em>, 56(4):340–343, 1939.</span></a>
+The derivative of the electronic chemical potential with respect to the external potential,
+at fixed electron number, is the <strong>Fukui function</strong>, <span class="math notranslate nohighlight">\(f(\mathbf{r})\)</span>. <a class="tooltip" href="sci_doc_zref.html#fukui1952jcp" id="id3">[25]<span class="tooltiptext">K.&nbsp;Fukui, T.&nbsp;Yonezawa, and H.&nbsp;Shingu. A molecular orbital theory of reactivity in aromatic hydrocarbons. <em>J. Chem. Phys.</em>, 20(4):722–725, 1952.</span></a><a class="tooltip" href="sci_doc_zref.html#parr1984jacs" id="id4">[26]<span class="tooltiptext">R.G. Parr and W.&nbsp;Yang. Density functional approach to the frontier-electron theory of chemical reactivity. <em>J. Am. Chem. Soc.</em>, 106(14):4049–4050, 1984.</span></a>
+The Fukui function is the fundamental regioselectivity descriptor in conceptual DFT, and indicates the
+areas of the molecule that are best able to accept/donate electrons.
+The derivative of the chemical hardness with respect to external potential at constant <span class="math notranslate nohighlight">\(N\)</span> is the
+<strong>dual descriptor</strong>, <span class="math notranslate nohighlight">\(\Delta f(\mathbf{r})\)</span>. <a class="tooltip" href="sci_doc_zref.html#morell2005jpc" id="id5">[27]<span class="tooltiptext">C.&nbsp;Morell, A.&nbsp;Grand, and A.&nbsp;Toro-Labbé. New dual descriptor for chemical reactivity. <em>J. Phys. Chem.</em>, 109(1):205–212, 2005.</span></a>
+The dual descriptor is positive in electrophilic regions negative in nucleophilic regions. It is especially
+useful for reactions where electrons are simultaneously accepted/donated electrons (like concerted pericyclic
+reactions) or for describing ambiphilic reagents. Higher-order local reactivity descriptors—corresponding to
+the derivatives of hyper-hardnesses with respect to the external potential—are called <strong>hyper-Fukui functions</strong> or
+<span class="math notranslate nohighlight">\(\mathbf{n^{\text{th}}}\)</span> <strong>-order Fukui function</strong>, <span class="math notranslate nohighlight">\(f^{(n)}(\mathbf{r})\)</span>.
+While the computational utility of hyper-Fukui functions has not been established, they can be computed with ChemTools.</p>
+<p>In the grand canonical ensemble, fundamental local descriptors arise by differentiating
+<a class="reference internal" href="sci_doc_globaltool.html#grand-potential-derivatives"><span class="std std-ref">grand potential and its derivatives</span></a> (with respect to the electronic chemical potential)
+with respect to the external potential <span class="math notranslate nohighlight">\(v(\mathbf{r})\)</span> at constant chemical potential <span class="math notranslate nohighlight">\(\mu\)</span>.</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}\rho(\mathbf{r}) = s^{(0)}(\mathbf{r}) &amp;= {\left( \frac{\delta \Omega}{\delta v(\mathbf{r})} \right)_{\mu}}  \\
+s(\mathbf{r}) = s^{(1)}(\mathbf{r}) &amp;= -{\left( \frac{\delta N}{\delta v(\mathbf{r})} \right)_{\mu}}
+          = {\left( \frac{\delta}{\delta v(\mathbf{r})}
+              {\left( \frac{\partial \Omega}{\partial \mu} \right)_{v(\mathbf{r})}} \right)_{\mu}}
+            = S \cdot f(\mathbf{r})  \\
+s^{(2)}(\mathbf{r}) &amp;= {\left( \frac{\delta S}{\delta v(\mathbf{r})} \right)_{\mu}}
+          = {\left( \frac{\delta}{\delta v(\mathbf{r})}
+              {\left( \frac{\partial^2 \Omega}{\partial {\mu}^2} \right)_{v(\mathbf{r})}} \right)_{\mu}}
+            = S^{2} \cdot f^{(2)}(\mathbf{r}) + S^{(2)} \cdot f(\mathbf{r}) \\
+s^{(n)}(\mathbf{r}) &amp;= {\left( \frac{\delta S^{(n-1)}}{\delta v(\mathbf{r})} \right)_{\mu}}
+         = {\left( \frac{\delta}{\delta v(\mathbf{r})}
+             {\left( \frac{\partial^n \Omega}{\partial {\mu}^n} \right)_{v(\mathbf{r})}} \right)_{\mu}} \\
+           &amp;= -\sum_{k=1}^n f^{(k)}(\mathbf{r}) \cdot B_{n,k}\left(S^{(1)}, S^{(2)}, ..., S^{(n-k+1)} \right)  \\\end{split}\]</div>
+</div></blockquote>
+<p>The derivative of the grand potential with respect to the external potential at constant chemical potential
+is the ground-state electron density, <span class="math notranslate nohighlight">\(\rho(\mathbf{r})\)</span>.
+The derivative of minus the number of electrons with respect to the external potential, at fixed electron number,
+gives the <strong>local softness</strong>, <span class="math notranslate nohighlight">\(s(\mathbf{r})\)</span>. <a class="tooltip" href="sci_doc_zref.html#yang1985pnas" id="id6">[28]<span class="tooltiptext">W&nbsp;Yang and R&nbsp;G Parr. Hardness, softness, and the fukui function in the electronic theory of metals and catalysis. <em>Proc. Natl. Acad. Sci. U.S.A.</em>, 82(20):6723–6726, 1985.</span></a>
+The local softness is the fundamental regioselectivity descriptor for open systems, and is especially useful when
+comparing the relative electrophilicity/nucleophilicity of reactive sites of different molecules, especially if
+those molecules are somewhat different in size. The derivative of the global softness with respect to external
+potential at constant <span class="math notranslate nohighlight">\(\mu\)</span> is the <strong>dual local softness</strong>, <span class="math notranslate nohighlight">\(s^{(2)}(\mathbf{r})\)</span>.
+The dual local softness is positive in electrophilic regions negative in nucleophilic regions.
+It has similar properties and amplicability to the dual descriptor. Higher-order local reactivity
+descriptors—corresponding to the derivatives of global hyper-softnesses with respect to the external potential—are
+called local <strong>hyper-softnesses</strong> or <span class="math notranslate nohighlight">\(\mathbf{n^{\text{th}}}\)</span> <strong>-order local softness</strong>, <span class="math notranslate nohighlight">\(s^{(n)}(\mathbf{r})\)</span>.
+While the computational utility of local hyper-softnesses have not been established,
+they can be computed with ChemTools.</p>
+<p>In ChemTools, the expressions for reactivity indicators in the grand canonical ensemble are evaluated from the
+reactivity indicators in the canonical ensemble. This leads to rather complicated expressions for the local
+hyper-softnesses.</p>
+<p id="local-derived-indicators"><strong>Derived Local Reactivity Descriptors</strong></p>
+<p>Many derived local reactivity descriptors are defined as the local response of a global derived descriptors.
+I.e., the derivative of any global reactivity descriptor with respect to the external potential, <span class="math notranslate nohighlight">\(v(\mathbf{r})\)</span>
+at constant <span class="math notranslate nohighlight">\(N\)</span> or <span class="math notranslate nohighlight">\(\mu\)</span> is a local reactivity descriptor.
+Most other derived descriptors are defined as products of several global and local descriptors.</p>
+<p><strong>Energy Models</strong></p>
+<p>Calculating fundamental and derived global reactivity descriptors requires that one choose a model for the dependence
+of the electronic energy upon the number of electrons at fixed external potential, <span class="math notranslate nohighlight">\(v(\mathbf{r})\)</span>.
+For the user-selected reference states with electron numbers <span class="math notranslate nohighlight">\(N_0,N_1,N_2,...,N_n\)</span> and electronic energies
+<span class="math notranslate nohighlight">\(E\left(N_0\right),E\left(N_1\right),E\left(N_2\right),...,E\left(N_n\right)\)</span>, a model for the electron density
+and Fukui functions as a function of the number of electrons can be derived using chain-rule:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}f^{(n)}(\mathbf{r}) &amp;= {\left(\frac{\delta}{\delta v(\mathbf{r})}{\left(\frac{\partial^n E_{\text{model}}}
+                       {\partial N^n}\right)_{v(\mathbf{r})}}\right)_N} \\
+&amp;= {\left(\frac{\delta}{\delta v(\mathbf{r})}{\left(\frac{\partial^n}
+   {\partial N^n} E(N; \{\alpha_1, \alpha_2, ..., \alpha_n\}) \right)_{v(\mathbf{r})}}\right)_N} \\
+&amp;= {\left(\frac{\partial^n}{\partial N^n}{\left(\frac{\delta}
+   {\delta v(\mathbf{r})} E(N; \{\alpha_1, \alpha_2, ..., \alpha_n\}) \right)_N} \right)_{v(\mathbf{r})}} \\
+&amp;= {\left(\frac{\partial^n}{\partial N^n}{\left(\sum_{i=1}^n \frac{\partial E(N; \{\alpha_1, \alpha_2, ..., \alpha_n\})}
+   {\partial \alpha_{i}} \frac{\delta \alpha_i}{\delta v(\mathbf{r})}
+   \right)_N} \right)_{v(\mathbf{r})}} \\
+&amp;= {\left(\frac{\partial^n}{\partial N^n}{\left(\sum_{i=1}^n \left( \frac{\partial E(N; \{\alpha_1, \alpha_2, ..., \alpha_n\})}
+   {\partial \alpha_{i}} \cdot \sum_k \frac{\partial \alpha_i}{\partial E_{N_0 \pm k}} \frac{\delta E_{N_0 \pm k}}{\delta v(\mathbf{r})}
+   \right)_N\right)} \right)_{v(\mathbf{r})}} \\
+&amp;= {\left(\frac{\partial^n}{\partial N^n}{\left(\sum_{i=1}^n \left( \left.\frac{\partial E(N; \{\alpha_1, \alpha_2, ..., \alpha_n\})}
+   {\partial \alpha_{i}}\right|_{N=N_0} \cdot \sum_k \frac{\partial \alpha_i}{\partial E_{N_0 \pm k}} \rho_{N_0 \pm k}(\mathbf{r})
+   \right)\right)} \right)_{v(\mathbf{r})}} \\
+&amp;= \sum_{i=1}^n \left(\left. \frac{\partial^{n+1} E(N; \{\alpha_1, \alpha_2, ..., \alpha_n\})}
+   {\partial N^n \partial\alpha_{i}} \right|_{N=N_0} \cdot
+   \sum_k \frac{\partial \alpha_i}{\partial E_{N_0 \pm k}}
+   \rho_{N_0 \pm k}(\mathbf{r})\right)_{v(\mathbf{r})}\end{split}\]</div>
+</div></blockquote>
+<p>where the known electron densities for the reference states are</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\rho_{N_k}(\mathbf{r}) = \left(\frac{\delta E\left(N_k\right)}{\delta v(\mathbf{r})}\right)_{N=N_k} \qquad k=1,2,\dots,n\]</div>
+</div></blockquote>
+<p>ChemTools provide explicit implementations for local reactivity descriptors computed using the</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_local_linear.html">Linear Energy Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_local_quadratic.html">Quadratic Energy Model</a></li>
+</ul>
+</div>
+<p>The rational model and the exponential model do not have built-in support because the local reactivity
+indicators (even the electron density!) do not satisfy the appropriate normalization constraints for these models.
+Please see <a class="tooltip" href="sci_doc_zref.html#heidar-zadeh2016jctc" id="id7">[7]<span class="tooltiptext">F.&nbsp;Heidar-Zadeh, R&nbsp;Alain&nbsp;Miranda-Quintana, T.&nbsp;Verstraelen, P.&nbsp;Bultinck, and P.W. Ayers. When is the fukui function not normalized? the danger of inconsistent energy interpolation models in density functional theory. <em>J. Chem. Theory Comput.</em>, 12(12):5777–5787, 2016.</span></a> for more information.</p>
+<blockquote>
+<div></div></blockquote>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sci_doc_local_linear.html" class="btn btn-neutral float-right" title="Linear Energy Model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="sci_doc_global_general.html" class="btn btn-neutral" title="General Energy Model" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, ChemTools Dev Team.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+  <script type='text/javascript'>
+  $(".tooltiptext").hide(); // On very first line of scripts.js file
+
+
+  $("a").hover(function () {
+    var elems = this;
+    var curClass = elems.className // current class clicked.
+    // var windowHeight = $(".rst-content").height();
+    var windowWidth = $(".rst-content").width();
+
+    var left = elems.offsetLeft;
+    var top = elems.offsetTop;
+    // var linkHeight = $(".tooltip").height();
+    // var linkWidth = $(".tooltip").width();
+    // var tooltiph = $(".tooltiptext").height();
+    var tooltipw = $(".tooltiptext").width();
+    // var bottom = windowHeight - top - tooltiph;
+    var right = windowWidth - left - tooltipw;
+
+		var isEntirelyVisible = (left + tooltipw <= windowWidth);
+    if (!isEntirelyVisible) {
+        $(".tooltiptext").css("right", "0px");
+    } else  {
+        $(".tooltiptext").css("right", "-160px");
+    }
+
+
+
+
+    $(".tooltiptext").fadeIn('fast');
+},
+
+function () {
+});
+  </script>
+</body>
+</html>

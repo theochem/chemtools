@@ -1,0 +1,9 @@
+:orphan:
+
+chemtools.toolbox.conceptualglobal.ExponentialGlobalTool
+========================================================
+
+.. currentmodule:: chemtools.toolbox.conceptualglobal
+
+.. autoclass:: ExponentialGlobalTool
+   :members:

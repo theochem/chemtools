@@ -1,0 +1,10 @@
+:orphan:
+
+chemtools.conceptual.rational.RationalGlobalTool
+================================================
+
+.. currentmodule:: chemtools.conceptual.rational
+
+.. autoclass:: RationalGlobalTool
+   :members:
+   :inherited-members:

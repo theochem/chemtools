@@ -1,0 +1,504 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>开发者指南 &mdash; ChemTools 0.0 文档</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/chemtools_favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="索引"
+              href="genindex.html"/>
+        <link rel="search" title="搜索" href="search.html"/>
+    <link rel="top" title="ChemTools 0.0 文档" href="index.html"/>
+        <link rel="next" title="API Documentation" href="tech_api.html"/>
+        <link rel="prev" title="参考文献" href="sci_doc_zref.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+  <style type="text/css">
+  #content {
+      position: relative;
+      }
+  #content img {
+          position: absolute;
+	      top: 0px;
+	          right: 0px;
+		  }
+  .rst-content p, .rst-content li {
+	    text-align: justify;
+	    text-justify: inter-word;
+      }
+  .tooltip {
+      position: relative;
+      /*display: inline-block;*/
+      /*border-bottom: 5px dotted black;*/
+      width: 75px;
+      /*min-width: 75px;*/
+      /*max-width: 255px;*/
+      }
+
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 180px;
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #fff;
+      text-align: left;
+      /*border-radius: 6px;*/
+      padding: 4px;
+      font-size:12px;
+      line-height: 15px;
+      /* Position the tooltip */
+      position: absolute;
+      z-index: 1;
+      }
+
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+      position: absolute;
+      /*left: -70px; -index: 99;*/
+      top: 20px;
+      }
+ </style>
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> ChemTools
+          
+
+          
+            
+            <img src="_static/chemtools_logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro_about.html">关于 ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_citing.html">引用 ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_license.html">开源许可</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_contact.html">联系方式</a></li>
+</ul>
+<p class="caption"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_quick_start.html">快速入门</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_tutorials.html">新手教程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">样例图库</a></li>
+</ul>
+<p class="caption"><span class="caption-text">科学手册</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_conceptual.html">概念密度泛函理论</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_densitytool.html">基于密度的定域描述符</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_orbitaltool.html">基于轨道的定域描述符</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_nci.html">非共价相互作用（NCI） <code class="docutils literal"><span class="pre">chemtools.tool.analysis.nci</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_zref.html">参考文献</a></li>
+</ul>
+<p class="caption"><span class="caption-text">高阶文档</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">开发者指南</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submitting-issues">提交错误</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building-chemtools">安装ChemTools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-tests">运行测试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing-code">贡献代码</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building-documentation">创建文档</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#quality-assurance">质量保证</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tech_api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tech_derivations.html">推导</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ChemTools</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div id=content>
+        <a href="https://github.com/QuantumElephant/chemtools" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+       </div>
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>开发者指南</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="developer-guidelines">
+<span id="usr-development"></span><h1>开发者指南<a class="headerlink" href="#developer-guidelines" title="永久链接至标题">¶</a></h1>
+<div class="section" id="submitting-issues">
+<h2>提交错误<a class="headerlink" href="#submitting-issues" title="永久链接至标题">¶</a></h2>
+<p>如果您在使用ChemTools的过程中遇到了程序出错的情况，欢迎您到我们的 <a class="reference external" href="https://github.com/QuantumElephant/chemtools/issues">问题页面</a> 提交相关的报告或反馈。</p>
+</div>
+<div class="section" id="building-chemtools">
+<span id="dev-build"></span><h2>安装ChemTools<a class="headerlink" href="#building-chemtools" title="永久链接至标题">¶</a></h2>
+<p>我们使用Github来管理ChemTools的开发，您可以用下列命令下载我们最新的 <a class="reference external" href="https://github.com/QuantumElephant/chemtools">代码</a></p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>git clone https://github.com/QuantumElephant/chemtools.git chemtools
+</pre></div>
+</div>
+<p>对于开发者来说，我们推荐就地安装ChemTools。在安装前，请确保你已经安装好了所有必须的 <a class="reference internal" href="usr_doc_installation.html#usr-py-depend"><span class="std std-ref">依赖库</span></a> 。您可以用下列命令就地安装ChemTools：</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">cd</span> chemtools
+python setup.py build
+</pre></div>
+</div>
+<p>您需要添加 <code class="docutils literal"><span class="pre">PYTHONPATH</span></code> 和 <code class="docutils literal"><span class="pre">CTDATA</span></code> 路径到环境变量中，<strong>~/.bashrc</strong> (Linux) or <strong>~/.profile</strong> (Mac OS):</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">$PYTHONPATH</span>:<span class="o">{</span>path_to_chemtools_repo<span class="o">}</span>
+<span class="nb">export</span> <span class="nv">CTDATA</span><span class="o">={</span>path_to_chemtools_repo<span class="o">}</span>/data
+</pre></div>
+</div>
+</div>
+<div class="section" id="running-tests">
+<h2>运行测试<a class="headerlink" href="#running-tests" title="永久链接至标题">¶</a></h2>
+<p>为确保ChemTools各部分正常运行，我们建议您运行 <code class="docutils literal"><span class="pre">nosetests</span></code> 来测试：</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>nosetests -v chemtools
+</pre></div>
+</div>
+<p>在测试的过程中，一些警告信息可能会显示在屏幕上，不同担心，这些是正常情况。需要留意的是在测试结束后，正常情况下不应该有任何错误或者测试失败的信息。</p>
+</div>
+<div class="section" id="contributing-code">
+<h2>贡献代码<a class="headerlink" href="#contributing-code" title="永久链接至标题">¶</a></h2>
+<p>我们推荐您使用`Git`来参与开发，Fork我们在Github上的Repo，修改，保存，然后再在Github上通过 <cite>Pull request</cite> 来提交你所做的修改</p>
+<ul>
+<li><p class="first">Fork我们在Github上面的 <a class="reference external" href="https://github.com/QuantumElephant/chemtools">Repo</a> :点击网页右上角 <code class="docutils literal"><span class="pre">Fork</span></code> 按钮。这样，在您自己的账号下就会有一份完全一摸一样的ChemTools的拷贝。</p>
+</li>
+<li><p class="first">将拷贝的Repo添加到你本地电脑中的远程Repo中：</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>git remote add your_remote_name git@github.com:YourAccount/chemtools.git
+</pre></div>
+</div>
+</li>
+<li><p class="first">在本地电脑上创建一个新的分支(Branch):</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>git checkout -b your_feature_branch_name
+</pre></div>
+</div>
+</li>
+<li><p class="first">将您的名字和邮箱保存在ChemTools根目录中的 <code class="docutils literal"><span class="pre">AUTHORS</span></code> 文件中。请确保您输入的名字和您Git所设置的信息相匹配。您可以用下列命令查看相关的Git信息：</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>git config user.name
+git config user.email
+</pre></div>
+</div>
+</li>
+<li><p class="first">在新创建的分支上对代码进行修改，当您完成编辑之后，使用以下命令：</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>git add files_you_modified
+git commit
+</pre></div>
+</div>
+<p>在Commit的文本中写下你所做的修改并保存。</p>
+</li>
+<li><p class="first">将你修改后的代码推送（Push）到你自己的远程Repo中：</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>git push your_remote_name your_feature_branch_name
+</pre></div>
+</div>
+</li>
+<li><p class="first">最后，回到您自己Fork的Github的网页，点击 <code class="docutils literal"><span class="pre">Pull</span> <span class="pre">request</span></code> 提交你所做的修改。所有提交的修改都会在通过ChemTools的代码测试之后被审阅。你可以在 <a class="reference external" href="https://github.com/QuantumElephant/chemtools/pulls">Pull request</a> 页面查看测试结果，并修正可能生成的错误。</p>
+</li>
+</ul>
+</div>
+<div class="section" id="building-documentation">
+<span id="usr-doc"></span><h2>创建文档<a class="headerlink" href="#building-documentation" title="永久链接至标题">¶</a></h2>
+<p>如果你想要从源代码编译生成说明文档，那么下列软件库则是必不可少的：</p>
+<ul class="simple">
+<li>Sphinx &gt;=1.3.1: <a class="reference external" href="http://sphinx.pocoo.org/">http://sphinx.pocoo.org/</a></li>
+<li>sphinxcontrib-bibtex &gt;= 0.3.5: <a class="reference external" href="https://pypi.python.org/pypi/sphinxcontrib-bibtex">https://pypi.python.org/pypi/sphinxcontrib-bibtex</a></li>
+<li>IPython &gt;= 3.2.1: <a class="reference external" href="https://ipython.org/install.html">https://ipython.org/install.html</a></li>
+</ul>
+<p>根据你的电脑系统，按步骤安装这些依赖库</p>
+<ul>
+<li><p class="first"><strong>Ubuntu Linux 16.04</strong></p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo apt-get install python-sphinx ipython
+pip install --user --upgrade sphinxcontrib-bibtex
+</pre></div>
+</div>
+</li>
+<li><p class="first"><strong>Ubuntu Linux 15.04 &amp; 14.04</strong></p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>pip install --user --upgrade sphinx sphinxcontrib-bibtex ipython
+</pre></div>
+</div>
+</li>
+<li><p class="first"><strong>Mac OS</strong></p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo port install py27-sphinx py27-ipython
+pip install --user --upgrade sphinxcontrib-bibtex
+</pre></div>
+</div>
+</li>
+</ul>
+<p>您可以用Git来下载ChemTools订制版的Sphinx RTD主题：</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>git submodule update --init doc/_themes/sphinx_rtd_theme
+</pre></div>
+</div>
+<p>同时，请确认正确设置了 <a class="reference internal" href="#dev-build"><span class="std std-ref">环境变量</span></a> <code class="docutils literal"><span class="pre">CTDATA</span></code> ；顺利下载了 <a class="reference internal" href="usr_doc_installation.html#usr-lfs-installation"><span class="std std-ref">实例文件</span></a>。</p>
+<p>您可以使用下列命令，自动生成软件API文档和HTML网页文档：</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">cd</span> doc
+make clean
+make html
+</pre></div>
+</div>
+<p>您可以通过直接点击打开 <code class="docutils literal"><span class="pre">_build/html/index.html</span></code> 文件 或是通过下列命令打开查看生成的网页：</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>open _build/html/index.html
+</pre></div>
+</div>
+<p>如果上述命令在您的电脑系统上无效，如在Ubuntu 16.04等，你也可以尝试：</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>see _build/html/index.html
+</pre></div>
+</div>
+</div>
+<div class="section" id="quality-assurance">
+<h2>质量保证<a class="headerlink" href="#quality-assurance" title="永久链接至标题">¶</a></h2>
+<p>每当您使用Pull request推送你的代码到ChemTools Repo的时候，远程服务器都会对所推送的代码进行测试，以确保所有上传的代码符合ChemTools的质量要求。如果您想在本地电脑上运行普通测试，请查阅 <a class="reference internal" href="usr_doc_installation.html#usr-testing"><span class="std std-ref">测试</span></a> 页面；如果您想要在本地电脑上运行质量保证测试,请首先在电脑上安装下列依赖库：</p>
+<ul class="simple">
+<li>PyLint &gt;= 1.5.0: <a class="reference external" href="https://www.pylint.org/">https://www.pylint.org/</a></li>
+<li>pycodestyle &gt;= 2.0.0: <a class="reference external" href="http://pycodestyle.readthedocs.io/">http://pycodestyle.readthedocs.io/</a></li>
+<li>pydocstyle &gt;= 1.0.0: <a class="reference external" href="http://pydocstyle.readthedocs.io/">http://pydocstyle.readthedocs.io/</a></li>
+<li>coverage &gt;= 4.1: <a class="reference external" href="https://coverage.readthedocs.io/">https://coverage.readthedocs.io/</a></li>
+<li>Git &gt;= 1.8: <a class="reference external" href="https://git-scm.com/">https://git-scm.com/</a></li>
+<li>GitPython &gt;= 2.0.5: <a class="reference external" href="http://gitpython.readthedocs.io/">http://gitpython.readthedocs.io/</a></li>
+</ul>
+<p>使用Git 下载 <code class="docutils literal"><span class="pre">质量保证</span></code> 子模版：</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>git submodule update --init tools/inspector
+</pre></div>
+</div>
+<p>之后，利用该模版中的bash脚本对pre-commit hooks进行设置，再依次运行质量保证的测试脚本：</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># it is installed in the relative path</span>
+<span class="nb">cd</span> tools/inspector
+./install.sh
+<span class="nb">cd</span> ../..
+</pre></div>
+</div>
+<p>在这个阶段，质量保证测试可以在ChemTools的根目录下进行。例如，测试 <code class="docutils literal"><span class="pre">pylint</span></code> 可以使用如下命令，</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># from ChemTools parent directory</span>
+./tools/inspector/qa/simulate_trapdoor_pr.py tools/inspector/qa/trapdoor_pylint.py
+</pre></div>
+</div>
+<p>用下列命令运行所有测试脚本，</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># from ChemTools parent directory</span>
+<span class="k">for</span> i in tools/inspector/qa/trapdoor_*<span class="p">;</span> <span class="k">do</span> tools/inspector/qa/simulate_trapdoor_pr.py <span class="nv">$i</span><span class="p">;</span> <span class="k">done</span>
+</pre></div>
+</div>
+<p>注意，在开发的时候，您应该在特征（feature）分支上，而不是主分支（master）上进行。在开发完成之后再合并（Merge／rebase）至最新的主分支上。同时在测试之前，也请确保该分支下没有未保存的编辑内容。</p>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tech_api.html" class="btn btn-neutral float-right" title="API Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="sci_doc_zref.html" class="btn btn-neutral" title="参考文献" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; 版权所有 2016, Ayers&#39; Group @ McMaster University.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0',
+            LANGUAGE:'zh_CN',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/translations.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+  <script type='text/javascript'>
+  $(".tooltiptext").hide(); // On very first line of scripts.js file
+
+
+  $("a").hover(function () {
+    var elems = this;
+    var curClass = elems.className // current class clicked.
+    // var windowHeight = $(".rst-content").height();
+    var windowWidth = $(".rst-content").width();
+
+    var left = elems.offsetLeft;
+    var top = elems.offsetTop;
+    // var linkHeight = $(".tooltip").height();
+    // var linkWidth = $(".tooltip").width();
+    // var tooltiph = $(".tooltiptext").height();
+    var tooltipw = $(".tooltiptext").width();
+    // var bottom = windowHeight - top - tooltiph;
+    var right = windowWidth - left - tooltipw;
+
+		var isEntirelyVisible = (left + tooltipw <= windowWidth);
+    if (!isEntirelyVisible) {
+        $(".tooltiptext").css("right", "0px");
+    } else  {
+        $(".tooltiptext").css("right", "-160px");
+    }
+
+
+
+
+    $(".tooltiptext").fadeIn('fast');
+},
+
+function () {
+});
+  </script>
+</body>
+</html>

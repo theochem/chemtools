@@ -1,0 +1,10 @@
+:orphan:
+
+chemtools.toolbox.motbased.MOTBasedTool
+=======================================
+
+.. currentmodule:: chemtools.toolbox.motbased
+
+.. autoclass:: MOTBasedTool
+   :members:
+   :inherited-members:

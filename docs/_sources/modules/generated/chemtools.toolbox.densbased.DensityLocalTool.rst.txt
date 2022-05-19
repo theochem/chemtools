@@ -1,0 +1,10 @@
+:orphan:
+
+chemtools.toolbox.densbased.DensityLocalTool
+============================================
+
+.. currentmodule:: chemtools.toolbox.densbased
+
+.. autoclass:: DensityLocalTool
+   :members:
+   :inherited-members:

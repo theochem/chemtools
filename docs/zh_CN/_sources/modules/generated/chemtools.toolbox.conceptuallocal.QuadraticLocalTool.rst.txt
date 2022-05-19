@@ -1,0 +1,9 @@
+:orphan:
+
+chemtools.toolbox.conceptuallocal.QuadraticLocalTool
+====================================================
+
+.. currentmodule:: chemtools.toolbox.conceptuallocal
+
+.. autoclass:: QuadraticLocalTool
+   :members:

@@ -1,0 +1,10 @@
+:orphan:
+
+chemtools.conceptual.mixed.MixedGlobalTool
+==========================================
+
+.. currentmodule:: chemtools.conceptual.mixed
+
+.. autoclass:: MixedGlobalTool
+   :members:
+   :inherited-members:

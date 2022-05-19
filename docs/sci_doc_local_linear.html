@@ -1,0 +1,501 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Linear Energy Model &mdash; ChemTools 0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/chemtools_favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="ChemTools 0.0 documentation" href="index.html"/>
+        <link rel="up" title="Local Descriptive Tools" href="sci_doc_localtool.html"/>
+        <link rel="next" title="Quadratic Energy Model" href="sci_doc_local_quadratic.html"/>
+        <link rel="prev" title="Local Descriptive Tools" href="sci_doc_localtool.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+  <style type="text/css">
+  #content {
+      position: relative;
+      }
+  #content img {
+          position: absolute;
+	      top: 0px;
+	          right: 0px;
+		  }
+  .rst-content p, .rst-content li {
+	    text-align: justify;
+	    text-justify: inter-word;
+      }
+  .tooltip {
+      position: relative;
+      /*display: inline-block;*/
+      /*border-bottom: 5px dotted black;*/
+      width: 75px;
+      /*min-width: 75px;*/
+      /*max-width: 255px;*/
+      }
+
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 180px;
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #fff;
+      text-align: left;
+      /*border-radius: 6px;*/
+      padding: 4px;
+      font-size:12px;
+      line-height: 15px;
+      /* Position the tooltip */
+      position: absolute;
+      z-index: 1;
+      }
+
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+      position: absolute;
+      /*left: -70px; -index: 99;*/
+      top: 20px;
+      }
+ </style>
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> ChemTools
+          
+
+          
+            
+            <img src="_static/chemtools_logo2.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro_about.html">About ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_citing.html">Citing ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_license.html">Licence Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_conduct.html">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_contact.html">Contact Information</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Examples Gallery</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scientific Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="sci_doc_conceptual.html">Conceptual Density Functional Theory</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="sci_doc_globaltool.html">Global Descriptive Tools</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="sci_doc_localtool.html">Local Descriptive Tools</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Linear Energy Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sci_doc_local_quadratic.html">Quadratic Energy Model</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sci_doc_condensedtool.html">Condensed Descriptive Tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_dftbased.html">Density Functional Theory (DFT) Based</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_orbitaltool.html">Orbital-Based Local Descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_nci.html">Non-Covalent Interactions (NCI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_zref.html">References</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advanced Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tech_dev.html">Developer Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tech_api.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ChemTools</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div id=content>
+        <a href="https://github.com/theochem/chemtools" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+       </div>
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="sci_doc_conceptual.html">Conceptual Density Functional Theory</a> &raquo;</li>
+        
+          <li><a href="sci_doc_localtool.html">Local Descriptive Tools</a> &raquo;</li>
+        
+      <li>Linear Energy Model</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="linear-energy-model">
+<span id="local-linear"></span><h1>Linear Energy Model<a class="headerlink" href="#linear-energy-model" title="Permalink to this headline">¶</a></h1>
+<p>Complementing the <a class="reference internal" href="sci_doc_global_linear.html#linear-energy"><span class="std std-ref">linear global tools</span></a>, the fitted piece-wise linear
+energy expression,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}E\left(N\right) = \begin{cases}
+         \left(N - N_0 + 1\right) E\left(N_0\right) - \left(N - N_0\right) E\left(N_0 - 1\right) &amp; \text{ for } N \leqslant N_0 \\
+         \left(N - N_0\right) E\left(N_0 + 1\right) - \left(N - N_0 - 1\right) E\left(N_0\right) &amp; \text{ for } N \geqslant N_0 \\
+        \end{cases}\end{split}\]</div>
+</div></blockquote>
+<p>and its derivative with respect to number of electrons <span class="math notranslate nohighlight">\(N\)</span> at fixed external potential,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}\mu\left(N\right) = \begin{cases}
+         E\left(N_0\right) - E\left(N_0 - 1\right) = - IP &amp;= \mu^- &amp; \text{ for } N &lt; N_0 \\
+         E\left(N_0 + 1\right) - E\left(N_0\right) = - EA &amp;= \mu^+ &amp; \text{ for } N &gt; N_0 \\
+        \end{cases}\end{split}\]</div>
+</div></blockquote>
+<p>alongside the electron density of systems with <span class="math notranslate nohighlight">\(N_0 - 1\)</span>, <span class="math notranslate nohighlight">\(N_0\)</span> and <span class="math notranslate nohighlight">\(N_0 + 1\)</span> electrons, namely
+<span class="math notranslate nohighlight">\({\{\rho_{N_0 - 1}\left(\mathbf{r}\right), \rho_{N_0}\left(\mathbf{r}\right), \rho_{N_0 + 1}\left(\mathbf{r}\right)\}}\)</span>,
+are used to calculate linear local descriptors. These local tools include:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><a class="reference internal" href="#linear-density"><span class="std std-ref">Linear Electron Density</span></a></li>
+<li><a class="reference internal" href="#linear-fukui-function"><span class="std std-ref">Linear Fukui Function</span></a></li>
+<li><a class="reference internal" href="#linear-softness"><span class="std std-ref">Linear Softness</span></a></li>
+</ol>
+</div></blockquote>
+<p id="linear-density"><strong>Linear Electron Density:</strong> According to Eq. ???, the change in linear energy expression with respect to external
+potential at fixed number of electrons yields the density of <span class="math notranslate nohighlight">\(N\)</span>-electron system, that is,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}\rho_{N}(\mathbf{r}) = \left( \frac{\delta E\left(N\right)}{\delta v(\mathbf{r})} \right)_N =
+  \begin{cases}
+    \left(N - N_0 + 1\right) \left(\frac{\delta E\left(N_0\right)}{\delta v(\mathbf{r})} \right)_N -
+    \left(N - N_0\right) \left(\frac{\delta E\left(N_0 - 1\right)}{\delta v(\mathbf{r})} \right)_N &amp; \text{ for } N \leqslant N_0 \\
+    \left(N - N_0\right) \left(\frac{\delta E\left(N_0 + 1\right)}{\delta v(\mathbf{r})} \right)_N -
+    \left(N - N_0 - 1\right) \left(\frac{\delta E\left(N_0\right)}{\delta v(\mathbf{r})} \right)_N &amp; \text{ for } N \geqslant N_0 \\
+  \end{cases}\end{split}\]</div>
+</div></blockquote>
+<p>So,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}\rho_{N}(\mathbf{r}) =
+  \begin{cases}
+    \left(N - N_0 + 1\right) \rho_{N_0}(\mathbf{r}) - \left(N - N_0\right) \rho_{N_0 - 1}(\mathbf{r}) &amp; \text{ for } N \leqslant N_0 \\
+    \left(N - N_0\right) \rho_{N_0 + 1}(\mathbf{r}) - \left(N - N_0 - 1\right) \rho_{N_0}(\mathbf{r}) &amp; \text{ for } N \geqslant N_0 \\
+  \end{cases}\end{split}\]</div>
+</div></blockquote>
+<p>As expected, the obtained expression for density equals <span class="math notranslate nohighlight">\(\rho_{N_0 - 1}\left(\mathbf{r}\right)\)</span>, <span class="math notranslate nohighlight">\(\rho_{N_0}\left(\mathbf{r}\right)\)</span>
+and <span class="math notranslate nohighlight">\(\rho_{N_0 + 1}\left(\mathbf{r}\right)\)</span> when setting <span class="math notranslate nohighlight">\(N\)</span> equal to <span class="math notranslate nohighlight">\(\left(N_0-1\right)\)</span>, <span class="math notranslate nohighlight">\(N_0\)</span> and
+<span class="math notranslate nohighlight">\(\left(N_0+1\right)\)</span>, respectively.
+Also, integrating the linear electron density over all space results in <span class="math notranslate nohighlight">\(N\)</span>
+which confirms that the density expression is properly normalized to the number of electrons.</p>
+<p>By rearranging the expression for linear electron density, it can be easily perceived as first-order Taylor expansion of density
+around the <span class="math notranslate nohighlight">\(\rho_{N_0}(\mathbf{r})\)</span> as the reference within the linear energy model, that is,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}\rho_{N}(\mathbf{r}) =
+  \begin{cases}
+    \rho_{N_0}(\mathbf{r}) + \left[\rho_{N_0}(\mathbf{r}) - \rho_{N_0 - 1}(\mathbf{r})\right] \left(N - N_0\right) &amp; \text{ for } N \leqslant N_0 \\
+    \rho_{N_0}(\mathbf{r}) + \left[\rho_{N_0 + 1}(\mathbf{r}) - \rho_{N_0}(\mathbf{r})\right] \left(N - N_0\right) &amp; \text{ for } N \geqslant N_0 \\
+  \end{cases}\end{split}\]</div>
+</div></blockquote>
+<p>where,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}\left. \left(\frac{\partial \rho_{N}(\mathbf{r})}{\partial N}\right)_{v(\mathbf{r})} \right|_{N = N_0^-} &amp;=
+     \rho_{N_0}(\mathbf{r}) - \rho_{N_0 - 1}(\mathbf{r}) = f_{N_0}^-(\mathbf{r}) \\
+\left. \left(\frac{\partial \rho_{N}(\mathbf{r})}{\partial N}\right)_{v(\mathbf{r})} \right|_{N = N_0^+} &amp;=
+     \rho_{N_0 + 1}(\mathbf{r}) - \rho_{N_0}(\mathbf{r}) = f_{N_0}^+(\mathbf{r})\end{split}\]</div>
+</div></blockquote>
+<p id="linear-fukui-function"><strong>Linear Fukui Function:</strong> According to Eq. ???, the change in linear chemical potential with respect to external potential at fixed number of electrons yields
+the Fukui function of <span class="math notranslate nohighlight">\(N\)</span>-electron system. Equivalently, the Fukui function of <span class="math notranslate nohighlight">\(N\)</span>-electron system can be viewed as the
+change in linear electron density <span class="math notranslate nohighlight">\(\rho_N\left(\mathbf{r}\right)\)</span> with respect to number of electrons <span class="math notranslate nohighlight">\(N\)</span> at fixed external potential.
+In other words,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}f_{N}(\mathbf{r}) = \left( \frac{\delta \mu\left(N\right)}{\delta v(\mathbf{r})} \right)_N =
+                    \left( \frac{\delta}{\delta v(\mathbf{r})} \left(\frac{\partial E\left(N\right)}{\partial N}\right)_{v(\mathbf{r})} \right)_N =
+                    \left( \frac{\partial}{\partial N} \left(\frac{\delta E\left(N\right)}{\delta v(\mathbf{r})}\right)_{N} \right)_{v(\mathbf{r})}  =
+                    \left(\frac{\partial \rho_{N}(\mathbf{r})}{\partial N}\right)_{v(\mathbf{r})} \\\end{split}\]</div>
+</div></blockquote>
+<p>where,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}\left( \frac{\delta \mu\left(N\right)}{\delta v(\mathbf{r})} \right)_N &amp;=
+  \begin{cases}
+    \left(\frac{\delta E\left(N_0\right)}{\delta v(\mathbf{r})} \right)_N -
+    \left(\frac{\delta E\left(N_0 - 1\right)}{\delta v(\mathbf{r})} \right)_N &amp; \text{ for } N &lt; N_0 \\
+    \left(\frac{\delta E\left(N_0 + 1\right)}{\delta v(\mathbf{r})} \right)_N -
+    \left(\frac{\delta E\left(N_0\right)}{\delta v(\mathbf{r})} \right)_N &amp; \text{ for } N &gt; N_0 \\
+  \end{cases} \\
+\left( \frac{\partial \rho_{N}(\mathbf{r})}{\partial N} \right)_{v(\mathbf{r})} &amp;=
+  \begin{cases}
+    \frac{\partial}{\partial N}\left[\left(N - N_0 + 1\right) \rho_{N_0}(\mathbf{r}) - \left(N - N_0\right) \rho_{N_0 - 1}(\mathbf{r})\right] &amp; \text{ for } N &lt; N_0 \\
+    \frac{\partial}{\partial N}\left[\left(N - N_0\right) \rho_{N_0 + 1}(\mathbf{r}) - \left(N - N_0 - 1\right) \rho_{N_0}(\mathbf{r})\right] &amp; \text{ for } N &gt; N_0 \\
+  \end{cases}\end{split}\]</div>
+</div></blockquote>
+<p>Simplifying either of the above expressions results in the linear Fukui function of <span class="math notranslate nohighlight">\(N\)</span>-electron system:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}f_{N}(\mathbf{r}) =
+  \begin{cases}
+    \rho_{N_0}(\mathbf{r}) - \rho_{N_0 - 1}(\mathbf{r}) = f^-(\mathbf{r}) &amp; \text{ for } N &lt; N_0 \\
+    \rho_{N_0 + 1}(\mathbf{r}) - \rho_{N_0}(\mathbf{r}) = f^+(\mathbf{r}) &amp; \text{ for } N &gt; N_0 \\
+  \end{cases}\end{split}\]</div>
+</div></blockquote>
+<p>Considering the fact that the linear energy model is not differentiable at <span class="math notranslate nohighlight">\(N_0\)</span>,
+Commonly, the average Fukui function <span class="math notranslate nohighlight">\(f^0\left(\mathbf{r}\right)\)</span> is used:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[f^0\left(\mathbf{r}\right) = \frac{f^+\left(\mathbf{r}\right) + f^-\left(\mathbf{r}\right)}{2} =
+         \frac{\rho_{N_0 + 1}\left(\mathbf{r}\right) - \rho_{N_0 - 1}\left(\mathbf{r}\right)}{2}\]</div>
+</div></blockquote>
+<p><strong>(TO BE REMOVED)</strong> Dual descriptor is defined as:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[d\left(\mathbf{r}\right) = f^+\left(\mathbf{r}\right) - f^-\left(\mathbf{r}\right) =
+       \rho_{N_0 + 1}\left(\mathbf{r}\right) - 2 \rho_{N_0 - 1}\left(\mathbf{r}\right) + \rho_{N_0 - 1}\left(\mathbf{r}\right)\]</div>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>This is not really dual descriptor for linear model. Technically the dual descriptor is zero for linear model,
+but the dual descriptor for quadratic model happens to be f+(r) - f-(r).
+Does this need to be clarified?</li>
+</ul>
+</div>
+</div></blockquote>
+<p id="linear-softness"><strong>Linear Softness:</strong></p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}s_{N}(\mathbf{r}) = S \cdot f_{N}(\mathbf{r}) =
+  \begin{cases}
+    S \cdot \left[\rho_{N_0}(\mathbf{r}) - \rho_{N_0 - 1}(\mathbf{r})\right] &amp;=
+    S \cdot f^-(\mathbf{r}) &amp; \text{ for } N &lt; N_0 \\
+    S \cdot \left[\rho_{N_0 + 1}(\mathbf{r}) - \rho_{N_0 - 1}(\mathbf{r})\right] \cdot 0.5 &amp;=
+    S \cdot f^0(\mathbf{r}) &amp; \text{ for } N = N_0 \\
+    S \cdot \left[\rho_{N_0 + 1}(\mathbf{r}) - \rho_{N_0}(\mathbf{r})\right] &amp;=
+    S \cdot f^+(\mathbf{r}) &amp; \text{ for } N &gt; N_0 \\
+  \end{cases}\end{split}\]</div>
+</div></blockquote>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sci_doc_local_quadratic.html" class="btn btn-neutral float-right" title="Quadratic Energy Model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="sci_doc_localtool.html" class="btn btn-neutral" title="Local Descriptive Tools" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, ChemTools Dev Team.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+  <script type='text/javascript'>
+  $(".tooltiptext").hide(); // On very first line of scripts.js file
+
+
+  $("a").hover(function () {
+    var elems = this;
+    var curClass = elems.className // current class clicked.
+    // var windowHeight = $(".rst-content").height();
+    var windowWidth = $(".rst-content").width();
+
+    var left = elems.offsetLeft;
+    var top = elems.offsetTop;
+    // var linkHeight = $(".tooltip").height();
+    // var linkWidth = $(".tooltip").width();
+    // var tooltiph = $(".tooltiptext").height();
+    var tooltipw = $(".tooltiptext").width();
+    // var bottom = windowHeight - top - tooltiph;
+    var right = windowWidth - left - tooltipw;
+
+		var isEntirelyVisible = (left + tooltipw <= windowWidth);
+    if (!isEntirelyVisible) {
+        $(".tooltiptext").css("right", "0px");
+    } else  {
+        $(".tooltiptext").css("right", "-160px");
+    }
+
+
+
+
+    $(".tooltiptext").fadeIn('fast');
+},
+
+function () {
+});
+  </script>
+</body>
+</html>

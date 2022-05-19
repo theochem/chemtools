@@ -1,0 +1,486 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>凝聚描述工具 chemtools.tool.condensedtool &mdash; ChemTools 0.0 文档</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/chemtools_favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="索引"
+              href="genindex.html"/>
+        <link rel="search" title="搜索" href="search.html"/>
+    <link rel="top" title="ChemTools 0.0 文档" href="index.html"/>
+        <link rel="up" title="概念密度泛函理论" href="sci_doc_conceptual.html"/>
+        <link rel="next" title="基于密度的定域描述符" href="sci_doc_densitytool.html"/>
+        <link rel="prev" title="二次函数能量模型 chemtools.tool.localtool.QuadraticLocalTool" href="sci_doc_local_quadratic.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+  <style type="text/css">
+  #content {
+      position: relative;
+      }
+  #content img {
+          position: absolute;
+	      top: 0px;
+	          right: 0px;
+		  }
+  .rst-content p, .rst-content li {
+	    text-align: justify;
+	    text-justify: inter-word;
+      }
+  .tooltip {
+      position: relative;
+      /*display: inline-block;*/
+      /*border-bottom: 5px dotted black;*/
+      width: 75px;
+      /*min-width: 75px;*/
+      /*max-width: 255px;*/
+      }
+
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 180px;
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #fff;
+      text-align: left;
+      /*border-radius: 6px;*/
+      padding: 4px;
+      font-size:12px;
+      line-height: 15px;
+      /* Position the tooltip */
+      position: absolute;
+      z-index: 1;
+      }
+
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+      position: absolute;
+      /*left: -70px; -index: 99;*/
+      top: 20px;
+      }
+ </style>
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> ChemTools
+          
+
+          
+            
+            <img src="_static/chemtools_logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro_about.html">关于 ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_citing.html">引用 ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_license.html">开源许可</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_contact.html">联系方式</a></li>
+</ul>
+<p class="caption"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_quick_start.html">快速入门</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_tutorials.html">新手教程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">样例图库</a></li>
+</ul>
+<p class="caption"><span class="caption-text">科学手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="sci_doc_conceptual.html">概念密度泛函理论</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="sci_doc_globaltool.html">全局描述工具 <code class="docutils literal"><span class="pre">chemtools.tool.globaltool</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="sci_doc_localtool.html">定域描述工具 <code class="docutils literal"><span class="pre">chemtools.tool.localtool</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">凝聚描述工具 <code class="docutils literal"><span class="pre">chemtools.tool.condensedtool</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_densitytool.html">基于密度的定域描述符</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_orbitaltool.html">基于轨道的定域描述符</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_nci.html">非共价相互作用（NCI） <code class="docutils literal"><span class="pre">chemtools.tool.analysis.nci</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_zref.html">参考文献</a></li>
+</ul>
+<p class="caption"><span class="caption-text">高阶文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tech_dev.html">开发者指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tech_api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tech_derivations.html">推导</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ChemTools</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div id=content>
+        <a href="https://github.com/QuantumElephant/chemtools" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+       </div>
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="sci_doc_conceptual.html">概念密度泛函理论</a> &raquo;</li>
+        
+      <li>凝聚描述工具 <code class="docutils literal"><span class="pre">chemtools.tool.condensedtool</span></code></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="condensed-descriptive-tools-chemtools-tool-condensedtool">
+<span id="condensed-tools"></span><h1>凝聚描述工具 <code class="xref py py-mod docutils literal"><span class="pre">chemtools.tool.condensedtool</span></code><a class="headerlink" href="#condensed-descriptive-tools-chemtools-tool-condensedtool" title="永久链接至标题">¶</a></h1>
+<p>定域反应指示符是用来指示空间中某一点对化学反应的易感性。科学家们通常认为将那些表示定域反应指示符的点聚集起来能够更好的解释不同原子或功能团对反应活性的贡献。这样聚集起来表示反应性的指示符就被称为凝聚反应指示符 <a class="tooltip" href="sci_doc_zref.html#yang1986jacs" id="id1">[8]<span class="tooltiptext">W.T. Yang and W.J. Mortier. The use of global and local molecular parameters for the analysis of the gas-phase basicity of amines. <em>J. Am. Chem. Soc.</em>, 108(18):5708–5711, 1986.</span></a>。</p>
+<p>在概念密度泛函理论中，最基本的定域反应指示符就是电子密度对电子数或对化学势的偏导数。</p>
+<blockquote>
+<div><div class="math">
+\[\lambda \left(\mathbf{r}\right) \equiv \left(\frac{\partial^{k} \rho \left(\mathbf{r}\right)}
+{\partial N^{k}} \right)_{v\left(\mathbf{r}\right)}
+\qquad \text{or} \qquad
+\lambda \left(\mathbf{r}\right) \equiv \left(\frac{\partial^{k} \rho \left(\mathbf{r}\right)}
+{\partial \mu^{k}} \right)_{v\left(\mathbf{r}\right)}\]</div>
+</div></blockquote>
+<p>有时候（例如，定域亲核性 <a class="tooltip" href="sci_doc_zref.html#chattaraj2003jpca" id="id2">[9]<span class="tooltiptext">P.K. Chattaraj, B.&nbsp;Maiti, and U.&nbsp;Sarkar. Philicity: a unified treatment of chemical reactivity and selectivity. <em>J. Phys. Chem. A</em>, 107(25):4973–4975, 2003.</span></a><a class="tooltip" href="sci_doc_zref.html#chattaraj2006cr" id="id3">[10]<span class="tooltiptext">P.K. Chattaraj, U.&nbsp;Sarkar, and D.R. Roy. Electrophilicity index. <em>Chem. Rev.</em>, 106(6):2065–2091, 2006.</span></a>），我们可能会将上述反应指示符和某个全局反应指示符相乘，亦或是将多个定域反应指示符相加。为了更好的表示这些指示符，我们将系统按照真实空间的原子权重函数分割成原子或是原子团。</p>
+<blockquote>
+<div><div class="math">
+\[\begin{split}w_{A} \left(\mathbf{r}\right) \ge 0 \\
+\sum_{A=1}^{{N}_{\text{atoms}}} w_{A} \left(\mathbf{r}\right) = 1\end{split}\]</div>
+</div></blockquote>
+<p>在 <strong>fragment-of-molecular-response (FMR) 方法</strong> 中，定域性质被直接划分出来 <a class="tooltip" href="sci_doc_zref.html#ayers2002jcp" id="id4">[11]<span class="tooltiptext">P.&nbsp;W. Ayers, R.&nbsp;C. Morrison, and R.&nbsp;K. Roy. Variational principles for describing chemical reactions: condensed reactivity indices. <em>J. Chem. Phys.</em>, 116(20):8731–8744, 2002.</span></a><a class="tooltip" href="sci_doc_zref.html#bultinck2007jcp" id="id5">[12]<span class="tooltiptext">P&nbsp;Bultinck, S.&nbsp;Fias, C.&nbsp;Van&nbsp;Alsenoy, P.W. Ayers, and R.&nbsp;Carbó-Dorca. Critical thoughts on computing atom condensed fukui functions. <em>J. Chem. Phys.</em>, 127(3):034102, 2007.</span></a></p>
+<blockquote>
+<div><div class="math">
+\[\lambda_{A}^{\text{FMR}} = \int w_{A} \left(\mathbf{r}\right) \lambda \left(\mathbf{r}\right) d\mathbf{r}\]</div>
+</div></blockquote>
+<p>在 <strong>response-of-molecular-fragment (RMF) 方法</strong> 中，电子密度则能通过聚集的方法得到了总电子数。</p>
+<blockquote>
+<div><div class="math">
+\[N_{A} = \int w_{A} \left(\mathbf{r}\right) \rho \left(\mathbf{r}\right) d\mathbf{r}\]</div>
+</div></blockquote>
+<dl class="docutils">
+<dt>总电子数也因此是可微分的 <a class="tooltip" href="sci_doc_zref.html#bultinck2007jcp" id="id6">[12]<span class="tooltiptext">P&nbsp;Bultinck, S.&nbsp;Fias, C.&nbsp;Van&nbsp;Alsenoy, P.W. Ayers, and R.&nbsp;Carbó-Dorca. Critical thoughts on computing atom condensed fukui functions. <em>J. Chem. Phys.</em>, 127(3):034102, 2007.</span></a>，</dt>
+<dd><div class="first last math">
+\[\lambda_{A}^{\text{RMF}} \left(\mathbf{r} \right) \equiv \left(\frac{\partial^{k} N_{A}}
+{\partial N^{k}} \right)_{v\left(\mathbf{r}\right)}
+\qquad \text{or} \qquad
+\lambda_{A}^{\text{RMF}} \left(\mathbf{r} \right) \equiv \left(\frac{\partial^{k} N_{A}}
+{\partial \mu^{k}} \right)_{v\left(\mathbf{r}\right)}\]</div>
+</dd>
+</dl>
+<p>FMR和RMF只是众多计算聚合原子的定域反应指示符方法中的两种。只有当原子权重函数独立于电子数的时候，两者得到的结果是一样的，例如，Hirshfeld配分法，Voronoi/Becke配分法以及Mulliken配分法。当使用其他一些复杂的配分法，如Hirshfeld迭代电荷法时，FMR和RMF则会得到不同的结果。对于这些不同的配分法各有优劣，我们并没有足够的理由去证明某一个方法比另一个方法更优秀。在某些情况下，RMF方法更简便易算，因为它只需要对分子电荷状态不同的几个区域进行电荷数分析即可。但当需要啊计算高阶的反应指示符时，根据公式（1）中的 <span class="math">\(k &gt; 2\)</span> ，FMR的方法则显得更简便一些。</p>
+<p>基础非定域反应指示符</p>
+<blockquote>
+<div><div class="math">
+\[v \left(\mathbf{r},\mathbf{r'}\right) \equiv \left( \frac{ \partial^{k} \chi \left( \mathbf{r},\mathbf{r'} \right)}
+{\partial N^{k}} \right)_{v\left(\mathbf{r}\right)}
+\qquad \text{and} \qquad
+v \left(\mathbf{r},\mathbf{r'} \right)\equiv \left( \frac{ \partial^{k} \chi \left( \mathbf{r},\mathbf{r'} \right)}
+{\partial \mu^{k}} \right)_{v\left(\mathbf{r}\right)}\]</div>
+</div></blockquote>
+<p>也能通过类似聚集的方法得到一个电荷矩阵。这个矩阵表示分子某一部分反应电荷对其他部分扰动的响应。如前文所说，FMR方法可以直接聚集非定域反应指示剂，</p>
+<blockquote>
+<div><div class="math">
+\[v_{AB}^{\text{FMR}} = \iint w_{A} \left(\mathbf{r}\right) v \left(\mathbf{r},\mathbf{r'}\right)
+w_{B} \left(\mathbf{r'}\right) d\mathbf{r} d\mathbf{r'}\]</div>
+</div></blockquote>
+<p>而RMF方法则是使用线性响应函数，</p>
+<blockquote>
+<div><div class="math">
+\[\chi_{AB} = \iint w_{A} \left(\mathbf{r}\right) \chi \left(\mathbf{r},\mathbf{r'}\right)
+w_{B} \left(\mathbf{r'}\right) d\mathbf{r} d\mathbf{r'}\]</div>
+</div></blockquote>
+<p>或是软度核，</p>
+<blockquote>
+<div><div class="math">
+\[s_{AB} = \iint w_{A} \left(\mathbf{r}\right) s \left(\mathbf{r},\mathbf{r'}\right)
+w_{B} \left(\mathbf{r'}\right) d\mathbf{r} d\mathbf{r'}\]</div>
+</div></blockquote>
+<p>在将结果对电子数或是化学势求偏微分。</p>
+<blockquote>
+<div><div class="math">
+\[v_{AB}^{\text{FMR}}  \equiv \left( \frac{ \partial^{k} \chi_{AB}}
+{\partial N^{k}} \right)_{v\left(\mathbf{r}\right)}
+\qquad \text{and} \qquad
+v_{AB}^{\text{FMR}} \equiv \left( \frac{ \partial^{k} \chi_{AB}}
+{\partial \mu^{k}} \right)_{v\left(\mathbf{r}\right)}\]</div>
+</div></blockquote>
+<p>基本空间中三个或更多个点得到的非定域反应指示剂能够通过同样的方法聚集得到一个张量， <span class="math">\(v_{ABC...}\)</span>，</p>
+<p>在用FMR或者RMF计算凝聚反应指示符的之前，我们需要先选择一个合适的模型来描述体系能量随电子数变化的函数关系 <a class="tooltip" href="sci_doc_zref.html#parr1982jacs" id="id7">[5]<span class="tooltiptext">R.G. Parr and L.J. Bartolotti. On the geometric mean principle for electronegativity equalization. <em>J. Am. Chem. Soc.</em>, 104(14):3801–3803, 1982.</span></a> 。ChemTools能够利用文献 <a class="tooltip" href="sci_doc_zref.html#heidar-zadeh2016cpl" id="id8">[13]<span class="tooltiptext">F.&nbsp;Heidar-Zadeh, M.&nbsp;Richer, S.&nbsp;Fias, R.A. Miranda-Quintana, M.&nbsp;Chan, M.&nbsp;Franco-Perez, C.&nbsp;E. Gonzalez-Espinoza, T.D. Kim, C.&nbsp;Lanssens, A.H.G. Patel, X.D. Yang, E.&nbsp;Vohringer-Martinez, C.&nbsp;Cardenas, T.&nbsp;Verstraelen, and P.&nbsp;W. Ayers. An explicit approach to conceptual density functional theory descriptors of arbitrary order. <em>Chem. Phys. Lett.</em>, 660:307–312, 2016.</span></a> 中的公式计算各类能量模型下的凝聚反应指示符，其中最常用的是线性模型和二次函数模型。</p>
+<p>在线性模型中，FMR方法的凝聚福井函数表示为</p>
+<blockquote>
+<div><div class="math">
+\[f_{A}^{\text{FMR,+}} \left(\mathbf{r}\right) = \int w_{A} \left(N;\mathbf{r}\right) f^{+} \left(\mathbf{r}\right) d\mathbf{r} =
+\int w_{A} \left(N;\mathbf{r}\right) \left(\rho \left(N+1;\mathbf{r}\right) - \rho \left(N;\mathbf{r}\right) \right) d\mathbf{r}\]</div>
+<div class="math">
+\[f_{A}^{\text{FMR,-}} \left(\mathbf{r}\right) = \int w_{A} \left(N;\mathbf{r}\right) f^{-} \left(\mathbf{r}\right) d\mathbf{r} =
+\int w_{A} \left(N;\mathbf{r}\right) \left(\rho \left(N;\mathbf{r}\right) - \rho \left(N-1;\mathbf{r}\right) \right) d\mathbf{r}\]</div>
+</div></blockquote>
+<p>在RMF中则表示为</p>
+<blockquote>
+<div><div class="math">
+\[\begin{split}f_{A}^{\text{RMF,+}} \left(\mathbf{r}\right) &amp;= N_{A} \left(N+1\right) - N_{A} \left(N\right) = q_{A} \left(N\right) - q_{A} \left(N+1\right) \\
+&amp;= \int w_{A} \left(N+1;\mathbf{r}\right) \rho \left(N+1;\mathbf{r}\right) - w_{A} \left(N;\mathbf{r}\right) \rho \left(N;\mathbf{r}\right) d\mathbf{r}\end{split}\]</div>
+<div class="math">
+\[\begin{split}f_{A}^{\text{RMF,-}} \left(\mathbf{r}\right) &amp;= N_{A} \left(N\right) - N_{A} \left(N-1\right) = q_{A} \left(N-1\right) - q_{A} \left(N\right) \\
+&amp;= \int w_{A} \left(N;\mathbf{r}\right) \rho \left(N;\mathbf{r}\right) - w_{A} \left(N-1;\mathbf{r}\right) \rho \left(N-1;\mathbf{r}\right) d\mathbf{r}\end{split}\]</div>
+</div></blockquote>
+<p>这里 <span class="math">\(\rho\left(N;\mathbf{r}\right)\)</span> 表示 <span class="math">\(N-\)</span> 电子体系基态电子密度， <span class="math">\(w_A\left(N;\mathbf{r}\right)\)</span> 表示原子 <span class="math">\(A\)</span> 在 <span class="math">\(N-\)</span> 电子体系中的原子权重函数。同样地，我们分别用 <span class="math">\(N_A\left(N\right)\)</span> 和 <span class="math">\(q_A\left(N\right)\)</span> 来表示原子 <span class="math">\(A\)</span> 在 <span class="math">\(N-\)</span> 电子体系中的电子数和电荷数。严格来说，在线性模型中，凝聚对偶描述符号并没有定义，而在二次函数模型中，FMR中的凝聚福井函数和凝聚对偶描述符则被定义为，</p>
+<blockquote>
+<div><div class="math">
+\[\begin{split}f_{A}^{\text{FMR,0}} \left(\mathbf{r}\right) &amp;= \tfrac{1}{2} \int w_{A} \left(N;\mathbf{r}\right)
+       \left( f^{+} \left(\mathbf{r}\right) + f^{-} \left(\mathbf{r}\right) \right) d\mathbf{r} \\
+&amp;= \tfrac{1}{2} \int w_{A} \left(N;\mathbf{r}\right) \left( \rho \left(N+1;\mathbf{r}\right) -
+   \rho \left(N-1;\mathbf{r}\right) \right) d\mathbf{r}\end{split}\]</div>
+<div class="math">
+\[\begin{split}f_{A}^{\text{FMR,(2)}} \left(\mathbf{r}\right) &amp;= \int w_{A} \left(N;\mathbf{r}\right)
+       \left( f^{+} \left(\mathbf{r}\right) + f^{-} \left(\mathbf{r}\right) \right) d\mathbf{r} \\
+&amp;= \int w_{A} \left(N;\mathbf{r}\right) \left( \rho \left(N+1;\mathbf{r}\right) - 2 \rho \left(N;\mathbf{r}\right) +
+   \rho \left(N-1;\mathbf{r}\right) \right)d\mathbf{r}\end{split}\]</div>
+</div></blockquote>
+<p>在RMF中则表示为</p>
+<blockquote>
+<div><div class="math">
+\[\begin{split}f_{A}^{\text{RMF,0}} \left(\mathbf{r}\right) &amp;= \tfrac{1}{2} \left( N_{A} \left(N+1\right) - N_{A} \left(N-1\right) \right) \\
+&amp;= \tfrac{1}{2} \left( q_{A} \left(N-1\right) - q_{A} \left(N+1\right) \right) \\
+&amp;= \tfrac{1}{2} \int w_{A} \left(N+1;\mathbf{r}\right) \rho \left( N+1;\mathbf{r}\right) - w_{A} \left(N-1;\mathbf{r}\right)
+   \rho \left(N-1;\mathbf{r}\right) d\mathbf{r}\end{split}\]</div>
+<div class="math">
+\[\begin{split}f_{A}^{\text{RMF,(2)}} \left(\mathbf{r}\right) &amp;= \left( N_{A} \left(N+1\right) - 2 N_{A} \left(N\right) + N_{A} \left(N-1\right) \right) \\
+&amp;= - \tfrac{1}{2} \left( q_{A} \left(N+1\right) - 2 q_{A} \left(N\right) + q_{A} \left(N-1\right) \right) \\
+&amp;= \int w_{A} \left(N+1;\mathbf{r}\right) \rho \left(N+1;\mathbf{r}\right) - 2 w_{A} \left(N;\mathbf{r}\right) \rho \left(N;\mathbf{r}\right) +
+   w_{A}\left(N-1;\mathbf{r}\right) \rho \left(N-1;\mathbf{r}\right) d\mathbf{r}\end{split}\]</div>
+</div></blockquote>
+<p></p>
+<p>对化学势微分的凝聚反应指示符可以从对电子数微分的凝聚反应指示符计算得到。例如，凝聚定域软度，</p>
+<blockquote>
+<div><div class="math">
+\[s_{A} = S f_{A} = \frac{f_{A}}{\eta} = \frac{f_{A}}{I-A}\]</div>
+</div></blockquote>
+<p>以及凝聚对偶定域软度，</p>
+<blockquote>
+<div><div class="math">
+\[s_{A}^{(2)} = \frac{f_{A}^{(2)}}{\eta^{2}} - \frac{\eta^{(2)}f_{A}^{0}}{\eta^{3}}\]</div>
+</div></blockquote>
+<p>这些反应指示符都可以通过FMR或RMF方法从福井函数或是对偶指示符计算得到。</p>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sci_doc_densitytool.html" class="btn btn-neutral float-right" title="基于密度的定域描述符" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="sci_doc_local_quadratic.html" class="btn btn-neutral" title="二次函数能量模型 chemtools.tool.localtool.QuadraticLocalTool" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; 版权所有 2016, Ayers&#39; Group @ McMaster University.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0',
+            LANGUAGE:'zh_CN',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/translations.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+  <script type='text/javascript'>
+  $(".tooltiptext").hide(); // On very first line of scripts.js file
+
+
+  $("a").hover(function () {
+    var elems = this;
+    var curClass = elems.className // current class clicked.
+    // var windowHeight = $(".rst-content").height();
+    var windowWidth = $(".rst-content").width();
+
+    var left = elems.offsetLeft;
+    var top = elems.offsetTop;
+    // var linkHeight = $(".tooltip").height();
+    // var linkWidth = $(".tooltip").width();
+    // var tooltiph = $(".tooltiptext").height();
+    var tooltipw = $(".tooltiptext").width();
+    // var bottom = windowHeight - top - tooltiph;
+    var right = windowWidth - left - tooltipw;
+
+		var isEntirelyVisible = (left + tooltipw <= windowWidth);
+    if (!isEntirelyVisible) {
+        $(".tooltiptext").css("right", "0px");
+    } else  {
+        $(".tooltiptext").css("right", "-160px");
+    }
+
+
+
+
+    $(".tooltiptext").fadeIn('fast');
+},
+
+function () {
+});
+  </script>
+</body>
+</html>

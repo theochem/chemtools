@@ -1,0 +1,591 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>chemtools.conceptual.quadratic &mdash; ChemTools 0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../_static/chemtools_favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="ChemTools 0.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+  <style type="text/css">
+  #content {
+      position: relative;
+      }
+  #content img {
+          position: absolute;
+	      top: 0px;
+	          right: 0px;
+		  }
+  .rst-content p, .rst-content li {
+	    text-align: justify;
+	    text-justify: inter-word;
+      }
+  .tooltip {
+      position: relative;
+      /*display: inline-block;*/
+      /*border-bottom: 5px dotted black;*/
+      width: 75px;
+      /*min-width: 75px;*/
+      /*max-width: 255px;*/
+      }
+
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 180px;
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #fff;
+      text-align: left;
+      /*border-radius: 6px;*/
+      padding: 4px;
+      font-size:12px;
+      line-height: 15px;
+      /* Position the tooltip */
+      position: absolute;
+      z-index: 1;
+      }
+
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+      position: absolute;
+      /*left: -70px; -index: 99;*/
+      top: 20px;
+      }
+ </style>
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ChemTools
+          
+
+          
+            
+            <img src="../../../_static/chemtools_logo2.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_about.html">About ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_citing.html">Citing ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_license.html">Licence Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_conduct.html">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_contact.html">Contact Information</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usr_doc_installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usr_doc_quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../auto_examples/index.html">Examples Gallery</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scientific Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_conceptual.html">Conceptual Density Functional Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_dftbased.html">Density Functional Theory (DFT) Based</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_orbitaltool.html">Orbital-Based Local Descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_nci.html">Non-Covalent Interactions (NCI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_zref.html">References</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advanced Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tech_dev.html">Developer Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tech_api.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ChemTools</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div id=content>
+        <a href="https://github.com/theochem/chemtools" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+       </div>
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>chemtools.conceptual.quadratic</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for chemtools.conceptual.quadratic</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># ChemTools is a collection of interpretive chemical tools for</span>
+<span class="c1"># analyzing outputs of the quantum chemistry calculations.</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2016-2019 The ChemTools Development Team</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of ChemTools.</span>
+<span class="c1">#</span>
+<span class="c1"># ChemTools is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the GNU General Public License</span>
+<span class="c1"># as published by the Free Software Foundation; either version 3</span>
+<span class="c1"># of the License, or (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># ChemTools is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># --</span>
+<span class="sd">&quot;&quot;&quot;Conceptual Density Functional Theory (DFT) Reactivity Tools Based on Quadratic Energy Model.</span>
+
+<span class="sd">This module contains the global and local tool classes corresponding to quadratic energy models.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">chemtools.utils.utils</span> <span class="kn">import</span> <span class="n">doc_inherit</span>
+<span class="kn">from</span> <span class="nn">chemtools.conceptual.base</span> <span class="kn">import</span> <span class="n">BaseGlobalTool</span><span class="p">,</span> <span class="n">BaseLocalTool</span><span class="p">,</span> <span class="n">BaseCondensedTool</span>
+<span class="kn">from</span> <span class="nn">chemtools.conceptual.utils</span> <span class="kn">import</span> <span class="n">check_dict_values</span><span class="p">,</span> <span class="n">check_number_electrons</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;QuadraticGlobalTool&quot;</span><span class="p">,</span> <span class="s2">&quot;QuadraticLocalTool&quot;</span><span class="p">,</span> <span class="s2">&quot;QuadraticCondensedTool&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="QuadraticGlobalTool"><a class="viewcode-back" href="../../../modules/generated/chemtools.conceptual.quadratic.QuadraticGlobalTool.html#chemtools.conceptual.quadratic.QuadraticGlobalTool">[docs]</a><span class="k">class</span> <span class="nc">QuadraticGlobalTool</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class of global conceptual DFT reactivity descriptors based on the quadratic energy model.</span>
+
+<span class="sd">    The energy is approximated as a quadratic function of the number of electrons,</span>
+
+<span class="sd">    .. math:: E(N) = a + b N + c N^2</span>
+
+<span class="sd">    Given :math:`E(N_0 - 1)`, :math:`E(N_0)` and :math:`E(N_0 + 1)` values, the unknown parameters</span>
+<span class="sd">    of the energy model are obtained by interpolation.</span>
+
+<span class="sd">    First, second and higher order derivatives of the quadratic energy model with respect to</span>
+<span class="sd">    the number of electrons at fixed external potential are given by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \left(\frac{\partial E}{\partial N}\right)_{v(\mathbf{r})} &amp;= b + 2 c N \\</span>
+<span class="sd">       \left(\frac{\partial^2 E}{\partial N^2}\right)_{v(\mathbf{r})} &amp;= 2 c \\</span>
+<span class="sd">       \left(\frac{\partial^n E}{\partial N^n}\right)_{v(\mathbf{r})} &amp;= 0</span>
+<span class="sd">             \quad \text{for} \quad n \geq 2</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dict_energy</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Initialize quadratic energy model to compute global reactivity descriptors.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dict_energy : dict</span>
+<span class="sd">            Dictionary of number of electrons (keys) and corresponding energy (values).</span>
+<span class="sd">            This model expects three energy values corresponding to three consecutive number of</span>
+<span class="sd">            electrons differing by one, i.e. :math:`\{(N_0 - 1): E(N_0 - 1), N_0: E(N_0),</span>
+<span class="sd">            (N_0 + 1): E(N_0 + 1)\}`. The :math:`N_0` value is considered as the reference number</span>
+<span class="sd">            of electrons.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check number of electrons &amp; energy values</span>
+        <span class="n">n_ref</span><span class="p">,</span> <span class="n">energy_m</span><span class="p">,</span> <span class="n">energy_0</span><span class="p">,</span> <span class="n">energy_p</span> <span class="o">=</span> <span class="n">check_dict_values</span><span class="p">(</span><span class="n">dict_energy</span><span class="p">)</span>
+        <span class="c1"># calculate parameters a, b, c of quadratic energy model</span>
+        <span class="n">energy_m</span><span class="p">,</span> <span class="n">energy_0</span><span class="p">,</span> <span class="n">energy_p</span> <span class="o">=</span> <span class="p">[</span><span class="n">dict_energy</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">dict_energy</span><span class="o">.</span><span class="n">keys</span><span class="p">())]</span>
+        <span class="n">param_c</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">energy_m</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">energy_0</span> <span class="o">+</span> <span class="n">energy_p</span><span class="p">)</span>
+        <span class="n">param_b</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">energy_p</span> <span class="o">-</span> <span class="n">energy_m</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">param_c</span> <span class="o">*</span> <span class="n">n_ref</span>
+        <span class="n">param_a</span> <span class="o">=</span> <span class="n">energy_0</span> <span class="o">-</span> <span class="n">param_b</span> <span class="o">*</span> <span class="n">n_ref</span> <span class="o">-</span> <span class="n">param_c</span> <span class="o">*</span> <span class="p">(</span><span class="n">n_ref</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">param_a</span><span class="p">,</span> <span class="n">param_b</span><span class="p">,</span> <span class="n">param_c</span><span class="p">]</span>
+        <span class="c1"># calculate N_max (number of electrons for which energy is minimum)</span>
+        <span class="n">n_max</span> <span class="o">=</span> <span class="o">-</span> <span class="n">param_b</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">param_c</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">QuadraticGlobalTool</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">n_max</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict_energy</span> <span class="o">=</span> <span class="n">dict_energy</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Parameter :math:`a`, :math:`b` and :math:`c` of energy model.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span>
+
+<div class="viewcode-block" id="QuadraticGlobalTool.energy"><a class="viewcode-back" href="../../../modules/generated/chemtools.conceptual.quadratic.QuadraticGlobalTool.html#chemtools.conceptual.quadratic.QuadraticGlobalTool.energy">[docs]</a>    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">):</span>
+        <span class="c1"># check n_elec argument</span>
+        <span class="n">check_number_electrons</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># evaluate energy</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_elec</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_elec</span><span class="o">**</span><span class="mi">2</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="QuadraticGlobalTool.energy_derivative"><a class="viewcode-back" href="../../../modules/generated/chemtools.conceptual.quadratic.QuadraticGlobalTool.html#chemtools.conceptual.quadratic.QuadraticGlobalTool.energy_derivative">[docs]</a>    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">energy_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># check n_elec argument</span>
+        <span class="n">check_number_electrons</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># check order</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">order</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Argument order should be an integer greater than or equal to 1.&quot;</span><span class="p">)</span>
+        <span class="c1"># evaluate derivative</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n_elec</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">return</span> <span class="n">deriv</span></div></div>
+
+
+<div class="viewcode-block" id="QuadraticLocalTool"><a class="viewcode-back" href="../../../modules/generated/chemtools.conceptual.quadratic.QuadraticLocalTool.html#chemtools.conceptual.quadratic.QuadraticLocalTool">[docs]</a><span class="k">class</span> <span class="nc">QuadraticLocalTool</span><span class="p">(</span><span class="n">BaseLocalTool</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class of local conceptual DFT reactivity descriptors based on the quadratic energy model.</span>
+
+<span class="sd">    Considering the interpolated :class:`quadratic energy model &lt;QuadraticGlobalTool&gt;` and its</span>
+<span class="sd">    derivatives, the quadratic local tools are obtained by taking the functional derivative</span>
+<span class="sd">    of these expressions with respect to external potential :math:`v(\mathbf{r})` at fixed</span>
+<span class="sd">    number of electrons :math:`N`.</span>
+
+<span class="sd">    Given the electron density corresponding to energy values used for interpolating the</span>
+<span class="sd">    energy model, i.e., :math:`\rho_{N_0 - 1}(\mathbf{r})`, :math:`\rho_{N_0}(\mathbf{r})`</span>
+<span class="sd">    and :math:`\rho_{N_0 + 1}(\mathbf{r})`, the :func:`density &lt;QuadraticLocalTool.density&gt;`</span>
+<span class="sd">    of the :math:`N` electron system :math:`\rho_{N}(\mathbf{r})` is given by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \rho_{N}(\mathbf{r}) = \rho_{N_0}\left(\mathbf{r}\right)</span>
+<span class="sd">         &amp;+ \left(\frac{\rho_{N_0 + 1}\left(\mathbf{r}\right) -</span>
+<span class="sd">            \rho_{N_0 - 1}\left(\mathbf{r}\right)}{2}\right) \left(N - N_0\right) \\</span>
+<span class="sd">         &amp;+ \left(\frac{\rho_{N_0 - 1}\left(\mathbf{r}\right) - 2</span>
+<span class="sd">            \rho_{N_0}\left(\mathbf{r}\right) + \rho_{N_0 + 1}\left(\mathbf{r}\right)}{2}\right)</span>
+<span class="sd">            \left(N - N_0\right)^2</span>
+
+<span class="sd">    The :func:`density derivative &lt;QuadraticLocalTool.density_derivative&gt;` with respect to the</span>
+<span class="sd">    number of electrons at fixed external potential is given by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">      \left(\frac{\partial \rho_N(\mathbf{r})}{\partial N}\right)_{v(\mathbf{r})} &amp;=</span>
+<span class="sd">      \left(\frac{\rho_{N_0 + 1}\left(\mathbf{r}\right) - \rho_{N_0 - 1}\left(\mathbf{r}\right)}{2}</span>
+<span class="sd">      \right) + \left[\rho_{N_0 + 1}\left(\mathbf{r}\right) - 2 \rho_{N_0}\left(\mathbf{r}\right) +</span>
+<span class="sd">      \rho_{N_0 - 1}\left(\mathbf{r}\right) \right] \left(N - N_0\right) \\</span>
+<span class="sd">      \left(\frac{\partial^2 \rho_N(\mathbf{r})}{\partial N^2}\right)_{v(\mathbf{r})} &amp;=</span>
+<span class="sd">      \rho_{N_0 + 1}\left(\mathbf{r}\right) - 2 \rho_{N_0}\left(\mathbf{r}\right) +</span>
+<span class="sd">      \rho_{N_0 - 1}\left(\mathbf{r}\right) \\</span>
+<span class="sd">      \left(\frac{\partial^n \rho_N(\mathbf{r})}{\partial N^n}\right)_{v(\mathbf{r})} &amp;= 0</span>
+<span class="sd">      \text{ for } n \geqslant 3</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dict_density</span><span class="p">,</span> <span class="n">n_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">global_softness</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Initialize quadratic density model to compute local reactivity descriptors.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dict_density : dict</span>
+<span class="sd">            Dictionary of number of electrons (keys) and corresponding density array (values).</span>
+<span class="sd">            This model expects three energy values corresponding to three consecutive number of</span>
+<span class="sd">            electrons differing by one, i.e. :math:`\{(N_0 - 1): \rho_{N_0 - 1}\left(\mathbf{</span>
+<span class="sd">            r}\right), N_0: \rho_{N_0}\left(\mathbf{r}\right), (N_0 + 1): \rho_{N_0 + 1}\left(</span>
+<span class="sd">            \mathbf{r}\right)\}`. The :math:`N_0` value is considered as the reference number</span>
+<span class="sd">            of electrons.</span>
+<span class="sd">        n_max : float, optional</span>
+<span class="sd">            Maximum number of electrons that system can accept, i.e. :math:`N_{\text{max}}`.</span>
+<span class="sd">            See :attr:`BaseGlobalTool.n_max`.</span>
+<span class="sd">        global_softness : float, optional</span>
+<span class="sd">            Global softness. See :attr:`BaseGlobalTool.softness`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check number of electrons &amp; density values</span>
+        <span class="n">n_ref</span><span class="p">,</span> <span class="n">dens_m</span><span class="p">,</span> <span class="n">dens_0</span><span class="p">,</span> <span class="n">dens_p</span> <span class="o">=</span> <span class="n">check_dict_values</span><span class="p">(</span><span class="n">dict_density</span><span class="p">)</span>
+        <span class="c1"># compute fukui function &amp; dual descriptor of N0-electron system</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ff0</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">dens_p</span> <span class="o">-</span> <span class="n">dens_m</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df0</span> <span class="o">=</span> <span class="n">dens_p</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dens_0</span> <span class="o">+</span> <span class="n">dens_m</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">QuadraticLocalTool</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">n_max</span><span class="p">,</span> <span class="n">global_softness</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict_density</span> <span class="o">=</span> <span class="n">dict_density</span>
+
+<div class="viewcode-block" id="QuadraticLocalTool.density"><a class="viewcode-back" href="../../../modules/generated/chemtools.conceptual.quadratic.QuadraticLocalTool.html#chemtools.conceptual.quadratic.QuadraticLocalTool.density">[docs]</a>    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseLocalTool</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">):</span>
+        <span class="c1"># check n_elec argument</span>
+        <span class="n">check_number_electrons</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># compute density</span>
+        <span class="n">rho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_density</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">rho</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ff0</span> <span class="o">*</span> <span class="p">(</span><span class="n">n_elec</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df0</span> <span class="o">*</span> <span class="p">(</span><span class="n">n_elec</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+        <span class="k">return</span> <span class="n">rho</span></div>
+
+<div class="viewcode-block" id="QuadraticLocalTool.density_derivative"><a class="viewcode-back" href="../../../modules/generated/chemtools.conceptual.quadratic.QuadraticLocalTool.html#chemtools.conceptual.quadratic.QuadraticLocalTool.density_derivative">[docs]</a>    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseLocalTool</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">density_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># check n_elec argument</span>
+        <span class="n">check_number_electrons</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># check order</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">order</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Argument order should be an integer greater than or equal to 1.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ff0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df0</span> <span class="o">*</span> <span class="p">(</span><span class="n">n_elec</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">n0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">return</span> <span class="n">deriv</span></div></div>
+
+
+<div class="viewcode-block" id="QuadraticCondensedTool"><a class="viewcode-back" href="../../../modules/generated/chemtools.conceptual.quadratic.QuadraticCondensedTool.html#chemtools.conceptual.quadratic.QuadraticCondensedTool">[docs]</a><span class="k">class</span> <span class="nc">QuadraticCondensedTool</span><span class="p">(</span><span class="n">BaseCondensedTool</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Condensed conceptual DFT reactivity descriptors class based on the quadratic energy model.</span>
+
+<span class="sd">    This class contains the atom-condensed equivalent of :class:`QuadraticLocalTool` reactivity</span>
+<span class="sd">    indicators.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dict_population</span><span class="p">,</span> <span class="n">n_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">global_softness</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Initialize quadratic population model to compute condensed reactivity descriptors.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dict_population : dict</span>
+<span class="sd">            Dictionary of number of electrons (keys) and corresponding atomic populations array</span>
+<span class="sd">            (values).</span>
+<span class="sd">            This model expects three energy values corresponding to three consecutive number of</span>
+<span class="sd">            electrons differing by one, i.e. :math:`\{(N_0 - 1): {N_A \left(N_0 - 1\right)},</span>
+<span class="sd">            N_0: {N_A \left(N_0\right)}, (N_0 + 1): {N_A \left(N_0 + 1\right)}`.</span>
+<span class="sd">            The :math:`N_0` value is considered as the reference number of electrons.</span>
+<span class="sd">        n_max : float, optional</span>
+<span class="sd">            Maximum number of electrons that system can accept, i.e. :math:`N_{\text{max}}`.</span>
+<span class="sd">            See :attr:`BaseGlobalTool.n_max`.</span>
+<span class="sd">        global_softness : float, optional</span>
+<span class="sd">            Global softness. See :attr:`BaseGlobalTool.softness`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check number of electrons &amp; density values</span>
+        <span class="n">n_ref</span><span class="p">,</span> <span class="n">pop_m</span><span class="p">,</span> <span class="n">pop_0</span><span class="p">,</span> <span class="n">pop_p</span> <span class="o">=</span> <span class="n">check_dict_values</span><span class="p">(</span><span class="n">dict_population</span><span class="p">)</span>
+        <span class="c1"># compute condensed fukui function &amp; dual descriptor of N0-electron system</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ff0</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">pop_p</span> <span class="o">-</span> <span class="n">pop_m</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df0</span> <span class="o">=</span> <span class="n">pop_p</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pop_0</span> <span class="o">+</span> <span class="n">pop_m</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">QuadraticCondensedTool</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">n_max</span><span class="p">,</span> <span class="n">global_softness</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict_population</span> <span class="o">=</span> <span class="n">dict_population</span>
+
+<div class="viewcode-block" id="QuadraticCondensedTool.population"><a class="viewcode-back" href="../../../modules/generated/chemtools.conceptual.quadratic.QuadraticCondensedTool.html#chemtools.conceptual.quadratic.QuadraticCondensedTool.population">[docs]</a>    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseCondensedTool</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">):</span>
+        <span class="c1"># check n_elec argument</span>
+        <span class="n">check_number_electrons</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># compute density</span>
+        <span class="n">pop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_population</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_ref</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">pop</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ff0</span> <span class="o">*</span> <span class="p">(</span><span class="n">n_elec</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df0</span> <span class="o">*</span> <span class="p">(</span><span class="n">n_elec</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+        <span class="k">return</span> <span class="n">pop</span></div>
+
+<div class="viewcode-block" id="QuadraticCondensedTool.population_derivative"><a class="viewcode-back" href="../../../modules/generated/chemtools.conceptual.quadratic.QuadraticCondensedTool.html#chemtools.conceptual.quadratic.QuadraticCondensedTool.population_derivative">[docs]</a>    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseCondensedTool</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">population_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># check n_elec argument</span>
+        <span class="n">check_number_electrons</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># check order</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">order</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Argument order should be an integer greater than or equal to 1.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ff0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df0</span> <span class="o">*</span> <span class="p">(</span><span class="n">n_elec</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_ref</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">return</span> <span class="n">deriv</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, ChemTools Dev Team.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../../_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+  <script type='text/javascript'>
+  $(".tooltiptext").hide(); // On very first line of scripts.js file
+
+
+  $("a").hover(function () {
+    var elems = this;
+    var curClass = elems.className // current class clicked.
+    // var windowHeight = $(".rst-content").height();
+    var windowWidth = $(".rst-content").width();
+
+    var left = elems.offsetLeft;
+    var top = elems.offsetTop;
+    // var linkHeight = $(".tooltip").height();
+    // var linkWidth = $(".tooltip").width();
+    // var tooltiph = $(".tooltiptext").height();
+    var tooltipw = $(".tooltiptext").width();
+    // var bottom = windowHeight - top - tooltiph;
+    var right = windowWidth - left - tooltipw;
+
+		var isEntirelyVisible = (left + tooltipw <= windowWidth);
+    if (!isEntirelyVisible) {
+        $(".tooltiptext").css("right", "0px");
+    } else  {
+        $(".tooltiptext").css("right", "-160px");
+    }
+
+
+
+
+    $(".tooltiptext").fadeIn('fast');
+},
+
+function () {
+});
+  </script>
+</body>
+</html>

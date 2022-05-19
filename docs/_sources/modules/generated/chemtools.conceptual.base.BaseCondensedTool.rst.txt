@@ -1,0 +1,10 @@
+:orphan:
+
+chemtools.conceptual.base.BaseCondensedTool
+===========================================
+
+.. currentmodule:: chemtools.conceptual.base
+
+.. autoclass:: BaseCondensedTool
+   :members:
+   :inherited-members:

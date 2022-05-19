@@ -1,0 +1,10 @@
+:orphan:
+
+chemtools.wrappers.grid.MolecularGrid
+=====================================
+
+.. currentmodule:: chemtools.wrappers.grid
+
+.. autoclass:: MolecularGrid
+   :members:
+   :inherited-members:

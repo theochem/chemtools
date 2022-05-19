@@ -1,0 +1,9 @@
+:orphan:
+:noindex:
+
+chemtools.utils.mesh.mesh_plane
+===============================
+
+.. currentmodule:: chemtools.utils.mesh
+
+.. autofunction:: mesh_plane

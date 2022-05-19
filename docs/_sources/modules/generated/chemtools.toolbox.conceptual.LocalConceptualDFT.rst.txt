@@ -1,0 +1,10 @@
+:orphan:
+
+chemtools.toolbox.conceptual.LocalConceptualDFT
+===============================================
+
+.. currentmodule:: chemtools.toolbox.conceptual
+
+.. autoclass:: LocalConceptualDFT
+   :members:
+   :inherited-members:

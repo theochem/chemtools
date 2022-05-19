@@ -1,0 +1,444 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>指数函数能量模型 chemtools.tool.globaltool.ExponentialGlobalTool &mdash; ChemTools 0.0 文档</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/chemtools_favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="索引"
+              href="genindex.html"/>
+        <link rel="search" title="搜索" href="search.html"/>
+    <link rel="top" title="ChemTools 0.0 文档" href="index.html"/>
+        <link rel="up" title="全局描述工具 chemtools.tool.globaltool" href="sci_doc_globaltool.html"/>
+        <link rel="next" title="自定义函数能量模型 chemtools.tool.globaltool.GeneralGlobalTool" href="sci_doc_global_general.html"/>
+        <link rel="prev" title="有理函数能量模型 chemtools.tool.globaltool.RationalGlobalTool" href="sci_doc_global_rational.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+  <style type="text/css">
+  #content {
+      position: relative;
+      }
+  #content img {
+          position: absolute;
+	      top: 0px;
+	          right: 0px;
+		  }
+  .rst-content p, .rst-content li {
+	    text-align: justify;
+	    text-justify: inter-word;
+      }
+  .tooltip {
+      position: relative;
+      /*display: inline-block;*/
+      /*border-bottom: 5px dotted black;*/
+      width: 75px;
+      /*min-width: 75px;*/
+      /*max-width: 255px;*/
+      }
+
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 180px;
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #fff;
+      text-align: left;
+      /*border-radius: 6px;*/
+      padding: 4px;
+      font-size:12px;
+      line-height: 15px;
+      /* Position the tooltip */
+      position: absolute;
+      z-index: 1;
+      }
+
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+      position: absolute;
+      /*left: -70px; -index: 99;*/
+      top: 20px;
+      }
+ </style>
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> ChemTools
+          
+
+          
+            
+            <img src="_static/chemtools_logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro_about.html">关于 ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_citing.html">引用 ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_license.html">开源许可</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_contact.html">联系方式</a></li>
+</ul>
+<p class="caption"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_quick_start.html">快速入门</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_tutorials.html">新手教程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">样例图库</a></li>
+</ul>
+<p class="caption"><span class="caption-text">科学手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="sci_doc_conceptual.html">概念密度泛函理论</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="sci_doc_globaltool.html">全局描述工具 <code class="docutils literal"><span class="pre">chemtools.tool.globaltool</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="sci_doc_global_linear.html">线性函数能量模型 <code class="docutils literal"><span class="pre">chemtools.tool.globaltool.LinearGlobalTool</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sci_doc_global_quadratic.html">二次函数能量模型 <code class="docutils literal"><span class="pre">chemtools.tool.globaltool.QuadraticGlobalTool</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sci_doc_global_rational.html">有理函数能量模型 <code class="docutils literal"><span class="pre">chemtools.tool.globaltool.RationalGlobalTool</span></code></a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">指数函数能量模型 <code class="docutils literal"><span class="pre">chemtools.tool.globaltool.ExponentialGlobalTool</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sci_doc_global_general.html">自定义函数能量模型 <code class="docutils literal"><span class="pre">chemtools.tool.globaltool.GeneralGlobalTool</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sci_doc_localtool.html">定域描述工具 <code class="docutils literal"><span class="pre">chemtools.tool.localtool</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="sci_doc_condensedtool.html">凝聚描述工具 <code class="docutils literal"><span class="pre">chemtools.tool.condensedtool</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_densitytool.html">基于密度的定域描述符</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_orbitaltool.html">基于轨道的定域描述符</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_nci.html">非共价相互作用（NCI） <code class="docutils literal"><span class="pre">chemtools.tool.analysis.nci</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_zref.html">参考文献</a></li>
+</ul>
+<p class="caption"><span class="caption-text">高阶文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tech_dev.html">开发者指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tech_api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tech_derivations.html">推导</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ChemTools</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div id=content>
+        <a href="https://github.com/QuantumElephant/chemtools" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+       </div>
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="sci_doc_conceptual.html">概念密度泛函理论</a> &raquo;</li>
+        
+          <li><a href="sci_doc_globaltool.html">全局描述工具 <code class="docutils literal"><span class="pre">chemtools.tool.globaltool</span></code></a> &raquo;</li>
+        
+      <li>指数函数能量模型 <code class="docutils literal"><span class="pre">chemtools.tool.globaltool.ExponentialGlobalTool</span></code></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="exponential-energy-model-chemtools-tool-globaltool-exponentialglobaltool">
+<span id="exponential-energy"></span><h1>指数函数能量模型 <code class="xref py py-class docutils literal"><span class="pre">chemtools.tool.globaltool.ExponentialGlobalTool</span></code><a class="headerlink" href="#exponential-energy-model-chemtools-tool-globaltool-exponentialglobaltool" title="永久链接至标题">¶</a></h1>
+<p>在这种模型中，整个体系的能量将会近似为电子数的指数函数：</p>
+<blockquote>
+<div><div class="math">
+\[E(N) = A \exp(-\gamma(N-N_0)) + B\]</div>
+</div></blockquote>
+<p>上述公式中包含三个未知数 <span class="math">\(A\)</span>, <span class="math">\(B\)</span> 和 <span class="math">\(\gamma\)</span>，因此指数模型需要三个能量点来内推其他的能量点。通常，人们使用 <span class="math">\(N_0 - 1\)</span>, <span class="math">\(N_0\)</span> and <span class="math">\(N_0 + 1\)</span> 电子体系来建立模型。用上述三个数据点对模型进行拟合计算，得到：</p>
+<blockquote>
+<div><div class="math">
+\[\begin{split}\begin{cases}
+      E(N_0-1) &amp;= A \exp(\gamma) + B \\
+      E(N_0)   &amp;= A + B \\
+      E(N_0+1) &amp;= A \exp(-\gamma) + B \\
+\end{cases}\end{split}\]</div>
+</div></blockquote>
+<p>从这三个公式，我们可以解出三个为止参数的值：</p>
+<blockquote>
+<div><div class="math">
+\[\begin{split}A      &amp;= \frac{(E\left(N_0 - 1\right) - E\left(N_0\right))(E\left(N_0\right) - E\left(N_0 + 1\right))}
+               {E\left(N_0 - 1\right) - 2 E\left(N_0\right) + E\left(N_0 + 1\right)}
+        = \frac{IP \cdot EA}{IP - EA} \\
+B      &amp;= E\left(N_0\right) - A  \\
+\gamma &amp;= \ln \left( 1 - \frac{E\left(N_0 - 1\right) - 2E\left(N_0\right) + E\left(N_0 + 1\right)}
+                              {E\left(N_0 + 1\right) - E\left(N_0\right)} \right) \\\end{split}\]</div>
+</div></blockquote>
+<p>由于参数计算过程较为复杂，我们略去了将其带入能量表达式的过程。在知道了这些参数之后，我们就能用这个模型来计算任意电子数体系的能量。这个功能被应用在 <code class="xref py py-class docutils literal"><span class="pre">chemtools.tool.globaltool.ExponentialGlobalTool.energy</span></code> 中。</p>
+<p>在给定外部势能的情况下，指数函数模型对于电子数的偏微分为：</p>
+<blockquote>
+<div><div class="math">
+\[\begin{split}\left( \frac{\partial E}{\partial N} \right)_{v(\mathbf{r})}
+     &amp;= A \left(-\gamma\right) \exp\left(-\gamma \left(N - N_0\right)\right) \\
+\left( \frac{\partial^2 E}{\partial N^2} \right)_{v(\mathbf{r})}
+     &amp;= A {\left(-\gamma\right)^2} \exp\left(-\gamma \left(N - N_0\right)\right) \\
+\left( \frac{\partial^n E}{\partial N^n} \right)_{v(\mathbf{r})}
+     &amp;= A {\left(-\gamma\right)^n} \exp\left(-\gamma \left(N - N_0\right)\right) \text{   for   } n \geq 1\end{split}\]</div>
+</div></blockquote>
+<p>对任意电子数求偏微分的方法被应用在 <code class="xref py py-class docutils literal"><span class="pre">chemtools.tool.globaltool.ExponentialGlobalTool.energy_derivative</span></code> 中</p>
+<p>在指数函数模型中，计算体系能量对电子数 <span class="math">\(N_0\)</span> 的一阶，二阶或是高阶偏导可以得到化学势，化学硬度以及超硬度等性质：</p>
+<blockquote>
+<div><div class="math">
+\[\begin{split}\mu = \left. \left( \frac{\partial E}{\partial N} \right)_{v(\mathbf{r})} \right|_{N = N_0}
+   &amp;= -A \gamma \\
+\eta = \left. \left( \frac{\partial^2 E}{\partial N^2} \right)_{v(\mathbf{r})} \right|_{N = N_0}
+    &amp;= A {\gamma ^2} \\
+\eta^{(2)} = \left. \left( \frac{\partial^{3} E}{\partial N^{3}} \right)_{v(\mathbf{r})} \right|_{N = N_0}
+          &amp;= -A \gamma^3 \\
+\eta^{(n)} = \left. \left( \frac{\partial^{n+1} E}{\partial N^{n+1}} \right)_{v(\mathbf{r})} \right|_{N = N_0}
+          &amp;= A {(-\gamma)^{(n+1)}} \text{  for  } n \geq 2\end{split}\]</div>
+</div></blockquote>
+<p>这些功能被应用在 <code class="xref py py-class docutils literal"><span class="pre">chemtools.tool.globaltool.ExponentialGlobalTool.chemical_potential</span></code> 和 <code class="xref py py-class docutils literal"><span class="pre">chemtools.tool.globaltool.ExponentialGlobalTool.chemical_hardness</span></code> 中。</p>
+<p>利用这些公式，我们也可以推导出下列公式计算化学软度和低阶超软度，</p>
+<blockquote>
+<div><div class="math">
+\[\begin{split}S = - \left. \left( \frac{\partial^2\Omega}{\partial\mu^2} \right)_{v(\mathbf{r})} \right|_{N = N_0}
+ &amp;=  \frac{1}{\eta} = \frac{1}{A \gamma^2} \\
+S^{(2)} = - \left. \left( \frac{\partial^{3}\Omega}{\partial\mu^{3}} \right)_{v(\mathbf{r})} \right|_{N = N_0}
+       &amp;= -\eta^{(2)} \cdot S^3 = - \left(-A\gamma^3\right) \left(\frac{1}{A \gamma^2} \right)^3 = \frac{1}{A^2\gamma^3} \\
+S^{(3)} = - \left. \left( \frac{\partial^{4}\Omega}{\partial\mu^{4}} \right)_{v(\mathbf{r})} \right|_{N = N_0}
+       &amp;= -\eta^{(3)} \cdot S^4 + 3 \left(\eta^{(2)}\right)^2 \cdot S^5 \\
+       &amp;= - \left(A\gamma^4\right) \left(\frac{1}{A\gamma^2}\right)^4 +
+          3 \left(\frac{1}{-A\gamma^3}\right)^2 \left(\frac{1}{A\gamma^2}\right)^5 = \frac{2}{A^3\gamma^4}\\\end{split}\]</div>
+</div></blockquote>
+<p>ChemTools也可以根据导数的反函数定理计算高阶的超软度。您可以查阅 <a class="reference internal" href="tech_derivations.html#derivation-global-softness"><span class="std std-ref">Deriving Global Hyper-Softness</span></a> 了解更多详细信息。</p>
+<p>若想要得到指数模型中的 <a class="reference internal" href="sci_doc_globaltool.html#global-derived-indicators"><span class="std std-ref">派生全局反应指示符</span></a> ，则要先计算出整个体系所能接纳的最大电子数。</p>
+<blockquote>
+<div><div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">待处理</p>
+<ol class="last arabic simple">
+<li>Include <span class="math">\(N_{\text{max}}=\infty\)</span> and derived global reactivity tools</li>
+</ol>
+</div>
+</div></blockquote>
+<p><strong>References:</strong></p>
+<blockquote>
+<div><div class="admonition-todo admonition" id="index-1">
+<p class="first admonition-title">待处理</p>
+<ol class="last arabic simple">
+<li>Add references</li>
+</ol>
+</div>
+</div></blockquote>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sci_doc_global_general.html" class="btn btn-neutral float-right" title="自定义函数能量模型 chemtools.tool.globaltool.GeneralGlobalTool" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="sci_doc_global_rational.html" class="btn btn-neutral" title="有理函数能量模型 chemtools.tool.globaltool.RationalGlobalTool" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; 版权所有 2016, Ayers&#39; Group @ McMaster University.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0',
+            LANGUAGE:'zh_CN',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/translations.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+  <script type='text/javascript'>
+  $(".tooltiptext").hide(); // On very first line of scripts.js file
+
+
+  $("a").hover(function () {
+    var elems = this;
+    var curClass = elems.className // current class clicked.
+    // var windowHeight = $(".rst-content").height();
+    var windowWidth = $(".rst-content").width();
+
+    var left = elems.offsetLeft;
+    var top = elems.offsetTop;
+    // var linkHeight = $(".tooltip").height();
+    // var linkWidth = $(".tooltip").width();
+    // var tooltiph = $(".tooltiptext").height();
+    var tooltipw = $(".tooltiptext").width();
+    // var bottom = windowHeight - top - tooltiph;
+    var right = windowWidth - left - tooltipw;
+
+		var isEntirelyVisible = (left + tooltipw <= windowWidth);
+    if (!isEntirelyVisible) {
+        $(".tooltiptext").css("right", "0px");
+    } else  {
+        $(".tooltiptext").css("right", "-160px");
+    }
+
+
+
+
+    $(".tooltiptext").fadeIn('fast');
+},
+
+function () {
+});
+  </script>
+</body>
+</html>

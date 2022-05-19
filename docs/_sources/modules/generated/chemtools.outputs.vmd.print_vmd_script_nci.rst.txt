@@ -1,0 +1,9 @@
+:orphan:
+:noindex:
+
+chemtools.outputs.vmd.print_vmd_script_nci
+==========================================
+
+.. currentmodule:: chemtools.outputs.vmd
+
+.. autofunction:: print_vmd_script_nci

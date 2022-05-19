@@ -1,0 +1,722 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>chemtools.utils.cube &mdash; ChemTools 0.0 文档</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../_static/chemtools_favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="索引"
+              href="../../../genindex.html"/>
+        <link rel="search" title="搜索" href="../../../search.html"/>
+    <link rel="top" title="ChemTools 0.0 文档" href="../../../index.html"/>
+        <link rel="up" title="模块代码" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+  <style type="text/css">
+  #content {
+      position: relative;
+      }
+  #content img {
+          position: absolute;
+	      top: 0px;
+	          right: 0px;
+		  }
+  .rst-content p, .rst-content li {
+	    text-align: justify;
+	    text-justify: inter-word;
+      }
+  .tooltip {
+      position: relative;
+      /*display: inline-block;*/
+      /*border-bottom: 5px dotted black;*/
+      width: 75px;
+      /*min-width: 75px;*/
+      /*max-width: 255px;*/
+      }
+
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 180px;
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #fff;
+      text-align: left;
+      /*border-radius: 6px;*/
+      padding: 4px;
+      font-size:12px;
+      line-height: 15px;
+      /* Position the tooltip */
+      position: absolute;
+      z-index: 1;
+      }
+
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+      position: absolute;
+      /*left: -70px; -index: 99;*/
+      top: 20px;
+      }
+ </style>
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ChemTools
+          
+
+          
+            
+            <img src="../../../_static/chemtools_logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_about.html">关于 ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_citing.html">引用 ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_license.html">开源许可</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_contact.html">联系方式</a></li>
+</ul>
+<p class="caption"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usr_doc_installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usr_doc_quick_start.html">快速入门</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usr_doc_tutorials.html">新手教程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../auto_examples/index.html">样例图库</a></li>
+</ul>
+<p class="caption"><span class="caption-text">科学手册</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_conceptual.html">概念密度泛函理论</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_densitytool.html">基于密度的定域描述符</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_orbitaltool.html">基于轨道的定域描述符</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_nci.html">非共价相互作用（NCI） <code class="docutils literal"><span class="pre">chemtools.tool.analysis.nci</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_zref.html">参考文献</a></li>
+</ul>
+<p class="caption"><span class="caption-text">高阶文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tech_dev.html">开发者指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tech_api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tech_derivations.html">推导</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ChemTools</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div id=content>
+        <a href="https://github.com/QuantumElephant/chemtools" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+       </div>
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">模块代码</a> &raquo;</li>
+        
+      <li>chemtools.utils.cube</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>chemtools.utils.cube 源代码</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># ChemTools is a collection of interpretive chemical tools for</span>
+<span class="c1"># analyzing outputs of the quantum chemistry calculations.</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2014-2015 The ChemTools Development Team</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of ChemTools.</span>
+<span class="c1">#</span>
+<span class="c1"># ChemTools is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the GNU General Public License</span>
+<span class="c1"># as published by the Free Software Foundation; either version 3</span>
+<span class="c1"># of the License, or (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># ChemTools is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># --</span>
+<span class="sd">&quot;&quot;&quot;The Cube Module.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">horton</span> <span class="k">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">IOData</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CubeGen&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="CubeGen"><a class="viewcode-back" href="../../../modules/generated/chemtools.utils.cube.CubeGen.html#chemtools.utils.cube.CubeGen">[文档]</a><span class="k">class</span> <span class="nc">CubeGen</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for generating a cubic grid and writing cube files.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numbers</span><span class="p">,</span> <span class="n">pseudo_numbers</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize ``CubeGen`` class based on the origin, axes and shape of the cube.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        numbers : np.ndarray, shape=(M,)</span>
+<span class="sd">            Atomic number of `M` atoms in the molecule.</span>
+<span class="sd">        pseudo_numbers : np.ndarray, shape=(M,)</span>
+<span class="sd">            Pseudo-number of `M` atoms in the molecule.</span>
+<span class="sd">        coordinates : np.ndarray, shape=(M, 3)</span>
+<span class="sd">            Cartesian coordinates of `M` atoms in the molecule.</span>
+<span class="sd">        origin : np.ndarray, shape=(3,)</span>
+<span class="sd">            Cartesian coordinates of the cubic grid origin.</span>
+<span class="sd">        axes : np.ndarray, shape=(3, 3)</span>
+<span class="sd">            The three vectors, stored as rows of axes array,</span>
+<span class="sd">            defining the Cartesian coordinate system used to build the</span>
+<span class="sd">            cubic grid.</span>
+<span class="sd">        shape : np.ndarray, shape=(3,)</span>
+<span class="sd">            Number of grid points along `x`, `y`, and `z` axis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_numbers</span> <span class="o">=</span> <span class="n">numbers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pseudo_numbers</span> <span class="o">=</span> <span class="n">pseudo_numbers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coordinates</span> <span class="o">=</span> <span class="n">coordinates</span>
+        <span class="k">if</span> <span class="n">origin</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument origin should be an np.ndarray with shape=(3,)&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_origin</span> <span class="o">=</span> <span class="n">origin</span>
+        <span class="k">if</span> <span class="n">axes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">axes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument axes should be an np.ndarray with shape=(3, 3)&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span> <span class="o">=</span> <span class="n">axes</span>
+        <span class="k">if</span> <span class="n">shape</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument shape should be an np.ndarray with shape=(3,)&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="n">shape</span>
+        <span class="c1">#</span>
+        <span class="c1"># Make cubic grid</span>
+        <span class="c1">#</span>
+        <span class="c1"># Number of points along x, y and z axis</span>
+        <span class="n">npoints_x</span><span class="p">,</span> <span class="n">npoints_y</span><span class="p">,</span> <span class="n">npoints_z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span>
+        <span class="c1"># Total number of grid points</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_npoints</span> <span class="o">=</span> <span class="n">npoints_x</span> <span class="o">*</span> <span class="n">npoints_y</span> <span class="o">*</span> <span class="n">npoints_z</span>
+        <span class="c1"># Make an array to store coordinates of grid points</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_npoints</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="c1"># Compute coordinates of grid points relative to the origin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_points</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_origin</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">nx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">npoints_x</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">ny</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">npoints_y</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">nz</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">npoints_z</span><span class="p">):</span>
+                    <span class="n">coordinate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_points</span><span class="p">[</span><span class="n">count</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="n">coordinate</span>
+                    <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># log information</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_init</span><span class="p">()</span>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="CubeGen.from_molecule"><a class="viewcode-back" href="../../../modules/generated/chemtools.utils.cube.CubeGen.html#chemtools.utils.cube.CubeGen.from_molecule">[文档]</a>    <span class="k">def</span> <span class="nf">from_molecule</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">numbers</span><span class="p">,</span> <span class="n">pseudo_numbers</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+                      <span class="n">threshold</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">rotate</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize ``CubeGen`` class based on the Cartesian coordinates of the molecule.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        numbers : np.ndarray, shape=(M,)</span>
+<span class="sd">            Atomic number of `M` atoms in the molecule.</span>
+<span class="sd">        pseudo_numbers : np.ndarray, shape=(M,)</span>
+<span class="sd">            Pseudo-number of `M` atoms in the molecule.</span>
+<span class="sd">        coordinates : np.ndarray, shape=(M, 3)</span>
+<span class="sd">            Cartesian coordinates of `M` atoms in the molecule.</span>
+<span class="sd">        spacing : float, default=0.2</span>
+<span class="sd">            Increment between grid points along `x`, `y` and `z` direction.</span>
+<span class="sd">        threshold : float, default=5.0</span>
+<span class="sd">            The extension of the cube on each side of the molecule.</span>
+<span class="sd">        rotate : bool, default=True</span>
+<span class="sd">            When True, the molecule is rotated so the axes of the cube file are</span>
+<span class="sd">            aligned with the principle axes of rotation of the molecule.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># calculate center of mass of the nuclear charges:</span>
+        <span class="n">totz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pseudo_numbers</span><span class="p">)</span>
+        <span class="n">com</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">pseudo_numbers</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">)</span> <span class="o">/</span> <span class="n">totz</span>
+
+        <span class="k">if</span> <span class="n">rotate</span><span class="p">:</span>
+            <span class="c1"># calculate moment of inertia tensor:</span>
+            <span class="n">itensor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pseudo_numbers</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">xyz</span> <span class="o">=</span> <span class="n">coordinates</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">com</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">xyz</span><span class="p">)</span><span class="o">**</span><span class="mf">2.0</span>
+                <span class="n">tempitens</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="n">r</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">r</span><span class="p">])</span>
+                <span class="n">tempitens</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">xyz</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">xyz</span><span class="p">)</span>
+                <span class="n">itensor</span> <span class="o">+=</span> <span class="n">pseudo_numbers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">tempitens</span>
+
+            <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">itensor</span><span class="p">)</span>
+            <span class="n">new_coordinates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">((</span><span class="n">coordinates</span> <span class="o">-</span> <span class="n">com</span><span class="p">),</span> <span class="n">v</span><span class="p">)</span>
+            <span class="n">axes</span> <span class="o">=</span> <span class="n">spacing</span> <span class="o">*</span> <span class="n">v</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Just use the original coordinates</span>
+            <span class="n">new_coordinates</span> <span class="o">=</span> <span class="n">coordinates</span>
+            <span class="c1"># Compute the unit vectors of the cubic grid&#39;s coordinate system</span>
+            <span class="n">axes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="n">spacing</span><span class="p">,</span> <span class="n">spacing</span><span class="p">,</span> <span class="n">spacing</span><span class="p">])</span>
+
+        <span class="c1"># maximum and minimum value of x, y and z coordinates</span>
+        <span class="n">max_coordinate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">new_coordinates</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">min_coordinate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">new_coordinates</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># Compute the required number of points along x, y, and z axis</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_coordinate</span> <span class="o">-</span> <span class="n">min_coordinate</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">threshold</span><span class="p">)</span> <span class="o">/</span> <span class="n">spacing</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+        <span class="c1"># Compute origin</span>
+        <span class="n">origin</span> <span class="o">=</span> <span class="n">com</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">((</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">shape</span><span class="p">),</span> <span class="n">axes</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">numbers</span><span class="p">,</span> <span class="n">pseudo_numbers</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span></div>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="CubeGen.from_cube"><a class="viewcode-back" href="../../../modules/generated/chemtools.utils.cube.CubeGen.html#chemtools.utils.cube.CubeGen.from_cube">[文档]</a>    <span class="k">def</span> <span class="nf">from_cube</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize ``CubeGen`` class based on the grid specifications of a cube file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str</span>
+<span class="sd">            Cube file name with \*.cube extension.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.cube&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument filename should be a cube file with *.cube extension!&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Extract the specifications of the cubic grid from cube file&#39;s header</span>
+        <span class="n">numbers</span><span class="p">,</span> <span class="n">pseudo_numbers</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_read_cube_header</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">numbers</span><span class="p">,</span> <span class="n">pseudo_numbers</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span></div>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="CubeGen.from_file"><a class="viewcode-back" href="../../../modules/generated/chemtools.utils.cube.CubeGen.html#chemtools.utils.cube.CubeGen.from_file">[文档]</a>    <span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">rotate</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize ``CubeGen`` class based on the grid specifications of a file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str</span>
+<span class="sd">            file name with, readable with HORTON&#39;s IOData.</span>
+<span class="sd">        spacing : float, default=0.2</span>
+<span class="sd">            Increment between grid points along `x`, `y` and `z` direction.</span>
+<span class="sd">        threshold : float, default=5.0</span>
+<span class="sd">            The extension of the cube on each side of the molecule.</span>
+<span class="sd">        rotate : bool, default=True</span>
+<span class="sd">            When True, the molecule is rotated so the axes of the cube file are</span>
+<span class="sd">            aligned with the principle axes of rotation of the molecule.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Load file</span>
+        <span class="n">mol</span> <span class="o">=</span> <span class="n">IOData</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_molecule</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">numbers</span><span class="p">,</span> <span class="n">mol</span><span class="o">.</span><span class="n">pseudo_numbers</span><span class="p">,</span> <span class="n">mol</span><span class="o">.</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">spacing</span><span class="p">,</span>
+                                 <span class="n">threshold</span><span class="p">,</span> <span class="n">rotate</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">numbers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Atomic number of the atoms in the molecule.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_numbers</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pseudo_numbers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Pseudo-number of the atoms in the molecule.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pseudo_numbers</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Cartesian coordinates of the atoms in the molecule.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinates</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">origin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Cartesian coordinate of the cubic grid origin.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_origin</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">axes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Array with axes of the cube.</span>
+
+<span class="sd">        The three vectors, stored as rows of axes array, defining the Cartesian</span>
+<span class="sd">        coordinate system used to build the cubic grid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Number of grid points along `x`, `y`, and `z` axis.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">npoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Total number of grid points.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_npoints</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Cartesian coordinates of the cubic grid points.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_points</span>
+
+    <span class="k">def</span> <span class="nf">_log_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Log an overview of the cube&#39;s properties.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">log</span><span class="o">.</span><span class="n">do_medium</span><span class="p">:</span>
+            <span class="n">log</span><span class="p">(</span><span class="s1">&#39;Initialized cube: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">deflist</span><span class="p">([(</span><span class="s1">&#39;Origin &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_origin</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s1">&#39;Axes[0]&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                         <span class="p">(</span><span class="s1">&#39;Axes[1]&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                         <span class="p">(</span><span class="s1">&#39;Axes[2]&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                         <span class="p">(</span><span class="s1">&#39;Shape  &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">)])</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">blank</span><span class="p">()</span>
+
+<div class="viewcode-block" id="CubeGen.dump_cube"><a class="viewcode-back" href="../../../modules/generated/chemtools.utils.cube.CubeGen.html#chemtools.utils.cube.CubeGen.dump_cube">[文档]</a>    <span class="k">def</span> <span class="nf">dump_cube</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Write the data evaluated on grid points into a cube file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str</span>
+<span class="sd">            Cube file name with \*.cube extension.</span>
+<span class="sd">        data : np.ndarray, shape=(npoints,)</span>
+<span class="sd">            An array containing the evaluated scalar property on the grid points.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.cube&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument filename should be a cube file with `*.cube` extension!&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_npoints</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument data should have the same size as the grid. &#39;</span> <span class="o">+</span>
+                             <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">!=</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_npoints</span><span class="p">))</span>
+
+        <span class="c1"># Write data into the cube file</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="c1"># writing the cube header:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Cubefile created with HORTON CHEMTOOLS</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;OUTER LOOP: X, MIDDLE LOOP: Y, INNER LOOP: Z</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">natom</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_numbers</span><span class="p">)</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_origin</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:5d}</span><span class="s1"> </span><span class="si">{1:11.6f}</span><span class="s1"> </span><span class="si">{2:11.6f}</span><span class="s1"> </span><span class="si">{3:11.6f}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">natom</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
+            <span class="n">rvecs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">,</span> <span class="n">rvecs</span><span class="p">):</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:5d}</span><span class="s1"> </span><span class="si">{1:11.6f}</span><span class="s1"> </span><span class="si">{2:11.6f}</span><span class="s1"> </span><span class="si">{3:11.6f}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_numbers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pseudo_numbers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinates</span><span class="p">):</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:5d}</span><span class="s1"> </span><span class="si">{1:11.6f}</span><span class="s1"> </span><span class="si">{2:11.6f}</span><span class="s1"> </span><span class="si">{3:11.6f}</span><span class="s1"> </span><span class="si">{4:11.6f}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
+            <span class="c1"># writing the cube data:</span>
+            <span class="n">num_chunks</span> <span class="o">=</span> <span class="mi">6</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">num_chunks</span><span class="p">):</span>
+                <span class="n">row_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">num_chunks</span><span class="p">]</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">((</span><span class="n">row_data</span><span class="o">.</span><span class="n">size</span><span class="o">*</span><span class="s1">&#39; </span><span class="si">{:12.5E}</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">row_data</span><span class="p">))</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CubeGen.weights"><a class="viewcode-back" href="../../../modules/generated/chemtools.utils.cube.CubeGen.html#chemtools.utils.cube.CubeGen.weights">[文档]</a>    <span class="k">def</span> <span class="nf">weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;R&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return integration weights at every point on the cubic grid.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        method : str, default=&#39;R0&#39;</span>
+<span class="sd">            The method for computing the integration weights at every point on the grid. Options:</span>
+
+<span class="sd">                - &#39;R&#39; method perfors rectangle/trapezoidal rule, without assuming that the function</span>
+<span class="sd">                  is close to zero at the edges of the grid.</span>
+<span class="sd">                - &#39;R0&#39; method performing rectangle/trapezoidal rule, assuming that the function is</span>
+<span class="sd">                  very close to zero at the edges of the grid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;R&#39;</span><span class="p">:</span>
+            <span class="n">volume</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">volume</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">volume</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">numpnt</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_npoints</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_npoints</span><span class="p">,</span> <span class="n">volume</span> <span class="o">/</span> <span class="n">numpnt</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;R0&#39;</span><span class="p">:</span>
+            <span class="n">volume</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">volume</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">volume</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+            <span class="n">numpnt</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_npoints</span><span class="p">,</span> <span class="n">volume</span> <span class="o">/</span> <span class="n">numpnt</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument method </span><span class="si">{0}</span><span class="s1"> is not known.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">method</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">weights</span></div>
+
+<div class="viewcode-block" id="CubeGen.integrate"><a class="viewcode-back" href="../../../modules/generated/chemtools.utils.cube.CubeGen.html#chemtools.utils.cube.CubeGen.integrate">[文档]</a>    <span class="k">def</span> <span class="nf">integrate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;R0&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Integrate the data on a cubic grid.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : np.ndarray, shape=(npoints, m)</span>
+<span class="sd">            Data at every point on the grid given as an array. The size of axis=0 of this array</span>
+<span class="sd">            should equal the number of grid points.</span>
+
+<span class="sd">        method : str, default=&#39;R0&#39;</span>
+<span class="sd">            The method for computing the integration weights at every point on the grid. Options:</span>
+
+<span class="sd">                - &#39;R&#39; method perfors rectangle/trapezoidal rule, without assuming that the function</span>
+<span class="sd">                  is close to zero at the edges of the grid.</span>
+<span class="sd">                - &#39;R0&#39; method performing rectangle/trapezoidal rule, assuming that the function is</span>
+<span class="sd">                  very close to zero at the edges of the grid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_npoints</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument data should have the same size as the grid for axis=0. &#39;</span> <span class="o">+</span>
+                             <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">!=</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_npoints</span><span class="p">))</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">),</span> <span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_read_cube_header</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return specifications of the cubic grid from the given cube file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str</span>
+<span class="sd">            Cube file name with *.cube extension.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="c1"># skip the title</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="c1"># skip the second line</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+
+            <span class="k">def</span> <span class="nf">read_grid_line</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+                <span class="sd">&quot;&quot;&quot;Read a number and (x, y, z) coordinate from the cube file line.&quot;&quot;&quot;</span>
+                <span class="n">words</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="k">return</span> <span class="p">(</span>
+                    <span class="nb">int</span><span class="p">(</span><span class="n">words</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">words</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">words</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">words</span><span class="p">[</span><span class="mi">3</span><span class="p">])],</span> <span class="nb">float</span><span class="p">)</span>
+                    <span class="c1"># all coordinates in a cube file are in atomic units</span>
+                <span class="p">)</span>
+
+            <span class="c1"># number of atoms and origin of the grid</span>
+            <span class="n">natom</span><span class="p">,</span> <span class="n">origin</span> <span class="o">=</span> <span class="n">read_grid_line</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span>
+            <span class="c1"># numer of grid points in A direction and step vector A, and so on</span>
+            <span class="n">shape0</span><span class="p">,</span> <span class="n">axis0</span> <span class="o">=</span> <span class="n">read_grid_line</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span>
+            <span class="n">shape1</span><span class="p">,</span> <span class="n">axis1</span> <span class="o">=</span> <span class="n">read_grid_line</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span>
+            <span class="n">shape2</span><span class="p">,</span> <span class="n">axis2</span> <span class="o">=</span> <span class="n">read_grid_line</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">shape0</span><span class="p">,</span> <span class="n">shape1</span><span class="p">,</span> <span class="n">shape2</span><span class="p">],</span> <span class="nb">int</span><span class="p">)</span>
+            <span class="n">axes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">axis0</span><span class="p">,</span> <span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="p">])</span>
+
+            <span class="k">def</span> <span class="nf">read_coordinate_line</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+                <span class="sd">&quot;&quot;&quot;Read atomic number and (x, y, z) coordinate from the cube file line.&quot;&quot;&quot;</span>
+                <span class="n">words</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="k">return</span> <span class="p">(</span>
+                    <span class="nb">int</span><span class="p">(</span><span class="n">words</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">words</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">words</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">words</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">words</span><span class="p">[</span><span class="mi">4</span><span class="p">])],</span> <span class="nb">float</span><span class="p">)</span>
+                    <span class="c1"># all coordinates in a cube file are in atomic units</span>
+                <span class="p">)</span>
+
+            <span class="n">numbers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">natom</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+            <span class="n">pseudo_numbers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">natom</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+            <span class="n">coordinates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">natom</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="nb">float</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">natom</span><span class="p">):</span>
+                <span class="n">numbers</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">pseudo_numbers</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">coordinates</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_coordinate_line</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span>
+                <span class="c1"># If the pseudo_number field is zero, we assume that no effective core</span>
+                <span class="c1"># potentials were used.</span>
+                <span class="k">if</span> <span class="n">pseudo_numbers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+                    <span class="n">pseudo_numbers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">numbers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">numbers</span><span class="p">,</span> <span class="n">pseudo_numbers</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">shape</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; 版权所有 2016, Ayers&#39; Group @ McMaster University.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.0',
+            LANGUAGE:'zh_CN',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../../_static/translations.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+  <script type='text/javascript'>
+  $(".tooltiptext").hide(); // On very first line of scripts.js file
+
+
+  $("a").hover(function () {
+    var elems = this;
+    var curClass = elems.className // current class clicked.
+    // var windowHeight = $(".rst-content").height();
+    var windowWidth = $(".rst-content").width();
+
+    var left = elems.offsetLeft;
+    var top = elems.offsetTop;
+    // var linkHeight = $(".tooltip").height();
+    // var linkWidth = $(".tooltip").width();
+    // var tooltiph = $(".tooltiptext").height();
+    var tooltipw = $(".tooltiptext").width();
+    // var bottom = windowHeight - top - tooltiph;
+    var right = windowWidth - left - tooltipw;
+
+		var isEntirelyVisible = (left + tooltipw <= windowWidth);
+    if (!isEntirelyVisible) {
+        $(".tooltiptext").css("right", "0px");
+    } else  {
+        $(".tooltiptext").css("right", "-160px");
+    }
+
+
+
+
+    $(".tooltiptext").fadeIn('fast');
+},
+
+function () {
+});
+  </script>
+</body>
+</html>

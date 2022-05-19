@@ -1,0 +1,10 @@
+:orphan:
+
+chemtools.conceptual.linear.LinearLocalTool
+===========================================
+
+.. currentmodule:: chemtools.conceptual.linear
+
+.. autoclass:: LinearLocalTool
+   :members:
+   :inherited-members:

@@ -1,0 +1,1413 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>chemtools.toolbox.conceptualglobal &mdash; ChemTools 0.0 文档</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../_static/chemtools_favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="索引"
+              href="../../../genindex.html"/>
+        <link rel="search" title="搜索" href="../../../search.html"/>
+    <link rel="top" title="ChemTools 0.0 文档" href="../../../index.html"/>
+        <link rel="up" title="模块代码" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+  <style type="text/css">
+  #content {
+      position: relative;
+      }
+  #content img {
+          position: absolute;
+	      top: 0px;
+	          right: 0px;
+		  }
+  .rst-content p, .rst-content li {
+	    text-align: justify;
+	    text-justify: inter-word;
+      }
+  .tooltip {
+      position: relative;
+      /*display: inline-block;*/
+      /*border-bottom: 5px dotted black;*/
+      width: 75px;
+      /*min-width: 75px;*/
+      /*max-width: 255px;*/
+      }
+
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 180px;
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #fff;
+      text-align: left;
+      /*border-radius: 6px;*/
+      padding: 4px;
+      font-size:12px;
+      line-height: 15px;
+      /* Position the tooltip */
+      position: absolute;
+      z-index: 1;
+      }
+
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+      position: absolute;
+      /*left: -70px; -index: 99;*/
+      top: 20px;
+      }
+ </style>
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ChemTools
+          
+
+          
+            
+            <img src="../../../_static/chemtools_logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_about.html">关于 ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_citing.html">引用 ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_license.html">开源许可</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_contact.html">联系方式</a></li>
+</ul>
+<p class="caption"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usr_doc_installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usr_doc_quick_start.html">快速入门</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usr_doc_tutorials.html">新手教程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../auto_examples/index.html">样例图库</a></li>
+</ul>
+<p class="caption"><span class="caption-text">科学手册</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_conceptual.html">概念密度泛函理论</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_densitytool.html">基于密度的定域描述符</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_orbitaltool.html">基于轨道的定域描述符</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_nci.html">非共价相互作用（NCI） <code class="docutils literal"><span class="pre">chemtools.tool.analysis.nci</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_zref.html">参考文献</a></li>
+</ul>
+<p class="caption"><span class="caption-text">高阶文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tech_dev.html">开发者指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tech_api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tech_derivations.html">推导</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ChemTools</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div id=content>
+        <a href="https://github.com/QuantumElephant/chemtools" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+       </div>
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">模块代码</a> &raquo;</li>
+        
+      <li>chemtools.toolbox.conceptualglobal</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>chemtools.toolbox.conceptualglobal 源代码</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># ChemTools is a collection of interpretive chemical tools for</span>
+<span class="c1"># analyzing outputs of the quantum chemistry calculations.</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2014-2015 The ChemTools Development Team</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of ChemTools.</span>
+<span class="c1">#</span>
+<span class="c1"># ChemTools is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the GNU General Public License</span>
+<span class="c1"># as published by the Free Software Foundation; either version 3</span>
+<span class="c1"># of the License, or (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># ChemTools is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># --</span>
+<span class="sd">&quot;&quot;&quot;Global Conceptual Density Functional Theory (DFT) Reactivity Tools.</span>
+
+<span class="sd">This module contains various global tool classes corresponding to</span>
+<span class="sd">linear, quadratic, exponential, general energy models.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">sympy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">from</span> <span class="nn">horton</span> <span class="k">import</span> <span class="n">log</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="k">import</span> <span class="n">root</span><span class="p">,</span> <span class="n">newton</span><span class="p">,</span> <span class="n">least_squares</span>
+<span class="kn">from</span> <span class="nn">chemtools.utils.utils</span> <span class="k">import</span> <span class="n">doc_inherit</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;BaseGlobalTool&#39;</span><span class="p">,</span> <span class="s1">&#39;LinearGlobalTool&#39;</span><span class="p">,</span> <span class="s1">&#39;QuadraticGlobalTool&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;ExponentialGlobalTool&#39;</span><span class="p">,</span> <span class="s1">&#39;RationalGlobalTool&#39;</span><span class="p">,</span> <span class="s1">&#39;GeneralGlobalTool&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="BaseGlobalTool"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.BaseGlobalTool.html#chemtools.toolbox.conceptualglobal.BaseGlobalTool">[文档]</a><span class="k">class</span> <span class="nc">BaseGlobalTool</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class of global conceptual DFT reactivity descriptors.&quot;&quot;&quot;</span>
+
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energy_zero</span><span class="p">,</span> <span class="n">energy_plus</span><span class="p">,</span> <span class="n">energy_minus</span><span class="p">,</span> <span class="n">n0</span><span class="p">,</span> <span class="n">n_max</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        energy_zero : float</span>
+<span class="sd">            Energy of the :math:`N_0` -electron system, i.e. :math:`E(N_0)`.</span>
+<span class="sd">        energy_plus : float</span>
+<span class="sd">            Energy of the :math:`(N_0 + 1)` -electron system, i.e. :math:`E(N_0 + 1)`.</span>
+<span class="sd">        energy_minus : float</span>
+<span class="sd">            Energy of the :math:`(N_0 - 1)` -electron system, i.e. :math:`E(N_0 - 1)`.</span>
+<span class="sd">        n0 : float</span>
+<span class="sd">            Reference number of electrons, i.e. :math:`N_0`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">n0</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument n0 should be positive! Given n0=</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n0</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">n_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">n_max</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument n_max cannot be negative! Given n0=</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_max</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">=</span> <span class="n">n0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_max</span> <span class="o">=</span> <span class="n">n_max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_energy_zero</span> <span class="o">=</span> <span class="n">energy_zero</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_energy_plus</span> <span class="o">=</span> <span class="n">energy_plus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_energy_minus</span> <span class="o">=</span> <span class="n">energy_minus</span>
+        <span class="c1"># calculate ionization potential and electron affinity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ip</span> <span class="o">=</span> <span class="n">energy_minus</span> <span class="o">-</span> <span class="n">energy_zero</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ea</span> <span class="o">=</span> <span class="n">energy_zero</span> <span class="o">-</span> <span class="n">energy_plus</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n0</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reference number of electrons, i.e. :math:`N_0`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Maximum number of electrons that the system can accept.</span>
+
+<span class="sd">        .. math:: N_{\text{max}} = \underbrace {\min }_N E(N)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_max</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">energy_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Energy of the system with :math:`N_0` electrons, i.e. :math:`E(N_0)`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_energy_zero</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ionization_potential</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ionization potential (IP) of the :math:`N_0`-electron system.</span>
+
+<span class="sd">        .. math:: IP = E\left(N_0 - 1\right) - E\left(N_0\right)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ip</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The same as :attr:`ionization_potential`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ionization_potential</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">electron_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Electron affinity (EA) of the :math:`N_0`-electron system.</span>
+
+<span class="sd">        .. math:: EA = E\left(N_0\right) - E\left(N_0 + 1\right)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ea</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ea</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The same as :attr:`electron_affinity`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">electron_affinity</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">electronegativity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Mulliken electronegativity defined as negative :attr:`chemical_potential`.</span>
+
+<span class="sd">        .. math:: \chi_{\text{Mulliken}} = - \mu</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemical_potential</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemical_potential</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">electrophilicity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Electrophilicity of the :math:`N_0`-electron system.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \omega_{\text{electrophilicity}} = \text{sgn}\left(N_{\text{max}} - N_0\right)</span>
+<span class="sd">                                              \times \left(E(N_0) - E(N_{\text{max}})\right)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_max</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">sign</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_energy_zero</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_max</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">nucleofugality</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Nucleofugality of the :math:`N_0`-electron system.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \nu_{\text{nucleofugality}} = \text{sgn}\left(N_0 + 1 - N_{\text{max}}\right)</span>
+<span class="sd">                                         \times \left(E(N_0 + 1) - E(N_{\text{max}})\right)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_max</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">sign</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_max</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">electrofugality</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Electrofugalityof the :math:`N_0`-electron system.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \nu_{\text{electrofugality}} = \text{sgn}\left(N_{\text{max}} - N_0 + 1\right)</span>
+<span class="sd">                                          \times \left(E(N_0 - 1) - E(N_{\text{max}})\right)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_max</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">sign</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_max</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">chemical_potential</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Chemical potential of the :math:`N_0`-electron system.</span>
+
+<span class="sd">        The chemical potential is defined as the first derivative of the energy model w.r.t.</span>
+<span class="sd">        the number of electrons, at fixed external potential, evaluated at :math:`N_0`,</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \mu = \left. \left(\frac{\partial E}{\partial N}</span>
+<span class="sd">                        \right)_{v(\mathbf{r})} \right|_{N = N_0}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy_derivative</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The same as :attr:`chemical_potential`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemical_potential</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">chemical_hardness</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Chemical hardness of the :math:`N_0`-electron system.</span>
+
+<span class="sd">        This chemical hardness is defined as the second derivative of the energy model</span>
+<span class="sd">        w.r.t. the number of electrons, at fixed external potential, evaluated at :math:`N_0`.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \eta  = \left. \left(\frac{\partial^2 E}{\partial N^2}</span>
+<span class="sd">                          \right)_{v(\mathbf{r})} \right|_{N = N_0}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy_derivative</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">eta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The same as :attr:`chemical_hardness`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemical_hardness</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">softness</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Chemical softness of the :math:`N_0`-electron system.</span>
+
+<span class="sd">        The chemical softness is defined as the second derivative of the grand potential model</span>
+<span class="sd">        w.r.t the number of electrons, at fixed external potential, evaluated at :math:`N_0`.</span>
+<span class="sd">        This is equal to the inverse chemical hardness.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           S = - \left. \left(\frac{\partial^2 \Omega}{\partial \mu^2}</span>
+<span class="sd">                        \right)_{v(\mathbf{r})}\right|_{N = N_0} = \frac{1}{\eta}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># compute 2nd-order derivative of grand potential w.r.t. mu at N0</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grand_potential_derivative</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">*=</span> <span class="o">-</span><span class="mf">1.</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+<div class="viewcode-block" id="BaseGlobalTool.hyper_hardness"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.BaseGlobalTool.html#chemtools.toolbox.conceptualglobal.BaseGlobalTool.hyper_hardness">[文档]</a>    <span class="k">def</span> <span class="nf">hyper_hardness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the :math:`n^{\text{th}}`-order hyper-hardness of the :math:`N_0`-electron system.</span>
+
+<span class="sd">        The :math:`n^{\text{th}}`-order hyper-hardness is defined as the :math:`(n+1)^{\text{th}}`</span>
+<span class="sd">        -order derivative, where :math:`n \geq 2`, of the energy model w.r.t the number of</span>
+<span class="sd">        electrons, at fixed external potential, evaluated at :math:`N_0`.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \eta^{(n)} = \left. \left(\frac{\partial^{n+1} E}{\partial N^{n+1}}</span>
+<span class="sd">                        \right)_{v(\mathbf{r})} \right|_{N = N_0} \quad \text{for} \quad n \geq 2</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        order : int, default=2</span>
+<span class="sd">            The order of hyper-hardness denoted by :math:`n \geq 2` in the formula.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">order</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument order should be an integer greater than or equal to 2.&#39;</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy_derivative</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">,</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="BaseGlobalTool.hyper_softness"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.BaseGlobalTool.html#chemtools.toolbox.conceptualglobal.BaseGlobalTool.hyper_softness">[文档]</a>    <span class="k">def</span> <span class="nf">hyper_softness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the :math:`n^{\text{th}}`-order hyper-softness of the :math:`N_0`-electron system.</span>
+
+<span class="sd">        The :math:`n^{\text{th}}`-order hyper softness is defined as the :math:`(n+1)^{\text{th}}`</span>
+<span class="sd">        -order derivative, where :math:`n \geq 2`, of the grand potential model w.r.t the number of</span>
+<span class="sd">        electrons at fixed external potential evaluated at :math:`N_0`.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           S^{(n)} = - \left. \left(\frac{\partial^{n+1} \Omega}{\partial \mu^{n+1}}</span>
+<span class="sd">                       \right)_{v(\mathbf{r})} \right|_{N = N_0} \quad \text{for} \quad n \geq 2</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        order : int, default=2</span>
+<span class="sd">            The order of hyper-hardness denoted by :math:`n \geq 2` in the formula.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">order</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument order should be an integer greater than or equal to 2.&#39;</span><span class="p">)</span>
+        <span class="c1"># compute derivative of grand potential w.r.t. mu at N0</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">grand_potential_derivative</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">,</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseGlobalTool.energy"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.BaseGlobalTool.html#chemtools.toolbox.conceptualglobal.BaseGlobalTool.energy">[文档]</a>    <span class="k">def</span> <span class="nf">energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the energy model :math:`E(N)` evaluated for the specified number of electrons.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_elec: float</span>
+<span class="sd">            Number of electrons, :math:`N_{\text{elec}}`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseGlobalTool.energy_derivative"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.BaseGlobalTool.html#chemtools.toolbox.conceptualglobal.BaseGlobalTool.energy_derivative">[文档]</a>    <span class="k">def</span> <span class="nf">energy_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the :math:`n^{\text{th}}`-order derivative of energy w.r.t. the number of electrons.</span>
+
+<span class="sd">        This returns the :math:`n^{\text{th}}`-order derivative of energy model :math:`E(N)` w.r.t.</span>
+<span class="sd">        to the number of electrons, at fixed chemical potential, evaluated for the specified number</span>
+<span class="sd">        of electrons.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \left. \left(\frac{\partial^n E}{\partial N^n}</span>
+<span class="sd">                  \right)_{v(\mathbf{r})}\right|_{N = N_{\text{elec}}}</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_elec: float</span>
+<span class="sd">            Number of electrons, :math:`N_{\text{elec}}`.</span>
+<span class="sd">        order : int, default=1</span>
+<span class="sd">            The order of derivative denoted by :math:`n` in the formula.</span>
+
+<span class="sd">        Note</span>
+<span class="sd">        ----</span>
+<span class="sd">        For :math:`N_{\text{elec}} = N_0` the first, second and higher order derivatives are equal</span>
+<span class="sd">        to the :attr:`BaseGlobalTool.chemical_potential`, :attr:`BaseGlobalTool.chemical_hardness`</span>
+<span class="sd">        and :attr:`BaseGlobalTool.hyper_hardness`, respectively.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BaseGlobalTool.grand_potential"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.BaseGlobalTool.html#chemtools.toolbox.conceptualglobal.BaseGlobalTool.grand_potential">[文档]</a>    <span class="k">def</span> <span class="nf">grand_potential</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the grand potential model evaluated for the specified number of electrons.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \Omega [\mu(N_{\text{elec}}); v(\mathbf{r})] &amp;=</span>
+<span class="sd">            E(N_{\text{elec}}) - \mu(N_{\text{elec}}) \times N_{\text{elec}} \\</span>
+<span class="sd">            &amp;= E(N_{\text{elec}}) - \left.\left(\frac{\partial E(N)}{\partial N}</span>
+<span class="sd">                    \right)_{v(\mathbf{r})}\right|_{N = N_{\text{elec}}} \times N_{\text{elec}}</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_elec : float</span>
+<span class="sd">            Number of electrons, :math:`N_{\text{elec}}`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">n_elec</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="c1"># compute grand potential as a function of N</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="p">(</span><span class="n">n_elec</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy_derivative</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_elec</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="BaseGlobalTool.grand_potential_derivative"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.BaseGlobalTool.html#chemtools.toolbox.conceptualglobal.BaseGlobalTool.grand_potential_derivative">[文档]</a>    <span class="k">def</span> <span class="nf">grand_potential_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate the :math:`n^{\text{th}}`-order derivative of grand potential at the given n_elec.</span>
+
+<span class="sd">        This returns the :math:`n^{\text{th}}`-order derivative of grand potential model w.r.t.</span>
+<span class="sd">        to the chemical potential, at fixed external potential, evaluated for the specified</span>
+<span class="sd">        number of electrons :math:`N_{\text{elec}}`.</span>
+
+<span class="sd">        That is,</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">             \left. \left(\frac{\partial^n \Omega}{\partial \mu^n}</span>
+<span class="sd">                    \right)_{v(\mathbf{r})} \right|_{N = N_{\text{elec}}} =</span>
+<span class="sd">             \left. \left(\frac{\partial^{n-1}}{\partial \mu^{n-1}}</span>
+<span class="sd">                          \frac{\partial \Omega}{\partial \mu}</span>
+<span class="sd">                    \right)_{v(\mathbf{r})} \right|_{N = N_{\text{elec}}} =</span>
+<span class="sd">           - \left. \left(\frac{\partial^{n-1} N}{\partial \mu^{n-1}}</span>
+<span class="sd">                    \right)_{v(\mathbf{r})} \right|_{N = N_{\text{elec}}}</span>
+<span class="sd">             \quad  n = 1, 2, \dots</span>
+
+<span class="sd">        These derivatives can be computed using the derivative of energy model w.r.t. number of</span>
+<span class="sd">        electrons, at fixed external potential, evaluated at :math:`N_{\text{elec}}`.</span>
+<span class="sd">        More specifically,</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">             \left. \left(\frac{\partial \Omega}{\partial \mu}</span>
+<span class="sd">                    \right)_{v(\mathbf{r})} \right|_{N = N_{\text{elec}}} &amp;= - N_{\text{elec}} \\</span>
+<span class="sd">             \left. \left(\frac{\partial^2 \Omega}{\partial \mu^2}</span>
+<span class="sd">                    \right)_{v(\mathbf{r})} \right|_{N = N_{\text{elec}}} &amp;= -\frac{1}{\eta^{(1)}}</span>
+
+<span class="sd">        where :math:`\eta^{(n)}` denotes the :math:`(n+1)^{\text{th}}`-order derivative of energy</span>
+<span class="sd">        w.r.t. number of electrons evaluated at :math:`N_{\text{elec}}`, i.e.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \eta^{(n)} = \left. \left(\frac{\partial^{n+1} E}{\partial N^{n+1}}</span>
+<span class="sd">                               \right)_{v(\mathbf{r})} \right|_{N = N_{\text{elec}}}</span>
+<span class="sd">                        \qquad n = 1, 2, \dots</span>
+
+<span class="sd">        To compute higher-order derivatives, Faa di Bruno formula which generalizes the chain rule</span>
+<span class="sd">        to higher derivatives can be used. i.e. for :math:`n \geq 2`,</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \left. \left(\frac{\partial^n \Omega}{\partial \mu^n}</span>
+<span class="sd">                  \right)_{v(\mathbf{r})} \right|_{N = N_{\text{elec}}} =</span>
+<span class="sd">           \frac{-\displaystyle\sum_{k=1}^{n-2} \left.\left(\frac{\partial^k \Omega}{\partial \mu^k}</span>
+<span class="sd">                                    \right)_{v(\mathbf{r})} \right|_{N = N_{\text{elec}}}</span>
+<span class="sd">                 \cdot B_{n-1,k} \left(\eta^{(1)}, \eta^{(2)}, \dots, \eta^{(n-k)} \right)}</span>
+<span class="sd">                {B_{n-1,n-1} \left(\eta^{(1)}\right)}</span>
+
+<span class="sd">        where :math:`B_{n-1,k} \left(x_1, x_2, \dots, x_{n-k}\right)` denotes the Bell polynomials.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_elec : float</span>
+<span class="sd">            Number of electrons, :math:`N_{\text{elec}}`.</span>
+<span class="sd">        order : int, default=1</span>
+<span class="sd">            The order of derivative denoted by :math:`n` in the formula.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">n_elec</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Number of electrons cannot be negativ! #elec=</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">order</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument order should be an integer greater than or equal to 1.&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># 1st order derivative is minus number of electrons</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="o">-</span> <span class="n">n_elec</span>
+        <span class="k">elif</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># 2nd order derivative is inverse hardness</span>
+            <span class="n">hardness</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy_derivative</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">hardness</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">deriv</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">elif</span> <span class="n">hardness</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">deriv</span> <span class="o">=</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">hardness</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">deriv</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># higher-order derivatives are compute with Faa Di Bruno formula</span>
+            <span class="c1"># list of hyper-hardneses (derivatives of energy w.r.t. N)</span>
+            <span class="n">energy_deriv</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">energy_derivative</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">order</span><span class="p">)]</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">order</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">grand_potential</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grand_potential_derivative</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">deriv</span> <span class="o">-=</span> <span class="n">grand_potential</span> <span class="o">*</span> <span class="n">sp</span><span class="o">.</span><span class="n">bell</span><span class="p">(</span><span class="n">order</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">energy_deriv</span><span class="p">[:</span><span class="n">order</span> <span class="o">-</span> <span class="n">k</span><span class="p">])</span>
+            <span class="n">deriv</span> <span class="o">/=</span> <span class="n">sp</span><span class="o">.</span><span class="n">bell</span><span class="p">(</span><span class="n">order</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">order</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="n">energy_deriv</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="k">return</span> <span class="n">deriv</span></div>
+
+<div class="viewcode-block" id="BaseGlobalTool.grand_potential_mu"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.BaseGlobalTool.html#chemtools.toolbox.conceptualglobal.BaseGlobalTool.grand_potential_mu">[文档]</a>    <span class="k">def</span> <span class="nf">grand_potential_mu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mu</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate the grand potential model for the specified chemical potential :math:`\mu`.</span>
+
+<span class="sd">        To evaluate grand potential model, first the number of electrons corresponding to the</span>
+<span class="sd">        specified :math:`\mu` is found, i.e. :math:`N(\mu)=\mu^{-1}(N)`, then the grand potential</span>
+<span class="sd">        in computed by,</span>
+
+<span class="sd">        .. math:: \Omega [\mu(N); v(\mathbf{r})] = E(N(\mu)) - \mu \times N(\mu)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mu : float</span>
+<span class="sd">            Chemical potential :math:`\mu`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># find N corresponding to the given mu</span>
+        <span class="n">n_elec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_mu_to_n</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
+        <span class="c1"># evaluate grand potential as a function of N</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grand_potential</span><span class="p">(</span><span class="n">n_elec</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="BaseGlobalTool.grand_potential_mu_derivative"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.BaseGlobalTool.html#chemtools.toolbox.conceptualglobal.BaseGlobalTool.grand_potential_mu_derivative">[文档]</a>    <span class="k">def</span> <span class="nf">grand_potential_mu_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate the :math:`n^{\text{th}}`-order derivative of grand potential at the given mu.</span>
+
+<span class="sd">        This returns the :math:`n^{\text{th}}`-order derivative of grand potential model w.r.t.</span>
+<span class="sd">        chemical potential, at fixed external potential, evaluated for the specified chemical</span>
+<span class="sd">        potential :math:`\mu`.</span>
+
+<span class="sd">        That is,</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">             \left. \left(\frac{\partial^n \Omega}{\partial \mu^n}</span>
+<span class="sd">                    \right)_{v(\mathbf{r})} \right|_{N = N\left(\mu\right)} =</span>
+<span class="sd">             \left. \left(\frac{\partial^{n-1}}{\partial \mu^{n-1}}</span>
+<span class="sd">                          \frac{\partial \Omega}{\partial \mu}</span>
+<span class="sd">                    \right)_{v(\mathbf{r})} \right|_{N = N\left(\mu\right)} =</span>
+<span class="sd">           - \left. \left(\frac{\partial^{n-1} N}{\partial \mu^{n-1}}</span>
+<span class="sd">                    \right)_{v(\mathbf{r})} \right|_{N = N\left(\mu\right)}</span>
+<span class="sd">             \quad  n = 1, 2, \dots</span>
+
+<span class="sd">        To evaluate this expression, the number of electrons corresponding to the specified</span>
+<span class="sd">        :math:`\mu` should is found, i.e. :math:`N(\mu)=\mu^{-1}(N)`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mu : float</span>
+<span class="sd">            Chemical potential, :math:`\mu`.</span>
+<span class="sd">        order : int, default=1</span>
+<span class="sd">            The order of derivative denoted by :math:`n` in the formula.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">order</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument order should be an integer greater than or equal to 1.&#39;</span><span class="p">)</span>
+        <span class="c1"># find N corresponding to the given mu</span>
+        <span class="n">n_elec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_mu_to_n</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
+        <span class="c1"># evaluate grand potential derivative w.r.t. mu</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grand_potential_derivative</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="BaseGlobalTool.convert_mu_to_n"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.BaseGlobalTool.html#chemtools.toolbox.conceptualglobal.BaseGlobalTool.convert_mu_to_n">[文档]</a>    <span class="k">def</span> <span class="nf">convert_mu_to_n</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the number of electrons :math:`N` matching the given chemical potential :math:`\mu`.</span>
+
+<span class="sd">        Chemical potential is a function of the number of electrons, :math:`\mu(N)`, as it is the</span>
+<span class="sd">        first derivative of energy model :math:`E(N)` with respect to the number of electrons at</span>
+<span class="sd">        fixed external potential,</span>
+
+<span class="sd">        .. math:: \mu(N) = \left(\frac{\partial E(N)}{\partial N}\right)_{v(\mathbf{r})}</span>
+
+<span class="sd">        Here we solve for :math:`N` which results in the specified :math:`\mu` according to the</span>
+<span class="sd">        equation above, i.e. :math:`N(\mu) = \mu^{-1}(N)`, using ``scipy.optimize.newton``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mu : float</span>
+<span class="sd">            Chemical potential, :math:`\mu`.</span>
+<span class="sd">        guess : float, default=None</span>
+<span class="sd">            Initial guess used for solving for :math:`N`.</span>
+<span class="sd">            If ``None``, the reference number of electrons :math:`N_0` is used as an initial guess.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># assign an initial guess for N</span>
+        <span class="k">if</span> <span class="n">guess</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">guess</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span>
+        <span class="c1"># solve for N corresponding to the given mu using scipy.optimize.newton</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy_derivative</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">mu</span>
+        <span class="n">fprime</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy_derivative</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">fprime2</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy_derivative</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">n_elec</span> <span class="o">=</span> <span class="n">newton</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">guess</span><span class="p">,</span> <span class="n">fprime</span><span class="o">=</span><span class="n">fprime</span><span class="p">,</span> <span class="n">fprime2</span><span class="o">=</span><span class="n">fprime2</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">&#39;Number of electrons corresponding to mu=</span><span class="si">{0}</span><span class="s1"> could not be found!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mu</span><span class="p">))</span>
+        <span class="c1"># according to scipy.optimize.newton notes: the stopping criterion used here is the step</span>
+        <span class="c1"># size and there is no guarantee that a zero has been found. Consequently the result</span>
+        <span class="c1"># should be verified.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">energy_derivative</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1.e-4</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Solved number of electrons </span><span class="si">{0}</span><span class="s1"> corresponding to </span><span class="si">{1}</span><span class="s1"> gives, &#39;</span>
+                     <span class="s1">&#39;mu(N=</span><span class="si">{0}</span><span class="s1">)=</span><span class="si">{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy_derivative</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">n_elec</span></div></div>
+
+
+<div class="viewcode-block" id="LinearGlobalTool"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.LinearGlobalTool.html#chemtools.toolbox.conceptualglobal.LinearGlobalTool">[文档]</a><span class="k">class</span> <span class="nc">LinearGlobalTool</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class of global conceptual DFT reactivity descriptors based on the linear energy model.</span>
+
+<span class="sd">    The energy is approximated as a piece-wise linear function of the number of electrons,</span>
+
+<span class="sd">    .. math:: E(N) = a + b N</span>
+
+<span class="sd">    Given :math:`E(N_0 - 1)`, :math:`E(N_0)` and :math:`E(N_0 + 1)` values, the unknown parameters</span>
+<span class="sd">    of the energy model are obtained by interpolation.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       E(N) = \begin{cases}</span>
+<span class="sd">               (N_0 - N) \times E(N_0 - 1) + (N - N_0 + 1) \times E(N_0) &amp; N \leqslant N_0 \\</span>
+<span class="sd">               (N_0 + 1 - N) \times E(N_0) + (N - N_0) \times E(N_0 + 1) &amp; N \geqslant N_0 \\</span>
+<span class="sd">              \end{cases}</span>
+
+<span class="sd">    Because the energy model is not differentiable at integer number of electrons, the first</span>
+<span class="sd">    derivative of the energy w.r.t. number if electrons is calculated from above, from below</span>
+<span class="sd">    and averaged:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \mu^{-} &amp;= -IP \\\</span>
+<span class="sd">       \mu^{0} &amp;= \frac{\mu^{+} + \mu^{-}}{2} \\</span>
+<span class="sd">       \mu^{+} &amp;= -EA \\</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energy_zero</span><span class="p">,</span> <span class="n">energy_plus</span><span class="p">,</span> <span class="n">energy_minus</span><span class="p">,</span> <span class="n">n0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">energy_zero</span> <span class="o">&lt;</span> <span class="n">energy_plus</span><span class="p">:</span>
+            <span class="n">n_max</span> <span class="o">=</span> <span class="n">n0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n_max</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">energy_zero</span><span class="p">,</span> <span class="n">energy_plus</span><span class="p">,</span> <span class="n">energy_minus</span><span class="p">,</span> <span class="n">n0</span><span class="p">,</span> <span class="n">n_max</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mu_minus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Chemical potential from below.</span>
+
+<span class="sd">        .. math:: \mu^{-} = E\left(N_0\right) - E\left(N_0 - 1\right)  = -IP</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ip</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mu_plus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Chemical potential from above.</span>
+
+<span class="sd">        .. math:: \mu^{+} = E\left(N_0 + 1\right) - E\left(N_0\right)  = -EA</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ea</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mu_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Chemical potential averaged of :math:`N_0^{+}` and :math:`N_0^{-}`.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \mu^{0} = \frac{\mu^{+} + \mu^{-}}{2}</span>
+<span class="sd">                   = \frac{E\left(N_0 + 1\right) - E\left(N_0 - 1\right)}{2} = - \frac{IP + EA}{2}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ea</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ip</span><span class="p">)</span>
+
+    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">)</span>
+<div class="viewcode-block" id="LinearGlobalTool.energy"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.LinearGlobalTool.html#chemtools.toolbox.conceptualglobal.LinearGlobalTool.energy">[文档]</a>    <span class="k">def</span> <span class="nf">energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n_elec</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">n_elec</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Number of electrons cannot be negativ! n_elec=</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">n_elec</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Energy evaluated for n_elec=</span><span class="si">{0}</span><span class="s1"> outside of interpolation &#39;</span>
+                     <span class="s1">&#39;region [</span><span class="si">{1}</span><span class="s1">, </span><span class="si">{2}</span><span class="s1">].&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="c1"># evaluate energy</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_energy_zero</span>
+        <span class="k">if</span> <span class="n">n_elec</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">+=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="n">n_elec</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ip</span>
+        <span class="k">elif</span> <span class="n">n_elec</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">+=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="n">n_elec</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ea</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">)</span>
+<div class="viewcode-block" id="LinearGlobalTool.energy_derivative"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.LinearGlobalTool.html#chemtools.toolbox.conceptualglobal.LinearGlobalTool.energy_derivative">[文档]</a>    <span class="k">def</span> <span class="nf">energy_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n_elec</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">n_elec</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Number of electrons cannot be negativ! n_elec=</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">n_elec</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Energy derivative evaluated for n_elec=</span><span class="si">{0}</span><span class="s1"> outside of interpolation &#39;</span>
+                     <span class="s1">&#39;region [</span><span class="si">{1}</span><span class="s1">, </span><span class="si">{2}</span><span class="s1">].&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">order</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument order should be an integer greater than or equal to 1.&#39;</span><span class="p">)</span>
+        <span class="c1"># evaluate derivative</span>
+        <span class="k">if</span> <span class="n">n_elec</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">:</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="n">order</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">elif</span> <span class="n">n_elec</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">:</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ip</span>
+        <span class="k">elif</span> <span class="n">n_elec</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span><span class="p">:</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ea</span>
+        <span class="k">return</span> <span class="n">deriv</span></div></div>
+
+
+<div class="viewcode-block" id="QuadraticGlobalTool"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.QuadraticGlobalTool.html#chemtools.toolbox.conceptualglobal.QuadraticGlobalTool">[文档]</a><span class="k">class</span> <span class="nc">QuadraticGlobalTool</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class of global conceptual DFT reactivity descriptors based on the quadratic energy model.</span>
+
+<span class="sd">    The energy is approximated as a quadratic function of the number of electrons,</span>
+
+<span class="sd">    .. math:: E(N) = a + b N + c N^2</span>
+
+<span class="sd">    Given :math:`E(N_0 - 1)`, :math:`E(N_0)` and :math:`E(N_0 + 1)` values, the unknown parameters</span>
+<span class="sd">    of the energy model are obtained by interpolation.</span>
+
+<span class="sd">    First, second and higher order derivatives of the quadratic energy model with respect to</span>
+<span class="sd">    the number of electrons at fixed external potential are given by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \left(\frac{\partial E}{\partial N}\right)_{v(\mathbf{r})} &amp;= b + 2 c N \\</span>
+<span class="sd">       \left(\frac{\partial^2 E}{\partial N^2}\right)_{v(\mathbf{r})} &amp;= 2 c \\</span>
+<span class="sd">       \left(\frac{\partial^n E}{\partial N^n}\right)_{v(\mathbf{r})} &amp;= 0</span>
+<span class="sd">             \quad \text{for} \quad n \geq 2</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energy_zero</span><span class="p">,</span> <span class="n">energy_plus</span><span class="p">,</span> <span class="n">energy_minus</span><span class="p">,</span> <span class="n">n0</span><span class="p">):</span>
+        <span class="c1"># calculate parameters a, b, c of quadratic energy model</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">energy_minus</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">energy_zero</span> <span class="o">+</span> <span class="n">energy_plus</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">energy_plus</span> <span class="o">-</span> <span class="n">energy_minus</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="n">n0</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">energy_zero</span> <span class="o">-</span> <span class="n">b</span> <span class="o">*</span> <span class="n">n0</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">n0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span>
+        <span class="c1"># calculate Nmax (number of electrons for which energy is minimum)</span>
+        <span class="n">n_max</span> <span class="o">=</span> <span class="o">-</span> <span class="n">b</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">c</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">energy_zero</span><span class="p">,</span> <span class="n">energy_plus</span><span class="p">,</span> <span class="n">energy_minus</span><span class="p">,</span> <span class="n">n0</span><span class="p">,</span> <span class="n">n_max</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Parameter :math:`a`, :math:`b` and :math:`c` of energy model.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span>
+
+    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">)</span>
+<div class="viewcode-block" id="QuadraticGlobalTool.energy"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.QuadraticGlobalTool.html#chemtools.toolbox.conceptualglobal.QuadraticGlobalTool.energy">[文档]</a>    <span class="k">def</span> <span class="nf">energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n_elec</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Number of electrons cannot be negativ! n_elec=</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">n_elec</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Energy evaluated for n_elec=</span><span class="si">{0}</span><span class="s1"> outside of interpolation &#39;</span>
+                     <span class="s1">&#39;region [</span><span class="si">{1}</span><span class="s1">, </span><span class="si">{2}</span><span class="s1">].&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="c1"># evaluate energy</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_elec</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_elec</span><span class="o">**</span><span class="mi">2</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">)</span>
+<div class="viewcode-block" id="QuadraticGlobalTool.energy_derivative"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.QuadraticGlobalTool.html#chemtools.toolbox.conceptualglobal.QuadraticGlobalTool.energy_derivative">[文档]</a>    <span class="k">def</span> <span class="nf">energy_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n_elec</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Number of electrons cannot be negativ! n_elec=</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">n_elec</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Energy derivative evaluated for n_elec=</span><span class="si">{0}</span><span class="s1"> outside of interpolation &#39;</span>
+                     <span class="s1">&#39;region [</span><span class="si">{1}</span><span class="s1">, </span><span class="si">{2}</span><span class="s1">].&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">order</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument order should be an integer greater than or equal to 1.&#39;</span><span class="p">)</span>
+        <span class="c1"># evaluate derivative</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n_elec</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">order</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">return</span> <span class="n">deriv</span></div></div>
+
+
+<div class="viewcode-block" id="ExponentialGlobalTool"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.ExponentialGlobalTool.html#chemtools.toolbox.conceptualglobal.ExponentialGlobalTool">[文档]</a><span class="k">class</span> <span class="nc">ExponentialGlobalTool</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class of global conceptual DFT reactivity descriptors based on the exponential energy model.</span>
+
+<span class="sd">    The energy is approximated as a exponential function of the number of electrons,</span>
+
+<span class="sd">    .. math:: E(N) = A \exp(-\gamma(N-N_0)) + B</span>
+
+<span class="sd">    Given :math:`E(N_0 - 1)`, :math:`E(N_0)` and :math:`E(N_0 + 1)` values, the unknown parameters</span>
+<span class="sd">    of the energy model are obtained by interpolation.</span>
+
+<span class="sd">    The :math:`n^{\text{th}}`-order derivative of the rational energy model with respect to</span>
+<span class="sd">    the number of electrons at fixed external potential is given by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \left(\frac{\partial^n E}{\partial N^n}\right)_{v(\mathbf{r})} =</span>
+<span class="sd">              A (-\gamma)^n \exp(-\gamma (N - N_0))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energy_zero</span><span class="p">,</span> <span class="n">energy_plus</span><span class="p">,</span> <span class="n">energy_minus</span><span class="p">,</span> <span class="n">n0</span><span class="p">):</span>
+        <span class="c1"># check energy values are monotonic, i.e. E(N-1) &gt; E(N) &gt; E(N+1)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">energy_minus</span> <span class="o">&gt;</span> <span class="n">energy_zero</span> <span class="o">&gt;</span> <span class="n">energy_plus</span><span class="p">:</span>
+            <span class="n">energies</span> <span class="o">=</span> <span class="p">[</span><span class="n">energy_minus</span><span class="p">,</span> <span class="n">energy_zero</span><span class="p">,</span> <span class="n">energy_plus</span><span class="p">]</span>
+            <span class="n">n_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n0</span><span class="p">,</span> <span class="n">n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;To interpolate exponential energy model, E values vs. N should be &#39;</span> <span class="o">+</span>
+                             <span class="s1">&#39;monotonic! Given E=</span><span class="si">{0}</span><span class="s1"> for N=</span><span class="si">{1}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">energies</span><span class="p">,</span> <span class="n">n_values</span><span class="p">))</span>
+
+        <span class="c1"># calculate the A, B, gamma parameters of the model and N_max</span>
+        <span class="n">param_a</span> <span class="o">=</span> <span class="p">(</span><span class="n">energy_minus</span> <span class="o">-</span> <span class="n">energy_zero</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">energy_zero</span> <span class="o">-</span> <span class="n">energy_plus</span><span class="p">)</span>
+        <span class="n">param_a</span> <span class="o">/=</span> <span class="p">(</span><span class="n">energy_minus</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">energy_zero</span> <span class="o">+</span> <span class="n">energy_plus</span><span class="p">)</span>
+        <span class="n">param_b</span> <span class="o">=</span> <span class="n">energy_zero</span> <span class="o">-</span> <span class="n">param_a</span>
+        <span class="n">gamma</span> <span class="o">=</span> <span class="p">(</span><span class="n">energy_minus</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">energy_zero</span> <span class="o">+</span> <span class="n">energy_plus</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">energy_plus</span> <span class="o">-</span> <span class="n">energy_zero</span><span class="p">)</span>
+        <span class="n">gamma</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">gamma</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">param_a</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">param_b</span><span class="p">]</span>
+        <span class="c1"># calulate N_max</span>
+        <span class="n">n_max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">energy_zero</span><span class="p">,</span> <span class="n">energy_plus</span><span class="p">,</span> <span class="n">energy_minus</span><span class="p">,</span> <span class="n">n0</span><span class="p">,</span> <span class="n">n_max</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parameter :math:`A`, :math:`\gamma` and :math:`B` of energy model.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span>
+
+    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">)</span>
+<div class="viewcode-block" id="ExponentialGlobalTool.energy"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.ExponentialGlobalTool.html#chemtools.toolbox.conceptualglobal.ExponentialGlobalTool.energy">[文档]</a>    <span class="k">def</span> <span class="nf">energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n_elec</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Number of electrons cannot be negativ! n_elec=</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">n_elec</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Energy evaluated for n_elec=</span><span class="si">{0}</span><span class="s1"> outside of interpolation &#39;</span>
+                     <span class="s1">&#39;region [</span><span class="si">{1}</span><span class="s1">, </span><span class="si">{2}</span><span class="s1">].&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="c1"># evaluate energy</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">n_elec</span><span class="p">):</span>
+            <span class="c1"># limit of E(N) as N goes to infinity equals B</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dn</span> <span class="o">=</span> <span class="n">n_elec</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">dn</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">)</span>
+<div class="viewcode-block" id="ExponentialGlobalTool.energy_derivative"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.ExponentialGlobalTool.html#chemtools.toolbox.conceptualglobal.ExponentialGlobalTool.energy_derivative">[文档]</a>    <span class="k">def</span> <span class="nf">energy_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n_elec</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Number of electrons cannot be negativ! n_elec=</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">n_elec</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Energy derivative evaluated for n_elec=</span><span class="si">{0}</span><span class="s1"> outside of interpolation &#39;</span>
+                     <span class="s1">&#39;region [</span><span class="si">{1}</span><span class="s1">, </span><span class="si">{2}</span><span class="s1">].&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">order</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument order should be an integer greater than or equal to 1.&#39;</span><span class="p">)</span>
+        <span class="c1"># evaluate derivative</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">n_elec</span><span class="p">):</span>
+            <span class="c1"># limit of E(N) derivatives as N goes to infinity equals zero</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dn</span> <span class="o">=</span> <span class="n">n_elec</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="n">order</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">dn</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">deriv</span></div></div>
+
+
+<div class="viewcode-block" id="RationalGlobalTool"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.RationalGlobalTool.html#chemtools.toolbox.conceptualglobal.RationalGlobalTool">[文档]</a><span class="k">class</span> <span class="nc">RationalGlobalTool</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class of global conceptual DFT reactivity descriptors based on the rational energy model.</span>
+
+<span class="sd">    The energy is approximated as a 3-parameter rational function of the number of electrons,</span>
+
+<span class="sd">    .. math:: E(N) = \frac{a_0 + a_1 N}{1 + b_1 N}</span>
+
+<span class="sd">    Given :math:`E(N_0 - 1)`, :math:`E(N_0)` and :math:`E(N_0 + 1)` values, the unknown parameters</span>
+<span class="sd">    of the energy model are obtained by interpolation.</span>
+
+<span class="sd">    The :math:`n^{\text{th}}`-order derivatives of the rational energy model with respect to</span>
+<span class="sd">    the number of electrons at fixed external potential is given by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \left(\frac{\partial^n E}{\partial N^n} \right)_{v(\mathbf{r})} =</span>
+<span class="sd">             \frac{b_1^{n - 1} (a_1 - a_0 b_1) n!}{(1 + b_1 N)^{2n}}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energy_zero</span><span class="p">,</span> <span class="n">energy_plus</span><span class="p">,</span> <span class="n">energy_minus</span><span class="p">,</span> <span class="n">n0</span><span class="p">):</span>
+        <span class="c1"># check energy values are monotonic, i.e. E(N-1) &gt; E(N) &gt; E(N+1)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">energy_minus</span> <span class="o">&gt;</span> <span class="n">energy_zero</span> <span class="o">&gt;</span> <span class="n">energy_plus</span><span class="p">:</span>
+            <span class="n">energies</span> <span class="o">=</span> <span class="p">[</span><span class="n">energy_minus</span><span class="p">,</span> <span class="n">energy_zero</span><span class="p">,</span> <span class="n">energy_plus</span><span class="p">]</span>
+            <span class="n">n_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n0</span><span class="p">,</span> <span class="n">n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;To interpolate rational energy model, E values vs. N should be &#39;</span> <span class="o">+</span>
+                             <span class="s1">&#39;monotonic! Given E=</span><span class="si">{0}</span><span class="s1"> for N=</span><span class="si">{1}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">energies</span><span class="p">,</span> <span class="n">n_values</span><span class="p">))</span>
+
+        <span class="c1"># calculate parameters a0, a1 and b1 of rational energy model</span>
+        <span class="n">b1</span> <span class="o">=</span> <span class="o">-</span> <span class="p">(</span><span class="n">energy_plus</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">energy_zero</span> <span class="o">+</span> <span class="n">energy_minus</span><span class="p">)</span>
+        <span class="n">b1</span> <span class="o">/=</span> <span class="p">((</span><span class="n">n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">energy_plus</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n0</span> <span class="o">*</span> <span class="n">energy_zero</span> <span class="o">+</span> <span class="p">(</span><span class="n">n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">energy_minus</span><span class="p">)</span>
+        <span class="n">a1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">b1</span> <span class="o">*</span> <span class="n">n0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">energy_plus</span> <span class="o">-</span> <span class="n">energy_zero</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">b1</span> <span class="o">*</span> <span class="n">energy_plus</span><span class="p">)</span>
+        <span class="n">a0</span> <span class="o">=</span> <span class="o">-</span> <span class="n">a1</span> <span class="o">*</span> <span class="n">n0</span> <span class="o">+</span> <span class="n">energy_zero</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">b1</span> <span class="o">*</span> <span class="n">n0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">]</span>
+        <span class="c1"># calculate Nmax</span>
+        <span class="n">n_max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">energy_zero</span><span class="p">,</span> <span class="n">energy_plus</span><span class="p">,</span> <span class="n">energy_minus</span><span class="p">,</span> <span class="n">n0</span><span class="p">,</span> <span class="n">n_max</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Parameter :math:`a_0`, :math:`a_1` and :math:`b_1` of energy model.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span>
+
+    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">)</span>
+<div class="viewcode-block" id="RationalGlobalTool.energy"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.RationalGlobalTool.html#chemtools.toolbox.conceptualglobal.RationalGlobalTool.energy">[文档]</a>    <span class="k">def</span> <span class="nf">energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n_elec</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Number of electrons cannot be negativ! n_elec=</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">n_elec</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Energy evaluated for n_elec=</span><span class="si">{0}</span><span class="s1"> outside of interpolation &#39;</span>
+                     <span class="s1">&#39;region [</span><span class="si">{1}</span><span class="s1">, </span><span class="si">{2}</span><span class="s1">].&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="c1"># evaluate energy</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">n_elec</span><span class="p">):</span>
+            <span class="c1"># limit of E(N) as N goes to infinity equals a1/b1</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_elec</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_elec</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">)</span>
+<div class="viewcode-block" id="RationalGlobalTool.energy_derivative"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.RationalGlobalTool.html#chemtools.toolbox.conceptualglobal.RationalGlobalTool.energy_derivative">[文档]</a>    <span class="k">def</span> <span class="nf">energy_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n_elec</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Number of electrons cannot be negativ! n_elec=</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">n_elec</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Energy derivative evaluated for n_elec=</span><span class="si">{0}</span><span class="s1"> outside of interpolation &#39;</span>
+                     <span class="s1">&#39;region [</span><span class="si">{1}</span><span class="s1">, </span><span class="si">{2}</span><span class="s1">].&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">order</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument order should be an integer greater than or equal to 1.&#39;</span><span class="p">)</span>
+        <span class="c1"># evaluate derivative</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">n_elec</span><span class="p">):</span>
+            <span class="c1"># limit of E(N) derivatives as N goes to infinity equals zero</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">deriv</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">**</span><span class="p">(</span><span class="n">order</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">deriv</span> <span class="o">*=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+            <span class="n">deriv</span> <span class="o">/=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_elec</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">deriv</span></div></div>
+
+
+<div class="viewcode-block" id="GeneralGlobalTool"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.GeneralGlobalTool.html#chemtools.toolbox.conceptualglobal.GeneralGlobalTool">[文档]</a><span class="k">class</span> <span class="nc">GeneralGlobalTool</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class of global conceptual DFT reactivity descriptors based on the user-specified energy model.</span>
+
+<span class="sd">    The energy model is approximated as a symbolic function of the number of electrons,</span>
+<span class="sd">    and the unknown parameters are obtained by interpolating to the given values of energy; i.e.</span>
+<span class="sd">    the number of parameters in the model should equal the number of given energy values and</span>
+<span class="sd">    the corresponding number of electrons.</span>
+
+<span class="sd">    The :math:`n^{\text{th}}`-order derivative of the symbolic energy model with respect to the</span>
+<span class="sd">    number of electrons at fixed external potential is calculated symbolically.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">,</span> <span class="n">n0</span><span class="p">,</span> <span class="n">n_energies</span><span class="p">,</span> <span class="n">n_symbol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n0_symbol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        expr : sp.Exp</span>
+<span class="sd">            The energy expression representing the dependence of energy on the number of electrons.</span>
+<span class="sd">        n0 : float</span>
+<span class="sd">            Reference number of electrons, i.e. :math:`N_0`.</span>
+<span class="sd">        n_energies : dict</span>
+<span class="sd">            The energy values of `expr` at different electron-numbers.  The dict has int</span>
+<span class="sd">            (electron-number) keys, float (energy) values.</span>
+<span class="sd">        n_symbol : sp.Symbol, default=sp.symbols(&#39;N&#39;)</span>
+<span class="sd">            The symbol in `expr` that represents the number of electrons.</span>
+<span class="sd">        n0_symbol: sp.Symbol, optional</span>
+<span class="sd">            The symbol in `expr` that represents the electron-number at which to evaluate</span>
+<span class="sd">            `expr`.  If not specified, assume that it is already expressed numerically in</span>
+<span class="sd">            `expr`.</span>
+<span class="sd">        guess : dict, optional</span>
+<span class="sd">            Guesses at the values of the parameters of `expr`.  The dict has sp.Symbol</span>
+<span class="sd">            keys, float values.</span>
+<span class="sd">        opts : dict, optional</span>
+<span class="sd">            Optional keyword arguments to pass to the :py:meth:`scipy.optimize.root` solver</span>
+<span class="sd">            that is used to solve for the parameters in the model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># make sure that the energy expression depends on number of electrons</span>
+        <span class="k">if</span> <span class="n">n_symbol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">n_symbol</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;N&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_symbol</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">expr</span><span class="o">.</span><span class="n">atoms</span><span class="p">(</span><span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">&#39;The expr=</span><span class="si">{0}</span><span class="s1"> does not contain </span><span class="si">{1}</span><span class="s1"> symbol representing &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">n_symbol</span><span class="p">)</span> <span class="o">+</span>
+                <span class="s1">&#39;the number of electrons.&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_symb</span> <span class="o">=</span> <span class="n">n_symbol</span>
+        <span class="c1"># store minimum and maximum number of electrons used for interpolation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">n_energies</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">n_energies</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+        <span class="c1"># substitute N0 in energy expression</span>
+        <span class="k">if</span> <span class="n">n0_symbol</span><span class="p">:</span>
+            <span class="n">expr</span> <span class="o">=</span> <span class="n">expr</span><span class="o">.</span><span class="n">subs</span><span class="p">(</span><span class="n">n0_symbol</span><span class="p">,</span> <span class="n">n0</span><span class="p">)</span>
+
+        <span class="c1"># list of energy model parameters</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">expr</span><span class="o">.</span><span class="n">atoms</span><span class="p">(</span><span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">)</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_symb</span><span class="p">)</span>
+        <span class="c1"># assign initial values for parameters of energy model</span>
+        <span class="k">if</span> <span class="n">guess</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">guess</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">guess</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">param</span><span class="p">:</span> <span class="mf">1.</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span> <span class="k">if</span> <span class="n">param</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">guess</span><span class="p">})</span>
+        <span class="c1"># solve for the parameters of energy model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve_parameters</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">n_energies</span><span class="p">,</span> <span class="n">guess</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+        <span class="c1"># substitute values of parameters in energy expression</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expr</span> <span class="o">=</span> <span class="n">expr</span><span class="o">.</span><span class="n">subs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+
+        <span class="c1"># solve for N_max (number of electrons for which the 1st derivative of energy is zero)</span>
+        <span class="n">n_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve_nmax</span><span class="p">(</span><span class="n">n0</span><span class="p">)</span>
+
+        <span class="c1"># calculate E(N0 - 1), E(N0) and E(N0 + 1) values</span>
+        <span class="n">energy_zero</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="p">(</span><span class="n">n0</span><span class="p">)</span>
+        <span class="n">energy_plus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="p">(</span><span class="n">n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">energy_minus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="p">(</span><span class="n">n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">energy_zero</span><span class="p">,</span> <span class="n">energy_plus</span><span class="p">,</span> <span class="n">energy_minus</span><span class="p">,</span> <span class="n">n0</span><span class="p">,</span> <span class="n">n_max</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Parameter dictionary of energy model.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Symbol used to denote the number of electrons.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_symb</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">expression</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Energy expression as a function of number of electrons, :math:`E(N)`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expr</span>
+
+    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">)</span>
+<div class="viewcode-block" id="GeneralGlobalTool.energy"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.GeneralGlobalTool.html#chemtools.toolbox.conceptualglobal.GeneralGlobalTool.energy">[文档]</a>    <span class="k">def</span> <span class="nf">energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n_elec</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Number of electrons cannot be negativ! n_elec=</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_min</span> <span class="o">&lt;=</span> <span class="n">n_elec</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_max</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Energy evaluated for n_elec=</span><span class="si">{0}</span><span class="s1"> outside of interpolation &#39;</span>
+                     <span class="s1">&#39;region [</span><span class="si">{1}</span><span class="s1">, </span><span class="si">{2}</span><span class="s1">].&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_max</span><span class="p">))</span>
+        <span class="c1"># evaluate energy</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expr</span><span class="o">.</span><span class="n">subs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_symb</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+    <span class="nd">@doc_inherit</span><span class="p">(</span><span class="n">BaseGlobalTool</span><span class="p">)</span>
+<div class="viewcode-block" id="GeneralGlobalTool.energy_derivative"><a class="viewcode-back" href="../../../modules/generated/chemtools.toolbox.conceptualglobal.GeneralGlobalTool.html#chemtools.toolbox.conceptualglobal.GeneralGlobalTool.energy_derivative">[文档]</a>    <span class="k">def</span> <span class="nf">energy_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n_elec</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Number of electrons cannot be negativ! n_elec=</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">n_elec</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Energy derivative evaluated for n_elec=</span><span class="si">{0}</span><span class="s1"> outside of interpolation &#39;</span>
+                     <span class="s1">&#39;region [</span><span class="si">{1}</span><span class="s1">, </span><span class="si">{2}</span><span class="s1">].&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_elec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">order</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument order should be an integer greater than or equal to 1.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># obtain derivative expression</span>
+        <span class="n">deriv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expr</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_symb</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+        <span class="c1"># evaluate derivative expression at n_elec</span>
+        <span class="n">deriv</span> <span class="o">=</span> <span class="n">deriv</span><span class="o">.</span><span class="n">subs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_symb</span><span class="p">,</span> <span class="n">n_elec</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">deriv</span></div>
+
+    <span class="k">def</span> <span class="nf">_solve_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">,</span> <span class="n">n_energies</span><span class="p">,</span> <span class="n">guess</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solve for the unknown parameters of the energy model.</span>
+
+<span class="sd">        The parameters of energy model is found using the given :math:`\left(N, E(N)\right)` pairs.</span>
+<span class="sd">        This requires solving a system of (non-)linear equations</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        See __init__().</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        parameters : dict</span>
+<span class="sd">            A dictionary of sympy.Symbol keys corresponding to the</span>
+<span class="sd">            value of the expression&#39;s solved parameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># obtain set of parameters in the energy expression</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">guess</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">&#39;There is no parameters in the energy_expression=</span><span class="si">{0}</span><span class="s1"> to solve for.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">expr</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">param</span> <span class="ow">in</span> <span class="n">expr</span><span class="o">.</span><span class="n">atoms</span><span class="p">(</span><span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">)</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The expr=</span><span class="si">{0}</span><span class="s1"> does not contain parameters given in guess=</span><span class="si">{1}</span><span class="s1">&#39;</span>
+                             <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">guess</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">n_energies</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Underdetermined system of equations: Number of unknowns parameters &#39;</span>
+                             <span class="s1">&#39;in the energy model is more than number of given known energies.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># initial guess for the parameters in the energy model</span>
+        <span class="n">guess</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">guess</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span><span class="p">])</span>
+
+        <span class="c1"># construct system of equations to solve</span>
+        <span class="n">system_eqns</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">d_system_eqns</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">energy</span> <span class="ow">in</span> <span class="n">n_energies</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">eqn</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">lambdify</span><span class="p">((</span><span class="n">params</span><span class="p">,),</span> <span class="n">expr</span><span class="o">.</span><span class="n">subs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_symb</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="o">-</span> <span class="n">energy</span><span class="p">,</span> <span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
+            <span class="n">system_eqns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eqn</span><span class="p">)</span>
+            <span class="n">d_eqn_row</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+                <span class="n">d_eqn</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">lambdify</span><span class="p">((</span><span class="n">params</span><span class="p">,),</span> <span class="n">expr</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">subs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_symb</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
+                <span class="n">d_eqn_row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d_eqn</span><span class="p">)</span>
+            <span class="n">d_system_eqns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d_eqn_row</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Evaluate the system of equations for the given values of parameters.</span>
+
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            args : array representing the value of parameters.</span>
+<span class="sd">                The expression for the property.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">eqn</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">for</span> <span class="n">eqn</span> <span class="ow">in</span> <span class="n">system_eqns</span><span class="p">])</span>
+
+        <span class="k">def</span> <span class="nf">jacobian</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Evaluate jacobian of the objective function for the given values of parameters.</span>
+
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            See objective().</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">jac</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">d_system_eqns</span><span class="p">:</span>
+                <span class="n">jac</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">eqn</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">for</span> <span class="n">eqn</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">jac</span><span class="p">)</span>
+
+        <span class="c1"># solve for the parameters in the energy model</span>
+        <span class="k">if</span> <span class="n">opts</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">opts</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">least_squares</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="n">guess</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="n">jacobian</span><span class="p">,</span> <span class="o">**</span><span class="n">opts</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">&#39;The system of equations for parameters could not be solved. &#39;</span>
+                <span class="s1">&#39;message:</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">message</span><span class="p">))</span>
+        <span class="c1"># make dictionary of parameter values</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">param</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">params</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="n">parameters</span>
+
+    <span class="k">def</span> <span class="nf">_solve_nmax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">guess</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Solve for the :math:`N_{\text{max}}` of the energy model.&quot;&quot;&quot;</span>
+        <span class="n">d_expr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expr</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_symb</span><span class="p">)</span>
+        <span class="n">n_max_eqn</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">lambdify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_symb</span><span class="p">,</span> <span class="n">d_expr</span><span class="p">,</span> <span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">root</span><span class="p">(</span><span class="n">n_max_eqn</span><span class="p">,</span> <span class="n">guess</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="n">result</span>
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+            <span class="n">n_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asscalar</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+            <span class="c1"># n_ceil = math.ceil(n_max)</span>
+            <span class="c1"># n_floor = math.floor(n_max)</span>
+            <span class="c1"># e_ceil = self._expr.subs(self._n_symb, math.ceil(n_max))</span>
+            <span class="c1"># e_floor = self._expr.subs(self._n_symb, math.floor(n_max))</span>
+            <span class="c1"># n_max = n_floor if e_floor &lt; e_ceil else n_ceil</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">sign</span> <span class="ow">in</span> <span class="p">(</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">n_inf</span> <span class="o">=</span> <span class="n">n_max_eqn</span><span class="p">(</span><span class="n">sign</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">n_inf</span><span class="p">):</span>
+                    <span class="n">n_max</span> <span class="o">=</span> <span class="n">sign</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">n_max</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;The system of equations for Nmax could not be solved; Nmax=`None`. &#39;</span>
+                         <span class="s1">&#39;message:</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">message</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">n_max</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; 版权所有 2016, Ayers&#39; Group @ McMaster University.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.0',
+            LANGUAGE:'zh_CN',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../../_static/translations.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+  <script type='text/javascript'>
+  $(".tooltiptext").hide(); // On very first line of scripts.js file
+
+
+  $("a").hover(function () {
+    var elems = this;
+    var curClass = elems.className // current class clicked.
+    // var windowHeight = $(".rst-content").height();
+    var windowWidth = $(".rst-content").width();
+
+    var left = elems.offsetLeft;
+    var top = elems.offsetTop;
+    // var linkHeight = $(".tooltip").height();
+    // var linkWidth = $(".tooltip").width();
+    // var tooltiph = $(".tooltiptext").height();
+    var tooltipw = $(".tooltiptext").width();
+    // var bottom = windowHeight - top - tooltiph;
+    var right = windowWidth - left - tooltipw;
+
+		var isEntirelyVisible = (left + tooltipw <= windowWidth);
+    if (!isEntirelyVisible) {
+        $(".tooltiptext").css("right", "0px");
+    } else  {
+        $(".tooltiptext").css("right", "-160px");
+    }
+
+
+
+
+    $(".tooltiptext").fadeIn('fast');
+},
+
+function () {
+});
+  </script>
+</body>
+</html>

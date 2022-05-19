@@ -1,0 +1,453 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>API Documentation &mdash; ChemTools 0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/chemtools_favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="ChemTools 0.0 documentation" href="index.html"/>
+        <link rel="prev" title="Developer Guidelines" href="tech_dev.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+  <style type="text/css">
+  #content {
+      position: relative;
+      }
+  #content img {
+          position: absolute;
+	      top: 0px;
+	          right: 0px;
+		  }
+  .rst-content p, .rst-content li {
+	    text-align: justify;
+	    text-justify: inter-word;
+      }
+  .tooltip {
+      position: relative;
+      /*display: inline-block;*/
+      /*border-bottom: 5px dotted black;*/
+      width: 75px;
+      /*min-width: 75px;*/
+      /*max-width: 255px;*/
+      }
+
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 180px;
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #fff;
+      text-align: left;
+      /*border-radius: 6px;*/
+      padding: 4px;
+      font-size:12px;
+      line-height: 15px;
+      /* Position the tooltip */
+      position: absolute;
+      z-index: 1;
+      }
+
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+      position: absolute;
+      /*left: -70px; -index: 99;*/
+      top: 20px;
+      }
+ </style>
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> ChemTools
+          
+
+          
+            
+            <img src="_static/chemtools_logo2.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro_about.html">About ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_citing.html">Citing ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_license.html">Licence Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_conduct.html">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_contact.html">Contact Information</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Examples Gallery</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scientific Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_conceptual.html">Conceptual Density Functional Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_dftbased.html">Density Functional Theory (DFT) Based</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_orbitaltool.html">Orbital-Based Local Descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_nci.html">Non-Covalent Interactions (NCI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_zref.html">References</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advanced Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tech_dev.html">Developer Guidelines</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#toolbox-module">Toolbox Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#conceptual-module">Conceptual Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#density-based-module">Density-Based Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#topological-analysis">Topological Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#wrappers-module">Wrappers Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#output-module">Output Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#utilities">Utilities</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ChemTools</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div id=content>
+        <a href="https://github.com/theochem/chemtools" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+       </div>
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>API Documentation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="api"></span><div class="section" id="module-chemtools">
+<span id="api-documentation"></span><h1>API Documentation<a class="headerlink" href="#module-chemtools" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="toolbox-module">
+<h2>Toolbox Module<a class="headerlink" href="#toolbox-module" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Conceptual DFT Tools<ul>
+<li><a class="reference internal" href="modules/generated/chemtools.toolbox.conceptual.GlobalConceptualDFT.html#chemtools.toolbox.conceptual.GlobalConceptualDFT" title="chemtools.toolbox.conceptual.GlobalConceptualDFT"><code class="xref py py-class docutils literal notranslate"><span class="pre">Global</span> <span class="pre">Conceptual</span> <span class="pre">DFT</span> <span class="pre">Tools</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.toolbox.conceptual.LocalConceptualDFT.html#chemtools.toolbox.conceptual.LocalConceptualDFT" title="chemtools.toolbox.conceptual.LocalConceptualDFT"><code class="xref py py-class docutils literal notranslate"><span class="pre">Local</span> <span class="pre">Conceptual</span> <span class="pre">DFT</span> <span class="pre">Tools</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.toolbox.conceptual.CondensedConceptualDFT.html#chemtools.toolbox.conceptual.CondensedConceptualDFT" title="chemtools.toolbox.conceptual.CondensedConceptualDFT"><code class="xref py py-class docutils literal notranslate"><span class="pre">Condensed</span> <span class="pre">Conceptual</span> <span class="pre">DFT</span> <span class="pre">Tools</span></code></a></li>
+</ul>
+</li>
+<li>Density Based Tools<ul>
+<li><a class="reference internal" href="modules/generated/chemtools.toolbox.densbased.DensityLocalTool.html#chemtools.toolbox.densbased.DensityLocalTool" title="chemtools.toolbox.densbased.DensityLocalTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Density</span> <span class="pre">Local</span> <span class="pre">Tool</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.toolbox.interactions.NCI.html#chemtools.toolbox.interactions.NCI" title="chemtools.toolbox.interactions.NCI"><code class="xref py py-class docutils literal notranslate"><span class="pre">Noncovalent</span> <span class="pre">Interaction</span> <span class="pre">(NCI)</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.toolbox.interactions.ELF.html#chemtools.toolbox.interactions.ELF" title="chemtools.toolbox.interactions.ELF"><code class="xref py py-class docutils literal notranslate"><span class="pre">Electron</span> <span class="pre">Localization</span> <span class="pre">Function</span> <span class="pre">(ELF)</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.toolbox.interactions.LOL.html#chemtools.toolbox.interactions.LOL" title="chemtools.toolbox.interactions.LOL"><code class="xref py py-class docutils literal notranslate"><span class="pre">Localized</span> <span class="pre">orbital</span> <span class="pre">Locator</span> <span class="pre">(LOL)</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.toolbox.kinetic.KED.html#chemtools.toolbox.kinetic.KED" title="chemtools.toolbox.kinetic.KED"><code class="xref py py-class docutils literal notranslate"><span class="pre">Kinetic</span> <span class="pre">Energy</span> <span class="pre">Density</span> <span class="pre">(KED)</span></code></a></li>
+</ul>
+</li>
+<li>Orbital Based Tools</li>
+<li><a class="reference internal" href="modules/generated/chemtools.toolbox.motbased.MOTBasedTool.html#chemtools.toolbox.motbased.MOTBasedTool" title="chemtools.toolbox.motbased.MOTBasedTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Molecular</span> <span class="pre">Orbtital</span> <span class="pre">Theory</span> <span class="pre">Based</span> <span class="pre">Tool</span></code></a></li>
+</ul>
+</div>
+<div class="section" id="conceptual-module">
+<h2>Conceptual Module<a class="headerlink" href="#conceptual-module" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Global Conceptual DFT Tools<ul>
+<li><a class="reference internal" href="modules/generated/chemtools.conceptual.base.BaseGlobalTool.html#chemtools.conceptual.base.BaseGlobalTool" title="chemtools.conceptual.base.BaseGlobalTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Base</span> <span class="pre">Global</span> <span class="pre">Tool</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.conceptual.linear.LinearGlobalTool.html#chemtools.conceptual.linear.LinearGlobalTool" title="chemtools.conceptual.linear.LinearGlobalTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Linear</span> <span class="pre">Global</span> <span class="pre">Tool</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.conceptual.quadratic.QuadraticGlobalTool.html#chemtools.conceptual.quadratic.QuadraticGlobalTool" title="chemtools.conceptual.quadratic.QuadraticGlobalTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Quadratic</span> <span class="pre">Global</span> <span class="pre">Tool</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.conceptual.exponential.ExponentialGlobalTool.html#chemtools.conceptual.exponential.ExponentialGlobalTool" title="chemtools.conceptual.exponential.ExponentialGlobalTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exponential</span> <span class="pre">Global</span> <span class="pre">Tool</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.conceptual.rational.RationalGlobalTool.html#chemtools.conceptual.rational.RationalGlobalTool" title="chemtools.conceptual.rational.RationalGlobalTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Rational</span> <span class="pre">Global</span> <span class="pre">Tool</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.conceptual.cubic.CubicGlobalTool.html#chemtools.conceptual.cubic.CubicGlobalTool" title="chemtools.conceptual.cubic.CubicGlobalTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cubic</span> <span class="pre">Global</span> <span class="pre">Tool</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.conceptual.general.GeneralGlobalTool.html#chemtools.conceptual.general.GeneralGlobalTool" title="chemtools.conceptual.general.GeneralGlobalTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">General</span> <span class="pre">Global</span> <span class="pre">Tool</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.conceptual.mixed.MixedGlobalTool.html#chemtools.conceptual.mixed.MixedGlobalTool" title="chemtools.conceptual.mixed.MixedGlobalTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mixed</span> <span class="pre">Global</span> <span class="pre">Tool</span></code></a></li>
+</ul>
+</li>
+<li>Local Conceptual DFT Tools<ul>
+<li><a class="reference internal" href="modules/generated/chemtools.conceptual.base.BaseLocalTool.html#chemtools.conceptual.base.BaseLocalTool" title="chemtools.conceptual.base.BaseLocalTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Base</span> <span class="pre">Local</span> <span class="pre">Tool</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.conceptual.linear.LinearLocalTool.html#chemtools.conceptual.linear.LinearLocalTool" title="chemtools.conceptual.linear.LinearLocalTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Linear</span> <span class="pre">Local</span> <span class="pre">Tool</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.conceptual.quadratic.QuadraticLocalTool.html#chemtools.conceptual.quadratic.QuadraticLocalTool" title="chemtools.conceptual.quadratic.QuadraticLocalTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Quadratic</span> <span class="pre">Local</span> <span class="pre">Tool</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.conceptual.mixed.MixedLocalTool.html#chemtools.conceptual.mixed.MixedLocalTool" title="chemtools.conceptual.mixed.MixedLocalTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mixed</span> <span class="pre">Local</span> <span class="pre">Tool</span></code></a></li>
+</ul>
+</li>
+<li>Condensed Conceptual DFT Tools<ul>
+<li><a class="reference internal" href="modules/generated/chemtools.conceptual.base.BaseCondensedTool.html#chemtools.conceptual.base.BaseCondensedTool" title="chemtools.conceptual.base.BaseCondensedTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Base</span> <span class="pre">Condensed</span> <span class="pre">Tool</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.conceptual.linear.LinearCondensedTool.html#chemtools.conceptual.linear.LinearCondensedTool" title="chemtools.conceptual.linear.LinearCondensedTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Linear</span> <span class="pre">Condensed</span> <span class="pre">Tool</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.conceptual.quadratic.QuadraticCondensedTool.html#chemtools.conceptual.quadratic.QuadraticCondensedTool" title="chemtools.conceptual.quadratic.QuadraticCondensedTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Quadratic</span> <span class="pre">Condensed</span> <span class="pre">Tool</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.conceptual.mixed.MixedCondensedTool.html#chemtools.conceptual.mixed.MixedCondensedTool" title="chemtools.conceptual.mixed.MixedCondensedTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mixed</span> <span class="pre">Condensed</span> <span class="pre">Tool</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="density-based-module">
+<h2>Density-Based Module<a class="headerlink" href="#density-based-module" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Density-Based Tools<ul>
+<li><a class="reference internal" href="modules/generated/chemtools.denstools.densbased.DensTool.html#chemtools.denstools.densbased.DensTool" title="chemtools.denstools.densbased.DensTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Density</span> <span class="pre">Based</span> <span class="pre">Tool</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.denstools.densbased.DensGradTool.html#chemtools.denstools.densbased.DensGradTool" title="chemtools.denstools.densbased.DensGradTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Density</span> <span class="pre">&amp;</span> <span class="pre">Gradient</span> <span class="pre">Based</span> <span class="pre">Tool</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.denstools.densbased.DensGradLapTool.html#chemtools.denstools.densbased.DensGradLapTool" title="chemtools.denstools.densbased.DensGradLapTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Density,</span> <span class="pre">Gradient</span> <span class="pre">&amp;</span> <span class="pre">Laplacian</span> <span class="pre">Based</span> <span class="pre">Tool</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.denstools.densbased.DensGradLapKedTool.html#chemtools.denstools.densbased.DensGradLapKedTool" title="chemtools.denstools.densbased.DensGradLapKedTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Density,</span> <span class="pre">Gradient,</span> <span class="pre">Laplacian</span> <span class="pre">&amp;</span> <span class="pre">KED</span> <span class="pre">Based</span> <span class="pre">Tool</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="topological-analysis">
+<h2>Topological Analysis<a class="headerlink" href="#topological-analysis" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="modules/generated/chemtools.topology.point.EigenValueTool.html#chemtools.topology.point.EigenValueTool" title="chemtools.topology.point.EigenValueTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Eigenvalue</span> <span class="pre">Descriptors</span></code></a></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="wrappers-module">
+<h2>Wrappers Module<a class="headerlink" href="#wrappers-module" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="modules/generated/chemtools.wrappers.molecule.Molecule.html#chemtools.wrappers.molecule.Molecule" title="chemtools.wrappers.molecule.Molecule"><code class="xref py py-class docutils literal notranslate"><span class="pre">Molecule</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.wrappers.grid.MolecularGrid.html#chemtools.wrappers.grid.MolecularGrid" title="chemtools.wrappers.grid.MolecularGrid"><code class="xref py py-class docutils literal notranslate"><span class="pre">MolecularGrid</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.utils.cube.UniformGrid.html#chemtools.utils.cube.UniformGrid" title="chemtools.utils.cube.UniformGrid"><code class="xref py py-class docutils literal notranslate"><span class="pre">UniformGrid</span></code></a></li>
+</ul>
+</div>
+<div class="section" id="output-module">
+<h2>Output Module<a class="headerlink" href="#output-module" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>VMD Scripts<ul>
+<li><a class="reference internal" href="modules/generated/chemtools.outputs.vmd.print_vmd_script_nci.html#chemtools.outputs.vmd.print_vmd_script_nci" title="chemtools.outputs.vmd.print_vmd_script_nci"><code class="xref py py-func docutils literal notranslate"><span class="pre">print_vmd_script_nci</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.outputs.vmd.print_vmd_script_isosurface.html#chemtools.outputs.vmd.print_vmd_script_isosurface" title="chemtools.outputs.vmd.print_vmd_script_isosurface"><code class="xref py py-func docutils literal notranslate"><span class="pre">print_vmd_script_isosurface</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.outputs.vmd.print_vmd_script_multiple_cube.html#chemtools.outputs.vmd.print_vmd_script_multiple_cube" title="chemtools.outputs.vmd.print_vmd_script_multiple_cube"><code class="xref py py-func docutils literal notranslate"><span class="pre">print_vmd_script_multiple_cube</span></code></a></li>
+<li><a class="reference internal" href="modules/generated/chemtools.outputs.vmd.print_vmd_script_vector_field.html#chemtools.outputs.vmd.print_vmd_script_vector_field" title="chemtools.outputs.vmd.print_vmd_script_vector_field"><code class="xref py py-func docutils literal notranslate"><span class="pre">print_vmd_script_vector_field</span></code></a></li>
+</ul>
+</li>
+<li>2-D Plots<ul>
+<li><a class="reference internal" href="modules/generated/chemtools.outputs.plot.plot_scatter.html#chemtools.outputs.plot.plot_scatter" title="chemtools.outputs.plot.plot_scatter"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_scatter</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="utilities">
+<h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="modules/generated/chemtools.utils.mesh.mesh_plane.html#chemtools.utils.mesh.mesh_plane" title="chemtools.utils.mesh.mesh_plane"><code class="xref py py-func docutils literal notranslate"><span class="pre">mesh_plane</span></code></a></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="tech_dev.html" class="btn btn-neutral" title="Developer Guidelines" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, ChemTools Dev Team.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+  <script type='text/javascript'>
+  $(".tooltiptext").hide(); // On very first line of scripts.js file
+
+
+  $("a").hover(function () {
+    var elems = this;
+    var curClass = elems.className // current class clicked.
+    // var windowHeight = $(".rst-content").height();
+    var windowWidth = $(".rst-content").width();
+
+    var left = elems.offsetLeft;
+    var top = elems.offsetTop;
+    // var linkHeight = $(".tooltip").height();
+    // var linkWidth = $(".tooltip").width();
+    // var tooltiph = $(".tooltiptext").height();
+    var tooltipw = $(".tooltiptext").width();
+    // var bottom = windowHeight - top - tooltiph;
+    var right = windowWidth - left - tooltipw;
+
+		var isEntirelyVisible = (left + tooltipw <= windowWidth);
+    if (!isEntirelyVisible) {
+        $(".tooltiptext").css("right", "0px");
+    } else  {
+        $(".tooltiptext").css("right", "-160px");
+    }
+
+
+
+
+    $(".tooltiptext").fadeIn('fast');
+},
+
+function () {
+});
+  </script>
+</body>
+</html>

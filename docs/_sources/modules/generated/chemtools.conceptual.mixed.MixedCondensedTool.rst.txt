@@ -1,0 +1,10 @@
+:orphan:
+
+chemtools.conceptual.mixed.MixedCondensedTool
+=============================================
+
+.. currentmodule:: chemtools.conceptual.mixed
+
+.. autoclass:: MixedCondensedTool
+   :members:
+   :inherited-members:

@@ -1,0 +1,10 @@
+:orphan:
+
+chemtools.wrappers.molecule.Molecule
+====================================
+
+.. currentmodule:: chemtools.wrappers.molecule
+
+.. autoclass:: Molecule
+   :members:
+   :inherited-members:

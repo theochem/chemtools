@@ -1,0 +1,9 @@
+:orphan:
+
+chemtools.analysis.densitybased.NCI
+===================================
+
+.. currentmodule:: chemtools.analysis.densitybased
+
+.. autoclass:: NCI
+   :members:

@@ -1,0 +1,622 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>chemtools.analysis.densitybased &mdash; ChemTools 0.0 文档</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../_static/chemtools_favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="索引"
+              href="../../../genindex.html"/>
+        <link rel="search" title="搜索" href="../../../search.html"/>
+    <link rel="top" title="ChemTools 0.0 文档" href="../../../index.html"/>
+        <link rel="up" title="模块代码" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+  <style type="text/css">
+  #content {
+      position: relative;
+      }
+  #content img {
+          position: absolute;
+	      top: 0px;
+	          right: 0px;
+		  }
+  .rst-content p, .rst-content li {
+	    text-align: justify;
+	    text-justify: inter-word;
+      }
+  .tooltip {
+      position: relative;
+      /*display: inline-block;*/
+      /*border-bottom: 5px dotted black;*/
+      width: 75px;
+      /*min-width: 75px;*/
+      /*max-width: 255px;*/
+      }
+
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 180px;
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #fff;
+      text-align: left;
+      /*border-radius: 6px;*/
+      padding: 4px;
+      font-size:12px;
+      line-height: 15px;
+      /* Position the tooltip */
+      position: absolute;
+      z-index: 1;
+      }
+
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+      position: absolute;
+      /*left: -70px; -index: 99;*/
+      top: 20px;
+      }
+ </style>
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ChemTools
+          
+
+          
+            
+            <img src="../../../_static/chemtools_logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_about.html">关于 ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_citing.html">引用 ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_license.html">开源许可</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_contact.html">联系方式</a></li>
+</ul>
+<p class="caption"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usr_doc_installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usr_doc_quick_start.html">快速入门</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usr_doc_tutorials.html">新手教程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../auto_examples/index.html">样例图库</a></li>
+</ul>
+<p class="caption"><span class="caption-text">科学手册</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_conceptual.html">概念密度泛函理论</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_densitytool.html">基于密度的定域描述符</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_orbitaltool.html">基于轨道的定域描述符</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_nci.html">非共价相互作用（NCI） <code class="docutils literal"><span class="pre">chemtools.tool.analysis.nci</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_zref.html">参考文献</a></li>
+</ul>
+<p class="caption"><span class="caption-text">高阶文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tech_dev.html">开发者指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tech_api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tech_derivations.html">推导</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ChemTools</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div id=content>
+        <a href="https://github.com/QuantumElephant/chemtools" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+       </div>
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">模块代码</a> &raquo;</li>
+        
+      <li>chemtools.analysis.densitybased</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>chemtools.analysis.densitybased 源代码</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># ChemTools is a collection of interpretive chemical tools for</span>
+<span class="c1"># analyzing outputs of the quantum chemistry calculations.</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2014-2015 The ChemTools Development Team</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of ChemTools.</span>
+<span class="c1">#</span>
+<span class="c1"># ChemTools is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the GNU General Public License</span>
+<span class="c1"># as published by the Free Software Foundation; either version 3</span>
+<span class="c1"># of the License, or (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># ChemTools is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># --</span>
+<span class="sd">&quot;&quot;&quot;Module for Density-Based and Orbital-Based Analysis of Quantum Chemistry Output Files.</span>
+
+<span class="sd">This modules contains wrappers which take outputs of quantum chemistry software and</span>
+<span class="sd">compute various descriptive tools based on the density and orbital information.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">horton</span> <span class="k">import</span> <span class="n">IOData</span>
+<span class="kn">from</span> <span class="nn">chemtools.toolbox.densitybased</span> <span class="k">import</span> <span class="n">DensityLocalTool</span>
+<span class="kn">from</span> <span class="nn">chemtools.utils.cube</span> <span class="k">import</span> <span class="n">CubeGen</span>
+<span class="kn">from</span> <span class="nn">chemtools.utils.output</span> <span class="k">import</span> <span class="n">print_vmd_script_nci</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">rcParams</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NCI&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="NCI"><a class="viewcode-back" href="../../../modules/generated/chemtools.analysis.densitybased.NCI.html#chemtools.analysis.densitybased.NCI">[文档]</a><span class="k">class</span> <span class="nc">NCI</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for the Non-Covalent Interactions (NCI).&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">rdgradient</span><span class="p">,</span> <span class="n">cube</span><span class="p">,</span> <span class="n">hessian</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize class using density, Reduced density gradient and `CubeGen` instance.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        density : np.array</span>
+<span class="sd">            Density evaluated on grid points of `cube`.</span>
+<span class="sd">        rdgradient : np.array</span>
+<span class="sd">            Reduced density gradient evaluated on grid points of `cube`</span>
+<span class="sd">        cube : instance of `CubeGen`, default=None</span>
+<span class="sd">            Cubic grid used for calculating and visualizing the NCI.</span>
+<span class="sd">            If None, it is constructed from molecule with spacing=0.1 and threshold=2.0</span>
+<span class="sd">        hessian : np.array, default=None</span>
+<span class="sd">            Hessian of density evaluated on grid points of `cube`. This is a 3D-array with</span>
+<span class="sd">            (n, 3, 3) shape where n is the number of grid points of `cube`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">density</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cube</span><span class="o">.</span><span class="n">points</span><span class="p">),):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Shape of density argument </span><span class="si">{0}</span><span class="s1"> does not match &#39;</span>
+                             <span class="s1">&#39;expected (</span><span class="si">{1}</span><span class="s1">,) shape.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">density</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">cube</span><span class="o">.</span><span class="n">points</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">rdgradient</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cube</span><span class="o">.</span><span class="n">points</span><span class="p">),):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Shape of rdgradient argument </span><span class="si">{0}</span><span class="s1"> does not &#39;</span>
+                             <span class="s1">&#39;match expected (</span><span class="si">{1}</span><span class="s1">,) shape.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">density</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">cube</span><span class="o">.</span><span class="n">points</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="n">hessian</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">hessian</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cube</span><span class="o">.</span><span class="n">points</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Shape of hessian argument </span><span class="si">{0}</span><span class="s1"> does not match expected (</span><span class="si">{1}</span><span class="s1">, 3, 3)&#39;</span>
+                                 <span class="s1">&#39; shape.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hessian</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">cube</span><span class="o">.</span><span class="n">points</span><span class="p">)))</span>
+            <span class="c1"># Compute hessian and its eigenvalues on cubuc grid</span>
+            <span class="n">eigvalues</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvalsh</span><span class="p">(</span><span class="n">hessian</span><span class="p">)</span>
+
+            <span class="c1"># Use sign of second eigenvalue to distinguish interaction types</span>
+            <span class="n">sdens</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">eigvalues</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">density</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_signed_density</span> <span class="o">=</span> <span class="n">sdens</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_eigvalues</span> <span class="o">=</span> <span class="n">eigvalues</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_signed_density</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_eigvalues</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_density</span> <span class="o">=</span> <span class="n">density</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rdgrad</span> <span class="o">=</span> <span class="n">rdgradient</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cube</span> <span class="o">=</span> <span class="n">cube</span>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="NCI.from_file"><a class="viewcode-back" href="../../../modules/generated/chemtools.analysis.densitybased.NCI.html#chemtools.analysis.densitybased.NCI.from_file">[文档]</a>    <span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">cube</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize class using wave-function file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str</span>
+<span class="sd">            Path to molecule&#39;s files.</span>
+<span class="sd">        cube : instance of `CubeGen`, default=None</span>
+<span class="sd">            Cubic grid used for calculating and visualizing the NCI.</span>
+<span class="sd">            If None, it is constructed from molecule with spacing=0.1 and threshold=2.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># case of one file not given as a list</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">unicode</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_iodata</span><span class="p">(</span><span class="n">IOData</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="n">cube</span><span class="p">)</span>
+        <span class="c1"># case of list of file(s)</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Multiple files are not supported&#39;</span><span class="p">)</span></div>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="NCI.from_iodata"><a class="viewcode-back" href="../../../modules/generated/chemtools.analysis.densitybased.NCI.html#chemtools.analysis.densitybased.NCI.from_iodata">[文档]</a>    <span class="k">def</span> <span class="nf">from_iodata</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">iodata</span><span class="p">,</span> <span class="n">cube</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize class from ``IOData`` object from ``HORTON`` library.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        iodata : ``IOData``</span>
+<span class="sd">            Instance of ``IOData``.</span>
+<span class="sd">        cube : instance of `CubeGen`, default=None</span>
+<span class="sd">            Cubic grid used for calculating and visualizing the NCI.</span>
+<span class="sd">            If None, it is constructed from molecule with spacing=0.1 and threshold=2.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Generate or check cubic grid</span>
+        <span class="k">if</span> <span class="n">cube</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cube</span> <span class="o">=</span> <span class="n">CubeGen</span><span class="o">.</span><span class="n">from_molecule</span><span class="p">(</span><span class="n">iodata</span><span class="o">.</span><span class="n">numbers</span><span class="p">,</span> <span class="n">iodata</span><span class="o">.</span><span class="n">pseudo_numbers</span><span class="p">,</span>
+                                         <span class="n">iodata</span><span class="o">.</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cube</span><span class="p">,</span> <span class="n">CubeGen</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument cube should be an instance of CubeGen!&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Compute density &amp; gradient on cubic grid</span>
+        <span class="n">dm_full</span> <span class="o">=</span> <span class="n">iodata</span><span class="o">.</span><span class="n">get_dm_full</span><span class="p">()</span>
+        <span class="n">dens</span> <span class="o">=</span> <span class="n">iodata</span><span class="o">.</span><span class="n">obasis</span><span class="o">.</span><span class="n">compute_grid_density_dm</span><span class="p">(</span><span class="n">dm_full</span><span class="p">,</span> <span class="n">cube</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+        <span class="n">grad</span> <span class="o">=</span> <span class="n">iodata</span><span class="o">.</span><span class="n">obasis</span><span class="o">.</span><span class="n">compute_grid_gradient_dm</span><span class="p">(</span><span class="n">dm_full</span><span class="p">,</span> <span class="n">cube</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+        <span class="c1"># Compute hessian on cubic grid</span>
+        <span class="n">hess</span> <span class="o">=</span> <span class="n">_compute_hessian</span><span class="p">(</span><span class="n">iodata</span><span class="p">,</span> <span class="n">cube</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+
+        <span class="c1"># initialize DensityLocalTool &amp; compute reduced gradient</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">DensityLocalTool</span><span class="p">(</span><span class="n">dens</span><span class="p">,</span> <span class="n">grad</span><span class="p">)</span>
+        <span class="n">rdgrad</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">reduced_density_gradient</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">dens</span><span class="p">,</span> <span class="n">rdgrad</span><span class="p">,</span> <span class="n">cube</span><span class="p">,</span> <span class="n">hessian</span><span class="o">=</span><span class="n">hess</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">signed_density</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Signed electron density.</span>
+
+<span class="sd">        Electron density :math:`\rho\left(\mathbf{r}\right)` evaluated on a grid,</span>
+<span class="sd">        signed by the second eigenvalue of the Hessian at that point, i.e.</span>
+<span class="sd">        :math:`\text{sgn}\left(\lambda_2\right) \times \rho\left(\mathbf{r}\right)`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signed_density</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">eigvalues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;The eigenvalues of Hessian.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eigvalues</span>
+
+<div class="viewcode-block" id="NCI.plot"><a class="viewcode-back" href="../../../modules/generated/chemtools.analysis.densitybased.NCI.html#chemtools.analysis.densitybased.NCI.plot">[文档]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Plot reduced density gradient.</span>
+
+<span class="sd">        Reduced density gradient vs.</span>
+<span class="sd">        :math:`\text{sgn}\left(\lambda_2\right) \times \rho\left(\mathbf{r}\right)`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str</span>
+<span class="sd">            Name of generated 2D plot.</span>
+
+<span class="sd">            If the given filename does not have a proper extension (representing its format),</span>
+<span class="sd">            the &#39;png&#39; format is used by default (i.e. plot is saved as filename.png).</span>
+
+<span class="sd">            Supported formats (which should be specified as filename extensions) include:</span>
+
+<span class="sd">            - &#39;svgz&#39; or &#39;svg&#39; (Scalable Vector Graphics)</span>
+<span class="sd">            - &#39;tif&#39; or &#39;tiff&#39; (Tagged Image File Format)</span>
+<span class="sd">            - &#39;jpg&#39; or &#39;jpeg&#39; (Joint Photographic Experts Group)</span>
+<span class="sd">            - &#39;raw&#39; (Raw RGBA bitmap)</span>
+<span class="sd">            - &#39;png&#39; (Portable Network Graphics)</span>
+<span class="sd">            - &#39;ps&#39; (Postscript)</span>
+<span class="sd">            - &#39;eps&#39; (Encapsulated Postscript)</span>
+<span class="sd">            - &#39;rgba&#39; (Raw RGBA bitmap)</span>
+<span class="sd">            - &#39;pdf&#39; (Portable Document Format)</span>
+
+<span class="sd">        color : str, default=&#39;b&#39;</span>
+<span class="sd">            Color of plot. Default is blue specified with &#39;b&#39;.</span>
+<span class="sd">            For details on specifying colors, please refer to</span>
+<span class="sd">            http://matplotlib.org/users/colors.html</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># set font</span>
+        <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;serif&#39;</span>
+        <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.serif&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Times New Roman&#39;</span><span class="p">]</span>
+        <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;mathtext.fontset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;stix&#39;</span>
+        <span class="c1"># create figure</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># scatter plot</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_signed_density</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rdgrad</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+        <span class="c1"># set axis range and label</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;sgn$\mathbf{(\lambda_2)}$ $\times$ $\mathbf{\rho(r)}$ (a.u)&#39;</span><span class="p">,</span>
+                   <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Reduced Density Gradient&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+        <span class="c1"># hide the right, top and bottom spines</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;right&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">tick_bottom</span><span class="p">()</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">tick_left</span><span class="p">()</span>
+        <span class="c1"># save plot (&#39;.png&#39; extension is added by default, if filename is not a supported format)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">800</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NCI.dump_files"><a class="viewcode-back" href="../../../modules/generated/chemtools.analysis.densitybased.NCI.html#chemtools.analysis.densitybased.NCI.dump_files">[文档]</a>    <span class="k">def</span> <span class="nf">dump_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">isosurf</span><span class="o">=</span><span class="mf">0.50</span><span class="p">,</span> <span class="n">denscut</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generate cube files and VMD script to visualize non-covalent interactions (NCI).</span>
+
+<span class="sd">        Generate density and reduced density gradient cube files, as well as a VMD (Visual</span>
+<span class="sd">        Molecular Dynamics) script to visualize non-covalent interactions (NCI).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str</span>
+<span class="sd">            Name of generated cube files and vmd script.</span>
+<span class="sd">        isosurf : float, default=0.5</span>
+<span class="sd">            Value of reduced density gradient (RDG) iso-surface used in VMD script.</span>
+<span class="sd">        denscut : float, default=0.05</span>
+<span class="sd">            Density cutoff used in creating reduced density gradient cube file.</span>
+<span class="sd">            Similar to NCIPlot program, reduced density gradient of points with</span>
+<span class="sd">            density &gt; denscut will be set to 100.0 to display reduced density gradient</span>
+<span class="sd">            iso-surface subject to the constraint of low density.</span>
+<span class="sd">            To visualize all reduced density gradient iso-surfaces, disregarding of the</span>
+<span class="sd">            corresponding density value, set this argument equal to infity using `float(&#39;inf&#39;)`.</span>
+<span class="sd">        Note</span>
+<span class="sd">        ----</span>
+<span class="sd">        The generated cube files and script imitate the NCIPlot software version 1.0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Similar to NCIPlot program, reduced density gradient of points with</span>
+        <span class="c1"># density &gt; cutoff will be set to 100.0 before generating cube file to</span>
+        <span class="c1"># display reduced density gradient iso-surface subject to the constraint</span>
+        <span class="c1"># of low density, i.e. density &lt; denscut.</span>
+        <span class="n">cutrdg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rdgrad</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">cutrdg</span><span class="p">[</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_density</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">denscut</span><span class="p">]</span> <span class="o">=</span> <span class="mf">100.0</span>
+        <span class="c1"># Similar to NCIPlot program, sign(hessian second eigenvalue)*density is</span>
+        <span class="c1"># multiplied by 100.0 before generating cube file used for coloring the</span>
+        <span class="c1"># reduced density gradient iso-surface.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signed_density</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dens</span> <span class="o">=</span> <span class="mf">100.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signed_density</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dens</span> <span class="o">=</span> <span class="mf">100.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density</span>
+
+        <span class="c1"># Name of output files:</span>
+        <span class="n">densfile</span> <span class="o">=</span> <span class="n">filename</span> <span class="o">+</span> <span class="s1">&#39;-dens.cube&#39;</span>    <span class="c1"># density cube file</span>
+        <span class="n">rdgfile</span> <span class="o">=</span> <span class="n">filename</span> <span class="o">+</span> <span class="s1">&#39;-grad.cube&#39;</span>    <span class="c1"># reduced density gradient cube file</span>
+        <span class="n">vmdfile</span> <span class="o">=</span> <span class="n">filename</span> <span class="o">+</span> <span class="s1">&#39;.vmd&#39;</span>          <span class="c1"># vmd script file</span>
+        <span class="c1"># Dump density &amp; reduced density gradient cube files</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cube</span><span class="o">.</span><span class="n">dump_cube</span><span class="p">(</span><span class="n">densfile</span><span class="p">,</span> <span class="n">dens</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cube</span><span class="o">.</span><span class="n">dump_cube</span><span class="p">(</span><span class="n">rdgfile</span><span class="p">,</span> <span class="n">cutrdg</span><span class="p">)</span>
+        <span class="c1"># Make VMD scripts for visualization</span>
+        <span class="n">print_vmd_script_nci</span><span class="p">(</span><span class="n">vmdfile</span><span class="p">,</span> <span class="n">densfile</span><span class="p">,</span> <span class="n">rdgfile</span><span class="p">,</span> <span class="n">isosurf</span><span class="p">,</span> <span class="n">denscut</span> <span class="o">*</span> <span class="mf">100.0</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="_compute_hessian"><a class="viewcode-back" href="../../../modules/generated/chemtools.analysis.densitybased._compute_hessian.html#chemtools.analysis.densitybased._compute_hessian">[文档]</a><span class="k">def</span> <span class="nf">_compute_hessian</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute hessian of electron density w.r.t. coordinates.</span>
+
+<span class="sd">    Hessian is defined as the second-order partial derivative of electron density w.r.t.</span>
+<span class="sd">    coordinates.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mol : instance of `IOData`</span>
+<span class="sd">        An `IOData` object.</span>
+<span class="sd">    points : np.ndarray</span>
+<span class="sd">        Coordinates of grid points for calculating hessian.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    This finite difference implementation is temporary until hessian is implemented in HORTON.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Make small change in coordinates along x, y, &amp; z directions</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="mf">1.0e-5</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">points</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">eps</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">points</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
+    <span class="n">dz</span> <span class="o">=</span> <span class="n">points</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">eps</span><span class="p">]])</span>
+    <span class="c1"># Calculate gradient on original grid points</span>
+    <span class="n">dm</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">get_dm_full</span><span class="p">()</span>
+    <span class="n">gpnt</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">obasis</span><span class="o">.</span><span class="n">compute_grid_gradient_dm</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">points</span><span class="p">)</span>
+    <span class="c1"># Calculate hessian using finite difference</span>
+    <span class="n">hess</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">hess</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">obasis</span><span class="o">.</span><span class="n">compute_grid_gradient_dm</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">dx</span><span class="p">)</span> <span class="o">-</span> <span class="n">gpnt</span><span class="p">)</span> <span class="o">/</span> <span class="n">eps</span>
+    <span class="n">hess</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">obasis</span><span class="o">.</span><span class="n">compute_grid_gradient_dm</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">dy</span><span class="p">)</span> <span class="o">-</span> <span class="n">gpnt</span><span class="p">)</span> <span class="o">/</span> <span class="n">eps</span>
+    <span class="n">hess</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">obasis</span><span class="o">.</span><span class="n">compute_grid_gradient_dm</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">dz</span><span class="p">)</span> <span class="o">-</span> <span class="n">gpnt</span><span class="p">)</span> <span class="o">/</span> <span class="n">eps</span>
+    <span class="c1"># Make Hessian symmetric to avoid complex eigenvalues</span>
+    <span class="n">hess</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">hess</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">hess</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">hess</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; 版权所有 2016, Ayers&#39; Group @ McMaster University.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.0',
+            LANGUAGE:'zh_CN',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../../_static/translations.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+  <script type='text/javascript'>
+  $(".tooltiptext").hide(); // On very first line of scripts.js file
+
+
+  $("a").hover(function () {
+    var elems = this;
+    var curClass = elems.className // current class clicked.
+    // var windowHeight = $(".rst-content").height();
+    var windowWidth = $(".rst-content").width();
+
+    var left = elems.offsetLeft;
+    var top = elems.offsetTop;
+    // var linkHeight = $(".tooltip").height();
+    // var linkWidth = $(".tooltip").width();
+    // var tooltiph = $(".tooltiptext").height();
+    var tooltipw = $(".tooltiptext").width();
+    // var bottom = windowHeight - top - tooltiph;
+    var right = windowWidth - left - tooltipw;
+
+		var isEntirelyVisible = (left + tooltipw <= windowWidth);
+    if (!isEntirelyVisible) {
+        $(".tooltiptext").css("right", "0px");
+    } else  {
+        $(".tooltiptext").css("right", "-160px");
+    }
+
+
+
+
+    $(".tooltiptext").fadeIn('fast');
+},
+
+function () {
+});
+  </script>
+</body>
+</html>

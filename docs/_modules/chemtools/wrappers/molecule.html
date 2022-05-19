@@ -1,0 +1,978 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>chemtools.wrappers.molecule &mdash; ChemTools 0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../_static/chemtools_favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="ChemTools 0.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+  <style type="text/css">
+  #content {
+      position: relative;
+      }
+  #content img {
+          position: absolute;
+	      top: 0px;
+	          right: 0px;
+		  }
+  .rst-content p, .rst-content li {
+	    text-align: justify;
+	    text-justify: inter-word;
+      }
+  .tooltip {
+      position: relative;
+      /*display: inline-block;*/
+      /*border-bottom: 5px dotted black;*/
+      width: 75px;
+      /*min-width: 75px;*/
+      /*max-width: 255px;*/
+      }
+
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 180px;
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #fff;
+      text-align: left;
+      /*border-radius: 6px;*/
+      padding: 4px;
+      font-size:12px;
+      line-height: 15px;
+      /* Position the tooltip */
+      position: absolute;
+      z-index: 1;
+      }
+
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+      position: absolute;
+      /*left: -70px; -index: 99;*/
+      top: 20px;
+      }
+ </style>
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ChemTools
+          
+
+          
+            
+            <img src="../../../_static/chemtools_logo2.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_about.html">About ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_citing.html">Citing ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_license.html">Licence Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_conduct.html">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro_contact.html">Contact Information</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usr_doc_installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usr_doc_quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../auto_examples/index.html">Examples Gallery</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scientific Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_conceptual.html">Conceptual Density Functional Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_dftbased.html">Density Functional Theory (DFT) Based</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_orbitaltool.html">Orbital-Based Local Descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_nci.html">Non-Covalent Interactions (NCI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sci_doc_zref.html">References</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advanced Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tech_dev.html">Developer Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tech_api.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ChemTools</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div id=content>
+        <a href="https://github.com/theochem/chemtools" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+       </div>
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>chemtools.wrappers.molecule</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for chemtools.wrappers.molecule</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># ChemTools is a collection of interpretive chemical tools for</span>
+<span class="c1"># analyzing outputs of the quantum chemistry calculations.</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2016-2019 The ChemTools Development Team</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of ChemTools.</span>
+<span class="c1">#</span>
+<span class="c1"># ChemTools is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the GNU General Public License</span>
+<span class="c1"># as published by the Free Software Foundation; either version 3</span>
+<span class="c1"># of the License, or (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># ChemTools is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># --</span>
+<span class="sd">&quot;&quot;&quot;Wrapper Module.&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">horton</span> <span class="kn">import</span> <span class="n">IOData</span><span class="p">,</span> <span class="n">DenseLinalgFactory</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">importlib_resources</span> <span class="kn">import</span> <span class="n">path</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">importlib.resources</span> <span class="kn">import</span> <span class="n">path</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Molecule&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Molecule"><a class="viewcode-back" href="../../../modules/generated/chemtools.wrappers.molecule.Molecule.html#chemtools.wrappers.molecule.Molecule">[docs]</a><span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Molecule class from HORTON package.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iodata</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        iodata : horton.IOData</span>
+<span class="sd">           An instance of horton.IOData object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iodata</span> <span class="o">=</span> <span class="n">iodata</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iodata</span><span class="p">,</span> <span class="s2">&quot;obasis&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ao</span> <span class="o">=</span> <span class="n">AtomicOrbitals</span><span class="o">.</span><span class="n">from_molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ao</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coordinates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iodata</span><span class="o">.</span><span class="n">coordinates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_numbers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iodata</span><span class="o">.</span><span class="n">numbers</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iodata</span><span class="p">,</span> <span class="s2">&quot;exp_alpha&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mo</span> <span class="o">=</span> <span class="n">MolecularOrbitals</span><span class="o">.</span><span class="n">from_molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mo</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># FIXME: following code is pretty hacky. it will be used for the orbital partitioning code</span>
+        <span class="c1"># GOBasis object stores basis set to atom and angular momentum mapping</span>
+        <span class="c1"># by shell and not by contraction. So it needs to be converted</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ind_shell_atom</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">iodata</span><span class="o">.</span><span class="n">obasis</span><span class="o">.</span><span class="n">shell_map</span><span class="p">)</span>
+            <span class="n">ind_shell_orbtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">iodata</span><span class="o">.</span><span class="n">obasis</span><span class="o">.</span><span class="n">shell_types</span><span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">num_contr</span><span class="p">(</span><span class="n">orbtype</span><span class="p">):</span>
+                <span class="sd">&quot;&quot;&quot;Return the number of contractions for the given orbital type.</span>
+
+<span class="sd">                Parameters</span>
+<span class="sd">                ----------</span>
+<span class="sd">                orbtype : int</span>
+<span class="sd">                    Horton&#39;s orbital type scheme.</span>
+<span class="sd">                    Positive number corresponds to cartesian type and negative number corresponds to</span>
+<span class="sd">                    spherical types.</span>
+
+<span class="sd">                Returns</span>
+<span class="sd">                -------</span>
+<span class="sd">                num_contr : int</span>
+<span class="sd">                    Number of contractions for the given orbital type.</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">if</span> <span class="n">orbtype</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">orbtype</span><span class="p">)</span>
+                <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">orbtype</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">orbtype</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+            <span class="n">numcontr_per_shell</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">num_contr</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ind_shell_orbtype</span><span class="p">])</span>
+            <span class="c1"># Duplicate each shell information by the number of contractions in shell</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ind_basis_center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">ind_shell_atom</span><span class="p">,</span> <span class="n">numcontr_per_shell</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ind_basis_orbtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">ind_shell_orbtype</span><span class="p">,</span> <span class="n">numcontr_per_shell</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+<div class="viewcode-block" id="Molecule.from_file"><a class="viewcode-back" href="../../../modules/generated/chemtools.wrappers.molecule.Molecule.html#chemtools.wrappers.molecule.Molecule.from_file">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize class given a file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fname : str</span>
+<span class="sd">            Path to molecule&quot;s files.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># load molecule</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(levelname)s</span><span class="s2">: </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">iodata</span> <span class="o">=</span> <span class="n">IOData</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">_</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">path</span><span class="p">(</span><span class="s2">&quot;chemtools.data.examples&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span> <span class="k">as</span> <span class="n">fname</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="p">)))</span>
+                    <span class="n">iodata</span> <span class="o">=</span> <span class="n">IOData</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">iodata</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return attribute.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        attr : str</span>
+<span class="sd">            The name of attribute to retrieve.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iodata</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Cartesian coordinates of atomic centers.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinates</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">numbers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Atomic number of atomic centers.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_numbers</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ao</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Atomic orbital instance.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ao</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Molecular orbital instance.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mo</span>
+
+<div class="viewcode-block" id="Molecule.compute_density_matrix"><a class="viewcode-back" href="../../../modules/generated/chemtools.wrappers.molecule.Molecule.html#chemtools.wrappers.molecule.Molecule.compute_density_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">compute_density_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the density matrix array for the specified spin orbitals.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        spin : str, optional</span>
+<span class="sd">           The type of occupied spin orbitals. Options are &quot;a&quot; (for alpha), &quot;b&quot; (for beta), and</span>
+<span class="sd">           &quot;ab&quot; (for alpha + beta).</span>
+<span class="sd">        index : sequence of int, optional</span>
+<span class="sd">           Sequence of integers representing the occupied spin orbitals which are indexed</span>
+<span class="sd">           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo</span><span class="o">.</span><span class="n">compute_dm</span><span class="p">(</span><span class="n">spin</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">_array</span></div>
+
+<div class="viewcode-block" id="Molecule.compute_molecular_orbital"><a class="viewcode-back" href="../../../modules/generated/chemtools.wrappers.molecule.Molecule.html#chemtools.wrappers.molecule.Molecule.compute_molecular_orbital">[docs]</a>    <span class="k">def</span> <span class="nf">compute_molecular_orbital</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return molecular orbitals.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        points : ndarray</span>
+<span class="sd">           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.</span>
+<span class="sd">        spin : str, optional</span>
+<span class="sd">           Type of occupied spin orbitals which can be either &quot;a&quot; (for alpha), &quot;b&quot; (for</span>
+<span class="sd">           beta), and &quot;ab&quot; (for alpha + beta).</span>
+<span class="sd">        index : sequence of int, optional</span>
+<span class="sd">           Sequence of integers representing the occupied spin orbitals which are indexed</span>
+<span class="sd">           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_argument</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="c1"># assign orbital index (HORTON index the orbitals from 0)</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># include all occupied orbitals of specified spin</span>
+            <span class="n">spin_index</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo</span><span class="o">.</span><span class="n">homo_index</span><span class="p">[</span><span class="n">spin_index</span><span class="p">[</span><span class="n">spin</span><span class="p">]])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># include specified set of orbitals</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">index</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">index</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">index</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">index</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Argument index=</span><span class="si">{0}</span><span class="s2"> cannot be less than one!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1"># get orbital expression of specified spin</span>
+        <span class="k">if</span> <span class="n">spin</span> <span class="o">==</span> <span class="s1">&#39;b&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iodata</span><span class="p">,</span> <span class="s2">&quot;exp_beta&quot;</span><span class="p">):</span>
+            <span class="n">exp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iodata</span><span class="o">.</span><span class="n">exp_alpha</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exp</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iodata</span><span class="p">,</span> <span class="s2">&quot;exp_&quot;</span> <span class="o">+</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="s1">&#39;beta&#39;</span><span class="p">}[</span><span class="n">spin</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ao</span><span class="o">.</span><span class="n">compute_orbitals</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Molecule.compute_density"><a class="viewcode-back" href="../../../modules/generated/chemtools.wrappers.molecule.Molecule.html#chemtools.wrappers.molecule.Molecule.compute_density">[docs]</a>    <span class="k">def</span> <span class="nf">compute_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return electron density.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        points : ndarray</span>
+<span class="sd">           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.</span>
+<span class="sd">        spin : str, optional</span>
+<span class="sd">           Type of occupied spin orbitals which can be either &quot;a&quot; (for alpha), &quot;b&quot; (for</span>
+<span class="sd">           beta), and &quot;ab&quot; (for alpha + beta).</span>
+<span class="sd">        index : sequence of int, optional</span>
+<span class="sd">           Sequence of integers representing the occupied spin orbitals which are indexed</span>
+<span class="sd">           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_argument</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+
+        <span class="c1"># allocate output array</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],),</span> <span class="nb">float</span><span class="p">)</span>
+
+        <span class="c1"># compute density</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># get density matrix corresponding to the specified spin</span>
+            <span class="n">dm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo</span><span class="o">.</span><span class="n">compute_dm</span><span class="p">(</span><span class="n">spin</span><span class="p">)</span>
+            <span class="c1"># include all orbitals</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ao</span><span class="o">.</span><span class="n">compute_density</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">points</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># include subset of molecular orbitals</span>
+            <span class="k">if</span> <span class="n">spin</span> <span class="o">==</span> <span class="s2">&quot;ab&quot;</span><span class="p">:</span>
+                <span class="c1"># compute mo expression of alpha &amp; beta orbitals</span>
+                <span class="n">mo_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_molecular_orbital</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+                <span class="n">mo_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_molecular_orbital</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+                <span class="c1"># add density of alpha &amp; beta molecular orbitals</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mo_a</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+                <span class="n">output</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mo_b</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># compute mo expression of specified molecular orbitals</span>
+                <span class="n">mo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_molecular_orbital</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">spin</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+                <span class="c1"># add density of specified molecular orbitals</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mo</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span></div>
+
+<div class="viewcode-block" id="Molecule.compute_gradient"><a class="viewcode-back" href="../../../modules/generated/chemtools.wrappers.molecule.Molecule.html#chemtools.wrappers.molecule.Molecule.compute_gradient">[docs]</a>    <span class="k">def</span> <span class="nf">compute_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return gradient of the electron density.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        points : ndarray</span>
+<span class="sd">           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.</span>
+<span class="sd">        spin : str, optional</span>
+<span class="sd">           Type of occupied spin orbitals which can be either &quot;a&quot; (for alpha), &quot;b&quot; (for</span>
+<span class="sd">           beta), and &quot;ab&quot; (for alpha + beta).</span>
+<span class="sd">        index : sequence of int, optional</span>
+<span class="sd">           Sequence of integers representing the occupied spin orbitals which are indexed</span>
+<span class="sd">           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_argument</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ao</span><span class="o">.</span><span class="n">compute_gradient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo</span><span class="o">.</span><span class="n">compute_dm</span><span class="p">(</span><span class="n">spin</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">),</span> <span class="n">points</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Molecule.compute_hessian"><a class="viewcode-back" href="../../../modules/generated/chemtools.wrappers.molecule.Molecule.html#chemtools.wrappers.molecule.Molecule.compute_hessian">[docs]</a>    <span class="k">def</span> <span class="nf">compute_hessian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return hessian of the electron density.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        points : ndarray</span>
+<span class="sd">           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.</span>
+<span class="sd">        spin : str, optional</span>
+<span class="sd">           Type of occupied spin orbitals which can be either &quot;a&quot; (for alpha), &quot;b&quot; (for</span>
+<span class="sd">           beta), and &quot;ab&quot; (for alpha + beta).</span>
+<span class="sd">        index : sequence of int, optional</span>
+<span class="sd">           Sequence of integers representing the occupied spin orbitals which are indexed</span>
+<span class="sd">           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_argument</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ao</span><span class="o">.</span><span class="n">compute_hessian</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo</span><span class="o">.</span><span class="n">compute_dm</span><span class="p">(</span><span class="n">spin</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">),</span> <span class="n">points</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Molecule.compute_laplacian"><a class="viewcode-back" href="../../../modules/generated/chemtools.wrappers.molecule.Molecule.html#chemtools.wrappers.molecule.Molecule.compute_laplacian">[docs]</a>    <span class="k">def</span> <span class="nf">compute_laplacian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return Laplacian of the electron density.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        points : ndarray</span>
+<span class="sd">           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.</span>
+<span class="sd">        spin : str, optional</span>
+<span class="sd">           Type of occupied spin orbitals which can be either &quot;a&quot; (for alpha), &quot;b&quot; (for</span>
+<span class="sd">           beta), and &quot;ab&quot; (for alpha + beta).</span>
+<span class="sd">        index : sequence of int, optional</span>
+<span class="sd">           Sequence of integers representing the occupied spin orbitals which are indexed</span>
+<span class="sd">           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">hess</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_hessian</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">spin</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">hess</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Molecule.compute_esp"><a class="viewcode-back" href="../../../modules/generated/chemtools.wrappers.molecule.Molecule.html#chemtools.wrappers.molecule.Molecule.compute_esp">[docs]</a>    <span class="k">def</span> <span class="nf">compute_esp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">charges</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return molecular electrostatic potential.</span>
+
+<span class="sd">        The molecular electrostatic potential at point :math:`\mathbf{r}` is caused by the</span>
+<span class="sd">        electron density :math:`\rho` of the specified spin orbitals and set of point charges</span>
+<span class="sd">        :math:`\{q_A\}_{A=1}^{N_\text{atoms}}` placed at the position of the nuclei. i.e,</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           V \left(\mathbf{r}\right) =</span>
+<span class="sd">             \sum_{A=1}^{N_\text{atoms}} \frac{q_A}{\rvert \mathbf{R}_A - \mathbf{r} \lvert} -</span>
+<span class="sd">             \int \frac{\rho \left(\mathbf{r}&quot;\right)}{\rvert \mathbf{r}&quot; - \mathbf{r} \lvert}</span>
+<span class="sd">                  d\mathbf{r}&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        points : ndarray</span>
+<span class="sd">           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.</span>
+<span class="sd">        spin : str, optional</span>
+<span class="sd">           Type of occupied spin orbitals which can be either &quot;a&quot; (for alpha), &quot;b&quot; (for</span>
+<span class="sd">           beta), and &quot;ab&quot; (for alpha + beta).</span>
+<span class="sd">        index : sequence of int, optional</span>
+<span class="sd">           Sequence of integers representing the occupied spin orbitals which are indexed</span>
+<span class="sd">           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.</span>
+<span class="sd">        charges : np.ndarray, optional</span>
+<span class="sd">           Array with shape (n,) representing the point charges at the position of the nuclei.</span>
+<span class="sd">           When ``None``, the pseudo numbers are used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_argument</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="c1"># assign point charges</span>
+        <span class="k">if</span> <span class="n">charges</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">charges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pseudo_numbers</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">charges</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">or</span> <span class="n">charges</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">numbers</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Argument charges should be a 1d-array &quot;</span>
+                             <span class="s2">&quot;with </span><span class="si">{0}</span><span class="s2"> shape.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numbers</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+        <span class="n">dm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo</span><span class="o">.</span><span class="n">compute_dm</span><span class="p">(</span><span class="n">spin</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ao</span><span class="o">.</span><span class="n">compute_esp</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">charges</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Molecule.compute_ked"><a class="viewcode-back" href="../../../modules/generated/chemtools.wrappers.molecule.Molecule.html#chemtools.wrappers.molecule.Molecule.compute_ked">[docs]</a>    <span class="k">def</span> <span class="nf">compute_ked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return positive definite or Lagrangian kinetic energy density.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \tau_\text{PD} \left(\mathbf{r}\right) =</span>
+<span class="sd">           \tfrac{1}{2} \sum_i^N n_i \rvert \nabla \phi_i \left(\mathbf{r}\right) \lvert^2</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        points : ndarray</span>
+<span class="sd">           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.</span>
+<span class="sd">        spin : str, optional</span>
+<span class="sd">           Type of occupied spin orbitals which can be either &quot;a&quot; (for alpha), &quot;b&quot; (for</span>
+<span class="sd">           beta), and &quot;ab&quot; (for alpha + beta).</span>
+<span class="sd">        index : sequence of int, optional</span>
+<span class="sd">           Sequence of integers representing the occupied spin orbitals which are indexed</span>
+<span class="sd">           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_argument</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ao</span><span class="o">.</span><span class="n">compute_ked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo</span><span class="o">.</span><span class="n">compute_dm</span><span class="p">(</span><span class="n">spin</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">),</span> <span class="n">points</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_check_argument</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check given arguments.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        points : ndarray</span>
+<span class="sd">           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">or</span> <span class="n">points</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Argument points should be a 2D-array with 3 columns.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">points</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Argument points should be a 2D-array of floats!&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ao</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Atomic Orbitals information is needed!&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Molecular Orbitals information is needed!&quot;</span><span class="p">)</span></div>
+
+
+<span class="k">class</span> <span class="nc">MolecularOrbitals</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Molecular orbital class.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">occs_a</span><span class="p">,</span> <span class="n">occs_b</span><span class="p">,</span> <span class="n">energy_a</span><span class="p">,</span> <span class="n">energy_b</span><span class="p">,</span> <span class="n">coeffs_a</span><span class="p">,</span> <span class="n">coeffs_b</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_occs_a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_occs_b</span> <span class="o">=</span> <span class="n">occs_a</span><span class="p">,</span> <span class="n">occs_b</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_energy_a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_energy_b</span> <span class="o">=</span> <span class="n">energy_a</span><span class="p">,</span> <span class="n">energy_b</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coeffs_a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coeffs_b</span> <span class="o">=</span> <span class="n">coeffs_a</span><span class="p">,</span> <span class="n">coeffs_b</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_molecule</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">mol</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize class given an instance of `Molecule`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mol : Molecule</span>
+<span class="sd">            An instance of `Molecule` class.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="s2">&quot;exp_beta&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">mol</span><span class="o">.</span><span class="n">exp_beta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">exp_a</span><span class="p">,</span> <span class="n">exp_b</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">exp_alpha</span><span class="p">,</span> <span class="n">mol</span><span class="o">.</span><span class="n">exp_beta</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exp_a</span><span class="p">,</span> <span class="n">exp_b</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">exp_alpha</span><span class="p">,</span> <span class="n">mol</span><span class="o">.</span><span class="n">exp_alpha</span>
+        <span class="n">occs_a</span><span class="p">,</span> <span class="n">occs_b</span> <span class="o">=</span> <span class="n">exp_a</span><span class="o">.</span><span class="n">occupations</span><span class="p">,</span> <span class="n">exp_b</span><span class="o">.</span><span class="n">occupations</span>
+        <span class="n">energy_a</span><span class="p">,</span> <span class="n">energy_b</span> <span class="o">=</span> <span class="n">exp_a</span><span class="o">.</span><span class="n">energies</span><span class="p">,</span> <span class="n">exp_b</span><span class="o">.</span><span class="n">energies</span>
+        <span class="n">coeffs_a</span><span class="p">,</span> <span class="n">coeffs_b</span> <span class="o">=</span> <span class="n">exp_a</span><span class="o">.</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">exp_b</span><span class="o">.</span><span class="n">coeffs</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">occs_a</span><span class="p">,</span> <span class="n">occs_b</span><span class="p">,</span> <span class="n">energy_a</span><span class="p">,</span> <span class="n">energy_b</span><span class="p">,</span> <span class="n">coeffs_a</span><span class="p">,</span> <span class="n">coeffs_b</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize class given a file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fname : str</span>
+<span class="sd">            Path to molecule&quot;s files.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_molecule</span><span class="p">(</span><span class="n">Molecule</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">homo_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Index of alpha and beta HOMO orbital.&quot;&quot;&quot;</span>
+        <span class="c1"># HORTON indexes the orbitals from 0, so 1 is added to get the intuitive index</span>
+        <span class="n">index_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_occs_a</span> <span class="o">==</span> <span class="mf">0.</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">index_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_occs_b</span> <span class="o">==</span> <span class="mf">0.</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">index_a</span><span class="p">,</span> <span class="n">index_b</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">lumo_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Index of alpha and beta LUMO orbital.&quot;&quot;&quot;</span>
+        <span class="c1"># HORTON indexes the orbitals from 0, so 1 is added to get the intuitive index</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">homo_index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">homo_index</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">homo_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Energy of alpha and beta HOMO orbital.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_energy_a</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">homo_index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_energy_b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">homo_index</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">lumo_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Energy of alpha and beta LUMO orbital.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_energy_a</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">lumo_index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_energy_b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">lumo_index</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">occupation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Orbital occupation of alpha and beta electrons.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_occs_a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_occs_b</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">energy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Orbital energy of alpha and beta electrons.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_energy_a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_energy_b</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">coefficient</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Orbital coefficient of alpha and beta electrons.</span>
+
+<span class="sd">        The alpha and beta orbital coefficients are each storied in a 2d-array in which</span>
+<span class="sd">        the columns represent the basis coefficients of each molecular orbital.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coeffs_a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coeffs_b</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">nelectrons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Number of alpha and beta electrons.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_occs_a</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_occs_b</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">compute_dm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return HORTON density matrix object corresponding to the specified spin orbitals.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        spin : str, optional</span>
+<span class="sd">           Type of occupied spin orbitals which can be either &quot;a&quot; (for alpha), &quot;b&quot; (for</span>
+<span class="sd">           beta), and &quot;ab&quot; (for alpha + beta).</span>
+<span class="sd">        index : sequence of int, optional</span>
+<span class="sd">           Sequence of integers representing the occupied spin orbitals which are indexed</span>
+<span class="sd">           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># temporary class because of HORTON2</span>
+        <span class="k">class</span> <span class="nc">DM</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+            <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arr</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_array</span> <span class="o">=</span> <span class="n">arr</span>
+
+        <span class="k">if</span> <span class="n">spin</span> <span class="o">==</span> <span class="s2">&quot;ab&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">DM</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_dm</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">_array</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_dm</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">_array</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">spin</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coeffs_a</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_occs_a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coeffs_a</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">spin</span> <span class="o">==</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coeffs_b</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_occs_b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coeffs_b</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Argument spin=</span><span class="si">{0}</span><span class="s2"> is not recognized!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spin</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># convert to numpy array</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+            <span class="c1"># check</span>
+            <span class="k">if</span> <span class="n">index</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">index</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Indices should be given as a one-dimensional numpy array.&quot;</span><span class="p">)</span>
+            <span class="n">index</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">index</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Indices cannot be less than 1. Note that indices start from 1.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="n">index</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span> <span class="n">index</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]]</span>
+        <span class="k">return</span> <span class="n">DM</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">AtomicOrbitals</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Gaussian Basis Set.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">basis</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_basis</span> <span class="o">=</span> <span class="n">basis</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_molecule</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">mol</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize class given an instance of `Molecule`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mol : Molecule</span>
+<span class="sd">            An instance of `Molecule` class.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">basis</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">_iodata</span><span class="o">.</span><span class="n">obasis</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">basis</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize class given a file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fname : str</span>
+<span class="sd">            Path to molecule&quot;s files.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_molecule</span><span class="p">(</span><span class="n">Molecule</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">nbasis</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;int : number of basis functions.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basis</span><span class="o">.</span><span class="n">nbasis</span>
+
+    <span class="k">def</span> <span class="nf">compute_overlap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the overlap matrix of molecular orbitals.&quot;&quot;&quot;</span>
+        <span class="c1"># make linear algebra factory</span>
+        <span class="n">lf</span> <span class="o">=</span> <span class="n">DenseLinalgFactory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbasis</span><span class="p">)</span>
+        <span class="c1"># compute overlap matrix</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basis</span><span class="o">.</span><span class="n">compute_overlap</span><span class="p">(</span><span class="n">lf</span><span class="p">)</span><span class="o">.</span><span class="n">_array</span>
+        <span class="k">return</span> <span class="n">arr</span>
+
+    <span class="k">def</span> <span class="nf">compute_orbitals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dm : ndarray</span>
+<span class="sd">           First order reduced density matrix of B basis sets given as a 2D array of (B, B) shape.</span>
+<span class="sd">        points : ndarray</span>
+<span class="sd">           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.</span>
+<span class="sd">        index : sequence of int, optional</span>
+<span class="sd">           Sequence of integers representing the occupied spin orbitals which are indexed</span>
+<span class="sd">           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basis</span><span class="o">.</span><span class="n">compute_grid_orbitals_exp</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">compute_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return electron density evaluated on the a set of points.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dm : ndarray</span>
+<span class="sd">           First order reduced density matrix of B basis sets given as a 2D array of (B, B) shape.</span>
+<span class="sd">        points : ndarray</span>
+<span class="sd">           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basis</span><span class="o">.</span><span class="n">compute_grid_density_dm</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">points</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">compute_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the electron density evaluated on the a set of points.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dm : ndarray</span>
+<span class="sd">           First order reduced density matrix of B basis sets given as a 2D array of (B, B) shape.</span>
+<span class="sd">        points : ndarray</span>
+<span class="sd">           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basis</span><span class="o">.</span><span class="n">compute_grid_gradient_dm</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">points</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">compute_hessian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return hessian of the electron density evaluated on the a set of points.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dm : ndarray</span>
+<span class="sd">           First order reduced density matrix of B basis sets given as a 2D array of (B, B) shape.</span>
+<span class="sd">        points : ndarray</span>
+<span class="sd">           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># compute upper triangular elements</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basis</span><span class="o">.</span><span class="n">compute_grid_hessian_dm</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">points</span><span class="p">)</span>
+        <span class="c1"># convert the (n, 6) shape to (n, 3, 3)</span>
+        <span class="n">hess</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">points</span><span class="p">),</span> <span class="mi">9</span><span class="p">))</span>
+        <span class="c1"># NOTE: hard coded in the indices of the upper triangular matrix in the flattened form</span>
+        <span class="c1"># in C ordering. Maybe there is a numpy function that does this. This might fail if the</span>
+        <span class="c1"># hessian is not in c-ordering</span>
+        <span class="n">hess</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">]]</span> <span class="o">=</span> <span class="n">output</span>
+        <span class="n">hess</span> <span class="o">=</span> <span class="n">hess</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">points</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">hess</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">hess</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">points</span><span class="p">)):</span>
+            <span class="n">hess</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">diag_indices</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span> <span class="o">/=</span> <span class="mf">2.</span>
+        <span class="k">return</span> <span class="n">hess</span>
+
+    <span class="k">def</span> <span class="nf">compute_esp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">charges</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return electrostatic potential evaluated on the a set of points.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dm : ndarray</span>
+<span class="sd">           First order reduced density matrix of B basis sets given as a 2D array of (B, B) shape.</span>
+<span class="sd">        points : ndarray</span>
+<span class="sd">           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basis</span><span class="o">.</span><span class="n">compute_grid_esp_dm</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">charges</span><span class="p">,</span> <span class="n">points</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">compute_ked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return positive definite kinetic energy density evaluated on the a set of points.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dm : ndarray</span>
+<span class="sd">           First order reduced density matrix of B basis sets given as a 2D array of (B, B) shape.</span>
+<span class="sd">        points : ndarray</span>
+<span class="sd">           Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basis</span><span class="o">.</span><span class="n">compute_grid_kinetic_dm</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">points</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, ChemTools Dev Team.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../../_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+  <script type='text/javascript'>
+  $(".tooltiptext").hide(); // On very first line of scripts.js file
+
+
+  $("a").hover(function () {
+    var elems = this;
+    var curClass = elems.className // current class clicked.
+    // var windowHeight = $(".rst-content").height();
+    var windowWidth = $(".rst-content").width();
+
+    var left = elems.offsetLeft;
+    var top = elems.offsetTop;
+    // var linkHeight = $(".tooltip").height();
+    // var linkWidth = $(".tooltip").width();
+    // var tooltiph = $(".tooltiptext").height();
+    var tooltipw = $(".tooltiptext").width();
+    // var bottom = windowHeight - top - tooltiph;
+    var right = windowWidth - left - tooltipw;
+
+		var isEntirelyVisible = (left + tooltipw <= windowWidth);
+    if (!isEntirelyVisible) {
+        $(".tooltiptext").css("right", "0px");
+    } else  {
+        $(".tooltiptext").css("right", "-160px");
+    }
+
+
+
+
+    $(".tooltiptext").fadeIn('fast');
+},
+
+function () {
+});
+  </script>
+</body>
+</html>

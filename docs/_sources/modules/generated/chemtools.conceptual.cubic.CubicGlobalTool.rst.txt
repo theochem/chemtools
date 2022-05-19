@@ -1,0 +1,10 @@
+:orphan:
+
+chemtools.conceptual.cubic.CubicGlobalTool
+==========================================
+
+.. currentmodule:: chemtools.conceptual.cubic
+
+.. autoclass:: CubicGlobalTool
+   :members:
+   :inherited-members:

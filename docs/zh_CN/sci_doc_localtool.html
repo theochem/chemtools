@@ -1,0 +1,437 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>定域描述工具 chemtools.tool.localtool &mdash; ChemTools 0.0 文档</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/chemtools_favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="索引"
+              href="genindex.html"/>
+        <link rel="search" title="搜索" href="search.html"/>
+    <link rel="top" title="ChemTools 0.0 文档" href="index.html"/>
+        <link rel="up" title="概念密度泛函理论" href="sci_doc_conceptual.html"/>
+        <link rel="next" title="线性函数能量模型 chemtools.tool.localtool.LinearLocalTool" href="sci_doc_local_linear.html"/>
+        <link rel="prev" title="自定义函数能量模型 chemtools.tool.globaltool.GeneralGlobalTool" href="sci_doc_global_general.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+  <style type="text/css">
+  #content {
+      position: relative;
+      }
+  #content img {
+          position: absolute;
+	      top: 0px;
+	          right: 0px;
+		  }
+  .rst-content p, .rst-content li {
+	    text-align: justify;
+	    text-justify: inter-word;
+      }
+  .tooltip {
+      position: relative;
+      /*display: inline-block;*/
+      /*border-bottom: 5px dotted black;*/
+      width: 75px;
+      /*min-width: 75px;*/
+      /*max-width: 255px;*/
+      }
+
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 180px;
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #fff;
+      text-align: left;
+      /*border-radius: 6px;*/
+      padding: 4px;
+      font-size:12px;
+      line-height: 15px;
+      /* Position the tooltip */
+      position: absolute;
+      z-index: 1;
+      }
+
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+      position: absolute;
+      /*left: -70px; -index: 99;*/
+      top: 20px;
+      }
+ </style>
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> ChemTools
+          
+
+          
+            
+            <img src="_static/chemtools_logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro_about.html">关于 ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_citing.html">引用 ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_license.html">开源许可</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_contact.html">联系方式</a></li>
+</ul>
+<p class="caption"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_quick_start.html">快速入门</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_tutorials.html">新手教程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">样例图库</a></li>
+</ul>
+<p class="caption"><span class="caption-text">科学手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="sci_doc_conceptual.html">概念密度泛函理论</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="sci_doc_globaltool.html">全局描述工具 <code class="docutils literal"><span class="pre">chemtools.tool.globaltool</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">定域描述工具 <code class="docutils literal"><span class="pre">chemtools.tool.localtool</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sci_doc_local_linear.html">线性函数能量模型 <code class="docutils literal"><span class="pre">chemtools.tool.localtool.LinearLocalTool</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sci_doc_local_quadratic.html">二次函数能量模型 <code class="docutils literal"><span class="pre">chemtools.tool.localtool.QuadraticLocalTool</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sci_doc_condensedtool.html">凝聚描述工具 <code class="docutils literal"><span class="pre">chemtools.tool.condensedtool</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_densitytool.html">基于密度的定域描述符</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_orbitaltool.html">基于轨道的定域描述符</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_nci.html">非共价相互作用（NCI） <code class="docutils literal"><span class="pre">chemtools.tool.analysis.nci</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_zref.html">参考文献</a></li>
+</ul>
+<p class="caption"><span class="caption-text">高阶文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tech_dev.html">开发者指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tech_api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tech_derivations.html">推导</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ChemTools</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div id=content>
+        <a href="https://github.com/QuantumElephant/chemtools" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+       </div>
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="sci_doc_conceptual.html">概念密度泛函理论</a> &raquo;</li>
+        
+      <li>定域描述工具 <code class="docutils literal"><span class="pre">chemtools.tool.localtool</span></code></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="local-descriptive-tools-chemtools-tool-localtool">
+<span id="local-tools"></span><h1>定域描述工具 <code class="xref py py-class docutils literal"><span class="pre">chemtools.tool.localtool</span></code><a class="headerlink" href="#local-descriptive-tools-chemtools-tool-localtool" title="永久链接至标题">¶</a></h1>
+<p>定域描述符， <span class="math">\(p_{\text{local}} (\mathbf{r})\)</span> 描述体系空间中某一点的性质。这些值使我们更好的洞察分子空间中某点 <span class="math">\(\mathbf{r}\)</span> 的反应性。和 <a class="reference internal" href="sci_doc_globaltool.html#global-tools"><span class="std std-ref">全局描述工具 chemtools.tool.globaltool</span></a> 一样，定域反应描述符也可以分为 <a class="reference internal" href="#local-fundamental-indicators"><span class="std std-ref">基础</span></a> 或 <a class="reference internal" href="#local-derived-indicators"><span class="std std-ref">派生</span></a> 两类。除此之外，和全局描述符一样，计算定域描述符需要先选择一个合适的模型来描述体系能量和电子数之间的依赖关系，例如 <span class="math">\(E\left(N\right)\)</span> 。ChemTools内置了对线性模型和二次函数模型的支持，以及提供了自定义能量模型来计算相关的定域描述符。</p>
+<p id="local-fundamental-indicators"><strong>基础定域反应描述符</strong></p>
+<p>在概念密度函数中，基础定域描述符是 <a class="reference internal" href="sci_doc_globaltool.html#global-fundamental-indicators"><span class="std std-ref">基础全局描述工具</span></a> 对定域量的泛函导数，特别是对外部势能 <span class="math">\(v(\mathbf{r})\)</span> ，但是偶尔也有对电子密度 <span class="math">\(\rho(\mathbf{r})\)</span> 的。</p>
+<p>在正则系综中，基础定域描述符是在电子数 <span class="math">\(N\)</span> 一定的情况下，由 <a class="reference internal" href="sci_doc_globaltool.html#energy-derivatives"><span class="std std-ref">体系能量及其（对电子数的）偏导数</span></a> 对外部势能 <span class="math">\(v(\mathbf{r})\)</span> 微分得到的。</p>
+<blockquote>
+<div><div class="math">
+\[\begin{split}\rho(\mathbf{r}) = f^{(0)}(\mathbf{r}) &amp;= {\left( \frac{\delta E}{\delta v(\mathbf{r})} \right)_N} &amp;&amp; \\
+f(\mathbf{r}) = f^{(1)}(\mathbf{r}) &amp;= {\left( \frac{\delta \mu}{\delta v(\mathbf{r})} \right)_N}
+          &amp;&amp;= {\left( \frac{\delta}{\delta v(\mathbf{r})}
+              {\left( \frac{\partial E}{\partial N} \right)_{v(\mathbf{r})}} \right)_N} \\
+\Delta f(\mathbf{r}) = f^{(2)}(\mathbf{r}) &amp;= {\left( \frac{\delta \eta}{\delta v(\mathbf{r})} \right)_N}
+          &amp;&amp;= {\left( \frac{\delta}{\delta v(\mathbf{r})}
+              {\left( \frac{\partial^2 E}{\partial N^2} \right)_{v(\mathbf{r})}} \right)_N} \\
+f^{(n)}(\mathbf{r}) &amp;= {\left( \frac{\delta \eta^{(n-1)}}{\delta v(\mathbf{r})} \right)_N}
+         &amp;&amp;= {\left( \frac{\delta}{\delta v(\mathbf{r})}
+             {\left( \frac{\partial^n E}{\partial N^n} \right)_{v(\mathbf{r})}} \right)_N}\end{split}\]</div>
+</div></blockquote>
+<p>根据费曼-海尔曼定理，体系能量对外部势能的偏导数是基态的带脑子密度 <span class="math">\(\rho(\mathbf{r})\)</span> <a class="tooltip" href="sci_doc_zref.html#hellmann1937" id="id1">[23]<span class="tooltiptext">H.&nbsp;Hellmann. <em>Einführung in die Quantenchemie</em>. Leipzig: Franz Deuticke, 1937.</span></a><a class="tooltip" href="sci_doc_zref.html#feynman1939pr" id="id2">[24]<span class="tooltiptext">R.P. Feynman. Forces in molecules. <em>Phys. Rev.</em>, 56(4):340–343, 1939.</span></a> 。在电子数一定的情况下，电子化学势对外部势能的偏导数被成为 <strong>福井函数</strong> <span class="math">\(f(\mathbf{r})\)</span> <a class="tooltip" href="sci_doc_zref.html#fukui1952jcp" id="id3">[25]<span class="tooltiptext">K.&nbsp;Fukui, T.&nbsp;Yonezawa, and H.&nbsp;Shingu. A molecular orbital theory of reactivity in aromatic hydrocarbons. <em>J. Chem. Phys.</em>, 20(4):722–725, 1952.</span></a><a class="tooltip" href="sci_doc_zref.html#parr1984jacs" id="id4">[26]<span class="tooltiptext">R.G. Parr and W.&nbsp;Yang. Density functional approach to the frontier-electron theory of chemical reactivity. <em>J. Am. Chem. Soc.</em>, 106(14):4049–4050, 1984.</span></a> 。在概念密度泛函理论中，福井函数是基础区域选择性描述符，用来表示分子最容易接受／失去电子的区域。化学硬度对外部势能在电子数 <span class="math">\(N\)</span> 的偏微分为 <strong>对偶描述符</strong> <span class="math">\(\Delta f(\mathbf{r})\)</span> <a class="tooltip" href="sci_doc_zref.html#morell2005jpc" id="id5">[27]<span class="tooltiptext">C.&nbsp;Morell, A.&nbsp;Grand, and A.&nbsp;Toro-Labbé. New dual descriptor for chemical reactivity. <em>J. Phys. Chem.</em>, 109(1):205–212, 2005.</span></a> 。对偶描述符在亲电区域是正值而在亲核区域是负值。这对于研究同时失去／得到电子的反应（如协同反应）或是描述两性试剂的特性非常有帮助。对于高阶定域反应描述符，超硬度对外部势能的偏导数称为 <strong>超福井函数</strong> 或是 <span class="math">\(\mathbf{n^{\text{th}}}\)</span> <strong>-阶福井函数</strong> <span class="math">\(f^{(n)}(\mathbf{r})\)</span> 。虽然超福井函数的作用还不完全清楚，您仍然可以使用ChemTools来计算它的值。</p>
+<p>对于巨正则系综，基础定域描述符是在化学势 <span class="math">\(\mu\)</span> 一定的情况下，由:ref:<cite>巨热力学势及其（对化学势的）偏导数 &lt;grand_potential_derivatives&gt;</cite> 对外部势能 <span class="math">\(v(\mathbf{r})\)</span> 微分得到的。</p>
+<blockquote>
+<div><div class="math">
+\[\begin{split}\rho(\mathbf{r}) = s^{(0)}(\mathbf{r}) &amp;= {\left( \frac{\delta \Omega}{\delta v(\mathbf{r})} \right)_{\mu}}  \\
+s(\mathbf{r}) = s^{(1)}(\mathbf{r}) &amp;= -{\left( \frac{\delta N}{\delta v(\mathbf{r})} \right)_{\mu}}
+          = {\left( \frac{\delta}{\delta v(\mathbf{r})}
+              {\left( \frac{\partial \Omega}{\partial \mu} \right)_{v(\mathbf{r})}} \right)_{\mu}}
+            = S \cdot f(\mathbf{r})  \\
+s^{(2)}(\mathbf{r}) &amp;= {\left( \frac{\delta S}{\delta v(\mathbf{r})} \right)_{\mu}}
+          = {\left( \frac{\delta}{\delta v(\mathbf{r})}
+              {\left( \frac{\partial^2 \Omega}{\partial {\mu}^2} \right)_{v(\mathbf{r})}} \right)_{\mu}}
+            = S^{2} \cdot f^{(2)}(\mathbf{r}) + S^{(2)} \cdot f(\mathbf{r}) \\
+s^{(n)}(\mathbf{r}) &amp;= {\left( \frac{\delta S^{(n-1)}}{\delta v(\mathbf{r})} \right)_{\mu}}
+         = {\left( \frac{\delta}{\delta v(\mathbf{r})}
+             {\left( \frac{\partial^n \Omega}{\partial {\mu}^n} \right)_{v(\mathbf{r})}} \right)_{\mu}} \\
+           &amp;= -\sum_{k=1}^n f^{(k)}(\mathbf{r}) \cdot B_{n,k}\left(S^{(1)}, S^{(2)}, ..., S^{(n-k+1)} \right)  \\\end{split}\]</div>
+</div></blockquote>
+<p>在化学势一定的情况下，巨热力学势对外部势能的偏导数是基态的电子密度 <span class="math">\(\rho(\mathbf{r})\)</span> 。在电子数一定的情况下，电子数对势能偏导数的负值则是 <strong>化学软度</strong> <span class="math">\(s(\mathbf{r})\)</span> <a class="tooltip" href="sci_doc_zref.html#yang1985pnas" id="id6">[28]<span class="tooltiptext">W&nbsp;Yang and R&nbsp;G Parr. Hardness, softness, and the fukui function in the electronic theory of metals and catalysis. <em>Proc. Natl. Acad. Sci. U.S.A.</em>, 82(20):6723–6726, 1985.</span></a> 。定域软度是开放体系的基础区域选择描述符，特别是在反应分子尺寸不同的体系中。在 <span class="math">\(\mu\)</span> 一定的情况下，全局软度对外部势能的偏导数为 <strong>对偶定域软度</strong> <span class="math">\(s^{(2)}(\mathbf{r})\)</span> 。对偶定域软度在亲电的区域是正值，在亲核的区域是负值。这和对偶描述符的性质十分相似。高阶的定域反应描述符对外部势能的偏导数成为 定域 <strong>超软度</strong> 或者 <span class="math">\(\mathbf{n^{\text{th}}}\)</span> <strong>-阶定域软度</strong> <span class="math">\(s^{(n)}(\mathbf{r})\)</span> 。虽然定域超短度的作用还不完全清楚，您仍然可以使用ChemTools来计算它的值。</p>
+<p>在ChemTools中，巨正则系综中反应指示符的表达式是从正则系综反应指示符推算出来的。这是的定域超软度的表达式相当复杂。想要了解如何从超福井函数推算处定域超软度的表达式，请查阅 <a class="reference internal" href="tech_derivations.html#derivation-local-softness"><span class="std std-ref">Deriving Local Hyper-Softness</span></a> 了解更详细的信息。</p>
+<p id="local-derived-indicators"><strong>派生定域反应描述符</strong></p>
+<p>许多派生定域反应描述符被定义为全局描述符在定域的响应，例如，在 <span class="math">\(N\)</span> 或者 <span class="math">\(v(\mathbf{r})\)</span> 一定的情况下，任何全局反应描述符对外部势能的偏导数都是定域反应描述符。大部分其他的派生描述符则被是全局和定域描述符的乘积。</p>
+<p><strong>能量模型</strong></p>
+<p>计算基础和派生全局反应描述符需要先选择一个合适的模型描述在外部势能 <span class="math">\(v(\mathbf{r})\)</span> 一定的情况下，体系能量对电子书的依赖关系。对于用户选择的电子数为 <span class="math">\(N_0,N_1,N_2,...,N_n\)</span> ，体系能量为 <span class="math">\(E\left(N_0\right),E\left(N_1\right),E\left(N_2\right),...,E\left(N_n\right)\)</span> 的参考体系，电子密度和福井函数对电子数的函数可以通过下列链式规则推导出：</p>
+<blockquote>
+<div><div class="math">
+\[\begin{split}f^{(n)}(\mathbf{r}) &amp;= {\left(\frac{\delta}{\delta v(\mathbf{r})}{\left(\frac{\partial^n E_{\text{model}}}
+                       {\partial N^n}\right)_{v(\mathbf{r})}}\right)_N} \\
+&amp;= {\left(\frac{\delta}{\delta v(\mathbf{r})}{\left(\frac{\partial^n}
+   {\partial N^n} E(N; \{\alpha_1, \alpha_2, ..., \alpha_n\}) \right)_{v(\mathbf{r})}}\right)_N} \\
+&amp;= {\left(\frac{\partial^n}{\partial N^n}{\left(\frac{\delta}
+   {\delta v(\mathbf{r})} E(N; \{\alpha_1, \alpha_2, ..., \alpha_n\}) \right)_N} \right)_{v(\mathbf{r})}} \\
+&amp;= {\left(\frac{\partial^n}{\partial N^n}{\left(\sum_{i=1}^n \frac{\partial E(N; \{\alpha_1, \alpha_2, ..., \alpha_n\})}
+   {\partial \alpha_{i}} \frac{\delta \alpha_i}{\delta v(\mathbf{r})}
+   \right)_N} \right)_{v(\mathbf{r})}} \\
+&amp;= {\left(\frac{\partial^n}{\partial N^n}{\left(\sum_{i=1}^n \left( \frac{\partial E(N; \{\alpha_1, \alpha_2, ..., \alpha_n\})}
+   {\partial \alpha_{i}} \cdot \sum_k \frac{\partial \alpha_i}{\partial E_{N_0 \pm k}} \frac{\delta E_{N_0 \pm k}}{\delta v(\mathbf{r})}
+   \right)_N\right)} \right)_{v(\mathbf{r})}} \\
+&amp;= {\left(\frac{\partial^n}{\partial N^n}{\left(\sum_{i=1}^n \left( \left.\frac{\partial E(N; \{\alpha_1, \alpha_2, ..., \alpha_n\})}
+   {\partial \alpha_{i}}\right|_{N=N_0} \cdot \sum_k \frac{\partial \alpha_i}{\partial E_{N_0 \pm k}} \rho_{N_0 \pm k}(\mathbf{r})
+   \right)\right)} \right)_{v(\mathbf{r})}} \\
+&amp;= \sum_{i=1}^n \left(\left. \frac{\partial^{n+1} E(N; \{\alpha_1, \alpha_2, ..., \alpha_n\})}
+   {\partial N^n \partial\alpha_{i}} \right|_{N=N_0} \cdot
+   \sum_k \frac{\partial \alpha_i}{\partial E_{N_0 \pm k}}
+   \rho_{N_0 \pm k}(\mathbf{r})\right)_{v(\mathbf{r})}\end{split}\]</div>
+</div></blockquote>
+<p>其中，已知参考体系的电子密度为</p>
+<blockquote>
+<div><div class="math">
+\[\rho_{N_k}(\mathbf{r}) = \left(\frac{\delta E\left(N_k\right)}{\delta v(\mathbf{r})}\right)_{N=N_k} \qquad k=1,2,\dots,n\]</div>
+</div></blockquote>
+<p>ChemTools为定域反应描述符提供了下列能量模型的计算方法</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_local_linear.html">线性函数能量模型 <code class="docutils literal"><span class="pre">chemtools.tool.localtool.LinearLocalTool</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="sci_doc_local_quadratic.html">二次函数能量模型 <code class="docutils literal"><span class="pre">chemtools.tool.localtool.QuadraticLocalTool</span></code></a></li>
+</ul>
+</div>
+<p>我们没有对有理函数和指数函数模型提供支持，因为在这些模型中，定域描述指示符（甚至是电子密度）都无法满足归一化的条件。查阅参考文献 <a class="tooltip" href="sci_doc_zref.html#heidar-zadeh2016jctc" id="id7">[7]<span class="tooltiptext">F.&nbsp;Heidar-Zadeh, R&nbsp;Alain&nbsp;Miranda-Quintana, T.&nbsp;Verstraelen, P.&nbsp;Bultinck, and P.W. Ayers. When is the fukui function not normalized? the danger of inconsistent energy interpolation models in density functional theory. <em>J. Chem. Theory Comput.</em>, 12(12):5777–5787, 2016.</span></a> 了解详细信息。</p>
+<blockquote>
+<div></div></blockquote>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sci_doc_local_linear.html" class="btn btn-neutral float-right" title="线性函数能量模型 chemtools.tool.localtool.LinearLocalTool" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="sci_doc_global_general.html" class="btn btn-neutral" title="自定义函数能量模型 chemtools.tool.globaltool.GeneralGlobalTool" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; 版权所有 2016, Ayers&#39; Group @ McMaster University.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0',
+            LANGUAGE:'zh_CN',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/translations.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+  <script type='text/javascript'>
+  $(".tooltiptext").hide(); // On very first line of scripts.js file
+
+
+  $("a").hover(function () {
+    var elems = this;
+    var curClass = elems.className // current class clicked.
+    // var windowHeight = $(".rst-content").height();
+    var windowWidth = $(".rst-content").width();
+
+    var left = elems.offsetLeft;
+    var top = elems.offsetTop;
+    // var linkHeight = $(".tooltip").height();
+    // var linkWidth = $(".tooltip").width();
+    // var tooltiph = $(".tooltiptext").height();
+    var tooltipw = $(".tooltiptext").width();
+    // var bottom = windowHeight - top - tooltiph;
+    var right = windowWidth - left - tooltipw;
+
+		var isEntirelyVisible = (left + tooltipw <= windowWidth);
+    if (!isEntirelyVisible) {
+        $(".tooltiptext").css("right", "0px");
+    } else  {
+        $(".tooltiptext").css("right", "-160px");
+    }
+
+
+
+
+    $(".tooltiptext").fadeIn('fast');
+},
+
+function () {
+});
+  </script>
+</body>
+</html>

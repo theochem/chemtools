@@ -1,0 +1,9 @@
+:orphan:
+:noindex:
+
+chemtools.utils.output.print_vmd_script_vector_field
+====================================================
+
+.. currentmodule:: chemtools.utils.output
+
+.. autofunction:: print_vmd_script_vector_field

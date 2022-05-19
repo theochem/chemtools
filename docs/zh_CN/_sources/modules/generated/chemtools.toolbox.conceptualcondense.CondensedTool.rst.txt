@@ -1,0 +1,9 @@
+:orphan:
+
+chemtools.toolbox.conceptualcondense.CondensedTool
+==================================================
+
+.. currentmodule:: chemtools.toolbox.conceptualcondense
+
+.. autoclass:: CondensedTool
+   :members:

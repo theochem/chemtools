@@ -1,0 +1,547 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>chemtools.toolbox.motbased.MOTBasedTool &mdash; ChemTools 0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/chemtools_favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="ChemTools 0.0 documentation" href="../../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+  <style type="text/css">
+  #content {
+      position: relative;
+      }
+  #content img {
+          position: absolute;
+	      top: 0px;
+	          right: 0px;
+		  }
+  .rst-content p, .rst-content li {
+	    text-align: justify;
+	    text-justify: inter-word;
+      }
+  .tooltip {
+      position: relative;
+      /*display: inline-block;*/
+      /*border-bottom: 5px dotted black;*/
+      width: 75px;
+      /*min-width: 75px;*/
+      /*max-width: 255px;*/
+      }
+
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 180px;
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #fff;
+      text-align: left;
+      /*border-radius: 6px;*/
+      padding: 4px;
+      font-size:12px;
+      line-height: 15px;
+      /* Position the tooltip */
+      position: absolute;
+      z-index: 1;
+      }
+
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+      position: absolute;
+      /*left: -70px; -index: 99;*/
+      top: 20px;
+      }
+ </style>
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> ChemTools
+          
+
+          
+            
+            <img src="../../_static/chemtools_logo2.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro_about.html">About ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro_citing.html">Citing ChemTools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro_license.html">Licence Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro_conduct.html">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro_contact.html">Contact Information</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto_examples/index.html">Examples Gallery</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scientific Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sci_doc_conceptual.html">Conceptual Density Functional Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sci_doc_dftbased.html">Density Functional Theory (DFT) Based</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sci_doc_orbitaltool.html">Orbital-Based Local Descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sci_doc_nci.html">Non-Covalent Interactions (NCI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sci_doc_zref.html">References</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advanced Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tech_dev.html">Developer Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tech_api.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ChemTools</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div id=content>
+        <a href="https://github.com/theochem/chemtools" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+       </div>
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+      <li>chemtools.toolbox.motbased.MOTBasedTool</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="chemtools-toolbox-motbased-motbasedtool">
+<h1>chemtools.toolbox.motbased.MOTBasedTool<a class="headerlink" href="#chemtools-toolbox-motbased-motbasedtool" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="chemtools.toolbox.motbased.MOTBasedTool">
+<em class="property">class </em><code class="descclassname">chemtools.toolbox.motbased.</code><code class="descname">MOTBasedTool</code><span class="sig-paren">(</span><em>molecule</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/chemtools/toolbox/motbased.html#MOTBasedTool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#chemtools.toolbox.motbased.MOTBasedTool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Molecular Orbital Theory Based Descriptive Tools.</p>
+<p>Initialize class from Molecule instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>molecule</strong> (<a class="reference internal" href="chemtools.wrappers.molecule.Molecule.html#chemtools.wrappers.molecule.Molecule" title="chemtools.wrappers.molecule.Molecule"><em>Molecule</em></a>) – An instance of <cite>Molecule</cite> class.</td>
+</tr>
+</tbody>
+</table>
+<dl class="classmethod">
+<dt id="chemtools.toolbox.motbased.MOTBasedTool.from_molecule">
+<em class="property">classmethod </em><code class="descname">from_molecule</code><span class="sig-paren">(</span><em>molecule</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/chemtools/toolbox/motbased.html#MOTBasedTool.from_molecule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#chemtools.toolbox.motbased.MOTBasedTool.from_molecule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize class from Molecule instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>molecule</strong> (<a class="reference internal" href="chemtools.wrappers.molecule.Molecule.html#chemtools.wrappers.molecule.Molecule" title="chemtools.wrappers.molecule.Molecule"><em>Molecule</em></a>) – An instance of <cite>Molecule</cite> class.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="chemtools.toolbox.motbased.MOTBasedTool.from_file">
+<em class="property">classmethod </em><code class="descname">from_file</code><span class="sig-paren">(</span><em>fname</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/chemtools/toolbox/motbased.html#MOTBasedTool.from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#chemtools.toolbox.motbased.MOTBasedTool.from_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize class from wave-function file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fname</strong> (<em>str</em>) – Path to molecule’s wave-function file.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chemtools.toolbox.motbased.MOTBasedTool.coordinates">
+<code class="descname">coordinates</code><a class="headerlink" href="#chemtools.toolbox.motbased.MOTBasedTool.coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cartesian coordinates of atomic centers.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chemtools.toolbox.motbased.MOTBasedTool.numbers">
+<code class="descname">numbers</code><a class="headerlink" href="#chemtools.toolbox.motbased.MOTBasedTool.numbers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Atomic number of atomic centers.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chemtools.toolbox.motbased.MOTBasedTool.nelectrons">
+<code class="descname">nelectrons</code><a class="headerlink" href="#chemtools.toolbox.motbased.MOTBasedTool.nelectrons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of alpha and beta electrons.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chemtools.toolbox.motbased.MOTBasedTool.homo_index">
+<code class="descname">homo_index</code><a class="headerlink" href="#chemtools.toolbox.motbased.MOTBasedTool.homo_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Index of alpha and beta HOMO orbital.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chemtools.toolbox.motbased.MOTBasedTool.lumo_index">
+<code class="descname">lumo_index</code><a class="headerlink" href="#chemtools.toolbox.motbased.MOTBasedTool.lumo_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Index of alpha and beta LUMO orbital.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chemtools.toolbox.motbased.MOTBasedTool.homo_energy">
+<code class="descname">homo_energy</code><a class="headerlink" href="#chemtools.toolbox.motbased.MOTBasedTool.homo_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Energy of alpha and beta HOMO orbital.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chemtools.toolbox.motbased.MOTBasedTool.lumo_energy">
+<code class="descname">lumo_energy</code><a class="headerlink" href="#chemtools.toolbox.motbased.MOTBasedTool.lumo_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Energy of alpha and beta LUMO orbital.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chemtools.toolbox.motbased.MOTBasedTool.orbital_occupation">
+<code class="descname">orbital_occupation</code><a class="headerlink" href="#chemtools.toolbox.motbased.MOTBasedTool.orbital_occupation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Orbital occupation of alpha and beta electrons.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chemtools.toolbox.motbased.MOTBasedTool.orbital_energy">
+<code class="descname">orbital_energy</code><a class="headerlink" href="#chemtools.toolbox.motbased.MOTBasedTool.orbital_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Orbital energy of alpha and beta electrons.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chemtools.toolbox.motbased.MOTBasedTool.orbital_coefficient">
+<code class="descname">orbital_coefficient</code><a class="headerlink" href="#chemtools.toolbox.motbased.MOTBasedTool.orbital_coefficient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Orbital coefficient of alpha and beta electrons.</p>
+<p>The alpha and beta orbital coefficients are each storied in a 2d-array in which
+the columns represent the basis coefficients of each molecular orbital.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="chemtools.toolbox.motbased.MOTBasedTool.compute_density_matrix">
+<code class="descname">compute_density_matrix</code><span class="sig-paren">(</span><em>spin='ab'</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/chemtools/toolbox/motbased.html#MOTBasedTool.compute_density_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#chemtools.toolbox.motbased.MOTBasedTool.compute_density_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the density matrix array for the specified spin orbitals.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>spin</strong> (<em>str</em><em>, </em><em>optional</em>) – The type of occupied spin orbitals. Options are “a” (for alpha), “b” (for beta), and
+“ab” (for alpha + beta).</li>
+<li><strong>index</strong> (<em>sequence of int</em><em>, </em><em>optional</em>) – Sequence of integers representing the occupied spin orbitals which are indexed
+from 1 to <code class="xref py py-attr docutils literal notranslate"><span class="pre">nbasis</span></code>. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, all orbitals of the given spin(s) are included.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="chemtools.toolbox.motbased.MOTBasedTool.compute_orbital_expression">
+<code class="descname">compute_orbital_expression</code><span class="sig-paren">(</span><em>points</em>, <em>spin='ab'</em>, <em>index=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/chemtools/toolbox/motbased.html#MOTBasedTool.compute_orbital_expression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#chemtools.toolbox.motbased.MOTBasedTool.compute_orbital_expression" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return molecular orbitals.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>points</strong> (<em>ndarray</em>) – Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.</li>
+<li><strong>spin</strong> (<em>str</em><em>, </em><em>optional</em>) – Type of occupied spin orbitals which can be either “a” (for alpha), “b” (for
+beta), and “ab” (for alpha + beta).</li>
+<li><strong>index</strong> (<em>sequence of int</em><em>, </em><em>optional</em>) – Sequence of integers representing the occupied spin orbitals which are indexed
+from 1 to <code class="xref py py-attr docutils literal notranslate"><span class="pre">nbasis</span></code>. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, all orbitals of the given spin(s) are included.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="chemtools.toolbox.motbased.MOTBasedTool.compute_density">
+<code class="descname">compute_density</code><span class="sig-paren">(</span><em>points</em>, <em>spin='ab'</em>, <em>index=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/chemtools/toolbox/motbased.html#MOTBasedTool.compute_density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#chemtools.toolbox.motbased.MOTBasedTool.compute_density" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return electron density.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>points</strong> (<em>ndarray</em>) – Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.</li>
+<li><strong>spin</strong> (<em>str</em><em>, </em><em>optional</em>) – Type of occupied spin orbitals which can be either “a” (for alpha), “b” (for
+beta), and “ab” (for alpha + beta).</li>
+<li><strong>index</strong> (<em>sequence of int</em><em>, </em><em>optional</em>) – Sequence of integers representing the occupied spin orbitals which are indexed
+from 1 to <code class="xref py py-attr docutils literal notranslate"><span class="pre">nbasis</span></code>. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, all orbitals of the given spin(s) are included.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="chemtools.toolbox.motbased.MOTBasedTool.compute_charges">
+<code class="descname">compute_charges</code><span class="sig-paren">(</span><em>scheme='mulliken'</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/chemtools/toolbox/motbased.html#MOTBasedTool.compute_charges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#chemtools.toolbox.motbased.MOTBasedTool.compute_charges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the partial charges at each atom using the given population analysis method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>scheme</strong> (<em>{&quot;lowdin&quot;</em><em>, </em><em>&quot;mulliken&quot;}</em>) – Type of population analysis.
+Default is Mulliken population analysis.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>populations</strong> – Number of electrons in each atom according the population analysis.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray(N,)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="chemtools.toolbox.motbased.MOTBasedTool.generate_scripts">
+<code class="descname">generate_scripts</code><span class="sig-paren">(</span><em>fname</em>, <em>spin='a'</em>, <em>index=None</em>, <em>isosurf=0.05</em>, <em>grid=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/chemtools/toolbox/motbased.html#MOTBasedTool.generate_scripts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#chemtools.toolbox.motbased.MOTBasedTool.generate_scripts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate VMD script(s) and cube file(s) to visualize MO iso-surface of given orbitals.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fname</strong> (<em>str</em>) – A string representing the path to a fname of generated files.
+The VMD script and cube file will be named fname_mo{index}.vmd and
+fname_mo{index}.cube, respectively.</li>
+<li><strong>spin</strong> (<em>str</em><em>, </em><em>optional</em>) – The type of occupied spin orbitals. Choose either ‘a’ or ‘b’.</li>
+<li><strong>index</strong> (<em>int</em><em>, </em><em>optional</em>) – Integer representing the index of spin orbital to visualize. Spin orbitals are each
+indexed from 1 to <code class="xref py py-attr docutils literal notranslate"><span class="pre">nbasis</span></code>. If None, files for visualizing all orbitals are
+generated.</li>
+<li><strong>isosurf</strong> (<em>float</em><em>, </em><em>optional</em>) – Value of MO iso-surface used in VMD script.</li>
+<li><strong>grid</strong> (<a class="reference internal" href="chemtools.utils.cube.UniformGrid.html#chemtools.utils.cube.UniformGrid" title="chemtools.utils.cube.UniformGrid"><em>UniformGrid</em></a><em>, </em><em>optional</em>) – Instance of UniformGrid used for computation and generating cube file(s).
+If None, a cubic grid is constructed from molecule with spacing=0.2 &amp; extension=5.0.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, ChemTools Dev Team.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+  <script type='text/javascript'>
+  $(".tooltiptext").hide(); // On very first line of scripts.js file
+
+
+  $("a").hover(function () {
+    var elems = this;
+    var curClass = elems.className // current class clicked.
+    // var windowHeight = $(".rst-content").height();
+    var windowWidth = $(".rst-content").width();
+
+    var left = elems.offsetLeft;
+    var top = elems.offsetTop;
+    // var linkHeight = $(".tooltip").height();
+    // var linkWidth = $(".tooltip").width();
+    // var tooltiph = $(".tooltiptext").height();
+    var tooltipw = $(".tooltiptext").width();
+    // var bottom = windowHeight - top - tooltiph;
+    var right = windowWidth - left - tooltipw;
+
+		var isEntirelyVisible = (left + tooltipw <= windowWidth);
+    if (!isEntirelyVisible) {
+        $(".tooltiptext").css("right", "0px");
+    } else  {
+        $(".tooltiptext").css("right", "-160px");
+    }
+
+
+
+
+    $(".tooltiptext").fadeIn('fast');
+},
+
+function () {
+});
+  </script>
+</body>
+</html>
