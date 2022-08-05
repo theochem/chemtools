@@ -32,6 +32,16 @@ from chemtools.wrappers.part import DensPart
 
 class EOS(object):
     def __init__(self, molecule, part):
+        """Initialize class from `Molecule` and `DensePart` objects.
+
+        Parameters
+        ----------
+        molecule : `Molecule`
+            Instance of `Molecular` class.
+        part : `DensePart`
+            Instance of `DensePart` class.
+
+        """
         if not isinstance(part, DensPart):
             raise TypeError('Argument part should be an instance of DensPart class.')
 
@@ -48,10 +58,12 @@ class EOS(object):
         ----------
         molecule : `Molecule`
             Instance of `Molecular` class.
-        part : `DensPart`
-            Instance of `DensPart` class.
+        scheme : str
+            Name of partitioning scheme.
         grid : `MolecularGrid`
             Molecular numerical integration grid.
+        proatomdb : `ProAtomDB`
+            Instance of `ProAtomDB` from HORTON.
 
         """
         part = DensPart.from_molecule(molecule, scheme=scheme, grid=grid, local=False,
@@ -66,10 +78,12 @@ class EOS(object):
         ----------
         fname : str
             A string representing the path to a molecule's fname.
-        part : `DensPart`
-            Instance of `DensPart` class.
+        scheme : str
+            Name of partitioning scheme.
         grid : `MolecularGrid`
             Molecular numerical integration grid.
+        proatomdb : `ProAtomDB`
+            Instance of `ProAtomDB` from HORTON.
 
         """
         molecule = Molecule.from_file(fname)
