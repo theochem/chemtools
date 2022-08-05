@@ -66,7 +66,8 @@ class DensPart(object):
                     raise ValueError("Pro-atom for atomic number {} does not exist!".format(absent))
                 proatomdb = ProAtomDB.from_refatoms(numbers)
                 kwargs["proatomdb"] = proatomdb
-            kwargs["local"] = False
+            if "local" not in kwargs:
+                kwargs["local"] = False
         # partition
         self.part = wpart(coordinates, numbers, pseudo_numbers, grid, density, **kwargs)
         self.part.do_charges()
