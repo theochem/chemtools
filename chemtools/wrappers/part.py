@@ -74,7 +74,7 @@ class DensPart(object):
 
         self.grid = grid
         self.density = density
-        self.coordines = coordinates
+        self.coordinates = coordinates
         self.numbers = numbers
         self.pseudo_numbers = pseudo_numbers
         self.charges = self.part['charges']
