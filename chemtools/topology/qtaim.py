@@ -1,9 +1,30 @@
-
+# -*- coding: utf-8 -*-
+# ChemTools is a collection of interpretive chemical tools for
+# analyzing outputs of the quantum chemistry calculations.
+#
+# Copyright (C) 2016-2019 The ChemTools Development Team
+#
+# This file is part of ChemTools.
+#
+# ChemTools is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 3
+# of the License, or (at your option) any later version.
+#
+# ChemTools is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>
+#
+# --
 import numpy as np
 
 from scipy.integrate import solve_ivp
 from scipy.interpolate import LSQSphereBivariateSpline, SmoothSphereBivariateSpline
-from scipy.spatial import ConvexHull, Delaunay, Voronoi
+from scipy.spatial import ConvexHull, Voronoi
 from scipy.spatial.distance import cdist
 
 from scipy.sparse import lil_matrix
@@ -16,30 +37,6 @@ from grid.utils import convert_cart_to_sph
 import matplotlib.pyplot as plt
 import matplotlib
 from mpl_toolkits import mplot3d
-
-r"""
-QTAIM Algorithm 1 (General Grid) with Yu-Trinkle
--------------------------------------------
-1) Sort based on density values
-2) Calculate the Voronoi Diagram 
-3) Find and store all neighbors of each point using the Voronoi Diagram, may miss some points on boundary.
-4) Go through each point
-    i) See if the neighbors of that point are assigned.
-    ii) If no neighbours are assigned and it has neighbors then it is a maxima point
-    iii) If no neighbors are assigned and no neighbor information is found, then assing
-        its weight based on the average of its closest three points.
-    iv) If all neighbors that were assigned, are assigned to a single basin, assign this to that basin.
-    v) If some neighbors are assigned to different basins, then this point is a watershed point. 
-        - Solve using scipy ode
-        - Yu-trinkle algorithm.
-
-
-
-QTAIM ALGORITHM 2
------------------
-Assumes if you're within the beta-sphere, then we're done.
-
-"""
 
 
 class _BasinContainer(object):
@@ -142,7 +139,9 @@ def _assign_weight_yu_trinkle_voronoi(index, basin_cont, density_vals, voronoi,
     # Go through each neighbour X` of the `index`th point X.
     for k, nbh_index in enumerate(neighbors_index):
         density_diff = density_vals[nbh_index] - density_vals[index]
-        print("Nbh Index ", nbh_index, "Nbh Point ", voronoi.points[nbh_index], "Density Diff ", density_diff, "Densities ",  density_vals[nbh_index], density_vals[index])
+        print("Nbh Index ", nbh_index, "Nbh Point ", voronoi.points[nbh_index],
+              "Density Diff ", density_diff, "Densities ",  density_vals[nbh_index],
+              density_vals[index])
         # Only look at neighbours X` whose density values is greater
         if 0.0 < density_diff:
             # Calc flux-probability: J_{X, X`} = a_{X, X`} (p_{X`} - p_{X}) / l_{X, X`}
@@ -311,7 +310,6 @@ def _points_on_bounding_box(points, step_size=0.25, extension=0.01):
     new_pts_up = coords.T.dot(axes) + np.array([l_bnd[0], l_bnd[1], u_bnd[2] + extension])
     points = np.vstack((points, new_pts_up))
 
-
     # construct y-z plane left and right
     coords = np.array(np.meshgrid([0.], np.arange(shape[1] - 1), np.arange(shape[2] - 1)))
     coords = np.swapaxes(coords, 1, 2)
@@ -320,8 +318,6 @@ def _points_on_bounding_box(points, step_size=0.25, extension=0.01):
     points = np.vstack((points, new_pts_left))
     new_pts_right = coords.T.dot(axes) + np.array([u_bnd[0] + extension, l_bnd[1], l_bnd[2]])
     points = np.vstack((points, new_pts_right))
-
-
 
     # construct x-z plane towards and back
     coords = np.array(np.meshgrid(np.arange(shape[0] - 1), [0.], np.arange(shape[2] - 1)))
@@ -364,12 +360,61 @@ def _get_neighbor_indices_for_cubic_grid(index, type, uniform_grid, return_area=
     return closest_nbh_indices
 
 
-def qtaim(grid_pts, density_vals, grad_func=None, num_centers=None, method="yu-trinkle",
+def qtaim(grid_pts, density_vals, grad_func=None, num_centers=None,
           remove_duplicates=True, bounding_box=True):
     r"""
-    Define what a watershed point is.
+    Find basins from Yu-Trinkle algorithm on a cubic grid or a general grid using Voronoi diagrams.
 
-    Qtaim fails when density_Vals is very small, like  a peak Gaussian with alpha=500
+    If a general grid is used, then problems may arise due to instabilities of constructing
+    a Voronoi diagrams.  Providing a cubic grid is more robust.
+
+    Parameters
+    ----------
+    grid_pts: theochem/grid._HyperRectangleGrid or np.ndarray
+        If it is the latter, then it is a cubic grid and whose Voronoi diagrams is known.
+        If it is an array of points then the Voronoi diagram is implemented.
+    density_vals: ndarrray
+        Density values of each of the grid points.
+    grad_func: Callable(ndarray(N,3) -> ndarray(N,3))
+        The gradient of the density values.  If provided, then it calculates the weights of
+        the watershed points more accuaretely.
+    num_centers: int, optional
+        The number of centers/local maximas.
+    remove_duplicates: bool
+        If true, then it removes duplicates from `grid_pts`. This is due to construction
+        of Voronoi diagrams.
+    bounding_box: bool
+        If true, then constructs a bounding box around the atom.
+
+    Returns
+    -------
+    dict:
+        Dictionary with the following keys:
+
+        "basin_cont": CSC
+            Sparse array (CSC format) with columns correspond to each basin.
+        "maxima_indices": ndarray
+            Array that holds which points correspond to the local maxima based on the grid.
+        "watershed_indices": ndarray
+            Array that holds indices of which points correspond to watershed points.
+        "voronoi_volumes": ndarray or float
+            Corresponds to the volume of the Voronoi diagram.
+
+    Notes
+    -----
+    1) Sort based on density values
+    2) Calculate the Voronoi Diagram
+    3) Find and store all neighbors of each point using the Voronoi Diagram, may miss
+        some points on boundary.
+    4) Go through each point
+        i) See if the neighbors of that point are assigned.
+        ii) If no neighbours are assigned and it has neighbors then it is a maxima point
+        iii) If no neighbors are assigned and no neighbor information is found, then assing
+            its weight based on the average of its closest three points.
+        iv) If all neighbors that were assigned, are assigned to a single basin, assign this
+            to that basin.
+        v) If some neighbors are assigned to different basins, then this point is a watershed point.
+            and it solves using Yu-Trinkle method for the fractional points.
     
     """
     # Assert method values
@@ -378,9 +423,9 @@ def qtaim(grid_pts, density_vals, grad_func=None, num_centers=None, method="yu-t
     is_cubic_grid = isinstance(grid_pts, _HyperRectangleGrid)
     points = grid_pts if not is_cubic_grid else grid_pts.points
 
-    # if remove_duplicates:
-    #     points, indices = np.unique(points, return_index=True, axis=0)
-    #     density_vals = density_vals[indices]
+    if remove_duplicates:
+        points, indices = np.unique(points, return_index=True, axis=0)
+        density_vals = density_vals[indices]
 
     original_num_pts = points.shape[0]
     if not is_cubic_grid:
@@ -400,7 +445,8 @@ def qtaim(grid_pts, density_vals, grad_func=None, num_centers=None, method="yu-t
     maxima_indices = []  # Indices of the centers.
     watershed_indices = []  # indices of points that are on the boundary of the basin.
     basin_cont = _BasinContainer(original_num_pts, num_centers)
-    # TODO: When density values are sorted, maybe group them based on similar values and pick the ones closest to the points.
+    # TODO: When density values are sorted, maybe group them based on similar values and pick
+    #  the ones closest to the points.
     sorted_density_indices = np.argsort(density_vals)[::-1]
 
     # Go through each point with the highest density values to the smallest.
@@ -449,7 +495,9 @@ def qtaim(grid_pts, density_vals, grad_func=None, num_centers=None, method="yu-t
                     raise NotImplementedError("TODO")
             elif not is_cubic_grid:
                 # Assign weight based on average of its neighbors due to problems with QHull.
-                weights = _assign_weight_average_neighbors(index, basin_cont, voronoi, original_num_pts)
+                weights = _assign_weight_average_neighbors(
+                    index, basin_cont, voronoi, original_num_pts
+                )
                 # assert the weights are not all zero
                 if np.all(weights == 0.0):
                     print("weights ", weights)
@@ -486,16 +534,14 @@ def qtaim(grid_pts, density_vals, grad_func=None, num_centers=None, method="yu-t
                 raise RuntimeError(
                     f"The Weights {weights} did not sum {np.sum(weights)} up to one."
                 )
-        # if index == 729:
-        #     input("sd")
         print("")
 
     # TODO: Update watershed indices
     # Calculate Voronoi volumes
     volume = np.prod(np.array([np.linalg.norm(axis) for axis in grid_pts.axes])) if is_cubic_grid \
         else voronoi_volumes(voronoi)[:original_num_pts]
-    return {"basin_cont" : basin_cont.basin.tocsc(), "maxima_indices" : maxima_indices,
-            "watershed_indices" : watershed_indices, "voronoi_volumes" : volume}
+    return {"basin_cont": basin_cont.basin.tocsc(), "maxima_indices": maxima_indices,
+            "watershed_indices": watershed_indices, "voronoi_volumes": volume}
 
 
 def gradient(pt, grad_func):
@@ -596,12 +642,12 @@ class SurfaceQTAIM():
         sph_pts = self.generate_angular_pts_of_basin(i_basin)
         return self.maximas[i_basin] + self.r_func[i_basin][:, None] * sph_pts
 
-    def get_ias_of_basin(self, i_basin):
+    def get_ias_pts_of_basin(self, i_basin):
         ias = self.ias[i_basin]
         sph_pts = self.generate_angular_pts_of_basin(i_basin)
         return self.maximas[i_basin] + self.r_func[i_basin][ias, None] * sph_pts[ias]
 
-    def get_oas_of_basin(self, i_basin):
+    def get_oas_pts_of_basin(self, i_basin):
         oas = self.oas[i_basin]
         sph_pts = self.generate_angular_pts_of_basin(i_basin)
         return self.maximas[i_basin] + self.r_func[i_basin][oas, None] * sph_pts[oas]
@@ -611,14 +657,22 @@ class SurfaceQTAIM():
         if ias and oas:
            raise ValueError(f"Both {ias} and {oas} cannot be true.")
         if ias:
+            #TODO
             pass
+        raise NotImplementedError(f"Not implemented yet.")
 
 
-
-def get_closest_points_between_ias_and_oas(
+def construct_points_between_ias_and_oas(
     ias: list, oas: int, angular_pts: np.ndarray, r_func_max: np.ndarray, maxima: np.ndarray
 ):
     r"""
+    Construct points between the inner atomic surface and outer atomic surface.
+
+    This is done by constructed a convex hull between IAS and OAS, seperetely.
+    Each point on the IAS, the two closest points are found on the OAS, then
+    a triangle is constructed.  Seven points are constructed within this triangle
+    and the Cartesian coordinates of the sphere centered at the maxima is solved
+    for each of these seven points.
 
     Parameters
     -----------
@@ -633,6 +687,13 @@ def get_closest_points_between_ias_and_oas(
         the radial value that intersects the OAS or the IAS.
     maxima : np.ndarray
         Maxima of the basin.
+
+    Returns
+    -------
+    ndarray(K * 7, 3)
+        Cartesian coordinates of :math:`K` points on the sphere centered at `maxima` such that
+        they correspond to the seven points constructed above, where :math:`K` is the number
+        of points on the IAS of `maxima`.
 
     """
     # Take a convex hull of both IAS and OAS seperately.
@@ -650,8 +711,6 @@ def get_closest_points_between_ias_and_oas(
     for i_ias, pt_ias in enumerate(ias_bnd):
         two_indices = dist_mat[i_ias].argsort()[:2]
         pt1, pt2 = oas_bnd[two_indices[0]], oas_bnd[two_indices[1]]
-
-        print(i_ias, pt_ias, pt1, pt2)
 
         # Take the center and midpoint between each line of the triangle (pt_ias, pt1, pt2)
         midpoint = (pt1 + pt2 + pt_ias) / 3.0
@@ -671,25 +730,7 @@ def get_closest_points_between_ias_and_oas(
         direction = new_pts - maxima
         t = np.linalg.norm(direction, axis=1)
         direction = direction / t[:, None]
-        print(direction)
-
         new_ang_pts[i_ias * 7:(i_ias + 1) * 7] = direction
-
-        # import matplotlib
-        # import matplotlib.pyplot as plt
-        # from mpl_toolkits import mplot3d
-        # matplotlib.use("Qt5Agg")
-        # fig = plt.figure()
-        # ax = plt.axes(projection='3d')
-        # p = np.array([pt1, pt2, pt_ias])
-        # ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="g", s=60)
-        # p = ias_bnd
-        # ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
-        # p = oas_bnd
-        # ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
-        # p = maxima + t[:, None] * direction
-        # ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="y", s=60)
-        # plt.show()
     return new_ang_pts
 
 
@@ -761,7 +802,7 @@ def solve_for_isosurface_pt(index_iso, rad_pts, maxima, cart_sphere_pt, density_
 
 def solve_for_basin_bnd_pt(
     dens_cutoff, maxima, radial, cart_sphere_pt, density_func, grad_func, other_maximas, bnd_err,
-    ss_watershed, iso_val, beta_sphere_maxima, beta_sphere_others
+    iso_val, beta_sphere_maxima, beta_sphere_others
 ):
     # Construct the ray and compute its density values based on a maxima defined by angles
     #  `cart_sphere_pt` with radial pts `rad_pts`.    It goes through each point on the ray
@@ -774,12 +815,15 @@ def solve_for_basin_bnd_pt(
     #  that intersects the ias.  If not, then we construct a new ray with different l_bnd
     #  and u_bnd and reduce the step-size further and repeat this process.
     rad_pts = radial.copy()
-    ss_ray = ss_watershed * 100   # Stay with a coarse ray then refine further.
+    ss_ray = np.mean(np.diff(rad_pts))   # Stay with a coarse ray then refine further.
     index_iso = None  # Needed to refine if the ray tends towards infinity.
     bnd_pt = None  # Boundary or Isosurface Point
     is_ray_to_inf = False  # Does this ray instead go towards infinity
 
     # TODO: Consider increase upper bound if it fails.
+    # TODO: doing the last point first to see if it is a ray that goes to infinity. THe problem
+    #   is if it isn't a ray that goes to infinity, then you need to do all of them anyways.
+    #   this is going to be heavy refactor for this function.
     found_watershed_on_ray = False
     basin_id = None
     while not found_watershed_on_ray:
@@ -836,73 +880,100 @@ def solve_for_basin_bnd_pt(
     return bnd_pt, is_ray_to_inf, index_iso, found_watershed_on_ray, basin_id
 
 
-def qtaim_line_search(rgrids, angular, centers, density_func, grad_func, dens_cutoff=1e-5, iso_val=0.001,
-                      ss_watershed=1e-3, bnd_err=1e-4, iso_err=1e-6, beta_sphere=None,
-                      optimize_centers=True, refine=False):
-    r"""
-    One approach is to initially only test the endpoint of the ray.  If this ray ends up at
-    the same basin, then it is a ray to infinity. If not, then this ray crosses the IAS.  This
-    assumes the ray is far away.  The downside of this approach is the how slow the convergence
-    is for points that are far away.  The other downside is for very complicated basins, this
-    approach might not work.
+def _optimize_centers(centers, grad_func):
+    maximas = np.array(
+        [gradient_path(x, grad_func, t_span=(0, 10), method="Radau",
+                       first_step=1e-9, max_step=1e-2) for x in centers],
+        dtype=np.float64
+    )
+    print("New maximas: \n ", maximas)
+    # Check duplicates
+    distance = cdist(maximas, maximas)
+    distance[np.diag_indices(len(maximas))] = 1.0  # Set diagonal elements to one
+    if np.any(distance < 1e-8):
+        raise RuntimeError(f"Optimized maximas contains duplicates: \n {maximas}.")
+    return maximas
 
-    - refine is not useful for integration purposes other than using the interpolate function.
+
+def qtaim_surface(rgrids, angular, centers, density_func, grad_func, iso_val=0.001,
+                  dens_cutoff=1e-5, bnd_err=1e-4, iso_err=1e-6,
+                  beta_sphere=None, optimize_centers=True, refine=False):
+    r"""
+    Find the outer atomic and inner atomic surface based on QTAIM.
+
+    For each maxima, a sphere is determined based on `angular` and a ray is propogated
+    based on the radial grid `rgrids`.  The ray is then determines to either
+    go to infinity and cross the isosurface of the electron density or the ray
+    intersects the inner-atomic surface of another basin.  This is determined for
+    each point on the sphere.
 
     Parameters
     ----------
-    angular : int or np.ndarray[M, 2]
+    rgrids: list[OneDGrid]
+        List of one dimensional grids for each centers.
+    angular: List[int] or ndarray(N, 3)
         Either integer specifying the degree to construct angular/Lebedev grid around each maxima
-        or a array of spherical coordinates :math:`(\theta, \phi)`.
-
+        or array of points on the sphere in Cartesian coordinates.
+    centers: ndarray(M,3)
+        List of local maximas of the density.
+    density_func: Callable(ndarray(N,3) ->  ndarray(N,))
+        The density function.
+    grad_func: Callable(ndarray(N,3) -> ndarray(N,3))
+        The gradient of the density function.
+    iso_val: float
+        The isosurface value of the outer atomic surface.
+    dens_cutoff: float
+        Points on the ray whose density is less than this cutoff are ignored.
+    bnd_err: float
+        This determines the accuracy of points on the inner atomic surface (IAS) by controlling
+        the step-size of the ray that cross the IAS.
+    iso_err: float
+        The error associated to points on the OAS and how close they are to the isosurface value.
     beta_sphere : list[float]
         List of size `M` of radius of the sphere centered at each maxima. It avoids backtracing
         of points within the circle. If None is provided, then it doesn't use beta sphere
         for that maxima.
-
+    optimize_centers: bool
+        If true, then it will optimize the centers/maximas to get the exact local maximas.
     refine : (bool, int)
-        Either False or an integer indicating which center is being runned on.
+        If true, then additional points between the IAS and OAS are constructed, added and
+        solved for whether it is on the IAS or OAS.
 
     Returns
     -------
+    SurfaceQTAIM
+        Class that contains the inner-atomic surface, outer-atomic surface for each maxima.
 
     Notes
     -----
-    - Optimizing centers would affect the beta-sphere radius TODO.
     - It is possible for a Ray to intersect the zero-flux surface but this algorihtm will
         classify it as a ray to infinity because the points on the other side of the basin have
         density values so small that the ode doesn't converge to the maxima of the other basin.
         In this scenario it might be worthwhile to have a denser radial grid with less points
         away from infinity or have a smaller density cut-off.  Alternative for the developer,
         is to implement highly accurate ode solver at the expense of computation time.
-    - Radeau helps for stiff problems far from the Nucleus, whereas for watershed points
-        DOP843 is better
 
     """
-    # TODO assert about refine statement.
-    # TODO assert density cutofff is not greater than iso_val
-    # Assert length of basins matchces the centers.
-    # Using ODE solver find the actual maximas
+    if not isinstance(refine, (bool, int)):
+        raise TypeError(f"Refine {type(refine)} should be either boolean or integer.")
+    if dens_cutoff > iso_val:
+        raise ValueError(f"Density cutoff {dens_cutoff} is greater than isosurface val {iso_val}.")
+    if beta_sphere is not None and len(centers) != len(beta_sphere):
+        raise ValueError(
+            f"Beta sphere length {len(beta_sphere)} should match the"
+            f" number of centers {len(centers)}"
+        )
+
     maximas = centers
     if optimize_centers:
-        print(maximas)
-        maximas = np.array(
-            [gradient_path(x, grad_func, t_span=(0, 10), method="Radau",
-                           first_step=1e-9, max_step=1e-2) for x in centers],
-            dtype=np.float64
-        )
-        print("New maximas: \n ", maximas)
-        # Check duplicates
-        distance = cdist(maximas, maximas)
-        distance[np.diag_indices(len(maximas))] = 1.0  # Set diagonal elements to one
-        if np.any(distance < 1e-8):
-            raise RuntimeError(f"Optimized maximas contains duplicates: \n {maximas}.")
+        # Using ODE solver to refine the maximas further.
+        maximas = _optimize_centers(maximas, grad_func)
 
     numb_maximas = len(maximas)
     angular_pts = AngularGrid(degree=angular).points if isinstance(angular, int) else angular
     r, thetas, phis = convert_cart_to_sph(angular_pts).T
     numb_ang_pts = len(thetas)
 
-    # TODO: have all zeros is inefficient due to refinement
     r_func = [np.zeros((numb_ang_pts,), dtype=np.float64) for _ in range(numb_maximas)]
     oas = [[] for _ in range(numb_maximas)]  # outer atomic surface
     ias = [[] for _ in range(numb_maximas)]  # inner atomic surface.
@@ -931,7 +1002,7 @@ def qtaim_line_search(rgrids, angular, centers, density_func, grad_func, dens_cu
 
                 bnd_pt, is_ray_to_inf, i_iso, found_watershed_on_ray, basin_id = solve_for_basin_bnd_pt(
                     dens_cutoff,maxima, radial, cart_sphere_pt, density_func, grad_func,
-                    other_maximas, bnd_err, ss_watershed, iso_val, beta_sph_max, other_beta_sph
+                    other_maximas, bnd_err, iso_val, beta_sph_max, other_beta_sph
                 )
                 # If the ray tends towards infinity instead, solve for the isosurface value.
                 if is_ray_to_inf:
@@ -954,16 +1025,15 @@ def qtaim_line_search(rgrids, angular, centers, density_func, grad_func, dens_cu
                 #  `new_pts` is concatenated to angular grids and is in cartesian coordinates.
                 print("IAS ", ias[i_maxima])
                 print("OAS", oas[i_maxima])
-                new_pts = get_closest_points_between_ias_and_oas(
+                new_pts = construct_points_between_ias_and_oas(
                     ias[i_maxima], oas[i_maxima], angular_pts, r_func[i_maxima], maxima
                 )
                 print("new pts ", new_pts, np.linalg.norm(new_pts, axis=1))
                 # Re-do this qtaim algortihm only on this center
-                # TODO Fix this with other maximas.
-                refined_qtaim = qtaim_line_search(rgrids, new_pts, maximas, density_func,
-                                                  grad_func, dens_cutoff, iso_val, ss_watershed,
-                                                  bnd_err, iso_err, beta_sphere=beta_sphere,
-                                                  optimize_centers=False, refine=i_maxima)
+                refined_qtaim = qtaim_surface(rgrids, new_pts, maximas, density_func,
+                                              grad_func, iso_val, dens_cutoff,
+                                              bnd_err, iso_err, beta_sphere=beta_sphere,
+                                              optimize_centers=False, refine=i_maxima)
                 print("Refined", refined_qtaim.ias, refined_qtaim.oas)
                 # Update this basin's result from the refined, + numb_ang_pts: corrects indices
                 ias[i_maxima] += [x + numb_ang_pts for x in refined_qtaim.ias[i_maxima]]
@@ -975,20 +1045,4 @@ def qtaim_line_search(rgrids, angular, centers, density_func, grad_func, dens_cu
                 # input("Why")
 
     print("\n")
-    result = SurfaceQTAIM(r_func, [rgrids], angular, maximas, oas, ias, basin_ias, refined_ang)
-    # if type(refine) == type(True) and refine:
-    #     import matplotlib
-    #     import matplotlib.pyplot as plt
-    #     from mpl_toolkits import mplot3d
-    #     matplotlib.use("Qt5Agg")
-    #     fig = plt.figure()
-    #     ax = plt.axes(projection='3d')
-    #     i = 0
-    #     p = centers
-    #     ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="g", s=60)
-    #     p = result.get_ias_of_basin(i)
-    #     ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
-    #     p = result.get_oas_of_basin(i)
-    #     ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
-    #     plt.show()
     return SurfaceQTAIM(r_func, [rgrids], angular, maximas, oas, ias, basin_ias, refined_ang)

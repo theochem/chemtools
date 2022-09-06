@@ -1,3 +1,25 @@
+# -*- coding: utf-8 -*-
+# ChemTools is a collection of interpretive chemical tools for
+# analyzing outputs of the quantum chemistry calculations.
+#
+# Copyright (C) 2016-2019 The ChemTools Development Team
+#
+# This file is part of ChemTools.
+#
+# ChemTools is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 3
+# of the License, or (at your option) any later version.
+#
+# ChemTools is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>
+#
+# --
 import numpy as np
 
 from scipy.integrate import solve_ivp
@@ -5,7 +27,7 @@ from scipy.spatial import ConvexHull
 from scipy.stats import special_ortho_group
 from scipy.spatial.transform.rotation import Rotation
 
-from chemtools.topology.qtaim import qtaim, _get_area_of_coplanar_polygon, qtaim_line_search
+from chemtools.topology.qtaim import qtaim, _get_area_of_coplanar_polygon, qtaim_surface
 from grid.cubic import Tensor1DGrids, UniformGrid
 from grid.onedgrid import OneDGrid, GaussLaguerre
 from grid.becke import BeckeWeights
@@ -254,10 +276,10 @@ def test_qtaim_line_search():
     oned = np.arange(1e-4, 2, 0.1)
     rgrid = OneDGrid(oned, np.ones(len(oned)) * 0.5)
     iso_val = 1e-5
-    result = qtaim_line_search(rgrid, 10, centers, gaussian_func, gradient_func,
-                               iso_val=iso_val, ss_watershed=1e-2,
-                               bnd_err=1e-5,
-                               iso_err=1e-6, dens_cutoff=1e-9, beta_sphere=[0.8, 0.8])
+    result = qtaim_surface(rgrid, 10, centers, gaussian_func, gradient_func,
+                           iso_val=iso_val,
+                           bnd_err=1e-5,
+                           iso_err=1e-6, dens_cutoff=1e-9, beta_sphere=[0.8, 0.8])
     import matplotlib
     import matplotlib.pyplot as plt
     from mpl_toolkits import mplot3d
@@ -265,9 +287,9 @@ def test_qtaim_line_search():
     fig = plt.figure()
     ax = plt.axes(projection='3d')
     q = result.generate_pts_on_surface(0)
-    p = result.get_ias_of_basin(0)
+    p = result.get_ias_pts_of_basin(0)
     ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
-    p = result.get_oas_of_basin(0)
+    p = result.get_oas_pts_of_basin(0)
     ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
     plt.show()
 
@@ -301,13 +323,13 @@ class TestQTAIMSurfaceOnTwoBodyGaussian():
         gaussian_func = lambda pts: self.gaussian_func(pts, centers, alpha)
         gradient_func = lambda pts: self.gradient_gaussian(pts, centers, alpha)
         iso_err = 1e-6
-        result = qtaim_line_search(rgrid, 15, centers, gaussian_func, gradient_func,
-                                   iso_val=iso_val, ss_watershed=1e-2,
-                                   bnd_err=1e-5, iso_err=iso_err, dens_cutoff=1e-9,
-                                   optimize_centers=False)
+        result = qtaim_surface(rgrid, 15, centers, gaussian_func, gradient_func,
+                               iso_val=iso_val,
+                               bnd_err=1e-5, iso_err=iso_err, dens_cutoff=1e-9,
+                               optimize_centers=False)
         # Test that the outer surface gives the correct
         for i in range(0, 2):
-            oas_0 = result.get_oas_of_basin(i)
+            oas_0 = result.get_oas_pts_of_basin(i)
             np.set_printoptions(threshold=np.inf)
             print(gaussian_func(oas_0))
             assert np.all(np.abs(gaussian_func(oas_0) - iso_val) < iso_err)
@@ -324,12 +346,12 @@ class TestQTAIMSurfaceOnTwoBodyGaussian():
         gradient_func = lambda pts: self.gradient_gaussian(pts, centers, alpha)
 
         rgrid = GaussLaguerre(10)
-        result = qtaim_line_search(rgrid, 20, centers, gaussian_func, gradient_func,
-                                   iso_val=1e-4, ss_watershed=1e-2,
-                                   bnd_err=bnd_err, iso_err=1e-6, dens_cutoff=1e-9,
-                                   optimize_centers=False, refine=refine)
+        result = qtaim_surface(rgrid, 20, centers, gaussian_func, gradient_func,
+                               iso_val=1e-4,
+                               bnd_err=bnd_err, iso_err=1e-6, dens_cutoff=1e-9,
+                               optimize_centers=False, refine=refine)
         for i in range(0, 2):
-            ias_0 = result.get_ias_of_basin(i)
+            ias_0 = result.get_ias_pts_of_basin(i)
             assert np.all(np.abs(ias_0[:, 0]) < bnd_err)
 
     @pytest.mark.parametrize(
@@ -352,14 +374,14 @@ class TestQTAIMSurfaceOnTwoBodyGaussian():
         gradient_func = lambda pts: self.gradient_gaussian(pts, centers, alpha)
 
         rgrid = OneDGrid(np.arange(0., 5, 0.5), np.arange(0., 5, 0.5))
-        result = qtaim_line_search(rgrid, 15, centers, gaussian_func, gradient_func,
-                                   iso_val=1e-4, ss_watershed=1e-2,
-                                   bnd_err=1e-6, iso_err=1e-6, dens_cutoff=1e-6,
-                                   refine=refine)
+        result = qtaim_surface(rgrid, 15, centers, gaussian_func, gradient_func,
+                               iso_val=1e-4,
+                               bnd_err=1e-6, iso_err=1e-6, dens_cutoff=1e-6,
+                               refine=refine)
 
         # Test that points on oas all converge to the maxima and no other.
         for i in range(0, 2):
-            oas_0 = result.get_oas_of_basin(i)
+            oas_0 = result.get_oas_pts_of_basin(i)
 
             for pt in oas_0:
                 sol = solve_ivp(
@@ -381,9 +403,9 @@ class TestQTAIMSurfaceOnTwoBodyGaussian():
                     fig = plt.figure()
                     ax = plt.axes(projection='3d')
                     q = result.generate_pts_on_surface(0)
-                    p = result.get_ias_of_basin(0)
+                    p = result.get_ias_pts_of_basin(0)
                     ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
-                    p = result.get_oas_of_basin(0)
+                    p = result.get_oas_pts_of_basin(0)
                     ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
                     ax.scatter(sol["y"][:, -1][0], sol["y"][:, -1][1], sol["y"][:, -1][2], color="g", s=60)
                     ax.scatter(pt[0], pt[1], pt[2], color="y", s=60)
@@ -406,10 +428,10 @@ class TestQTAIMSurfaceOnTwoBodyGaussian():
 
         oned = np.arange(1e-4, 2, 0.1)
         rgrid = OneDGrid(oned, np.ones(len(oned)) * 0.5)
-        result = qtaim_line_search(rgrid, 10, centers, gaussian_func, gradient_func,
-                                   iso_val=1e-5, ss_watershed=1e-2,
-                                   bnd_err=1e-5, iso_err=1e-6, dens_cutoff=1e-9,
-                                   beta_sphere=[0.8, 0.8])
+        result = qtaim_surface(rgrid, 10, centers, gaussian_func, gradient_func,
+                               iso_val=1e-5,
+                               bnd_err=1e-5, iso_err=1e-6, dens_cutoff=1e-9,
+                               beta_sphere=[0.8, 0.8])
 
         # Test integration
         desired = np.sqrt(np.pi / alpha) ** 3.0
@@ -418,33 +440,32 @@ class TestQTAIMSurfaceOnTwoBodyGaussian():
             true = atomgrid_basin_0.integrate(gaussian_func(atomgrid_basin_0.points))
             assert np.abs(true - desired) < 1e-8
 
-
-    def test_ch4(self):
-        alpha = 3
-        from chemtools.wrappers import Molecule
-        mol = Molecule.from_file(r"/home/pally/PythonProjects/chemtools/chemtools/data/ch4_uhf_ccpvdz.fchk")
-        centers = mol.coordinates
-        gaussian_func = lambda pts: mol.compute_density(pts)
-        gradient_func = lambda pts: mol.compute_gradient(pts)
-
-        oned = np.arange(1e-4, 5, 0.5)
-        rgrid = OneDGrid(oned, np.ones(len(oned)) * 0.5)
-        result = qtaim_line_search(rgrid, 20, centers, gaussian_func, gradient_func,
-                                   iso_val=1e-5, ss_watershed=1e-2,
-                                   bnd_err=1e-5, iso_err=1e-6, dens_cutoff=1e-9,
-                                   optimize_centers=False, refine=True)
-
-        import matplotlib
-        import matplotlib.pyplot as plt
-        from mpl_toolkits import mplot3d
-        matplotlib.use("Qt5Agg")
-        for i in range(0, centers.shape[0]):
-            fig = plt.figure()
-            ax = plt.axes(projection='3d')
-            p = centers
-            ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="g", s=60)
-            p = result.get_ias_of_basin(i)
-            ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
-            p = result.get_oas_of_basin(i)
-            ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
-            plt.show()
+    # def test_ch4(self):
+    #     alpha = 3
+    #     from chemtools.wrappers import Molecule
+    #     mol = Molecule.from_file(r"/home/pally/PythonProjects/chemtools/chemtools/data/ch4_uhf_ccpvdz.fchk")
+    #     centers = mol.coordinates
+    #     gaussian_func = lambda pts: mol.compute_density(pts)
+    #     gradient_func = lambda pts: mol.compute_gradient(pts)
+    #
+    #     oned = np.arange(1e-4, 5, 0.5)
+    #     rgrid = OneDGrid(oned, np.ones(len(oned)) * 0.5)
+    #     result = qtaim_surface(rgrid, 20, centers, gaussian_func, gradient_func,
+    #                            iso_val=1e-5, ss_watershed=1e-2,
+    #                            bnd_err=1e-5, iso_err=1e-6, dens_cutoff=1e-9,
+    #                            optimize_centers=False, refine=True)
+    #
+    #     import matplotlib
+    #     import matplotlib.pyplot as plt
+    #     from mpl_toolkits import mplot3d
+    #     matplotlib.use("Qt5Agg")
+    #     for i in range(0, centers.shape[0]):
+    #         fig = plt.figure()
+    #         ax = plt.axes(projection='3d')
+    #         p = centers
+    #         ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="g", s=60)
+    #         p = result.get_ias_pts_of_basin(i)
+    #         ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
+    #         p = result.get_oas_pts_of_basin(i)
+    #         ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
+    #         plt.show()
