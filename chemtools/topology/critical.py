@@ -133,23 +133,31 @@ class Topology(object):
         for index, point in enumerate(self._kdtree.data):
             point_norm = points_norm[index]
             neigh_norm = neighs_norm[4 * index: 4 * index + 4]
-            # use central point as initial guess for critical point finding
-            if index < len(self._coords) or np.all(point_norm < neigh_norm):
+            # If the gradient at the point is less than the neighbours then run/refine it further
+            #    with root_vector_func or enumerate all the points that are the centers (if centers
+            #    aren't None).
+            if np.all(point_norm < neigh_norm) or \
+                    (self._coords is not None and index < len(self._coords)):
                 try:
                     coord = self._root_vector_func(point.copy())
                 except np.linalg.LinAlgError as _:
+                    # Go to the next iteration.
                     continue
                 # add critical point if it is new
-                if not np.any([np.linalg.norm(coord - cp.coordinate) < 1.e-3 for cp in self.cps]):
+                new_pt = not np.any([
+                    np.linalg.norm(coord - cp.coordinate) < 1.e-3 for cp in self.cps
+                ])
+                if new_pt and not np.any(np.isnan(coord)):
                     dens = self.func(coord)
-                    grad = self.grad(coord)
-                    # skip critical point if its dens & grad are zero
-                    if abs(dens) < 1.e-4 and np.all(abs(grad) < 1.e-4):
-                        continue
-                    # compute rank & signature of critical point
-                    eigenvals, eigenvecs = np.linalg.eigh(self.hess(coord))
-                    cp = CriticalPoint(coord, eigenvals, eigenvecs, 1e-4)
-                    self._cps.setdefault((cp.rank[0], cp.signature[0]), []).append(cp)
+                    # skip critical point if its dens is greater than zero
+                    if abs(dens) > 1.e-4:
+                        # make sure gradient is zero, as it's a critical point.
+                        grad = self.grad(coord)
+                        if np.all(abs(grad) < 1.e-4):
+                            # compute rank & signature of critical point
+                            eigenvals, eigenvecs = np.linalg.eigh(self.hess(coord))
+                            cp = CriticalPoint(coord, eigenvals, eigenvecs, 1e-4)
+                            self._cps.setdefault((cp.rank[0], cp.signature[0]), []).append(cp)
         # check Poincare–Hopf equation
         if not self.poincare_hopf_equation:
             warnings.warn("Poincare–Hopf equation is not satisfied.", RuntimeWarning)

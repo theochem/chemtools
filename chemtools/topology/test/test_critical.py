@@ -1,6 +1,28 @@
+# -*- coding: utf-8 -*-
+# ChemTools is a collection of interpretive chemical tools for
+# analyzing outputs of the quantum chemistry calculations.
+#
+# Copyright (C) 2016-2019 The ChemTools Development Team
+#
+# This file is part of ChemTools.
+#
+# ChemTools is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 3
+# of the License, or (at your option) any later version.
+#
+# ChemTools is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>
+#
+# --
 """Test critical point finder."""
 
-"""
+
 from unittest import TestCase
 
 from chemtools.topology.critical import Topology, CriticalPoint
@@ -11,7 +33,6 @@ from numpy.testing import assert_allclose
 
 class TestCriticalPoints(TestCase):
     # Test critical point finder class.
-
     def gauss_func(self, coors, centers=np.zeros(3), alphas=1):
         # Generate gaussian function value.
         return np.prod(np.exp((-alphas * (coors - centers) ** 2)), axis=-1)
@@ -41,77 +62,36 @@ class TestCriticalPoints(TestCase):
                 hm[j][i] = hm[i][j]
         return hm
 
-    def test_topo(self):
+    def test_instantiation_of_topology_class(self):
         # Test properly initiate topo instance.
         coors = np.array([[1, 1, 1], [-1, -1, -1]])
         pts = np.random.rand(4, 3)
-        topo = Topology(coors, self.gauss_func, self.gauss_deriv, self.gauss_deriv2, pts)
+        topo = Topology(self.gauss_func, self.gauss_deriv, self.gauss_deriv2, pts, coords=coors)
         assert isinstance(topo, Topology)
 
-    def test_default_cube(self):
-        # Test default cube for points.
-        coors = np.array([[1, 1, 1], [-1, -1, -1]])
-        topo = Topology(coors, self.gauss_func, self.gauss_deriv, self.gauss_deriv2)
-        assert topo._kdtree.data.shape == (60 * 60 * 60, 3)
-
-    def test_construct_cage(self):
-        # Test construct cage among target points.
-        pts = Topology._construct_cage(np.array([0, 0, 0]), 1)
-        assert len(pts) == 4
-        dis = np.linalg.norm(pts[:] - np.array([0, 0, 0]), axis=-1)
-        assert_allclose(dis, np.ones(4) * 4.89898, rtol=1e-5)
-
-    def test_get_gradietn(self):
-        # Test get proper gradient.
-        # initiate topo obj.
-        coors = np.array([[1, 1, 1], [-1, -1, -1]])
+    def test_center_of_gaussian_is_a_nuclear_critical_point(self):
+        r"""Test the center of a single Gaussian is a nuclear critical point."""
+        coords = np.array([[0., 0., 0.]])
         pts = np.random.rand(4, 3)
-        topo = Topology(coors, self.gauss_func, self.gauss_deriv, self.gauss_deriv2, pts)
-        # get cage points
-        pts = Topology._construct_cage(np.array([0.5, 0.5, 0.5]), 0.1)
-        g_pts = topo.get_gradient(pts)
-        # assert len(g_pts) == 4
-        ref_g = self.gauss_deriv(pts)
-        assert_allclose(ref_g, g_pts)
+        topo = Topology(self.gauss_func, self.gauss_deriv, self.gauss_deriv2, pts, coords)
+        topo.find_critical_points()
+        # Test that only one critical point is found.
+        assert len(topo.cps) == 1
+        # Test critical point is center
+        assert_allclose(np.array([0., 0., 0.]), topo.cps[0].coordinate)
+        # Test it is a nuclear critical point.
+        assert len(topo.nna) == 1
+        assert_allclose(np.array([0., 0., 0.]), topo.nna[0].coordinate)
 
-    def test_add_critical_points(self):
-        # Test add critical points to class.
-        coors = np.array([[1, 1, 1], [-1, -1, -1]])
-        pts = np.random.rand(4, 3)
-        topo = Topology(coors, self.gauss_func, self.gauss_deriv, self.gauss_deriv2, pts)
-        pt = CriticalPoint(np.random.rand(3), None, None)
-        # bond
-        ct_type = -1
-        topo._add_critical_point(pt, ct_type)
-        assert_allclose(topo._bcp[0].point, pt.point, atol=1e-10)
-        # maxima
-        ct_type = -3
-        topo._add_critical_point(pt, ct_type)
-        assert_allclose(topo._nna[0].point, pt.point, atol=1e-10)
-        # ring
-        ct_type = 1
-        topo._add_critical_point(pt, ct_type)
-        assert_allclose(topo._rcp[0].point, pt.point, atol=1e-10)
-        # cage
-        ct_type = 3
-        topo._add_critical_point(pt, ct_type)
-        assert_allclose(topo._ccp[0].point, pt.point, atol=1e-10)
+    def test_find_critical_pts_of_sum_of_two_gaussians(self):
+        r"""
+        Test finding critical points of a sum of two Gaussian functions.
 
-    def test_is_coors_pt(self):
-        # Test same pts as nuclear position.
-        coors = np.array([[1, 1, 1], [-1, -1, -1]])
-        pts = np.random.rand(4, 3)
-        topo = Topology(coors, self.gauss_func, self.gauss_deriv, self.gauss_deriv2, pts)
-        for i in coors:
-            result = topo._is_coors_pt(i)
-            assert result
-        pt = (np.random.rand(4, 3) + 0.1) / 2
-        for i in pt:
-            result = topo._is_coors_pt(i)
-            assert not result
+        There should be three critical points, two of them are the center of the Gaussians.
+        The third should be in-between them.
 
-    def test_find_one_critical_pt(self):
-        # Test two atoms critical pts.
+        """
+        # The center of the two Gaussians and the alpha parameters
         atoms = np.array([[-2, -2, -2], [2, 2, 2]])
         alf = 0.3
 
@@ -137,19 +117,32 @@ class TestCriticalPoints(TestCase):
         pts = np.vstack(
             (pts, np.array([0.05, 0.05, 0.05]), np.array([-0.05, -0.05, -0.05]))
         )
-        tp_ins = Topology(atoms, fun_v, fun_d, fun_d2, pts)
-        tp_ins.find_critical_pts()
-        # one critical pt
-        assert len(tp_ins._found_ct) == 1
-        assert len(tp_ins._bcp) == 1
-        # one critical type bond
-        assert tp_ins._found_ct_type[0] == -1
-        # one critical point at origin
-        assert_allclose(tp_ins._found_ct[0], [0, 0, 0], atol=1e-10)
+        tp_ins = Topology(fun_v, fun_d, fun_d2, pts, atoms)
+        tp_ins.find_critical_points()
+        # Test that three critical points are found
+        assert len(tp_ins.cps) == 3
+        # Test that two of them are the centers
+        assert len(tp_ins.nna) == 2
+        assert_allclose(tp_ins.nna[0].coordinate, atoms[0, :], rtol=1e-5)
+        assert_allclose(tp_ins.nna[1].coordinate, atoms[1, :], rtol=1e-5)
+        assert_allclose(tp_ins.cps[-2].coordinate, atoms[0, :], rtol=1e-5)
+        assert_allclose(tp_ins.cps[-1].coordinate, atoms[1, :], rtol=1e-5)
+        # Test the bond critical-point inbetween the two centers
+        assert len(tp_ins.bcp) == 1
+        assert_allclose(tp_ins.bcp[0].coordinate, np.array([0., 0., 0.]), atol=1e-4)
+        # Poincare-Hopf is satisfied
+        assert tp_ins.poincare_hopf_equation
+        # Test all other types of critical points weren't found
+        assert len(tp_ins.ccp) == 0
+        assert len(tp_ins.rcp) == 0
 
-    def test_find_triangle_critical_pt(self):
-        # Test three atom ring critical pts.
-        atoms = np.array([[-2, -2, 0], [2, -2, 0], [0, 1, 0]])
+    def test_find_critical_points_of_three_gaussians_in_triangle_format(self):
+        # Test three Gaussians centered at "atoms" with hyper-parameter alpha
+        #   The three centers of the Gaussians should form a equaliteral triangle.
+        #   Since it is a equaliteral triangle, there should 9 critical points,
+        #   First three are the centers, the next three are inbetween the the tree Gaussians
+        #   the final critical point is the center of the equilateral triangle.
+        atoms = np.array([[-2, -2, 0], [2, -2, 0], [0, 2.0 * (np.sqrt(3.0) - 1.0), 0]])
         alf = 1
 
         def fun_v(coors):
@@ -172,11 +165,27 @@ class TestCriticalPoints(TestCase):
                 + self.gauss_deriv2(coors, atoms[1], alphas=alf)
                 + self.gauss_deriv2(coors, atoms[2], alphas=alf)
             )
-
-        tp_ins = Topology(atoms, fun_v, fun_d, fun_d2, extra=1)
-        tp_ins.find_critical_pts()
-        assert len(tp_ins._bcp) == 3
-        assert len(tp_ins._rcp) == 1
-        assert len(tp_ins._nna) == 0
-        assert len(tp_ins._ccp) == 0
-"""
+        # Construct a Three-Dimensional Grid
+        one_dgrid = np.arange(-2.0, 2.0, 0.1)
+        one_dgridz = np.arange(-0.5, 0.5, 0.1)  # Reduce computation time.
+        pts = np.vstack(np.meshgrid(one_dgrid, one_dgrid, one_dgridz)).reshape(3,-1).T
+        tp_ins = Topology(fun_v, fun_d, fun_d2, pts, atoms)
+        tp_ins.find_critical_points()
+        # Test that there are 7 critical points (c.p.) in total
+        assert len(tp_ins.cps) == 7
+        # Test that there are 3 nuclear c.p., 3 bond c.p., and 1 ring cp.p at the center.
+        assert len(tp_ins.nna) == 3
+        assert len(tp_ins.bcp) == 3
+        assert len(tp_ins.rcp) == 1
+        assert len(tp_ins.ccp) == 0
+        # Test the Nuclear c.p. is the same as the center of Gaussians.
+        assert_allclose(tp_ins.nna[0].coordinate, atoms[0], rtol=1e-6)
+        assert_allclose(tp_ins.nna[1].coordinate, atoms[1], rtol=1e-6)
+        assert_allclose(tp_ins.nna[2].coordinate, atoms[2], rtol=1e-6)
+        # Test the bond c.p. is the same as the center between the center of Gaussians.
+        assert_allclose(tp_ins.bcp[0].coordinate, (atoms[0] + atoms[1]) / 2.0, atol=1e-3)
+        assert_allclose(tp_ins.bcp[1].coordinate, (atoms[1] + atoms[2]) / 2.0, atol=1e-3)
+        assert_allclose(tp_ins.bcp[2].coordinate, (atoms[2] + atoms[0]) / 2.0, atol=1e-3)
+        # Test the ring c.p. is the as the center of the equilateral triangle.
+        #   Calculated using centroid of equilateral triangle online calculator.
+        assert_allclose(tp_ins.rcp[0].coordinate, np.array([0 , -0.845, 0]), atol=1e-3)
