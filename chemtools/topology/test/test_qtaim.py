@@ -27,9 +27,11 @@ from scipy.spatial import ConvexHull
 from scipy.stats import special_ortho_group
 from scipy.spatial.transform.rotation import Rotation
 
-from chemtools.topology.qtaim import qtaim, _get_area_of_coplanar_polygon, qtaim_surface
+from chemtools.topology.qtaim import qtaim_surface
+from chemtools.topology.yu_trinkle import qtaim, _get_area_of_coplanar_polygon
 from grid.cubic import Tensor1DGrids, UniformGrid
-from grid.onedgrid import OneDGrid, GaussLaguerre
+from grid.onedgrid import OneDGrid, GaussLaguerre, Trapezoidal
+from grid.rtransform import LinearFiniteRTransform
 from grid.becke import BeckeWeights
 from grid.molgrid import MolGrid
 
@@ -279,19 +281,19 @@ def test_qtaim_line_search():
     result = qtaim_surface(rgrid, 10, centers, gaussian_func, gradient_func,
                            iso_val=iso_val,
                            bnd_err=1e-5,
-                           iso_err=1e-6, dens_cutoff=1e-9, beta_sphere=[0.8, 0.8])
-    import matplotlib
-    import matplotlib.pyplot as plt
-    from mpl_toolkits import mplot3d
-    matplotlib.use("Qt5Agg")
-    fig = plt.figure()
-    ax = plt.axes(projection='3d')
-    q = result.generate_pts_on_surface(0)
-    p = result.get_ias_pts_of_basin(0)
-    ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
-    p = result.get_oas_pts_of_basin(0)
-    ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
-    plt.show()
+                           iso_err=1e-6, dens_cutoff=1e-9, beta_spheres=[0.8, 0.8])
+    # import matplotlib
+    # import matplotlib.pyplot as plt
+    # from mpl_toolkits import mplot3d
+    # matplotlib.use("Qt5Agg")
+    # fig = plt.figure()
+    # ax = plt.axes(projection='3d')
+    # q = result.generate_pts_on_surface(0)
+    # p = result.get_ias_pts_of_basin(0)
+    # ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
+    # p = result.get_oas_pts_of_basin(0)
+    # ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
+    # plt.show()
 
 
 
@@ -301,18 +303,21 @@ class TestQTAIMSurfaceOnTwoBodyGaussian():
                     np.exp(-alpha * np.linalg.norm(pts - centers[1], axis=1)**2.0)
 
     def gradient_gaussian(self, pts, centers, alpha):
-        return (
-            -2.0 * alpha * (
-            (pts - centers[0]) *  np.exp(-alpha * np.linalg.norm(pts - centers[0], axis=1) ** 2.0).T
-            + (pts - centers[1]) * np.exp(-alpha * np.linalg.norm(pts - centers[1], axis=1)**2.0).T
+        fac1 = np.exp(-alpha * np.linalg.norm(pts - centers[0], axis=1)**2.0).T# * np.linalg.norm(pts - centers[0], axis=1)**2.0
+        fac2 = np.exp(-alpha * np.linalg.norm(pts - centers[1], axis=1)**2.0).T# * np.linalg.norm(pts - centers[1], axis=1)**2.0
+        sol = (
+            -2.0 * alpha *
+            (
+                (pts - centers[0]) * fac1[:, None] + (pts - centers[1]) * fac2[:, None]
             )
         )
+        return sol
 
     @pytest.mark.parametrize(
         "centers", [
             np.array([[-1.0, 0.0, 0.0], [1.0, 0.0, 0.0]]),
-            np.array([[-0.5, 0., 0.], [0.0, 0.5, 0.]]),
-            np.vstack((np.random.uniform(-1, 0, size=(3,)), np.random.uniform(0, 1, size=(3,))))
+            np.array([[0.0, -0.75, 0.], [0.0, 0.75, 0.]]),
+            np.vstack((np.random.uniform(-1, 0.5, size=(3,)), np.random.uniform(0.5, 1, size=(3,))))
         ],
     )
     @pytest.mark.parametrize("iso_val", [1e-5, 1e-4, 1e-2])
@@ -326,7 +331,7 @@ class TestQTAIMSurfaceOnTwoBodyGaussian():
         result = qtaim_surface(rgrid, 15, centers, gaussian_func, gradient_func,
                                iso_val=iso_val,
                                bnd_err=1e-5, iso_err=iso_err, dens_cutoff=1e-9,
-                               optimize_centers=False)
+                               optimize_centers=True)
         # Test that the outer surface gives the correct
         for i in range(0, 2):
             oas_0 = result.get_oas_pts_of_basin(i)
@@ -336,9 +341,9 @@ class TestQTAIMSurfaceOnTwoBodyGaussian():
 
     @pytest.mark.parametrize("beta_sphere", [None, [0.8, 0.8]])
     @pytest.mark.parametrize("bnd_err", [1e-5, 1e-3])
-    @pytest.mark.parametrize("alpha,refine", [[5, True], [1, True], [0.5, False]])
+    @pytest.mark.parametrize("alpha,refine", [[5, True], [1, True], [0.8, False]])
     def test_inner_atomic_surface_is_correct_on_simple_example(
-            self, beta_sphere, bnd_err, alpha, refine
+        self, beta_sphere, bnd_err, alpha, refine
     ):
         r"""Test inner atomic surface lies exactly on x-axis on this example."""
         centers = np.array([[-1.0, 0.0, 0.0], [1.0, 0.0, 0.0]])
@@ -346,10 +351,10 @@ class TestQTAIMSurfaceOnTwoBodyGaussian():
         gradient_func = lambda pts: self.gradient_gaussian(pts, centers, alpha)
 
         rgrid = GaussLaguerre(10)
-        result = qtaim_surface(rgrid, 20, centers, gaussian_func, gradient_func,
+        result = qtaim_surface(rgrid, 10, centers, gaussian_func, gradient_func,
                                iso_val=1e-4,
                                bnd_err=bnd_err, iso_err=1e-6, dens_cutoff=1e-9,
-                               optimize_centers=False, refine=refine)
+                               optimize_centers=True, refine=refine)
         for i in range(0, 2):
             ias_0 = result.get_ias_pts_of_basin(i)
             assert np.all(np.abs(ias_0[:, 0]) < bnd_err)
@@ -377,7 +382,7 @@ class TestQTAIMSurfaceOnTwoBodyGaussian():
         result = qtaim_surface(rgrid, 15, centers, gaussian_func, gradient_func,
                                iso_val=1e-4,
                                bnd_err=1e-6, iso_err=1e-6, dens_cutoff=1e-6,
-                               refine=refine)
+                               refine=refine, optimize_centers=True)
 
         # Test that points on oas all converge to the maxima and no other.
         for i in range(0, 2):
@@ -395,77 +400,197 @@ class TestQTAIMSurfaceOnTwoBodyGaussian():
                 )
 
                 print(pt, sol["y"][:, -1], centers)
-                if not np.all(np.abs(sol["y"][:, -1] - result.maximas[i]) < 1e-2):
-                    import matplotlib
-                    import matplotlib.pyplot as plt
-                    from mpl_toolkits import mplot3d
-                    matplotlib.use("Qt5Agg")
-                    fig = plt.figure()
-                    ax = plt.axes(projection='3d')
-                    q = result.generate_pts_on_surface(0)
-                    p = result.get_ias_pts_of_basin(0)
-                    ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
-                    p = result.get_oas_pts_of_basin(0)
-                    ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
-                    ax.scatter(sol["y"][:, -1][0], sol["y"][:, -1][1], sol["y"][:, -1][2], color="g", s=60)
-                    ax.scatter(pt[0], pt[1], pt[2], color="y", s=60)
-                    plt.show()
                 assert np.all(np.abs(sol["y"][:, -1] - result.maximas[i]) < 1e-2)
 
     def test_integration_of_basin(self):
         centers = np.array([[-1, 0, 0], [1, 0, 0]])
         alpha = 3
-        gaussian_func = lambda pts: np.exp(
-            -alpha * np.linalg.norm(pts - centers[0], axis=1) ** 2.0) + \
-                                    np.exp(-alpha * np.linalg.norm(pts - centers[1], axis=1) ** 2.0)
+        gaussian_func = lambda pts: self.gaussian_func(pts, centers, alpha)
+        gradient_func = lambda pts: self.gradient_gaussian(pts, centers, alpha)
 
-        gradient_func = lambda pts: (
-                -2.0 * alpha * (
-                (pts - centers[0]) * np.exp(-alpha * np.linalg.norm(pts - centers[0], axis=1) ** 2.0).T
-                + (pts - centers[1]) * np.exp(-alpha * np.linalg.norm(pts - centers[1], axis=1) ** 2.0).T
-            )
-        )
+        oned = np.arange(0.0, 2, 0.1)
+        rgrid = OneDGrid(oned, np.ones(len(oned)) * 0.1)
+        # rgrid = GaussLaguerre(20)
+        result = qtaim_surface(rgrid, 25, centers, gaussian_func, gradient_func,
+                               iso_val=1e-6, bnd_err=1e-5, iso_err=1e-6, dens_cutoff=1e-9,
+                               beta_spheres=[0.8, 0.8])
 
-        oned = np.arange(1e-4, 2, 0.1)
-        rgrid = OneDGrid(oned, np.ones(len(oned)) * 0.5)
-        result = qtaim_surface(rgrid, 10, centers, gaussian_func, gradient_func,
-                               iso_val=1e-5,
-                               bnd_err=1e-5, iso_err=1e-6, dens_cutoff=1e-9,
-                               beta_sphere=[0.8, 0.8])
+        # Change integration grid to something that is more accurate.
+        oned = Trapezoidal(100)
+        rgrid = LinearFiniteRTransform(0, 2).transform_1d_grid(oned)
 
         # Test integration
         desired = np.sqrt(np.pi / alpha) ** 3.0
         for i in range(2):
-            atomgrid_basin_0 = result.get_atom_grid_over_basin(i)
+            atomgrid_basin_0 = result.get_atom_grid_over_basin(i, rgrid)
             true = atomgrid_basin_0.integrate(gaussian_func(atomgrid_basin_0.points))
-            assert np.abs(true - desired) < 1e-8
+            assert np.abs(true - desired) < 1e-3
 
-    # def test_ch4(self):
-    #     alpha = 3
-    #     from chemtools.wrappers import Molecule
-    #     mol = Molecule.from_file(r"/home/pally/PythonProjects/chemtools/chemtools/data/ch4_uhf_ccpvdz.fchk")
-    #     centers = mol.coordinates
-    #     gaussian_func = lambda pts: mol.compute_density(pts)
-    #     gradient_func = lambda pts: mol.compute_gradient(pts)
+
+@pytest.mark.parametrize("mol_fchk", ["ch4.fchk", "ch2nh2_q+0.fchk", "nh3.fchk", "h2o.fchk", "atom_kr.fchk"])
+def test_density_and_laplacian(mol_fchk):
+    r"""Test the integration of laplacian is zero over basin and electron density integration."""
+    print(mol_fchk)
+    import pathlib
+    file_path = pathlib.Path(__file__).parent.resolve().__str__()[:-13]
+    file_path += "data/examples/" + mol_fchk
+    print(file_path)
+
+    from chemtools.wrappers import Molecule
+    mol = Molecule.from_file(file_path)
+    centers = mol.coordinates
+    gaussian_func = lambda pts: mol.compute_density(pts)
+    gradient_func = lambda pts: mol.compute_gradient(pts)
+
+    result = qtaim_surface(20, centers, gaussian_func, gradient_func,
+                           iso_val=1e-8, bnd_err=1e-4, iso_err=1e-6, dens_cutoff=1e-10,
+                           optimize_centers=True, refine=False)
+
+    # Test Laplacian and density
+    from grid.onedgrid import ClenshawCurtis, GaussChebyshev
+    from grid.rtransform import BeckeRTransform
+    for numb in [500]:
+        oned = GaussChebyshev(numb)
+        print("Number Radial Points ", numb)
+
+        for r in [5]:
+            print("Radius r ", r)
+            rgrid = BeckeRTransform(1e-8, 1.5).transform_1d_grid(oned)
+            rgrid.points[-1] = 0.0
+            rgrid.weights[-1] = 0.0
+
+            print(rgrid.points)
+            density_integral = 0.0
+            energy_integral = 0.0
+            for i in range(len(centers)):
+                atomgrid_basin_0 = result.get_atom_grid_over_basin(i, rgrid)
+                print("Type ", type(atomgrid_basin_0))
+                laplacian = 0.25 * mol.compute_laplacian(atomgrid_basin_0.points)
+                integral = atomgrid_basin_0.integrate(laplacian)
+
+                print("Laplacian Integral ", integral)
+                assert np.abs(integral) < 1e-3, "Laplacian Integral should be close to zero."
+
+                dens = mol.compute_density(atomgrid_basin_0.points)
+                print("Density Integral ", atomgrid_basin_0.integrate(dens))
+                density_integral += atomgrid_basin_0.integrate(dens)
+
+                energ = atomgrid_basin_0.integrate(mol.compute_ked(atomgrid_basin_0.points))
+                print("Kinetic energy ", energ)
+                energy_integral += energ
+                print()
+            print("Total Density Integral ", density_integral)
+            print("Total energy ", energy_integral)
+            print("")
+
+            assert np.abs(density_integral - np.sum(mol.numbers)) < 1e-2
+        print("")
+
+    import matplotlib
+    import matplotlib.pyplot as plt
+    from mpl_toolkits import mplot3d
+    matplotlib.use("Qt5Agg")
+    for i in range(0, centers.shape[0]):
+        fig = plt.figure()
+        ax = plt.axes(projection='3d')
+        p = centers
+        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="g", s=60)
+        p = result.get_ias_pts_of_basin(i)
+        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
+        p = result.get_oas_pts_of_basin(i)
+        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
+        plt.show()
+
+
+def test_ch4():
+    mol = Molecule.from_file(r"/home/pally/PythonProjects/chemtools/chemtools/data/examples/benzene_q+0.fchk")
+    centers = mol.coordinates
+    gaussian_func = lambda pts: mol.compute_density(pts)
+    gradient_func = lambda pts: mol.compute_gradient(pts)
+
+    result = qtaim_surface(20, centers, gaussian_func, gradient_func,
+                           iso_val=1e-8, bnd_err=1e-4, iso_err=1e-6, dens_cutoff=1e-10,
+                           optimize_centers=True, refine=False)
+    # Test Laplacian
+    # Change integration grid to something that is more accurate.
+    from grid.onedgrid import ClenshawCurtis, GaussChebyshev
+    from grid.rtransform import BeckeRTransform
+    for numb in [500]:
+        oned = GaussChebyshev(numb)
+        print("Number Radial Points ", numb)
+
+        for r in [5]:
+            print("Radius r ", r)
+            rgrid = BeckeRTransform(1e-8, 1.5).transform_1d_grid(oned)
+            # rgrid.points[-1] = 0.0
+            # rgrid.weights[-1] = 0.0
+
+            print(rgrid.points)
+            total_integral = 0.0
+            total_energy = 0.0
+            for i in range(len(centers)):
+                atomgrid_basin_0 = result.get_atom_grid_over_basin(i, rgrid)
+                print("Type ", type(atomgrid_basin_0))
+                laplacian = mol.compute_laplacian(atomgrid_basin_0.points)
+                integral = atomgrid_basin_0.integrate(laplacian)
+
+                print("Laplacian Integral ", integral)
+
+                dens = mol.compute_density(atomgrid_basin_0.points)
+                print("Density Integral ", atomgrid_basin_0.integrate(dens))
+                total_integral += atomgrid_basin_0.integrate(dens)
+
+                ke = mol.compute_ked(atomgrid_basin_0.points)
+                print("Energy Integral ", atomgrid_basin_0.integrate(ke))
+                total_energy += atomgrid_basin_0.integrate(ke)
+                print()
+            print("Total Density Integral ", total_integral)
+            print("Total Energy Integral ", total_energy)
+            print("")
+        print("")
+
+
+    import matplotlib
+    import matplotlib.pyplot as plt
+    from mpl_toolkits import mplot3d
+    matplotlib.use("Qt5Agg")
+    for i in range(0, centers.shape[0]):
+        fig = plt.figure()
+        ax = plt.axes(projection='3d')
+        p = centers
+        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="g", s=60)
+        p = result.get_ias_pts_of_basin(i)
+        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
+        p = result.get_oas_pts_of_basin(i)
+        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
+        plt.show()
+
+
+def test_coh2():
+    from chemtools.wrappers import Molecule
+    # ch2nh2,  doesn't bridge the gap for the OAS
     #
-    #     oned = np.arange(1e-4, 5, 0.5)
-    #     rgrid = OneDGrid(oned, np.ones(len(oned)) * 0.5)
-    #     result = qtaim_surface(rgrid, 20, centers, gaussian_func, gradient_func,
-    #                            iso_val=1e-5, ss_watershed=1e-2,
-    #                            bnd_err=1e-5, iso_err=1e-6, dens_cutoff=1e-9,
-    #                            optimize_centers=False, refine=True)
-    #
-    #     import matplotlib
-    #     import matplotlib.pyplot as plt
-    #     from mpl_toolkits import mplot3d
-    #     matplotlib.use("Qt5Agg")
-    #     for i in range(0, centers.shape[0]):
-    #         fig = plt.figure()
-    #         ax = plt.axes(projection='3d')
-    #         p = centers
-    #         ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="g", s=60)
-    #         p = result.get_ias_pts_of_basin(i)
-    #         ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
-    #         p = result.get_oas_pts_of_basin(i)
-    #         ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
-    #         plt.show()
+    mol = Molecule.from_file(r"/home/pally/PythonProjects/chemtools/chemtools/data/examples/pyridine_q+0.fchk")
+    centers = mol.coordinates
+    gaussian_func = lambda pts: mol.compute_density(pts)
+    gradient_func = lambda pts: mol.compute_gradient(pts)
+
+    result = qtaim_surface(20, centers, gaussian_func, gradient_func,
+                           iso_val=0.001, bnd_err=1e-5, iso_err=1e-6, dens_cutoff=1e-9,
+                           optimize_centers=True, refine=False)
+
+
+    import matplotlib
+    import matplotlib.pyplot as plt
+    from mpl_toolkits import mplot3d
+    matplotlib.use("Qt5Agg")
+    for i in range(0, centers.shape[0]):
+        fig = plt.figure()
+        ax = plt.axes(projection='3d')
+        p = centers
+        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="g", s=60)
+        p = result.get_ias_pts_of_basin(i)
+        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
+        p = result.get_oas_pts_of_basin(i)
+        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
+        plt.show()

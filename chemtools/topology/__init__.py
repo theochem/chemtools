@@ -23,4 +23,6 @@
 """The Scalar Field Topological Analysis Module."""
 
 
-from chemtools.topology import *
+from chemtools.topology.point import *
+from chemtools.topology.critical import *
+from chemtools.topology.qtaim import *
