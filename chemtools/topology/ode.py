@@ -1,12 +1,20 @@
 import numpy as np
 from scipy.spatial.distance import cdist
 
-from scipy.integrate import RK45
+from scipy.integrate import solve_ivp
 
-__all__ = ["steepest_ascent_rk45"]
+__all__ = ["steepest_ascent_rk45", "gradient_path"]
 
 
-def RK45_step(pts, grad_func, step_size):
+def _get_normalized_gradient_func(grad_func):
+    r"""Returns the normalized version of the function."""
+    def norm_grad_func(x):
+        grad = grad_func(x)
+        return grad / np.linalg.norm(grad, axis=1)[:, None]
+    return norm_grad_func
+
+
+def _RK45_step(pts, grad_func, step_size):
     r"""
     Runge-Kutta fourth and five-order step for the following ode system:
 
@@ -103,9 +111,7 @@ def steepest_ascent_rk45(
         If value is negative one, then the point wasn't assigned to a basin.
     
     """
-    def norm_grad_func(x):
-        grad = grad_func(x)
-        return grad / np.linalg.norm(grad, axis=1)[:, None]
+    norm_grad_func = _get_normalized_gradient_func(grad_func)
 
     numb_pts = initial_pts.shape[0]
     if isinstance(ss_0, float):
@@ -124,9 +130,13 @@ def steepest_ascent_rk45(
     assigned_basins = (-1) * np.ones((numb_pts,), dtype=np.int)
     not_found_indices = np.arange(numb_pts)
     first_basin = -1  # First basin value that was found
-    # print("START STEEPEST-ASCENT")
+    print("START STEEPEST-ASCENT")
+    import time
     while len(not_found_indices) != 0:
-        y_four, y_five = RK45_step(pts, norm_grad_func, ss)
+        #start = time.time()
+        y_four, y_five = _RK45_step(pts, norm_grad_func, ss)
+        # final = time.time()
+        # print("RK Step ", final - start)
 
         # Update step-size
         # print("Step size used", ss)
@@ -143,12 +153,12 @@ def steepest_ascent_rk45(
             # print("Gradients here", grad_func(pts[indices, :]))
             y_five[indices, :] = pts[indices, :]
             ss[indices] *= 0.25
+        # TODO: Check here if the density is equal to the isosurface value, then stop.
 
         # Check any points are within the beta-spheres and remove them if they converged.
         dist_maxima = cdist(y_five, maximas)
         # print("Distance maxima", dist_maxima)
         beta_sph = dist_maxima <= beta_spheres
-        which_converged = np.any(beta_sph, axis=1)
         which_basins = np.where(beta_sph)
         # print("beta_sphereS ", beta_spheres)
         # print("which pts are within basin based on beta-sphere", which_basins)
@@ -177,6 +187,7 @@ def steepest_ascent_rk45(
 
         # Update next iteration
         pts = y_five.copy()
+        # print(pts)
         dens_vals0 = dens_vals1
 
         # input("Next step")
@@ -184,19 +195,73 @@ def steepest_ascent_rk45(
     return assigned_basins
 
 
-"""
- all_points = maxima + angular_pts
-            import matplotlib
-            import matplotlib.pyplot as plt
-            from mpl_toolkits import mplot3d
-            matplotlib.use("Qt5Agg")
-            fig = plt.figure()
-            ax = plt.axes(projection='3d')
-            p = maximas
-            ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="g", s=60)
-            p = all_points[ias_indices]
-            ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
-            p = all_points[oas_indices]
-            ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
-            plt.show()
-"""
+def gradient_path(pt, grad_func, use_norm=False, maximas=None, t_span=(0, 1000), method="LSODA", max_step=100,
+                  t_inc=400, max_tries=10, first_step=1e-3, beta_spheres=-np.inf):
+    r"""
+    Solves the final point of steepest-ascent starting at a single pt.
+
+    If maximas is not provided, then termination occurs due to convergence.
+
+    Parameters
+    ----------
+    pt : ndarray(3,)
+        The initial point of the ODE.
+    grad_func : callable(ndarray(N, 3) -> ndarray(M, 3))
+        The gradient function for the steepest-ascent
+    use_norm: bool
+        If true, then the grad_func output is normalized. This isn't useful for optimizing
+        the centers to obtain the local maximas.
+    maximas: (ndarray(M, 3), None)
+        The maximas of the density. If it isn't provided then termiantion occurs due to
+        convergence between two consequent points of the ODE.
+    t_span: (float, float)
+        The lower-bound and upper-bound of solving the ODE time-step.
+
+    Returns
+    -------
+    ndarray(3,)
+        The final point of the steepest-ascent path.
+
+    """
+    is_converged = False
+    y0 = pt.copy()
+    numb_times = 0
+
+    norm_grad_func = grad_func
+    if use_norm:
+        norm_grad_func = _get_normalized_gradient_func(grad_func)
+
+    def grad(t, x):
+        return norm_grad_func(np.array([x]))[0]
+
+    while not is_converged and numb_times < max_tries:
+        sol = solve_ivp(
+            grad,
+            y0=y0,
+            t_span=t_span,
+            method=method,
+            max_step=max_step,
+            first_step=first_step,
+        )
+        # print(sol)
+        assert sol["success"], "ODE was not successful."
+        # If it is close to a maxima or within any of the beta-spheres, then stop.
+        if maximas is not None:
+            last_y_val = sol["y"][:, -1]
+            dist_maxima = np.linalg.norm(last_y_val - maximas, axis=1)
+            if np.any(dist_maxima < 0.1) or np.any(dist_maxima <= beta_spheres):
+                return sol["y"][:, -1]
+        # if maximas not specified, then just look at if it converged.
+        else:
+            convergence = np.linalg.norm(sol["y"][:, -2] - sol["y"][:, -1])
+            if convergence < 1e-1:
+                return sol["y"][:, -1]
+        # No convergence occured, so increaes t-span.
+        # print(sol["y"][:, -1], t_span, "YE")
+        t_span = (t_span[1], t_span[1] + t_inc)
+        y0 = sol["y"][:, -1]
+        numb_times += 1
+
+    if numb_times == max_tries:
+        raise RuntimeError(f"No convergence in normalized_gradient path pt {pt},"
+                           f" solution {sol['y'][:, -1]}, t_span {t_span}")
