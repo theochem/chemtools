@@ -197,7 +197,7 @@ def construct_all_points_of_rays_of_atoms(
 
 
 def _solve_intersection_of_ias(
-    maximas, ias_indices, angular_pts, dens_func, grad_func, beta_spheres, bnd_err,
+    maximas, ias_indices, angular_pts, dens_func, grad_func, beta_spheres, bnd_err, ss_0, max_ss, tol
 ):
     r"""
     Solves the intersection of the ray to the inner-atomic surface.
@@ -228,6 +228,12 @@ def _solve_intersection_of_ias(
         The error of the intersection of the IAS. When the distance to two consequent points
         on the ray crosses different basins is less than this error, then the midpoint is accepted
         as the final radius value.
+    ss_0: float, optional
+        The initial step-size of the ODE (RK45) solver.
+    max_ss: float, optional
+        Maximum step-size of the ODE (RK45) solver.
+    tol: float, optional
+        Tolerance for the adaptive step-size.
 
     Return
     -------
@@ -254,7 +260,7 @@ def _solve_intersection_of_ias(
 
         # Solve for basins
         basins = steepest_ascent_rk45(
-            points, dens_func, grad_func, beta_spheres, maximas, tol=1e-7, max_ss=0.5, ss_0=0.23
+            points, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=ss_0
         )
         print("Basins", basins)
 
@@ -306,6 +312,10 @@ def qtaim_surface_vectorize(
     bnd_err=1e-4,
     iso_err=1e-6,
     beta_spheres=None,
+    beta_sphere_deg=21,
+    ss_0=0.23,
+    max_ss=0.5,
+    tol=1e-7,
     optimize_centers=True
 ):
     r"""
@@ -327,6 +337,15 @@ def qtaim_surface_vectorize(
         The error in solving for the isosurface points on the outer-atomic surface.
     beta_spheres: (List[float] or None)
         The radius of confidence that points are assigned to the atom. Should have length `M`.
+    beta_sphere_deg: int
+        Integer specifying angular grid of degree `beta_sphere_deg` that is used to find the beta-sphere
+        automatically, if `beta_spheres` isn't provided. Default value is 21.
+    ss_0: float, optional
+        The initial step-size of the ODE (RK45) solver.
+    max_ss: float, optional
+        Maximum step-size of the ODE (RK45) solver.
+    tol: float, optional
+        Tolerance for the adaptive step-size.
     optimize_centers: bool
         If true, then the steepest-ascent is performed on the centers to find the local maximas.
 
@@ -368,7 +387,7 @@ def qtaim_surface_vectorize(
     #         between atoms
     dist_maxs = cdist(maximas, maximas)
     distance_maximas = np.sort(dist_maxs, axis=1)[:, min(5, maximas.shape[0] - 1)]
-    ss0 = 0.23
+    ss0 = 0.2
     radial_grid = [
         np.arange(0.2, x + 5.0, ss0) for x in distance_maximas
     ]
@@ -385,7 +404,7 @@ def qtaim_surface_vectorize(
     # Determine beta-spheres from a smaller angular grid
     #  Degree can't be too small or else the beta-radius is too large and IAS point got classified
     #  as OAS point. TODO: Do the angle/spherical trick then do the beta-sphere
-    ang_grid = AngularGrid(degree=10)
+    ang_grid = AngularGrid(degree=beta_sphere_deg)
     if beta_spheres is None:
         beta_spheres = determine_beta_spheres(
             beta_spheres, maximas, radial_grid, ang_grid.points, dens_func, grad_func
@@ -411,7 +430,7 @@ def qtaim_surface_vectorize(
     import time
     start = time.time()
     basins = steepest_ascent_rk45(
-        points, dens_func, grad_func, beta_spheres, maximas, tol=1e-7, max_ss=0.5, ss_0=0.23
+        points, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=ss_0
     )
     final = time.time()
     print("Basins", basins)
@@ -434,7 +453,8 @@ def qtaim_surface_vectorize(
     ))
     print("ias indices", ias_indices)
     r_func, basin_ias = _solve_intersection_of_ias(
-        maximas, ias_indices, angular_pts, dens_func, grad_func, beta_spheres, bnd_err
+        maximas, ias_indices, angular_pts, dens_func, grad_func, beta_spheres, bnd_err,
+        tol=tol, max_ss=max_ss, ss_0=ss_0
     )
 
     # Solve OAS Points and updates r_func

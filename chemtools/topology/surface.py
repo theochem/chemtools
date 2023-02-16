@@ -9,7 +9,7 @@ Can be used for
 
 import numpy as np
 
-from grid.angular import AngularGrid
+from grid.lebedev import AngularGrid
 from grid.atomgrid import AtomGrid
 
 __all__ = ["SurfaceQTAIM"]

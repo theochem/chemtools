@@ -436,11 +436,17 @@ def test_density_and_laplacian(mol_fchk):
     file_path += "data/examples/" + mol_fchk
     print(file_path)
 
-    from chemtools.wrappers import Molecule
-    mol = Molecule.from_file(file_path)
-    centers = mol.coordinates
-    gaussian_func = lambda pts: mol.compute_density(pts)
-    gradient_func = lambda pts: mol.compute_gradient(pts)
+    # from chemtools.wrappers import Molecule
+    # mol = Molecule.from_file(file_path)
+    # centers = mol.coordinates
+    # gaussian_func = lambda pts: mol.compute_density(pts)
+    # gradient_func = lambda pts: mol.compute_gradient(pts)
+    import gbasis_cuda
+    from iodata import load_one
+    centers = load_one(file_path).coordinates
+    mol = gbasis_cuda.Molecule(file_path)
+    gaussian_func = lambda pts: mol.compute_electron_density(pts)
+    gradient_func = lambda pts: mol.compute_electron_density_gradient(pts)
 
     result = qtaim_surface(20, centers, gaussian_func, gradient_func,
                            iso_val=1e-8, bnd_err=1e-4, iso_err=1e-6, dens_cutoff=1e-10,
