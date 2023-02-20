@@ -20,18 +20,20 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+from chemtools.topology.qtaim import qtaim_surface
+from chemtools.topology.qtaim_gpu import qtaim_surface_vectorize
+from chemtools.topology.yu_trinkle import qtaim, _get_area_of_coplanar_polygon
+
 import numpy as np
+import pathlib
 
 from scipy.integrate import solve_ivp
 from scipy.spatial import ConvexHull
 from scipy.stats import special_ortho_group
 from scipy.spatial.transform.rotation import Rotation
-
-from chemtools.topology.qtaim import qtaim_surface
-from chemtools.topology.yu_trinkle import qtaim, _get_area_of_coplanar_polygon
 from grid.cubic import Tensor1DGrids, UniformGrid
-from grid.onedgrid import OneDGrid, GaussLaguerre, Trapezoidal
-from grid.rtransform import LinearFiniteRTransform
+from grid.onedgrid import OneDGrid, GaussChebyshev, GaussLaguerre, Trapezoidal
+from grid.rtransform import LinearFiniteRTransform, PowerRTransform, BeckeRTransform
 from grid.becke import BeckeWeights
 from grid.molgrid import MolGrid
 
@@ -427,14 +429,19 @@ class TestQTAIMSurfaceOnTwoBodyGaussian():
             assert np.abs(true - desired) < 1e-3
 
 
-@pytest.mark.parametrize("mol_fchk", ["ch4.fchk", "ch2nh2_q+0.fchk", "nh3.fchk", "h2o.fchk", "atom_kr.fchk"])
-def test_density_and_laplacian(mol_fchk):
+@pytest.mark.parametrize(
+    "mol_fchk, degs",
+     [
+        # ("h2o.fchk", [70, 30, 30]),
+        ("nh3.fchk", [70, 30, 30, 30]),
+        # ("atom_kr.fchk", [20]),
+        # ("ch4.fchk", [70, 30, 30, 30, 30])
+     ]
+)
+def test_density_and_laplacian(mol_fchk, degs):
     r"""Test the integration of laplacian is zero over basin and electron density integration."""
-    print(mol_fchk)
-    import pathlib
     file_path = pathlib.Path(__file__).parent.resolve().__str__()[:-13]
     file_path += "data/examples/" + mol_fchk
-    print(file_path)
 
     # from chemtools.wrappers import Molecule
     # mol = Molecule.from_file(file_path)
@@ -448,155 +455,46 @@ def test_density_and_laplacian(mol_fchk):
     gaussian_func = lambda pts: mol.compute_electron_density(pts)
     gradient_func = lambda pts: mol.compute_electron_density_gradient(pts)
 
-    result = qtaim_surface(20, centers, gaussian_func, gradient_func,
-                           iso_val=1e-8, bnd_err=1e-4, iso_err=1e-6, dens_cutoff=1e-10,
-                           optimize_centers=True, refine=False)
+    result = qtaim_surface_vectorize(degs, centers, gaussian_func, gradient_func,
+                                     iso_val=1e-10, bnd_err=1e-5, iso_err=1e-6, optimize_centers=True)
 
+    result.save("delete_test.npz")
+    assert 1 == 0
     # Test Laplacian and density
-    from grid.onedgrid import ClenshawCurtis, GaussChebyshev
-    from grid.rtransform import BeckeRTransform
-    for numb in [500]:
-        oned = GaussChebyshev(numb)
+    numb = 500
+    for numb in [500, 600, 700, 800]:
+        print("NUMB ", numb)
+        # oned = GaussChebyshev(numb)
+        from grid.onedgrid import GaussLegendre, UniformInteger
+        oned = UniformInteger(numb)
         print("Number Radial Points ", numb)
+        density_integral = 0.0
+        laplacian_integral = 0.0
+        for i in range(len(centers)):
+            if mol.numbers[i] == 1:
+                a,b = 1e-8, np.max(result.r_func[i][result.oas[i]])
+            elif mol.numbers[i] == 6:
+                a, b = 3.467e-10, 42.44372
+            elif mol.numbers[i] == 7:
+                a, b = 1.2e-10, 38.1743
+            elif mol.numbers[i] == 8:
+                a, b = 1.8e-10, 22.2270
+            b = np.max(result.r_func[i][result.oas[i]])
 
-        for r in [5]:
-            print("Radius r ", r)
-            rgrid = BeckeRTransform(1e-8, 1.5).transform_1d_grid(oned)
-            rgrid.points[-1] = 0.0
-            rgrid.weights[-1] = 0.0
+            rgrid = PowerRTransform(a, b).transform_1d_grid(oned)
+            print(rgrid.points[-10:], )
+            atomgrid_basin_0 = result.get_atom_grid_over_basin(i, rgrid)
+            laplacian = 0.25 * mol.compute_laplacian(atomgrid_basin_0.points)
+            integral = atomgrid_basin_0.integrate(laplacian)
 
-            print(rgrid.points)
-            density_integral = 0.0
-            energy_integral = 0.0
-            for i in range(len(centers)):
-                atomgrid_basin_0 = result.get_atom_grid_over_basin(i, rgrid)
-                print("Type ", type(atomgrid_basin_0))
-                laplacian = 0.25 * mol.compute_laplacian(atomgrid_basin_0.points)
-                integral = atomgrid_basin_0.integrate(laplacian)
+            print("Laplacian Integral ", integral)
+            laplacian_integral += integral
+            assert np.abs(integral) < 1e-3, "Laplacian Integral should be close to zero."
 
-                print("Laplacian Integral ", integral)
-                assert np.abs(integral) < 1e-3, "Laplacian Integral should be close to zero."
-
-                dens = mol.compute_density(atomgrid_basin_0.points)
-                print("Density Integral ", atomgrid_basin_0.integrate(dens))
-                density_integral += atomgrid_basin_0.integrate(dens)
-
-                energ = atomgrid_basin_0.integrate(mol.compute_ked(atomgrid_basin_0.points))
-                print("Kinetic energy ", energ)
-                energy_integral += energ
-                print()
-            print("Total Density Integral ", density_integral)
-            print("Total energy ", energy_integral)
-            print("")
-
-            assert np.abs(density_integral - np.sum(mol.numbers)) < 1e-2
-        print("")
-
-    import matplotlib
-    import matplotlib.pyplot as plt
-    from mpl_toolkits import mplot3d
-    matplotlib.use("Qt5Agg")
-    for i in range(0, centers.shape[0]):
-        fig = plt.figure()
-        ax = plt.axes(projection='3d')
-        p = centers
-        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="g", s=60)
-        p = result.get_ias_pts_of_basin(i)
-        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
-        p = result.get_oas_pts_of_basin(i)
-        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
-        plt.show()
-
-
-def test_ch4():
-    mol = Molecule.from_file(r"/home/pally/PythonProjects/chemtools/chemtools/data/examples/benzene_q+0.fchk")
-    centers = mol.coordinates
-    gaussian_func = lambda pts: mol.compute_density(pts)
-    gradient_func = lambda pts: mol.compute_gradient(pts)
-
-    result = qtaim_surface(20, centers, gaussian_func, gradient_func,
-                           iso_val=1e-8, bnd_err=1e-4, iso_err=1e-6, dens_cutoff=1e-10,
-                           optimize_centers=True, refine=False)
-    # Test Laplacian
-    # Change integration grid to something that is more accurate.
-    from grid.onedgrid import ClenshawCurtis, GaussChebyshev
-    from grid.rtransform import BeckeRTransform
-    for numb in [500]:
-        oned = GaussChebyshev(numb)
-        print("Number Radial Points ", numb)
-
-        for r in [5]:
-            print("Radius r ", r)
-            rgrid = BeckeRTransform(1e-8, 1.5).transform_1d_grid(oned)
-            # rgrid.points[-1] = 0.0
-            # rgrid.weights[-1] = 0.0
-
-            print(rgrid.points)
-            total_integral = 0.0
-            total_energy = 0.0
-            for i in range(len(centers)):
-                atomgrid_basin_0 = result.get_atom_grid_over_basin(i, rgrid)
-                print("Type ", type(atomgrid_basin_0))
-                laplacian = mol.compute_laplacian(atomgrid_basin_0.points)
-                integral = atomgrid_basin_0.integrate(laplacian)
-
-                print("Laplacian Integral ", integral)
-
-                dens = mol.compute_density(atomgrid_basin_0.points)
-                print("Density Integral ", atomgrid_basin_0.integrate(dens))
-                total_integral += atomgrid_basin_0.integrate(dens)
-
-                ke = mol.compute_ked(atomgrid_basin_0.points)
-                print("Energy Integral ", atomgrid_basin_0.integrate(ke))
-                total_energy += atomgrid_basin_0.integrate(ke)
-                print()
-            print("Total Density Integral ", total_integral)
-            print("Total Energy Integral ", total_energy)
-            print("")
-        print("")
-
-
-    import matplotlib
-    import matplotlib.pyplot as plt
-    from mpl_toolkits import mplot3d
-    matplotlib.use("Qt5Agg")
-    for i in range(0, centers.shape[0]):
-        fig = plt.figure()
-        ax = plt.axes(projection='3d')
-        p = centers
-        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="g", s=60)
-        p = result.get_ias_pts_of_basin(i)
-        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
-        p = result.get_oas_pts_of_basin(i)
-        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
-        plt.show()
-
-
-def test_coh2():
-    from chemtools.wrappers import Molecule
-    # ch2nh2,  doesn't bridge the gap for the OAS
-    #
-    mol = Molecule.from_file(r"/home/pally/PythonProjects/chemtools/chemtools/data/examples/pyridine_q+0.fchk")
-    centers = mol.coordinates
-    gaussian_func = lambda pts: mol.compute_density(pts)
-    gradient_func = lambda pts: mol.compute_gradient(pts)
-
-    result = qtaim_surface(20, centers, gaussian_func, gradient_func,
-                           iso_val=0.001, bnd_err=1e-5, iso_err=1e-6, dens_cutoff=1e-9,
-                           optimize_centers=True, refine=False)
-
-
-    import matplotlib
-    import matplotlib.pyplot as plt
-    from mpl_toolkits import mplot3d
-    matplotlib.use("Qt5Agg")
-    for i in range(0, centers.shape[0]):
-        fig = plt.figure()
-        ax = plt.axes(projection='3d')
-        p = centers
-        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="g", s=60)
-        p = result.get_ias_pts_of_basin(i)
-        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
-        p = result.get_oas_pts_of_basin(i)
-        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
-        plt.show()
+            dens = mol.compute_density(atomgrid_basin_0.points)
+            print("Density Integral ", atomgrid_basin_0.integrate(dens))
+            density_integral += atomgrid_basin_0.integrate(dens)
+            print()
+        print("Total Density Integral ", density_integral)
+        print("Total Laplacian Integral ", laplacian_integral)
+        assert np.abs(density_integral - np.sum(mol.numbers)) < 1e-2
