@@ -460,4 +460,4 @@ def qtaim_surface_vectorize(
     # Solve OAS Points and updates r_func
     solve_for_oas_points(maximas, oas, radial_grid, angular_pts, dens_func, iso_val, iso_err, r_func)
 
-    return SurfaceQTAIM(r_func, angular, maximas, oas, ias, basin_ias)
+    return SurfaceQTAIM(r_func, angular, maximas, oas, ias, basin_ias, iso_val)
