@@ -199,15 +199,21 @@ def solve_for_isosurface_pt(
     # Given a series of points based on a maxima defined by angles `cart_sphere_pt` with
     #  radial pts `rad_pts`.   The `index_iso` tells us where on these points to construct another
     #  refined grid from finding l_bnd and u_bnd.
-    dens_l_bnd = density_func(np.array([maxima + l_bnd * cart_sphere_pt]))
-    dens_u_bnd = density_func(np.array([maxima + u_bnd * cart_sphere_pt]))
-    if iso_val < dens_u_bnd or dens_l_bnd < iso_val:
-        if iso_val < dens_u_bnd:
-            u_bnd += 1.5
-        elif dens_l_bnd < iso_val:
-            l_bnd -= 1.5
-        # raise ValueError(f"Radial grid {l_bnd, u_bnd} did not bound {dens_l_bnd, dens_u_bnd} "
-        #                  f"the isosurface value {iso_val}. Use larger radial grid.")
+    bounds_found = False
+    while not bounds_found:
+        dens_l_bnd = density_func(np.array([maxima + l_bnd * cart_sphere_pt]))
+        dens_u_bnd = density_func(np.array([maxima + u_bnd * cart_sphere_pt]))
+        if iso_val < dens_u_bnd or dens_l_bnd < iso_val:
+            if iso_val < dens_u_bnd:
+                l_bnd = u_bnd
+                u_bnd += 1.5
+            elif dens_l_bnd < iso_val:
+                u_bnd = l_bnd
+                l_bnd -= 1.5
+            # raise ValueError(f"Radial grid {l_bnd, u_bnd} did not bound {dens_l_bnd, dens_u_bnd} "
+            #                  f"the isosurface value {iso_val}. Use larger radial grid.")
+        else:
+            bounds_found = True
 
     # Use Root-finding algorithm to find the isosurface point.
     root_func = lambda t: density_func(np.array([maxima + t * cart_sphere_pt]))[0] - iso_val
