@@ -14,7 +14,7 @@ def _get_normalized_gradient_func(grad_func):
     return norm_grad_func
 
 
-def _RK45_step(pts, grad_func, step_size):
+def _RK45_step(pts, grad_func, step_size, grad0=None):
     r"""
     Runge-Kutta fourth and five-order step for the following ode system:
 
@@ -31,6 +31,8 @@ def _RK45_step(pts, grad_func, step_size):
         Callable function that takes in points and obtains the gradient.
     step_size: float
         Stepsize for the step
+    grad0: ndarray(M, 3)
+        If the gradient is already computed on `pts`, then avoids re-computing it.
 
     Returns
     -------
@@ -39,7 +41,10 @@ def _RK45_step(pts, grad_func, step_size):
 
     """
     # Fourth and Fifth-Order Runge-Kutta
-    k1 = step_size * grad_func(pts)
+    if grad0 is None:
+        k1 = step_size * grad_func(pts)
+    else:
+        k1 = step_size * grad0
     k2 = step_size * grad_func(pts + 0.4 * k1)
     k3 = step_size * grad_func(pts + (3.0 / 32) * k1 + (9.0 / 32.0) * k2)
     k4 = step_size * grad_func(pts + (1932 / 2197) * k1 - (7200 / 2197) * k2 + (7296 / 2197) * k3)
@@ -70,7 +75,7 @@ def _RK45_step(pts, grad_func, step_size):
 
 def steepest_ascent_rk45(
     initial_pts, dens_func, grad_func, beta_spheres, maximas, ss_0=1e-7,
-    tol=1e-7, max_ss=0.25, terminate_if_other_basin_found=False
+    tol=1e-7, max_ss=0.25, maxiter=100, terminate_if_other_basin_found=False
 ):
     r"""
     Solves the following problem ODE using Runge-Kutta of order 4(5) with adaptive step-size
@@ -99,6 +104,8 @@ def steepest_ascent_rk45(
         Maximum step-size of the ODE (RK45) solver.
     tol: float, optional
         Tolerance for the adaptive step-size.
+    maxiter: int, optional
+        The maximum number of iterations of taking a step in the ODE solver.
     terminate_if_other_basin_found : bool
         If true, then if multiple basin values were found, then the ODE solver will exit.
         If false, then the ODE solver will run until all points enter one of the
@@ -130,11 +137,21 @@ def steepest_ascent_rk45(
     assigned_basins = (-1) * np.ones((numb_pts,), dtype=np.int)
     not_found_indices = np.arange(numb_pts)
     first_basin = None  # First basin value that was found
+    niter = 0  # Number of iterations
+    grad0 = norm_grad_func(pts)  # Avoids re-computing the gradient twice, used to check for NNA
     print("START STEEPEST-ASCENT")
-    import time
+    # import time
     while len(not_found_indices) != 0:
+        if niter == maxiter:
+            raise RuntimeError(
+                f"Number of iterations reached maximum {niter}, "
+                f"this may be because of a non-nuclear attractor (NNA) which may cause the ODE "
+                f"to cycle between two points. Repeat this calculation by including the "
+                f"non-nuclear attractor to the list of critical points."
+            )
+
         #start = time.time()
-        y_four, y_five = _RK45_step(pts, norm_grad_func, ss)
+        y_four, y_five = _RK45_step(pts, norm_grad_func, ss, grad0)
         # final = time.time()
         # print("RK Step ", final - start)
 
@@ -184,19 +201,22 @@ def steepest_ascent_rk45(
                         return assigned_basins
         # print("New indices to still do: ", not_found_indices)
 
-        # Check for critical points that aren't the maxima:
-        #  If the points converge to critical points, then assign it a -2.
+        # Check for non-nuclear attractors (NNA)
         if len(y_five) != 0:
+            grad0 = norm_grad_func(y_five)
             # Note `gradient` that this is an extra computation and could be removed
-            gradient = grad_func(y_five)
             i_smallg = np.where(
-                (np.all(np.abs(gradient) < 1e-3, axis=1)) & (dens_vals1 > 0.001)
+                (np.all(np.abs(grad0) < 1e-6, axis=1)) & (dens_vals1 > 0.001)
             )[0]
             if len(i_smallg) != 0:
                 #  0.001 a.u. obtained from the paper: An Efficient Grid-Based Scheme to Compute QTAIM
                 #  Atomic Properties without Explicit Calculation ofZero-Flux Surfaces
                 # Assign these points to basin -2,  delete them.
+                print(f"Maximas {maximas}")
                 print(f"Where the NNCP is {y_five[i_smallg]}")
+                print(f"Gradient {grad0[i_smallg]}")
+                print(f"Density {dens_vals1[i_smallg]}")
+                print(f"Distance to each maxima {cdist(y_five[i_smallg], maximas)}")
                 raise RuntimeError(
                     f"Non-nuclear attractor was found! Exiting"
                 )
@@ -210,6 +230,7 @@ def steepest_ascent_rk45(
         # Update next iteration
         pts = y_five.copy()
         dens_vals0 = dens_vals1
+        niter += 1
         # print("pts", pts)
 
         # input("Next step")
