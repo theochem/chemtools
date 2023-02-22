@@ -67,51 +67,58 @@ def _classify_rays_as_ias_or_oas(
     #     it as either a IAS or OAS.   Here you can determine whether it crosses twice, and
     #     determine which ray requires special attention.
     #
-    print("Index to atom ", index_to_atom, all_points.shape)
+    # print("Index to atom ", index_to_atom, all_points.shape)
     ias_bnds = [OrderedDict() for _ in range(0, numb_maximas)]  # Keys are Points index
     np.set_printoptions(threshold=np.inf)
     for i_maxima in range(0, numb_maximas):
-        print("ATom i ", i_maxima)
-        print("Starting and Final index", index_to_atom[i_maxima], index_to_atom[i_maxima + 1])
+        # print("ATom i ", i_maxima)
+        # print("Starting and Final index", index_to_atom[i_maxima], index_to_atom[i_maxima + 1])
         basins_a = all_basins[index_to_atom[i_maxima]:index_to_atom[i_maxima + 1]]  # Basin of atom
         points_a = all_points[index_to_atom[i_maxima]:index_to_atom[i_maxima + 1]]  # Points of atom
-        print("Basins of atom ", basins_a)
+        # print("Basins of atom ", basins_a)
         numb_rad_pts = numb_rad_to_radial_shell[i_maxima]
 
         i_ray = 0
-        print(index_to_atom[i_maxima], numb_rad_pts)
-        print("Number of angular points in this atom", numb_rays_to_atom[i_maxima])
+        # print(index_to_atom[i_maxima], numb_rad_pts)
+        # print("Number of angular points in this atom", numb_rays_to_atom[i_maxima])
         for i_ang in range(numb_rays_to_atom[i_maxima]):
-            print("Angular pt j", i_ang)
-            print("Number of radial points in this angular pt ", numb_rad_pts[i_ang])
+            # print("Angular pt j", i_ang)
+            # print("Number of radial points in this angular pt ", numb_rad_pts[i_ang])
 
             # Get the basin of the ray
             basins_ray = basins_a[i_ray:i_ray + numb_rad_pts[i_ang]]
-            print("Basin of the ray ", basins_ray)
+            # print("Basin of the ray ", basins_ray)
 
             # Classify basins as either OAS and IAS, if IAS, then count the number of
             #     intersections of the IAS. In addition, get the l_bnd, u_bnd of each intersection.
             # Groups basins i.e. [1, 1, 1, 0, 0, 0, 1, 1, 2, 2] -> [1, 0, 1, 2]
             group_by = [(k, list(g)) for k, g in itertools.groupby(basins_ray)]
             unique_basins = np.array([x[0] for x in group_by])
-            print(basins_ray == i_maxima)
-            print(unique_basins)
+            # print(basins_ray == i_maxima)
+            # print(unique_basins)
 
             # All pts in the ray got assigned to the same basin
             if len(unique_basins) == 1:
                 # This implies it is an OAS point, else then it is an IAS with a bad ray.
                 if unique_basins[0] == i_maxima:
-                    print("OAS Point")
+                    # print("OAS Point")
                     oas[i_maxima].append(i_ang)
                 else:
                     # This is IAS with a bad ray, would have to re-determine the l_bnd
-                    raise RuntimeError("Fix later, bad ray")
+                    print(f"Maxima you're at {i_maxima}")
+                    print(f"Basins founds on ray {basins_ray}")
+                    print(f"Unique Basins founds on ray {unique_basins}")
+                    raise RuntimeError("Fix later, bad ray.  This is most likely due to"
+                                       "either the beta-sphere determination was bad or"
+                                       "the ODE solver wasn't accurate enough. The ode solver"
+                                       "would need to be the same or more accurate than the"
+                                       "beta-sphere")
             else:
                 # The point is an IAS, determine the number of intersections.
                 conv_to_atom = unique_basins == i_maxima
                 numb_intersections = np.sum(conv_to_atom)
                 if numb_intersections >= 1:
-                    print("IAS With one Intersection.")
+                    # print("IAS With one Intersection.")
                     # Determine lower and upper-bound Point on ray.
                     index_u_bnd = len(group_by[0][1])
                     # Determine radius from the upper and lower bound.
@@ -121,7 +128,7 @@ def _classify_rays_as_ias_or_oas(
                     # Update containers
                     ias_bnds[i_maxima][i_ang] = [r_lbnd, r_ubnd]
                     ias[i_maxima].append(i_ang)
-                    print("Radius Lower and Upper bound ", r_lbnd, r_ubnd)
+                    # print("Radius Lower and Upper bound ", r_lbnd, r_ubnd)
                 # else:
                 #     r"""
                 #     There are rays for example CH4, where the ray goes from basin 1 to 0 to 1
@@ -249,7 +256,7 @@ def _solve_intersection_of_ias(
         points = []
         numb_pts_per_ray = []
         for (i_maxima, i_ang, l_bnd, u_bnd, ss) in ias_indices:
-            print((i_maxima, i_ang, l_bnd, u_bnd, ss))
+            # print((i_maxima, i_ang, l_bnd, u_bnd, ss))
             ray = (
                 maximas[int(i_maxima)] +
                 np.arange(l_bnd, u_bnd + ss, ss)[:, None] * angular_pts[int(i_maxima)][int(i_ang), :]
@@ -262,19 +269,20 @@ def _solve_intersection_of_ias(
         basins = steepest_ascent_rk45(
             points, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=ss_0
         )
-        print("Basins", basins)
+        # print("Basins", basins)
 
         # Refine the rays further
         index_basins = 0  # Index to iterate through basins
         converge_indices = []
+        print("Average step-size", np.mean(ias_indices[:, -1]))
         for i, (i_maxima, i_ang, l_bnd, u_bnd, ss) in enumerate(ias_indices):
             basins_ray = basins[index_basins:index_basins + numb_pts_per_ray[i]]
-            print((i_maxima, i_ang, l_bnd, u_bnd, ss))
-            print("Basins ", i, basins_ray)
+            # print((i_maxima, i_ang, l_bnd, u_bnd, ss))
+            # print("Basins ", i, basins_ray)
 
             # Basins that switch index
             i_switch = np.argmax(basins_ray != i_maxima)
-            print("Index of switch ", i_switch)
+            # print("Index of switch ", i_switch)
             if i_switch == 0:
                 raise ValueError(f"Fix this.")
 
@@ -290,12 +298,12 @@ def _solve_intersection_of_ias(
                 new_l_bnd = l_bnd + ss * (i_switch - 1)
                 new_u_bnd = l_bnd + ss * (i_switch)
                 new_ss = max(ss / 10.0, bnd_err)
-                print("New step-size ", new_ss)
+                # print("New step-size ", new_ss)
                 ias_indices[i] = [i_maxima, i_ang, new_l_bnd, new_u_bnd, new_ss]
 
             # Update index for the next ray
             index_basins += numb_pts_per_ray[i]
-            print("COnvergence indices", converge_indices)
+            # print("COnvergence indices", converge_indices)
         # Remove converged indices
         ias_indices = np.delete(ias_indices, converge_indices, axis=0)
 
@@ -312,7 +320,7 @@ def qtaim_surface_vectorize(
     bnd_err=1e-4,
     iso_err=1e-6,
     beta_spheres=None,
-    beta_sphere_deg=21,
+    beta_sphere_deg=27,
     ss_0=0.23,
     max_ss=0.5,
     tol=1e-7,
@@ -388,8 +396,9 @@ def qtaim_surface_vectorize(
     dist_maxs = cdist(maximas, maximas)
     distance_maximas = np.sort(dist_maxs, axis=1)[:, min(5, maximas.shape[0] - 1)]
     ss0 = 0.2
+    min_rad = 0.2  # TODO: Probably should take the minimum depending on nuclei coordinates.
     radial_grid = [
-        np.arange(0.2, x + 5.0, ss0) for x in distance_maximas
+        np.arange(min_rad, x + 5.0, ss0) for x in distance_maximas
     ]
     # input("Hello")
 
@@ -407,7 +416,7 @@ def qtaim_surface_vectorize(
     ang_grid = AngularGrid(degree=beta_sphere_deg)
     if beta_spheres is None:
         beta_spheres = determine_beta_spheres(
-            beta_spheres, maximas, radial_grid, ang_grid.points, dens_func, grad_func
+            beta_spheres, maximas, radial_grid, ang_grid.points, dens_func, grad_func,
         )
         beta_spheres = np.array(beta_spheres)
     # Check beta-spheres are not intersecting
@@ -424,7 +433,7 @@ def qtaim_surface_vectorize(
         construct_all_points_of_rays_of_atoms(
             maximas, angular_pts, radial_grid, dens_func, iso_val
     )
-    print("Index to atom ", index_to_atom)
+    # print("Index to atom ", index_to_atom)
 
     # Then assign basins values for all the points.
     import time
@@ -433,8 +442,8 @@ def qtaim_surface_vectorize(
         points, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=ss_0
     )
     final = time.time()
-    print("Basins", basins)
-    print("Length of basins ", len(basins))
+    # print("Basins", basins)
+    # print("Length of basins ", len(basins))
     print("Difference ", final - start)
 
     # Using basin values, classify each ray as either IAS or OAS and if IAS, find the interval
@@ -451,7 +460,6 @@ def qtaim_surface_vectorize(
               for y in ias[i]] for i in range(numb_maximas)]
         )
     ))
-    print("ias indices", ias_indices)
     r_func, basin_ias = _solve_intersection_of_ias(
         maximas, ias_indices, angular_pts, dens_func, grad_func, beta_spheres, bnd_err,
         tol=tol, max_ss=max_ss, ss_0=ss_0
