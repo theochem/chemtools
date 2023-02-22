@@ -140,7 +140,7 @@ def determine_beta_spheres(beta_spheres, maximas, radial_grid, angular_pts, dens
                     # Determine the points on the sphere with this radius
                     pts = maxima + rad_pt * angular_pts
                     basins = steepest_ascent_rk45(
-                        pts, dens_func, grad_func, beta_spheres, maximas, tol=1e-7, max_ss=0.1, ss_0=0.025
+                        pts, dens_func, grad_func, beta_spheres, maximas, tol=1e-9, max_ss=0.25, ss_0=0.23
                     )
                     basins = np.array(basins, dtype=np.int)
                     # If all the basins went to same maxima, then update radius

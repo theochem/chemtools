@@ -129,7 +129,7 @@ def steepest_ascent_rk45(
 
     assigned_basins = (-1) * np.ones((numb_pts,), dtype=np.int)
     not_found_indices = np.arange(numb_pts)
-    first_basin = -1  # First basin value that was found
+    first_basin = None  # First basin value that was found
     print("START STEEPEST-ASCENT")
     import time
     while len(not_found_indices) != 0:
@@ -162,7 +162,7 @@ def steepest_ascent_rk45(
         which_basins = np.where(beta_sph)
         # print("beta_sphereS ", beta_spheres)
         # print("which pts are within basin based on beta-sphere", which_basins)
-        # print("Conv to bet asphere", which_converged)
+        # print("basins", which_basins[1])
         if len(which_basins[0]) != 0:
             assigned_basins[not_found_indices[which_basins[0]]] = which_basins[1]
             not_found_indices = np.delete(not_found_indices, which_basins[0])
@@ -182,13 +182,35 @@ def steepest_ascent_rk45(
                         first_basin = unique_basins[0]
                     elif first_basin != unique_basins[0]:
                         return assigned_basins
-
         # print("New indices to still do: ", not_found_indices)
+
+        # Check for critical points that aren't the maxima:
+        #  If the points converge to critical points, then assign it a -2.
+        if len(y_five) != 0:
+            # Note `gradient` that this is an extra computation and could be removed
+            gradient = grad_func(y_five)
+            i_smallg = np.where(
+                (np.all(np.abs(gradient) < 1e-3, axis=1)) & (dens_vals1 > 0.001)
+            )[0]
+            if len(i_smallg) != 0:
+                #  0.001 a.u. obtained from the paper: An Efficient Grid-Based Scheme to Compute QTAIM
+                #  Atomic Properties without Explicit Calculation ofZero-Flux Surfaces
+                # Assign these points to basin -2,  delete them.
+                print(f"Where the NNCP is {y_five[i_smallg]}")
+                raise RuntimeError(
+                    f"Non-nuclear attractor was found! Exiting"
+                )
+                assigned_basins[not_found_indices[i_smallg]] = -2
+                not_found_indices = np.delete(not_found_indices, i_smallg)
+                y_five = np.delete(y_five, i_smallg, axis=0)
+                ss = np.delete(ss, i_smallg)[:, None]
+                dens_vals1 = np.delete(dens_vals1, i_smallg)
+
 
         # Update next iteration
         pts = y_five.copy()
-        # print(pts)
         dens_vals0 = dens_vals1
+        # print("pts", pts)
 
         # input("Next step")
     # print("Final basins ", assigned_basins)
