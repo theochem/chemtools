@@ -11,6 +11,7 @@ import numpy as np
 
 from grid.lebedev import AngularGrid
 from grid.atomgrid import AtomGrid
+from grid.basegrid import Grid
 
 __all__ = ["SurfaceQTAIM"]
 
@@ -112,6 +113,27 @@ class SurfaceQTAIM():
                 rgrid = rgrid[0]
         atom_grid = AtomGrid(rgrid, degrees=[deg], center=self.maximas[i_basin])
 
+        ias_indices_a = self.ias[i_basin]
+        r_limits = self.r_func[i_basin][ias_indices_a]
+        # Holds indices of each point on the angular grid, where the radial points should be zero afterwards.
+        ias_indices, rad_indices = np.where(atom_grid.rgrid.points[None, :] > r_limits[:, None])
+        start_indices = atom_grid.indices[rad_indices]  # Get the radial shell that includes the index rad_indices.
+        ias_indices = np.array(ias_indices, dtype=int)
+        start_indices = np.array(start_indices, dtype=int)
+        indices_zero = np.array(start_indices + np.array(ias_indices_a, dtype=int)[ias_indices], dtype=int)
+        atom_grid.weights[indices_zero] = 0.0
+
+
+        indices_zero = np.where(atom_grid.weights == 0.0)[0]
+        points = np.delete(atom_grid.points, indices_zero, axis=0)
+        weights = np.delete(atom_grid.weights, indices_zero)
+
+        return Grid(points, weights)
+        # TODO: Better if I jsut remove the points, and weights rather than setting the weights to zero
+        #  This is because, it saves computation time when computing points that we know the weights are zero.
+        """
+        Depreciated 
+        
         for i_ias in self.ias[i_basin]:
             r_limit = self.r_func[i_basin][i_ias]
 
@@ -121,6 +143,9 @@ class SurfaceQTAIM():
                     i_start, i_final = atom_grid.indices[i_rad], atom_grid.indices[i_rad + 1]
                     atom_grid.weights[i_start + i_ias] = 0.0
         return atom_grid
+        """
+        return atom_grid
+
 
     def generate_pts_on_surface(self, i_basin):
         sph_pts = self.generate_angular_pts_of_basin(i_basin)
