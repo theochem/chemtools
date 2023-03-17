@@ -7,11 +7,13 @@ from grid.lebedev import AngularGrid
 
 from chemtools.topology.surface import SurfaceQTAIM
 from chemtools.topology.utils import (
-    determine_beta_spheres,
+    construct_radial_grids,
+    determine_beta_spheres_and_nna,
+    find_non_nuclear_attractors,
     find_optimize_centers,
     solve_for_oas_points
 )
-from chemtools.topology.ode import steepest_ascent_rk45
+from chemtools.topology.ode import find_basins_steepest_ascent_rk45
 
 
 __all__ = ["qtaim_surface_vectorize"]
@@ -266,7 +268,7 @@ def _solve_intersection_of_ias(
         points = np.vstack(points)
 
         # Solve for basins
-        basins = steepest_ascent_rk45(
+        basins = find_basins_steepest_ascent_rk45(
             points, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=ss_0
         )
         # print("Basins", basins)
@@ -324,7 +326,8 @@ def qtaim_surface_vectorize(
     ss_0=0.23,
     max_ss=0.5,
     tol=1e-7,
-    optimize_centers=True
+    optimize_centers=True,
+    hess_func=None,
 ):
     r"""
     Parameters
@@ -356,6 +359,10 @@ def qtaim_surface_vectorize(
         Tolerance for the adaptive step-size.
     optimize_centers: bool
         If true, then the steepest-ascent is performed on the centers to find the local maximas.
+    hess_func: callable(ndarray(N, 3)->ndarray(N, 3, 3))
+        The Hessian of the electron density. If this is provided, then non-nuclear attractors will be found.
+        Adds a default Lebedev/angular grid of degree fifty and 0.1 a.u. to the `beta-spheres` if it is
+        provided.
 
     Returns
     -------
@@ -369,7 +376,7 @@ def qtaim_surface_vectorize(
     2. Determine the beta-spheres over all atoms.
     3. Using an angular grid and radial grid, construct all rays propogating across all atoms.
     4. Solve for each basin value for each point.
-    5. Analyze the basin values and classifty each ray as either an outer-atomic or inner-atomic
+    5. Analyze the basin values and classify each ray as either an outer-atomic or inner-atomic
         surface point.
     6. For the inner-atomic rays, find the point of intersection to the surface boundary.
 
@@ -390,55 +397,53 @@ def qtaim_surface_vectorize(
         maximas = find_optimize_centers(maximas, grad_func)
 
     # Construct a radial grid for each atom by taking distance to the closest five atoms.
-    #  Added an extra padding in the case of carbon in CH4
-    #  TODO: the upper-bound should depend on distance to isosurface value and distance
-    #         between atoms
-    dist_maxs = cdist(maximas, maximas)
-    distance_maximas = np.sort(dist_maxs, axis=1)[:, min(5, maximas.shape[0] - 1)]
     ss0 = 0.2
-    min_rad = 0.2  # TODO: Probably should take the minimum depending on nuclei coordinates.
-    radial_grid = [
-        np.arange(min_rad, x + 5.0, ss0) for x in distance_maximas
-    ]
-    # input("Hello")
+    radial_grids = construct_radial_grids(maximas, maximas, 0.2, 5.0, ss0)
 
-    numb_maximas = len(maximas)
-    angular_pts = []
-    for ang in angular:
-        if isinstance(ang, int):
-            angular_pts.append(AngularGrid(degree=ang).points)
-        else:
-            angular_pts.append(ang.points)
-
-    # Determine beta-spheres from a smaller angular grid
+    # Determine beta-spheres and non-nuclear attractors from a smaller angular grid
     #  Degree can't be too small or else the beta-radius is too large and IAS point got classified
     #  as OAS point. TODO: Do the angle/spherical trick then do the beta-sphere
     ang_grid = AngularGrid(degree=beta_sphere_deg)
     if beta_spheres is None:
-        beta_spheres = determine_beta_spheres(
-            beta_spheres, maximas, radial_grid, ang_grid.points, dens_func, grad_func,
+        beta_spheres, maximas, radial_grids = determine_beta_spheres_and_nna(
+            beta_spheres, maximas, radial_grids, ang_grid.points, dens_func, grad_func, hess_func
         )
         beta_spheres = np.array(beta_spheres)
     # Check beta-spheres are not intersecting
+    dist_maxs = cdist(maximas, maximas)
     condition = dist_maxs <= beta_spheres[:, None] + beta_spheres
     condition[range(len(maximas)), range(len(maximas))] = False  # Diagonal always true
     if np.any(condition):
         raise ValueError(f"Beta-spheres {beta_spheres} overlap with one another.")
     # Reduce the number of radial points that are greater than the beta-sphere.
-    for i in range(0, numb_maximas):
-        radial_grid[i] = radial_grid[i][radial_grid[i] >= beta_spheres[i]]
+    for i in range(0, len(maximas)):
+        radial_grids[i] = radial_grids[i][radial_grids[i] >= beta_spheres[i]]
+    # Construct Angular Points
+    angular_pts = []
+    for i in range(len(maximas)):
+        # If it is not provided, then use what's specified
+        if i < len(angular):
+            ang = angular[i]
+            if isinstance(ang, int):
+                angular_pts.append(AngularGrid(degree=ang).points)
+            else:
+                angular_pts.append(ang.points)
+        else:
+            # If it is a Non-nuclear attractor
+            angular.append(50)
+            angular_pts.append(AngularGrid(degree=50).points)
 
     # First step is to construct a grid that encloses all radial shells across all atoms
     points, index_to_atom, NUMB_RAYS_TO_ATOM, numb_rad_to_radial_shell = \
         construct_all_points_of_rays_of_atoms(
-            maximas, angular_pts, radial_grid, dens_func, iso_val
+            maximas, angular_pts, radial_grids, dens_func, iso_val
     )
     # print("Index to atom ", index_to_atom)
 
     # Then assign basins values for all the points.
     import time
     start = time.time()
-    basins = steepest_ascent_rk45(
+    basins = find_basins_steepest_ascent_rk45(
         points, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=ss_0
     )
     final = time.time()
@@ -457,7 +462,7 @@ def qtaim_surface_vectorize(
     ias_indices = np.array(list(
         itertools.chain.from_iterable(
             [[(i, y, ias_bnds[i][y][0], ias_bnds[i][y][1], max(ss0 / 10.0, bnd_err, ))
-              for y in ias[i]] for i in range(numb_maximas)]
+              for y in ias[i]] for i in range(len(maximas))]
         )
     ))
     r_func, basin_ias = _solve_intersection_of_ias(
@@ -466,6 +471,6 @@ def qtaim_surface_vectorize(
     )
 
     # Solve OAS Points and updates r_func
-    solve_for_oas_points(maximas, oas, radial_grid, angular_pts, dens_func, iso_val, iso_err, r_func)
+    solve_for_oas_points(maximas, oas, radial_grids, angular_pts, dens_func, iso_val, iso_err, r_func)
 
     return SurfaceQTAIM(r_func, angular, maximas, oas, ias, basin_ias, iso_val)
