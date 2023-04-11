@@ -194,6 +194,145 @@ class SurfaceQTAIM():
         sph_pts = self.generate_angular_pts_of_basin(i_basin)
         return self.maximas[i_basin] + self.r_func[i_basin][oas, None] * sph_pts[oas]
 
+    def construct_points_between_ias_and_oas(self, i_basin, dens_func, grad_func, ss_0, max_ss, tol):
+        r"""
+        Construct points between the inner atomic surface and outer atomic surface.
+
+        This is done by constructed a convex hull between IAS and OAS, seperetely.
+        Each point on the IAS, the two closest points are found on the OAS, then
+        a triangle is constructed.  Seven points are constructed within this triangle
+        and the Cartesian coordinates of the sphere centered at the maxima is solved
+        for each of these seven points.
+
+        Parameters
+        -----------
+        ias : List[int]
+            List of integers of `angular_pts` that are part of the inner atomic surface (IAS).
+        oas : List[int]
+            List of integers of `angular_pts` that are part of the outer atomic surface (OAS).
+        angular_pts : np.ndarray
+            Angular Points around the maxima for which rays are propgated from.
+        r_func_max : np.ndarray
+            The radial component for each angular point in `angular_pts` that either gives
+            the radial value that intersects the OAS or the IAS.
+        maxima : np.ndarray
+            Maxima of the basin.
+
+        Returns
+        -------
+        ndarray(K * 7, 3)
+            Cartesian coordinates of :math:`K` points on the sphere centered at `maxima` such that
+            they correspond to the seven points constructed above, where :math:`K` is the number
+            of points on the IAS of `maxima`.
+
+        """
+        maxima = self.maximas[i_basin]
+        ias = self.ias[i_basin]
+        oas = self.oas[i_basin]
+        r_func_max = self.r_func[i_basin]
+        angular_pts = self.generate_angular_pts_of_basin(i_basin)
+        # Take a convex hull of both IAS and OAS seperately.
+        ias_pts = maxima + r_func_max[ias, None] * angular_pts[ias, :]
+        oas_pts = maxima + r_func_max[oas, None] * angular_pts[oas, :]
+        ias_hull = ConvexHull(ias_pts)
+        oas_hull = ConvexHull(oas_pts)
+        ias_bnd = ias_hull.points[ias_hull.vertices]
+        oas_bnd = oas_hull.points[oas_hull.vertices]
+
+        # Compute the distance matrix
+        dist_mat = cdist(ias_bnd, oas_bnd)
+        i_smallest_dist = np.argmin(dist_mat, axis=1)
+        smallest_dist = dist_mat[np.arange(len(ias_bnd)), i_smallest_dist]
+        # print("Smallest distance between ias and oas ", np.sort(smallest_dist))
+        # print("new pts ", new_pts)
+
+        # fig = plt.figure()
+        # ax = plt.axes(projection='3d')
+        # p = ias_bnd
+        # ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
+        # p = ias_bnd[smallest_dist < np.exp(np.mean(np.log(smallest_dist)) - 2.0 * np.std(np.log(smallest_dist))), :]
+        # ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="m")
+        # p = oas_bnd
+        # ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
+        # plt.show()
+
+        # for each point in say ias take the closest two points in oas.
+        new_ang_pts = np.zeros((0, 3), dtype=np.float64)  # usually 7 points per ias boundary are added.
+        # Assumes the distances have a log-normal distribution, and taking the second quantile to get the
+        #   points closest to the OAS from the IAS.
+        extreme_ends = np.exp(np.mean(np.log(smallest_dist)) - 2.0 * np.std(np.log(smallest_dist)))
+        # print("Distance tolerance ", extreme_ends)
+        indices = np.where(smallest_dist < extreme_ends)[0]
+        ias_parameters = []  # parameters needed for
+        i_angular = 0
+        for i_ias in indices:
+            pt_ias = ias_bnd[i_ias, :]
+            # Get the two closest points on OAS to this IAS pt.
+            two_indices = dist_mat[i_ias].argsort()[:2]
+            pt1, pt2 = oas_bnd[two_indices[0]], oas_bnd[two_indices[1]]
+
+            # Take the center and midpoint between each line of the triangle (pt_ias, pt1, pt2)
+            midpoint = (pt1 + pt2 + pt_ias) / 3.0
+            line_pt1 = (pt1 + pt_ias) / 2.0
+            line_pt2 = (pt2 + pt_ias) / 2.0
+            line_pt3 = (pt1 + pt2) / 2.0
+
+            # The triangle with the center can be split into three polygons, take the center of each.
+            poly_pt1 = (midpoint + line_pt1 + line_pt2 + pt_ias) / 4.0
+            poly_pt2 = (midpoint + line_pt1 + line_pt3 + pt1) / 4.0
+            poly_pt3 = (midpoint + line_pt2 + line_pt3 + pt2) / 4.0
+
+            new_pts = np.array([midpoint, line_pt1, line_pt2, line_pt3, poly_pt1, poly_pt2, poly_pt3])
+            # Solve for the Cartesian angular coordinates of these 7 points by solving
+            #  r = m + t direction, where m is the maxima, direction has norm one, r is each of
+            #  these points
+            new_pts = new_pts - maxima
+            # Delete points that are on the maxima.
+            direction = np.delete(new_pts, np.all(np.abs(new_pts) < 1e-10, axis=1), axis=0)
+            radiuses = np.linalg.norm(direction, axis=1)
+            direction = direction / radiuses[:, None]
+            # Delete directions that are the same
+            direction, indices = np.unique(direction, axis=0, return_index=True)
+            radiuses = radiuses[indices]
+            new_ang_pts = np.vstack((new_ang_pts, direction))
+
+            for i in range(len(new_pts)):
+                # Construct lower and upper bound such that it is at the midpoint
+                l_bnd = radiuses[i] - 0.1
+                u_bnd = radiuses[i] + 0.1
+                ss = 0.05
+                ias_parameters.append(
+                    [i_basin, i_angular, l_bnd, u_bnd, ss, -1, i_angular]
+                )
+                i_angular += 1
+        ias_parameters = np.array(ias_parameters)
+
+        from chemtools.topology.qtaim_gpu import _solve_intersection_of_ias_point
+        print("Solve for the new radiuses")
+        angular_pts = [[0.0, 0.0, 0.0]] * len(self.maximas)
+        angular_pts[i_basin] = new_ang_pts
+        ias_lengths = [1] * len(self.maximas)
+        ias_lengths[i_basin] = len(new_ang_pts)
+        r_func_new, _ = _solve_intersection_of_ias_point(
+            self.maximas, ias_parameters, angular_pts, dens_func, grad_func, self.beta_spheres,
+            bnd_err=1e-5, ias_lengths=ias_lengths, ss_0=ss_0, max_ss=max_ss, tol=tol,
+        )
+
+        new_pts = maxima + r_func_new[i_basin][:, None] * new_ang_pts
+        print(f"Number of ne wpoints {len(new_pts)}")
+        return new_pts
+
+    def plot_basins(self, i_basin, include_other_surfaces=False):
+        fig = plt.figure()
+        ax = plt.axes(projection='3d')
+        p = self.maximas
+        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="g", s=60, label="Maximas")
+        p = self.get_ias_pts_of_basin(i_basin, include_other_surfaces=include_other_surfaces)
+        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
+        p = self.get_oas_pts_of_basin(i_basin)
+        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
+        plt.show()
+
     def interpolate_radial_func(self, method="smooth", ias=False, oas=False):
         # if method not in ["smooth", ]
         if ias and oas:
