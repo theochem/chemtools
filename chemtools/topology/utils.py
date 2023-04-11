@@ -162,17 +162,24 @@ def determine_beta_spheres_and_nna(
                     # Determine the points on the sphere with this radius
                     pts = maxima + rad_pt * angular_pts
                     # You want here for the ODE to be accurate in-order to find potential NNA.
-                    basins, maximas = find_basins_steepest_ascent_rk45(
-                        pts, dens_func, grad_func, beta_spheres, maximas, ss_0=0.2, max_ss=0.2, tol=1e-9,
-                        hess_func=hess_func
-                    )
+                    if hess_func is None:
+                        basins = find_basins_steepest_ascent_rk45(
+                            pts, dens_func, grad_func, beta_spheres, maximas, ss_0=0.2, max_ss=0.2, tol=1e-9,
+                            hess_func=hess_func
+                        )
+                    else:
+                        basins, maximas = find_basins_steepest_ascent_rk45(
+                            pts, dens_func, grad_func, beta_spheres, maximas, ss_0=0.2, max_ss=0.2, tol=1e-9,
+                            hess_func=hess_func
+                        )
                     basins = np.array(basins, dtype=np.int)
 
                     which_nna = np.where(basins >= numb_maximas)[0]
                     if len(which_nna) != 0:
                         # Copy a radial grid from the previous method
                         radial_grids += \
-                            construct_radial_grids(maximas[numb_maximas:], maximas[:numb_maximas], 0.1, 5.0, 0.2)
+                            construct_radial_grids(maximas[numb_maximas:], maximas[:numb_maximas],
+                                                   min_pts=0.1, pad=5.0, ss0=0.2)
 
                         print(maximas)
                         print(beta_spheres)
@@ -193,72 +200,6 @@ def determine_beta_spheres_and_nna(
         i_maxima += 1
         # input("next maxima")
     return beta_spheres, maximas, radial_grids
-
-
-def solve_for_isosurface_pt(
-    l_bnd, u_bnd, maxima, cart_sphere_pt, density_func, iso_val, iso_err
-):
-    r"""
-    Solves for the point on a ray that satisfies the isosurface value equation.
-
-    .. math::
-        f(r) := \rho(\textbf{A} + r \textbf{\theta}) - c,
-
-    where A is the position of the atom, :math:`\theta` is the Cartesian coordinates of the
-    point on the sphere, r is the radius, and c is the isosurface value.  The radius
-    is solved using a root-finding algorithm over an interval that contains the isosurface
-    value.
-
-    Parameters
-    ----------
-    l_bnd: float
-        The lower-bound on the radius for the root-solver. Needs to be less than the
-        isosurface value.
-    u_bnd: float
-        The upper-bound on the radius for the root-solver. Needs to be greater than the
-        isosurface value.
-    maxima: ndarray(3,)
-        The maximum of the atom.
-    cart_sphere_pt: ndarray(3,)
-        The Cartesian coordinates of the point on the sphere.
-    density_func: callable(ndarray(M,3), ndarray(M,))
-        The electron density function.
-    iso_val: float
-        The isosurface value.
-    iso_err: float
-        The xtol for the root-solver.
-
-    Returns
-    -------
-    ndarray(3,):
-        The point :math:`\textbf{A} + r \textbf{\theta}` that satisfies the isosurface value.
-
-    """
-    # Given a series of points based on a maxima defined by angles `cart_sphere_pt` with
-    #  radial pts `rad_pts`.   The `index_iso` tells us where on these points to construct another
-    #  refined grid from finding l_bnd and u_bnd.
-    bounds_found = False
-    while not bounds_found:
-        dens_l_bnd = density_func(np.array([maxima + l_bnd * cart_sphere_pt]))
-        dens_u_bnd = density_func(np.array([maxima + u_bnd * cart_sphere_pt]))
-        if iso_val < dens_u_bnd or dens_l_bnd < iso_val:
-            if iso_val < dens_u_bnd:
-                l_bnd = u_bnd
-                u_bnd += 1.5
-            elif dens_l_bnd < iso_val:
-                u_bnd = l_bnd
-                l_bnd -= 1.5
-            # raise ValueError(f"Radial grid {l_bnd, u_bnd} did not bound {dens_l_bnd, dens_u_bnd} "
-            #                  f"the isosurface value {iso_val}. Use larger radial grid.")
-        else:
-            bounds_found = True
-
-    # Use Root-finding algorithm to find the isosurface point.
-    root_func = lambda t: density_func(np.array([maxima + t * cart_sphere_pt]))[0] - iso_val
-    sol = root_scalar(root_func, method="toms748", bracket=(l_bnd, u_bnd), xtol=iso_err)
-    assert sol.converged, f"Root function did not converge {sol}."
-    bnd_pt = maxima + sol.root * cart_sphere_pt
-    return bnd_pt
 
 
 def find_non_nuclear_attractors(maximas, dens_func, grad_func, hess_func):
