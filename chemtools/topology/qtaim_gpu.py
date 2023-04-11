@@ -263,11 +263,11 @@ def construct_all_points_of_rays_of_atoms(
         index_to_atom[i + 1] = index_to_atom[i] + rs.shape[0]  # Add what index it is
         points.append(rs)
     points = np.vstack(points)  # has shape (Product_{i=1}^M K_i N_i, 3)
-    print("Total number of points ", points.shape)
+    print("Total number of points Over All Molecules ", points.shape)
     return points, index_to_atom, NUMB_RAYS_TO_ATOM, numb_rad_to_radial_shell
 
 
-def _solve_intersection_of_ias(
+def _solve_intersection_of_ias_interval(
     maximas, ias_indices, angular_pts, dens_func, grad_func, beta_spheres, bnd_err, ss_0, max_ss, tol
 ):
     r"""
@@ -287,6 +287,7 @@ def _solve_intersection_of_ias(
        First index is which index of maxima it originates from, then second
        index is index of angular point/ray, third index is the lower bound radius and fourth
        index is the upper-bound radius, fifth index is the step-size.
+       The sixth index holds which index of the `IAS` list it points to.
     angular_pts: list[ndarray]
         List of size `M` of the angular points over each maxima.
     dens_func:
@@ -319,7 +320,7 @@ def _solve_intersection_of_ias(
         # Construct New Points
         points = []
         numb_pts_per_ray = []
-        for (i_maxima, i_ang, l_bnd, u_bnd, ss) in ias_indices:
+        for (i_maxima, i_ang, l_bnd, u_bnd, ss, _) in ias_indices:
             # print((i_maxima, i_ang, l_bnd, u_bnd, ss))
             ray = (
                 maximas[int(i_maxima)] +
@@ -338,37 +339,161 @@ def _solve_intersection_of_ias(
         # Refine the rays further
         index_basins = 0  # Index to iterate through basins
         converge_indices = []
-        print("Average step-size", np.mean(ias_indices[:, -1]))
-        for i, (i_maxima, i_ang, l_bnd, u_bnd, ss) in enumerate(ias_indices):
+        # print("Average step-size", np.mean(ias_indices[:, -1]))
+        make_ode_solver_more_accurate = False
+        for i, (i_maxima, i_ang, l_bnd, u_bnd, ss, basin_switch, i_ias) in enumerate(ias_indices):
             basins_ray = basins[index_basins:index_basins + numb_pts_per_ray[i]]
-            # print((i_maxima, i_ang, l_bnd, u_bnd, ss))
+            print((i_maxima, i_ang, l_bnd, u_bnd, ss))
             # print("Basins ", i, basins_ray)
 
             # Basins that switch index
             i_switch = np.argmax(basins_ray != i_maxima)
             # print("Index of switch ", i_switch)
             if i_switch == 0:
-                raise ValueError(f"Fix this.")
+                print("Basins with bad ray: ", basins_ray, (i_maxima, i_ang, l_bnd, u_bnd, ss))
+                # raise ValueError(f"This ray lost it's ability to be an IAS point, as all points converged to the same maxima. "
+                #                  f"Fix this.")
 
-            # If ss was less than bnd_err, then we converge and should stop.
-            if ss <= bnd_err:
-                # Take midpoint to be the radius of intersection
-                radius_mid_pt = (2.0 * l_bnd + ss * i_switch) / 2.0
-                r_func[int(i_maxima)][int(i_ang)] = radius_mid_pt
-                basin_ias[int(i_maxima)].append(basins_ray[i_switch])
-                converge_indices.append(i)  # Put in list to remove indices.
-            else:
                 # Update ias_indices for the next iteration for example l_bnd, u_bnd, step-size
-                new_l_bnd = l_bnd + ss * (i_switch - 1)
-                new_u_bnd = l_bnd + ss * (i_switch)
+                # This lower and upper bound is chosen to guarantee that the IAS point will be found.
+                new_l_bnd = l_bnd - 20.0 * ss
+                new_u_bnd = u_bnd + 20.0 * ss
                 new_ss = max(ss / 10.0, bnd_err)
+                # Make ODE solver more accurate
+                make_ode_solver_more_accurate = True
                 # print("New step-size ", new_ss)
-                ias_indices[i] = [i_maxima, i_ang, new_l_bnd, new_u_bnd, new_ss]
+                ias_indices[i] = [i_maxima, i_ang, new_l_bnd, new_u_bnd, new_ss, basin_switch, i_ias]
+            else:
+                # If ss was less than bnd_err, then we converge and should stop.
+                if ss <= bnd_err:
+                    # Take midpoint to be the radius of intersection
+                    radius_mid_pt = (2.0 * l_bnd + ss * i_switch) / 2.0
+                    r_func[int(i_maxima)][int(i_ang)] = radius_mid_pt
+                    basin_ias[int(i_maxima)][int(i_ias)] = basins_ray[i_switch]
+                    converge_indices.append(i)  # Put in list to remove indices.
+                else:
+                    # Update ias_indices for the next iteration for example l_bnd, u_bnd, step-size
+                    new_l_bnd = l_bnd + ss * (i_switch - 1)
+                    new_u_bnd = l_bnd + ss * (i_switch)
+                    new_ss = max(ss / 10.0, bnd_err)
+                    # print("New step-size ", new_ss)
+                    ias_indices[i] = [i_maxima, i_ang, new_l_bnd, new_u_bnd, new_ss, basin_switch, i_ias]
 
             # Update index for the next ray
             index_basins += numb_pts_per_ray[i]
             # print("COnvergence indices", converge_indices)
+        if make_ode_solver_more_accurate:
+            tol /= 2.0
+            max_ss = min(0.1, max_ss)
+            ss_0 /= 2.0
+
         # Remove converged indices
+        ias_indices = np.delete(ias_indices, converge_indices, axis=0)
+
+    # Solve for multiple intersections
+    return r_func, basin_ias
+
+
+def _solve_intersection_of_ias_point(
+    maximas, ias_indices, angular_pts, dens_func, grad_func, beta_spheres, bnd_err, ias_lengths, ss_0, max_ss, tol
+):
+    r"""
+    Solves the intersection of the ray to the inner-atomic surface.
+
+    A point is associated to each ray based on `ias_indices`.  The basin value
+    is assigned to each point, and the point is moved along the ray until it keeps switching basins.
+     The process is further repeated with a smaller step-size until the distance between two
+     points on the ray is less than `bnd_err`.
+
+    Parameters
+    ----------
+    maximas: ndarray(M, 3)
+        Optimized centers of the electron density.
+    ias_indices: ndarray(N, 6)
+       Rows correspond to each ray that intersects the IAS.
+       First index is which index of maxima it originates from, then second
+       index is index of angular point/ray, third index is the lower bound radius
+       and fourth index is the upper-bound radius, fifth index is the step-size.
+       The fifth index holds which basin the IAS point switches to. Note it may
+       not be the true basin value that it switches to.
+       The sixth index holds which index of the `IAS` list it points to.
+    angular_pts: list[ndarray]
+        List of size `M` of the angular points over each maxima.
+    dens_func:
+        The density of electron density.
+    grad_func:
+        The gradient of the electron density.
+    beta_spheres: ndarray(M,)
+        Beta-spheres radius of each atom.
+    bnd_err: float
+        The error of the intersection of the IAS. When the distance to two consequent points
+        on the ray crosses different basins is less than this error, then the midpoint is accepted
+        as the final radius value.
+    ias_lengths: list[int]
+        List of length `M` atoms that contains the number of IAS points
+    ss_0: float, optional
+        The initial step-size of the ODE (RK45) solver.
+    max_ss: float, optional
+        Maximum step-size of the ODE (RK45) solver.
+    tol: float, optional
+        Tolerance for the adaptive step-size.
+
+    Return
+    -------
+    List[ndarray()], list[list[int]]:
+        The first list holds arrays that gives the radius value that intersects the IAS or OAS.
+        The second list of size `M`, holds which ias crosses which other basin.
+
+    """
+    if not isinstance(ias_indices, np.ndarray):
+        raise TypeError(f"The parameters to solve indices should be numpy array instead of {type(ias_indices)}.")
+    r_func = [np.zeros((len(angular_pts[i]),), dtype=np.float64) for i in range(len(maximas))]
+    basin_ias = [[-1] * ias_lengths[i] for i in range(len(maximas))]  # basin ids for inner atomic surface.
+    while len(ias_indices) != 0:
+        # Construct New Points
+        points = []
+        for (i_maxima, i_ang, l_bnd, u_bnd, _, _, _) in ias_indices:
+            # print((i_maxima, i_ang, l_bnd, u_bnd, ss))
+            # Take the midpoint of interval [l_bnd, u_bnd]
+            ray = maximas[int(i_maxima)] + (l_bnd + u_bnd) / 2.0 * angular_pts[int(i_maxima)][int(i_ang), :]
+            points.append(ray)
+        points = np.vstack(points)
+
+        # Solve for basins
+        basins = find_basins_steepest_ascent_rk45(
+            points, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=ss_0
+        )
+        # print("Basins", basins)
+
+        # Refine the rays further
+        # print("Average step-size", np.mean(ias_indices[:, 4]))
+        converge_indices = []
+        # Note it always assumes that `l_bnd` goes to `i_maxima` and `u_bnd` goes to `basin_switch`.
+        for i, (i_maxima, i_ang, l_bnd, u_bnd, ss, basin_switch, i_ias) in enumerate(ias_indices):
+            #print((i_maxima, i_ang, l_bnd, u_bnd, ss, basin_switch))
+            if basins[i] == i_maxima:
+                # Calculate new step-size between [(l_bnd + u_bnd) / 2,  u_bnd]
+                new_l_bnd = (l_bnd + u_bnd) / 2
+                new_u_bnd = u_bnd
+            else:
+                # Calculate new stepsize between [l_bnd, (l_bnd + u_bnd) / 2]
+                new_l_bnd = l_bnd
+                new_u_bnd = (l_bnd + u_bnd) / 2
+                # Update the basin that it switches to.
+                if basin_switch != basins[i]:
+                    basin_switch = basins[i]
+            new_ss = (new_u_bnd - new_l_bnd)
+            # If new stepsize was less than bnd_err, then we converge and should stop.
+            if new_ss <= bnd_err:
+                r_func[int(i_maxima)][int(i_ang)] = (new_l_bnd + new_u_bnd) / 2
+                basin_ias[int(i_maxima)][int(i_ias)] = int(basin_switch)
+                converge_indices.append(i)  # Put in list to remove indices.
+            else:
+                # Update ias_indices for the next iteration for example l_bnd, u_bnd, step-size
+                ias_indices[i] = [i_maxima, i_ang, new_l_bnd, new_u_bnd, new_ss, basin_switch, i_ias]
+
+        # Remove converged indices
+        # print("COnvergence indices", converge_indices)
         ias_indices = np.delete(ias_indices, converge_indices, axis=0)
 
     # Solve for multiple intersections
