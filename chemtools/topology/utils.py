@@ -1,7 +1,8 @@
 from grid.cubic import UniformGrid
 import numpy as np
+from scipy.spatial import ConvexHull
 from scipy.spatial.distance import cdist
-from scipy.optimize import root_scalar
+from scipy.optimize import root
 
 from chemtools.topology.ode import find_basins_steepest_ascent_rk45, steepest_ascent_rk45, gradient_path
 
@@ -13,8 +14,7 @@ __all__ = [
     "solve_for_oas_points",
     "construct_radial_grids",
     "find_optimize_centers",
-    "determine_beta_spheres_and_nna",
-    "solve_for_isosurface_pt"
+    "determine_beta_spheres_and_nna"
 ]
 
 
@@ -24,7 +24,15 @@ def solve_for_oas_points(
     r"""
     For each index in outer-atomic surface (OAS) solves for the isovalue point along a ray.
 
-    This is stored inside `r_func`.
+    This is stored inside `r_func`. Solves for the point on a ray that satisfies the isosurface value equation.
+
+    .. math::
+        f(r) := \rho(\textbf{A} + r \textbf{\theta}) - c,
+
+    where A is the position of the atom, :math:`\theta` is the Cartesian coordinates of the
+    point on the sphere, r is the radius, and c is the isosurface value.  The radius
+    is solved using a root-finding algorithm over an interval that contains the isosurface
+    value.
 
     Parameters
     ----------
@@ -51,6 +59,8 @@ def solve_for_oas_points(
         maxima = maximas[i_maxima]
         radial = radial_grid[i_maxima]
         ang_pts = angular_pts[i_maxima]
+
+        initial_guess = []
         for i_oas in oas[i_maxima]:
             # Construct upper and lower bound of the isosurface equation
             ang_pt = ang_pts[i_oas]
@@ -58,13 +68,13 @@ def solve_for_oas_points(
             i_iso = np.argsort(iso_eq)[0]
             l_bnd = radial[i_iso - 1] if i_iso >= 0 else radial[i_iso] / 2.0
             u_bnd = radial[i_iso + 1] if i_iso + 1 < len(radial) else radial[i_iso] * 2.0
-            # Solve for the isosurface point
-            oas_pt = solve_for_isosurface_pt(
-                l_bnd, u_bnd, maxima, ang_pt, dens_func, iso_val, iso_err
-            )
-            # print("Check isosurface pt", oas_pt, dens_func(np.array([oas_pt])))
-            # Record them
-            r_func[i_maxima][i_oas] = np.linalg.norm(oas_pt - maxima)
+            initial_guess.append((u_bnd + l_bnd) / 2.0)
+        initial_guess = np.array(initial_guess)
+        root_func = lambda t: np.log(dens_func(maxima + t[:, None] * ang_pts[oas[i_maxima]])) - np.log(iso_val)
+        sol = root(root_func, x0=initial_guess, tol=iso_err, method="krylov")
+        assert sol.success, f"Root function did not converge {sol}."
+        r_func[i_maxima][oas[i_maxima]] = sol.x
+
 
 
 def find_optimize_centers(centers, grad_func):
