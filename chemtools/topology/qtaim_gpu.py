@@ -515,6 +515,7 @@ def qtaim_surface_vectorize(
     tol=1e-7,
     optimize_centers=True,
     hess_func=None,
+    find_multiple_intersections=False,
 ):
     r"""
     Parameters
@@ -533,6 +534,9 @@ def qtaim_surface_vectorize(
         The error of the points on the inner-atomic surface.
     iso_err: float
         The error in solving for the isosurface points on the outer-atomic surface.
+    ss_0: float
+        Initial step-size of the coarse radial grid to determine whether the ray
+        is part of the outer atomic surface or inner.
     beta_spheres: (List[float] or None)
         The radius of confidence that points are assigned to the atom. Should have length `M`.
     beta_sphere_deg: int
@@ -550,6 +554,9 @@ def qtaim_surface_vectorize(
         The Hessian of the electron density. If this is provided, then non-nuclear attractors will be found.
         Adds a default Lebedev/angular grid of degree fifty and 0.1 a.u. to the `beta-spheres` if it is
         provided.
+    find_multiple_intersections: bool
+        If true, then it searches for up to three intersections of the inter-atomic surface. This is a
+        time-consuming process but produces more accurate surfaces.
 
     Returns
     -------
@@ -583,28 +590,34 @@ def qtaim_surface_vectorize(
         # Using ODE solver to refine the maximas further.
         maximas = find_optimize_centers(maximas, grad_func)
 
-    # Construct a radial grid for each atom by taking distance to the closest five atoms.
-    ss0 = 0.2
-    radial_grids = construct_radial_grids(maximas, maximas, 0.2, 5.0, ss0)
+    # Construct a dense radial grid for each atom by taking distance to the closest five atoms.
+    ss0 = 0.1
+    radial_grids = construct_radial_grids(maximas, maximas, min_pts=0.1, pad=1.0, ss0=ss0)
 
     # Determine beta-spheres and non-nuclear attractors from a smaller angular grid
     #  Degree can't be too small or else the beta-radius is too large and IAS point got classified
-    #  as OAS point. TODO: Do the angle/spherical trick then do the beta-sphere
-    ang_grid = AngularGrid(degree=beta_sphere_deg)
+    #  as OAS point.
+    ang_grid = AngularGrid(degree=beta_sphere_deg, use_spherical=True)
     if beta_spheres is None:
         beta_spheres, maximas, radial_grids = determine_beta_spheres_and_nna(
             beta_spheres, maximas, radial_grids, ang_grid.points, dens_func, grad_func, hess_func
         )
         beta_spheres = np.array(beta_spheres)
+        print(f"Final Beta -shpheres {beta_spheres}")
     # Check beta-spheres are not intersecting
     dist_maxs = cdist(maximas, maximas)
     condition = dist_maxs <= beta_spheres[:, None] + beta_spheres
     condition[range(len(maximas)), range(len(maximas))] = False  # Diagonal always true
     if np.any(condition):
         raise ValueError(f"Beta-spheres {beta_spheres} overlap with one another.")
-    # Reduce the number of radial points that are greater than the beta-sphere.
-    for i in range(0, len(maximas)):
-        radial_grids[i] = radial_grids[i][radial_grids[i] >= beta_spheres[i]]
+    # TODO : Check Rotation of Beta-sphere is still preserved.
+
+    # Construct a coarse radial grid for each atom starting at the beta-spheres.
+    ss0 = 0.4
+    radial_grids = [
+        np.arange(beta_spheres[i], radial_grids[i][-1], ss0) for i in range(len(maximas))
+    ]
+
     # Construct Angular Points
     angular_pts = []
     for i in range(len(maximas)):
@@ -612,13 +625,13 @@ def qtaim_surface_vectorize(
         if i < len(angular):
             ang = angular[i]
             if isinstance(ang, int):
-                angular_pts.append(AngularGrid(degree=ang).points)
+                angular_pts.append(AngularGrid(degree=ang, use_spherical=True).points)
             else:
                 angular_pts.append(ang.points)
         else:
             # If it is a Non-nuclear attractor
             angular.append(50)
-            angular_pts.append(AngularGrid(degree=50).points)
+            angular_pts.append(AngularGrid(degree=50, use_spherical=True).points)
 
     # First step is to construct a grid that encloses all radial shells across all atoms
     points, index_to_atom, NUMB_RAYS_TO_ATOM, numb_rad_to_radial_shell = \
@@ -640,24 +653,36 @@ def qtaim_surface_vectorize(
 
     # Using basin values, classify each ray as either IAS or OAS and if IAS, find the interval
     #   along the ray that intersects the IAS.
-    ias, oas, ias_bnds = _classify_rays_as_ias_or_oas(
-        maximas, points, basins, index_to_atom, NUMB_RAYS_TO_ATOM, numb_rad_to_radial_shell
+    ias, oas, ias_bnds, ias_basins, ias_2, ias_bnds_2, ias_basins_2, ias_3, ias_bnds_3, ias_basins_3 = \
+        _classify_rays_as_ias_or_oas(
+            maximas, points, basins, index_to_atom, NUMB_RAYS_TO_ATOM, numb_rad_to_radial_shell, dens_func
     )
+    print("Total number of two intersections found ", [len(x) for x in ias_2])
+    print("Total number of three intersections found ", [len(x) for x in ias_3])
 
     # The IAS is just refining the ray, till you find the exact intersection with the surface.
     # Checks docs of `_solve_intersection_of_ias` for what ias_indices is.
     ias_indices = np.array(list(
         itertools.chain.from_iterable(
-            [[(i, y, ias_bnds[i][y][0], ias_bnds[i][y][1], max(ss0 / 10.0, bnd_err, ))
-              for y in ias[i]] for i in range(len(maximas))]
+            [[(i, y, ias_bnds[i][y][0], ias_bnds[i][y][1], max(ss0 / 10.0, bnd_err), ias_basins[i][y], i_ias)
+              for i_ias, y in enumerate(ias[i])] for i in range(len(maximas))]
         )
     ))
-    r_func, basin_ias = _solve_intersection_of_ias(
+    start = time.time()
+    r_func, basin_ias = _solve_intersection_of_ias_point(
         maximas, ias_indices, angular_pts, dens_func, grad_func, beta_spheres, bnd_err,
-        tol=tol, max_ss=max_ss, ss_0=ss_0
+        ias_lengths=[len(x) for x in ias], tol=tol, max_ss=max_ss, ss_0=ss_0
     )
+    final = time.time()
+    print("Time Difference for Solving IAS ", final - start)
 
     # Solve OAS Points and updates r_func
+    start = time.time()
     solve_for_oas_points(maximas, oas, radial_grids, angular_pts, dens_func, iso_val, iso_err, r_func)
+    final = time.time()
+    print("Time Difference for Solving OAS", final - start)
 
-    return SurfaceQTAIM(r_func, angular, maximas, oas, ias, basin_ias, iso_val)
+    if find_multiple_intersections:
+        raise NotImplementedError(f"Multiple intersections was not implemented yet.")
+
+    return SurfaceQTAIM(r_func, angular, maximas, oas, ias, basin_ias, iso_val, beta_spheres)
