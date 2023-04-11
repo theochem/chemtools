@@ -3,7 +3,7 @@ import itertools
 import numpy as np
 from scipy.spatial.distance import cdist
 
-from grid.lebedev import AngularGrid
+from grid.angular import AngularGrid
 
 from chemtools.topology.surface import SurfaceQTAIM
 from chemtools.topology.utils import (
@@ -21,7 +21,7 @@ __all__ = ["qtaim_surface_vectorize"]
 
 def _classify_rays_as_ias_or_oas(
         maximas, all_points, all_basins, index_to_atom,
-        numb_rays_to_atom, numb_rad_to_radial_shell,
+        numb_rays_to_atom, numb_rad_to_radial_shell, dens_func
 ):
     r"""
     Classify all rays in a molecule as either crossing the outer or inner atomic surface.
@@ -48,16 +48,20 @@ def _classify_rays_as_ias_or_oas(
 
     Returns
     -------
-    ias, oas, ias_bnds: list[list[int]], list[list[int]], list[OrderedDict]
+    ias, oas, ias_bnds, ias_basins: list[list[int]], list[list[int]], list[OrderedDict], list[list[int]]
         A list of size `M`, that holds a list of indices of which angular pt/ray corresponds to
         either intersecting the ias or oas. The final element is a list of size `M`, of
         ordered dictionary whose keys are the indices of ias and items are the lower
         and upper-bound of the radius where the intersection occurs somewhere inbetween.
+        `ias_basins` contains which basin each ias pt in `ias` switches to, when it crosses the boundary.
+
+        These are repeat again for searching for second intersection ias_2, ias_basins_2, ias_bnds_2, and
+        similarly for the third intersection.
 
     """
     numb_maximas = len(maximas)
     oas = [[] for _ in range(numb_maximas)]  # outer atomic surface
-    ias = [[] for _ in range(numb_maximas)]  # inner atomic surface.
+    ias = [[] for _ in range(numb_maximas)]  # inner atomic surface for first intersection.
 
     # The points that all converge to the same point are OAS, and are isosurface points. Remove
     #  them
@@ -70,19 +74,28 @@ def _classify_rays_as_ias_or_oas(
     #     determine which ray requires special attention.
     #
     # print("Index to atom ", index_to_atom, all_points.shape)
-    ias_bnds = [OrderedDict() for _ in range(0, numb_maximas)]  # Keys are Points index
+    ias_bnds = [OrderedDict() for _ in range(0, numb_maximas)]              # Keys are Points index
+    ias_basins = [OrderedDict() for _ in range(numb_maximas)]               # Keys are Points index
+
+
+    ias_2 = [[] for _ in range(numb_maximas)]  # inner atomic surface for second intersection.
+    ias_3 = [[] for _ in range(numb_maximas)]  # inner atomic surface for third intersection.
+    ias_bnds_2 = [OrderedDict() for _ in range(0, numb_maximas)]              # Keys are Points index
+    ias_basins_2 = [OrderedDict() for _ in range(numb_maximas)]               # Keys are Points index
+    ias_bnds_3 = [OrderedDict() for _ in range(0, numb_maximas)]              # Keys are Points index
+    ias_basins_3 = [OrderedDict() for _ in range(numb_maximas)]               # Keys are Points index
     np.set_printoptions(threshold=np.inf)
     for i_maxima in range(0, numb_maximas):
         # print("ATom i ", i_maxima)
         # print("Starting and Final index", index_to_atom[i_maxima], index_to_atom[i_maxima + 1])
         basins_a = all_basins[index_to_atom[i_maxima]:index_to_atom[i_maxima + 1]]  # Basin of atom
         points_a = all_points[index_to_atom[i_maxima]:index_to_atom[i_maxima + 1]]  # Points of atom
-        # print("Basins of atom ", basins_a)
         numb_rad_pts = numb_rad_to_radial_shell[i_maxima]
 
-        i_ray = 0
+        # print("Basins of atom ", basins_a)
         # print(index_to_atom[i_maxima], numb_rad_pts)
         # print("Number of angular points in this atom", numb_rays_to_atom[i_maxima])
+        i_ray = 0
         for i_ang in range(numb_rays_to_atom[i_maxima]):
             # print("Angular pt j", i_ang)
             # print("Number of radial points in this angular pt ", numb_rad_pts[i_ang])
@@ -97,70 +110,119 @@ def _classify_rays_as_ias_or_oas(
             group_by = [(k, list(g)) for k, g in itertools.groupby(basins_ray)]
             unique_basins = np.array([x[0] for x in group_by])
             # print(basins_ray == i_maxima)
-            # print(unique_basins)
 
-            # All pts in the ray got assigned to the same basin
-            if len(unique_basins) == 1:
+            # All pts in the ray got assigned to the same basin of the maxima
+            if len(unique_basins) == 1 and unique_basins[0] == i_maxima:
                 # This implies it is an OAS point, else then it is an IAS with a bad ray.
-                if unique_basins[0] == i_maxima:
-                    # print("OAS Point")
-                    oas[i_maxima].append(i_ang)
-                else:
-                    # This is IAS with a bad ray, would have to re-determine the l_bnd
-                    print(f"Maxima you're at {i_maxima}")
-                    print(f"Basins founds on ray {basins_ray}")
-                    print(f"Unique Basins founds on ray {unique_basins}")
-                    raise RuntimeError("Fix later, bad ray.  This is most likely due to"
-                                       "either the beta-sphere determination was bad or"
-                                       "the ODE solver wasn't accurate enough. The ode solver"
-                                       "would need to be the same or more accurate than the"
-                                       "beta-sphere")
+                # print("OAS Point")
+                oas[i_maxima].append(i_ang)
             else:
                 # The point is an IAS, determine the number of intersections.
                 conv_to_atom = unique_basins == i_maxima
                 numb_intersections = np.sum(conv_to_atom)
-                if numb_intersections >= 1:
+                l_bnd_pad = 0.0  # This is the case with a bad ray, loweres the l_bnd by this amount
+                if numb_intersections == 0:
+                    # This is IAS with a bad ray, would have to re-determine the l_bnd. This was an IAS point
+                    # Whose ray at the boundary is assigned to different basins depending on the accuracy of ODE solver.
+                    # This is IAS with a bad ray, would have to re-determine the l_bnd
+                    l_bnd_pad = 0.1
+
+                if 0 <= numb_intersections:
                     # print("IAS With one Intersection.")
                     # Determine lower and upper-bound Point on ray.
-                    index_u_bnd = len(group_by[0][1])
+                    if group_by[0][1][0] == i_maxima:
+                        # if the ray started with a basin that converged ot i_maxima, then take the upper bound
+                        #   to be the when it started to switch to a different basin.
+                        index_u_bnd = len(group_by[0][1])
+                        index_l_bnd = index_u_bnd - 1
+                    else:
+                        # Here the ray is a bad ray in the sense that the start of the ray should have converged to
+                        #  i_maxima but it dind't, and so take the u_bnd to be when it or sure converges to the
+                        #  different maxima from i_maxima.
+                        index_u_bnd = min(2, len(group_by[0][1]))
+                        index_l_bnd = 0
+                        if index_u_bnd == index_l_bnd:
+                            raise RuntimeError(f"Algorithm Error .")
                     # Determine radius from the upper and lower bound.
                     r_ubnd = np.linalg.norm(points_a[i_ray + index_u_bnd] - maximas[i_maxima])
-                    r_lbnd = np.linalg.norm(
-                        points_a[i_ray + index_u_bnd - 1] - maximas[i_maxima])
+                    r_lbnd = np.linalg.norm(points_a[i_ray + index_l_bnd] - maximas[i_maxima])
                     # Update containers
-                    ias_bnds[i_maxima][i_ang] = [r_lbnd, r_ubnd]
+                    ias_bnds[i_maxima][i_ang] = [max(0.1, r_lbnd - l_bnd_pad), r_ubnd]
                     ias[i_maxima].append(i_ang)
+                    # Get the basins where it switches
+                    ias_basins[i_maxima][i_ang] = unique_basins[np.argmax(unique_basins != i_maxima)]
                     # print("Radius Lower and Upper bound ", r_lbnd, r_ubnd)
-                # else:
-                #     r"""
-                #     There are rays for example CH4, where the ray goes from basin 1 to 0 to 1
-                #     again, it doesn't make much sense why this is the case, because the ray
-                #     is very unlikely to do this and should have gone to the other hydrogen. But
-                #     the density values is incredibly small here.
-                #
-                #     """
-                #     print("IAS With Multiple Intersections")
-                #     print(dens_func(points_atoms[i_ray:i_ray + numb_rad_pts[i_ang]]))
-                # from chemtools.topology.qtaim import gradient_path_all_pts
-                # basins = gradient_path_all_pts(
-                #     points_atoms[i_ray:i_ray + numb_rad_pts[i_ang]], grad_func, beta_spheres, i_maxima, maximas,
-                #     t_span=(0, 100), max_step=np.inf, method="LSODA",
-                #     first_step=1e-7
-                # )
 
-            # import matplotlib
-            # import matplotlib.pyplot as plt
-            # from mpl_toolkits import mplot3d
-            # matplotlib.use("Qt5Agg")
-            # fig = plt.figure()
-            # ax = plt.axes(projection='3d')
-            # p = points_atoms[i_ray: i_ray + numb_rad_pts[i_ang]]
-            # ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="g", s=60)
-            # ax.scatter(maximas[:, 0], maximas[:, 1], maximas[:, 2], color="r", s=60)
-            # plt.show()
+                    # Gather information about other intersections
+                    if numb_intersections > 1:
+                        # print("Angular pt j", i_ang)
+                        # print("Number of radial points in this angular pt ", numb_rad_pts[i_ang])
+                        # print("IAS With Multiple Intersections")
+                        # print(group_by)
+                        # print(unique_basins)
+
+                        # Figure out if the number intersections is two or three. Code only checks up to three.
+                        index_ray = 0  # Keeps track of how many points to go further
+                        more_than_three = False
+                        for i, (basin, assigned_basin_vals) in enumerate(group_by):
+                            if i != 0:
+                                # Multiple intersections found, find correct intervals to search for intersections
+                                if basin == i_maxima:
+                                    if more_than_three:
+                                        print("Angular pt j", i_ang)
+                                        print("Number of radial points in this angular pt ", numb_rad_pts[i_ang])
+                                        print(f"Unique basins {unique_basins}")
+                                        print(f"Group by {group_by}")
+                                        raise RuntimeError(f"More than three intersections was found."
+                                                           f" Code doesn't check.")
+
+                                    # Add the second intersection
+                                    ias_2[i_maxima].append(i_ang)
+                                    ias_basins_2[i_maxima][i_ang] = group_by[i - 1][0]
+                                    l_bnd = points_a[i_ray + index_ray - 1]
+                                    u_bnd = points_a[i_ray + index_ray]
+                                    r_ubnd = np.linalg.norm(u_bnd - maximas[i_maxima])
+                                    r_lbnd = np.linalg.norm(l_bnd - maximas[i_maxima])
+                                    ias_bnds_2[i_maxima][i_ang] = [r_lbnd, r_ubnd]
+
+                                    # Check for the third intersection that occurs afterwards
+                                    if i + 1 < len(group_by):
+                                        ias_3[i_maxima].append(i_ang)
+                                        ias_basins_3[i_maxima][i_ang] = group_by[i + 1][0]
+                                        i_lbnd = i_ray + index_ray + len(assigned_basin_vals) - 1
+                                        i_ubnd = i_ray + index_ray + len(assigned_basin_vals)
+                                        l_bnd = points_a[i_lbnd]
+                                        u_bnd = points_a[i_ubnd]
+                                        r_ubnd = np.linalg.norm(u_bnd - maximas[i_maxima])
+                                        r_lbnd = np.linalg.norm(l_bnd - maximas[i_maxima])
+                                        ias_bnds_3[i_maxima][i_ang] = [r_lbnd, r_ubnd]
+                                        more_than_three = True
+                            index_ray += len(assigned_basin_vals)
+
+                        # print(ias_2[i_maxima])
+                        # print(ias_basins_2[i_maxima])
+                        # print(ias_bnds_2[i_maxima])
+                        # print(ias_3[i_maxima])
+                        # print(ias_basins_3[i_maxima])
+                        # print(ias_bnds_3[i_maxima])
+                        # import matplotlib
+                        # import matplotlib.pyplot as plt
+                        # from mpl_toolkits import mplot3d
+                        # matplotlib.use("Qt5Agg")
+                        # fig = plt.figure()
+                        # ax = plt.axes(projection='3d')
+                        # p = points_a[i_ray: i_ray + numb_rad_pts[i_ang]]
+                        # ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="g", s=60)
+                        # ax.scatter(maximas[:, 0], maximas[:, 1], maximas[:, 2], color="r", s=60)
+                        # plt.show()
+                    else:
+                        # Store [l_bnd, u_bnd] inside ias_bnds_2[i_maxima] for searching to the IAS in case
+                        #  the user wants to search for multiple intersections.
+                        ias_bnds_2[i_maxima][i_ang] = [[r_ubnd, r_ubnd]]
+
 
             i_ray += numb_rad_pts[i_ang]
-    return ias, oas, ias_bnds
+    return ias, oas, ias_bnds, ias_basins, ias_2, ias_bnds_2, ias_basins_2, ias_3, ias_bnds_3, ias_basins_3
 
 
 def construct_all_points_of_rays_of_atoms(
