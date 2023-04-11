@@ -92,7 +92,7 @@ def find_optimize_centers(centers, grad_func):
     return maximas
 
 
-def construct_radial_grids(pts1, maximas, min_pt=0.2, pad=5.0, ss0=0.23):
+def construct_radial_grids(pts1, maximas, min_pts=0.2, pad=5.0, ss0=0.23):
     r"""
     Construct radial grids around each maxima depending on its neighbors
 
@@ -102,13 +102,15 @@ def construct_radial_grids(pts1, maximas, min_pt=0.2, pad=5.0, ss0=0.23):
         Coordinates of the points to construct radial grids on.
     maximas: ndarray(M, 3)
         Coordinates of the maximas
-    min_pt: float
-        The minimum radial value on [0, \infty) to construct a radial grid.
+    min_pts: Union[float, list]
+        The minimum radial value on [0, \infty) to construct a radial grid. If it is a list,
+        it should be of size `M`.
     pad: float
         Extra padding to add to make sure the radial grid covers the intersection
         with the inter-atomic and outer-atomic surfaces.
     ss0: float
         The step-size of the uniform radial grid.
+
 
     Returns
     -------
@@ -122,12 +124,15 @@ def construct_radial_grids(pts1, maximas, min_pt=0.2, pad=5.0, ss0=0.23):
     #  Added an extra padding in the case of carbon in CH4
     #  TODO: the upper-bound should depend on distance to isosurface value and distance
     #         between atoms
+    if isinstance(min_pts, (float, np.float)):
+        # If it is a float, convert it to a list.
+        min_pts = [min_pts] * len(maximas)
     dist_maxs = cdist(pts1, maximas)
     sorted_dists = np.sort(dist_maxs, axis=1)
     distance_maximas = sorted_dists[:, min(5, maximas.shape[0] - 1)]
     distance_minimas = sorted_dists[:, 1] / 4.0
     radial_grid = [
-        np.arange(min(min_pt, distance_minimas[i]), x + pad, ss0) for i, x in enumerate(distance_maximas)
+        np.arange(min(min_pts[i], distance_minimas[i]), x + pad, ss0) for i, x in enumerate(distance_maximas)
     ]
     return radial_grid
 
