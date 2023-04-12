@@ -43,8 +43,8 @@ def solve_for_oas_points(
         of the electron density.
     radial_grid: list[ndarray]
         List of radial grids (arrays on zero to infinity) correspond to each maxima.
-    angular_pts: ndarray(N,)
-        The angular points on the sphere.
+    angular_pts: list[ndarray]
+        The angular points on the sphere for each maxima.
     dens_func: callable()
         The electron density function.
     iso_val: float
