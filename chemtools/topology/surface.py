@@ -6,6 +6,7 @@ Can be used for
 - analyzing the IAS and OAS.
 - integration over basins.
 """
+from chemtools.topology.utils import solve_for_oas_points
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 import numpy as np
@@ -194,7 +195,7 @@ class SurfaceQTAIM():
         sph_pts = self.generate_angular_pts_of_basin(i_basin)
         return self.maximas[i_basin] + self.r_func[i_basin][oas, None] * sph_pts[oas]
 
-    def construct_points_between_ias_and_oas(self, i_basin, dens_func, grad_func, ss_0, max_ss, tol):
+    def construct_points_between_ias_and_oas(self, i_basin, dens_func, grad_func, ss_0, max_ss, tol, iso_err):
         r"""
         Construct points between the inner atomic surface and outer atomic surface.
 
@@ -211,12 +212,14 @@ class SurfaceQTAIM():
         oas : List[int]
             List of integers of `angular_pts` that are part of the outer atomic surface (OAS).
         angular_pts : np.ndarray
-            Angular Points around the maxima for which rays are propgated from.
+            Angular Points around the maxima for which rays are propagated from.
         r_func_max : np.ndarray
             The radial component for each angular point in `angular_pts` that either gives
             the radial value that intersects the OAS or the IAS.
         maxima : np.ndarray
             Maxima of the basin.
+        iso_err: float
+            The error in solving for the isosurface points on the outer-atomic surface.
 
         Returns
         -------
@@ -319,7 +322,21 @@ class SurfaceQTAIM():
         )
 
         new_pts = maxima + r_func_new[i_basin][:, None] * new_ang_pts
-        print(f"Number of ne wpoints {len(new_pts)}")
+        print(f"Number of new points to add: {len(new_pts)}")
+
+        # Check if the new points are less than isosurface value and project them so that they do have .
+        dens_vals = dens_func(new_pts)
+        indices = np.where(dens_vals < self.iso_val)[0]
+        if len(indices) != 0:
+            # Construct bounded interval to solve for the root.
+            radial_grids = np.ravel(
+                np.hstack((r_func_new[i_basin][indices, None] - 0.01,  r_func_new[i_basin][indices, None] + 0.01))
+            )
+            solve_for_oas_points(
+                np.array([maxima]), [indices], [radial_grids], [new_ang_pts], dens_func, self.iso_val, iso_err,
+                [r_func_new[i_basin]]
+            )
+            new_pts[indices] = maxima + r_func_new[i_basin][indices, None] * new_ang_pts[indices, :]
         return new_pts
 
     def plot_basins(self, i_basin, include_other_surfaces=False):
