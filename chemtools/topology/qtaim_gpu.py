@@ -20,8 +20,7 @@ __all__ = ["qtaim_surface_vectorize"]
 
 
 def _classify_rays_as_ias_or_oas(
-        maximas, all_points, all_basins, index_to_atom,
-        numb_rays_to_atom, numb_rad_to_radial_shell, dens_func
+        maximas, all_points, all_basins, index_to_atom, numb_rays_to_atom, numb_rad_to_radial_shell
 ):
     r"""
     Classify all rays in a molecule as either crossing the outer or inner atomic surface.
@@ -510,8 +509,8 @@ def qtaim_surface_vectorize(
     iso_err=1e-6,
     beta_spheres=None,
     beta_sphere_deg=27,
-    ss_0=0.23,
-    max_ss=0.5,
+    ss_0=0.1,
+    max_ss=0.25,
     tol=1e-7,
     optimize_centers=True,
     hess_func=None,
@@ -655,7 +654,7 @@ def qtaim_surface_vectorize(
     #   along the ray that intersects the IAS.
     ias, oas, ias_bnds, ias_basins, ias_2, ias_bnds_2, ias_basins_2, ias_3, ias_bnds_3, ias_basins_3 = \
         _classify_rays_as_ias_or_oas(
-            maximas, points, basins, index_to_atom, NUMB_RAYS_TO_ATOM, numb_rad_to_radial_shell, dens_func
+            maximas, points, basins, index_to_atom, NUMB_RAYS_TO_ATOM, numb_rad_to_radial_shell
     )
     print("Total number of two intersections found ", [len(x) for x in ias_2])
     print("Total number of three intersections found ", [len(x) for x in ias_3])
