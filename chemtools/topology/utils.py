@@ -70,8 +70,19 @@ def solve_for_oas_points(
             u_bnd = radial[i_iso + 1] if i_iso + 1 < len(radial) else radial[i_iso] * 2.0
             initial_guess.append((u_bnd + l_bnd) / 2.0)
         initial_guess = np.array(initial_guess)
-        root_func = lambda t: np.log(dens_func(maxima + t[:, None] * ang_pts[oas[i_maxima]])) - np.log(iso_val)
-        sol = root(root_func, x0=initial_guess, tol=iso_err, method="krylov")
+        root_func = lambda t: dens_func(maxima + t[:, None] * ang_pts[oas[i_maxima]]) - iso_val
+
+        def l_infty_norm(x):
+            # Since this is independent optimization routine as in each t value doesn't depend on other t values
+            #  i.e. the jacobian is a multiple of the identity matrix, then it makes more sense to use the absolute
+            #  value rather than the default L2-norm.
+            return np.max(np.abs(x))
+
+        #
+        sol = root(
+            root_func, x0=initial_guess, method="df-sane",
+            options={"maxfev": 10000, "fnorm": l_infty_norm, "fatol": iso_err, "ftol": 0.0}
+        )
         assert sol.success, f"Root function did not converge {sol}."
         r_func[i_maxima][oas[i_maxima]] = sol.x
 
