@@ -32,7 +32,7 @@ from scipy.sparse import lil_matrix
 
 from grid.atomgrid import AtomGrid
 from grid.cubic import UniformGrid, _HyperRectangleGrid
-from grid.lebedev import AngularGrid
+from grid.angular import AngularGrid
 from grid.utils import convert_cart_to_sph
 
 from chemtools.topology.ode import steepest_ascent_rk45
