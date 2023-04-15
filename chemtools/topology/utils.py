@@ -210,12 +210,16 @@ def determine_beta_spheres_and_nna(
                         #input("Found NNA")
 
                     # If all the basins went to same maxima, then update radius
+                    # If the first radial point didn't suffice(e.g. NNA), then set the beta-sphere to something small.
                     # else then break out of this for loop.
                     if np.all(basins == i_maxima):
                         optimal_rad = rad_pt
                         beta_spheres[i_maxima] = optimal_rad
                         print(beta_spheres)
                         print("Optimal radius is ", optimal_rad)
+                    elif np.abs(rad_pt - radial_grids[i_maxima][0]) < 1e-8:
+                        beta_spheres[i_maxima] = min(rad_pt / 4.0, 0.3)
+                        break
                     else:
                         break
         print(f"i Maxima {i_maxima} and Final optimal radius {beta_spheres[i_maxima]}")
@@ -267,6 +271,7 @@ def find_non_nuclear_attractors(maximas, dens_func, grad_func, hess_func):
                                first_step=1e-9, max_step=1e-1) for x in pts],
                 dtype=np.float64
             )
+            # Round to two decimal places mostly due to empirical evidence of convergence of these ODE.
             nna_attractors = np.unique(np.round(nna_attractors, 2), axis=0)
             print(nna_attractors)
             eigs = np.linalg.eigvalsh(hess_func(nna_attractors))
