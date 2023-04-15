@@ -78,13 +78,24 @@ def solve_for_oas_points(
             #  value rather than the default L2-norm.
             return np.max(np.abs(x))
 
-        #
         sol = root(
             root_func, x0=initial_guess, method="df-sane",
-            options={"maxfev": 10000, "fnorm": l_infty_norm, "fatol": iso_err, "ftol": 0.0}
+            options={"maxfev": 10000, "fnorm": l_infty_norm, "fatol": iso_err, "ftol": 0.0, "disp": True}
         )
-        assert sol.success, f"Root function did not converge {sol}."
-        r_func[i_maxima][oas[i_maxima]] = sol.x
+        radial_results = sol.x
+        # The points that weren't successful, try again.
+        if not sol.success:
+            # Get rid of the points that converge, and re-try with the points that didn't.
+            print("Try solving the root equations for OAS again.")
+            indices = np.where(sol.fun > iso_err)[0]
+            sol_two = root(
+                root_func, x0=sol.x[indices], method="df-sane",
+                options={"maxfev": 10000, "fnorm": l_infty_norm, "fatol": iso_err, "ftol": 0.0, "disp": True}
+            )
+            assert sol_two.success, f"Root function did not converge {sol_two}."
+            radial_results[indices] = sol_two.x
+
+        r_func[i_maxima][oas[i_maxima]] = radial_results
 
 
 
