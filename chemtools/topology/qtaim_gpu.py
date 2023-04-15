@@ -629,8 +629,8 @@ def qtaim_surface_vectorize(
                 angular_pts.append(ang.points)
         else:
             # If it is a Non-nuclear attractor
-            angular.append(50)
-            angular_pts.append(AngularGrid(degree=50, use_spherical=True).points)
+            angular.append(99)
+            angular_pts.append(AngularGrid(degree=99, use_spherical=True).points)
 
     # First step is to construct a grid that encloses all radial shells across all atoms
     points, index_to_atom, NUMB_RAYS_TO_ATOM, numb_rad_to_radial_shell = \
