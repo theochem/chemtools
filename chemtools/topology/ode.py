@@ -173,7 +173,8 @@ def find_basins_steepest_ascent_rk45(
         start = time.time()
         y_four, y_five = _RK45_step(pts, norm_grad_func, ss, grad0)
         final = time.time()
-        print(f"Number Iterations {niter} RK Step {final - start}   and number of points left  {len(not_found_indices)}")
+        if niter == 0:
+            print(f"Number Iterations {niter} RK Step {final - start}   and number of points left  {len(not_found_indices)}")
 
         # Update step-size
         # print("Step size used", ss)
