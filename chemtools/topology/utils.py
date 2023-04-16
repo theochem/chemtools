@@ -163,7 +163,7 @@ def solve_for_oas_points(
         if not success:
             # Get rid of the points that converge, and re-try with the points that didn't.
             print("Try solving the root equations for OAS again on individual points.")
-            indices = np.where(np.abs(sol_fun) > iso_err)[0]
+            indices = np.where(np.abs(sol.fun) > iso_err)[0]
 
             for i_oas in indices:
                 oas_pt = _solve_for_isosurface_pt(
