@@ -2,7 +2,7 @@ from grid.cubic import UniformGrid
 import numpy as np
 from scipy.spatial import ConvexHull
 from scipy.spatial.distance import cdist
-from scipy.optimize import root
+from scipy.optimize import root, root_scalar
 
 from chemtools.topology.ode import find_basins_steepest_ascent_rk45, steepest_ascent_rk45, gradient_path
 
@@ -16,6 +16,67 @@ __all__ = [
     "find_optimize_centers",
     "determine_beta_spheres_and_nna"
 ]
+
+
+def _solve_for_isosurface_pt(
+    l_bnd, u_bnd, maxima, cart_sphere_pt, density_func, iso_val, iso_err
+):
+    r"""
+    Solves for the point on a ray that satisfies the isosurface value equation.
+    .. math::
+        f(r) := \rho(\textbf{A} + r \textbf{\theta}) - c,
+    where A is the position of the atom, :math:`\theta` is the Cartesian coordinates of the
+    point on the sphere, r is the radius, and c is the isosurface value.  The radius
+    is solved using a root-finding algorithm over an interval that contains the isosurface
+    value.
+    Parameters
+    ----------
+    l_bnd: float
+        The lower-bound on the radius for the root-solver. Needs to be less than the
+        isosurface value.
+    u_bnd: float
+        The upper-bound on the radius for the root-solver. Needs to be greater than the
+        isosurface value.
+    maxima: ndarray(3,)
+        The maximum of the atom.
+    cart_sphere_pt: ndarray(3,)
+        The Cartesian coordinates of the point on the sphere.
+    density_func: callable(ndarray(M,3), ndarray(M,))
+        The electron density function.
+    iso_val: float
+        The isosurface value.
+    iso_err: float
+        The xtol for the root-solver.
+    Returns
+    -------
+    ndarray(3,):
+        The point :math:`\textbf{A} + r \textbf{\theta}` that satisfies the isosurface value.
+    """
+    # Given a series of points based on a maxima defined by angles `cart_sphere_pt` with
+    #  radial pts `rad_pts`.   The `index_iso` tells us where on these points to construct another
+    #  refined grid from finding l_bnd and u_bnd.
+    bounds_found = False
+    while not bounds_found:
+        dens_l_bnd = density_func(np.array([maxima + l_bnd * cart_sphere_pt]))
+        dens_u_bnd = density_func(np.array([maxima + u_bnd * cart_sphere_pt]))
+        if iso_val < dens_u_bnd or dens_l_bnd < iso_val:
+            if iso_val < dens_u_bnd:
+                l_bnd = u_bnd
+                u_bnd += 1.5
+            elif dens_l_bnd < iso_val:
+                u_bnd = l_bnd
+                l_bnd -= 1.5
+            # raise ValueError(f"Radial grid {l_bnd, u_bnd} did not bound {dens_l_bnd, dens_u_bnd} "
+            #                  f"the isosurface value {iso_val}. Use larger radial grid.")
+        else:
+            bounds_found = True
+
+    # Use Root-finding algorithm to find the isosurface point.
+    root_func = lambda t: density_func(np.array([maxima + t * cart_sphere_pt]))[0] - iso_val
+    sol = root_scalar(root_func, method="toms748", bracket=(l_bnd, u_bnd), xtol=iso_err)
+    assert sol.converged, f"Root function did not converge {sol}."
+    bnd_pt = maxima + sol.root * cart_sphere_pt
+    return bnd_pt
 
 
 def solve_for_oas_points(
@@ -86,14 +147,15 @@ def solve_for_oas_points(
         # The points that weren't successful, try again.
         if not sol.success:
             # Get rid of the points that converge, and re-try with the points that didn't.
-            print("Try solving the root equations for OAS again.")
+            print("Try solving the root equations for OAS again on individual points.")
             indices = np.where(sol.fun > iso_err)[0]
-            sol_two = root(
-                root_func, x0=sol.x[indices], method="df-sane",
-                options={"maxfev": 10000, "fnorm": l_infty_norm, "fatol": iso_err, "ftol": 0.0, "disp": True}
-            )
-            assert sol_two.success, f"Root function did not converge {sol_two}."
-            radial_results[indices] = sol_two.x
+
+            for i_oas in indices:
+                oas_pt = _solve_for_isosurface_pt(
+                    radial_results[i_oas] - 0.1, radial_results[i_oas] + 0.1, maxima, ang_pts[i_oas],
+                    dens_func, iso_val, iso_err
+                )
+                radial_results[i_oas] = np.linalg.norm(oas_pt - maxima)
 
         r_func[i_maxima][oas[i_maxima]] = radial_results
 
