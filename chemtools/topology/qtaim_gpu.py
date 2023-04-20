@@ -676,11 +676,37 @@ def qtaim_surface_vectorize(
     final = time.time()
     print("Time Difference for Solving IAS ", final - start)
 
+
     # Solve OAS Points and updates r_func
+    # Update the radial grid step-size so that it samples more points, this shouldn't decrease computaitonal complextiy
+    #  since the electron density is cheaper to compute with.
+    ss0 = 0.05
+    radial_grids = [
+        np.arange(0.05, radial_grids[i][-1], ss0) for i in range(len(maximas))
+    ]
     start = time.time()
-    solve_for_oas_points(maximas, oas, radial_grids, angular_pts, dens_func, iso_val, iso_err, r_func)
+    solve_for_oas_points(maximas, oas, angular_pts, dens_func, grad_func, iso_val, iso_err, r_func)
     final = time.time()
     print("Time Difference for Solving OAS", final - start)
+
+    # Double Check if the points are really IAS but should be classified as OAS
+    for i_atom in range(len(maximas)):
+        print("I I i ", i_atom)
+        pts = maximas[i_atom] + r_func[i_atom][ias[i_atom], None] * angular_pts[i_atom][ias[i_atom], :]
+        dens_vals = dens_func(pts)
+        # Decrease by the OAS surface error "iso_err"
+        ias_indices = np.where(dens_vals - iso_err < iso_val)[0]
+        if len(ias_indices) != 0:
+            oas[i_atom] += list(np.array(ias[i_atom], dtype=int)[ias_indices])
+            oas[i_atom] = sorted(oas[i_atom])
+            for i_oas in ias_indices:
+                oas_pt = _solve_for_isosurface_pt(
+                    r_func[i_atom][ias[i_atom]][i_oas] - 0.1, r_func[i_atom][ias[i_atom]][i_oas] + 0.1, maximas[i_atom],
+                    angular_pts[i_atom][i_oas], dens_func, iso_val, iso_err
+                )
+                r_func[i_atom][ias[i_atom]][i_oas] = np.linalg.norm(oas_pt - maximas[i_atom])
+            ias[i_atom] = [k for j, k in enumerate(ias[i_atom]) if j not in ias_indices]
+            basin_ias[i_atom] = [k for j, k in enumerate(basin_ias[i_atom]) if j not in ias_indices]
 
     if find_multiple_intersections:
         raise NotImplementedError(f"Multiple intersections was not implemented yet.")
