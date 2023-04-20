@@ -264,7 +264,7 @@ class SurfaceQTAIM:
         new_ang_pts = np.zeros((0, 3), dtype=np.float64)  # usually 7 points per ias boundary are added.
         # Assumes the distances have a log-normal distribution, and taking the second quantile to get the
         #   points closest to the OAS from the IAS.
-        extreme_ends = np.exp(np.mean(np.log(smallest_dist)) - 2.0 * np.std(np.log(smallest_dist)))
+        extreme_ends = np.exp(np.mean(np.log(smallest_dist)) - 1.2 * np.std(np.log(smallest_dist)))
         # print("Distance tolerance ", extreme_ends)
         indices = np.where(smallest_dist < extreme_ends)[0]
         ias_parameters = []  # parameters needed for

@@ -11,7 +11,8 @@ from chemtools.topology.utils import (
     determine_beta_spheres_and_nna,
     find_non_nuclear_attractors,
     find_optimize_centers,
-    solve_for_oas_points
+    solve_for_oas_points,
+    _solve_for_isosurface_pt
 )
 from chemtools.topology.ode import find_basins_steepest_ascent_rk45
 
