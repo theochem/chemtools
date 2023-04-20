@@ -7,6 +7,7 @@ Can be used for
 - integration over basins.
 """
 from chemtools.topology.utils import solve_for_oas_points
+
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 import numpy as np
@@ -20,7 +21,7 @@ from grid.basegrid import Grid
 __all__ = ["SurfaceQTAIM"]
 
 
-class SurfaceQTAIM():
+class SurfaceQTAIM:
     def __init__(self, r_func, angular_degs, maximas, oas, ias, basins_ias, iso_val, beta_spheres,
                  refined_ang=None):
         self._r_func = r_func
@@ -310,8 +311,10 @@ class SurfaceQTAIM():
                 i_angular += 1
         ias_parameters = np.array(ias_parameters)
 
-        from chemtools.topology.qtaim_gpu import _solve_intersection_of_ias_point
         print("Solve for the new radiuses")
+        # This import can be outside to the cyclication, should move it to utils
+        from chemtools.topology.qtaim_gpu import _solve_intersection_of_ias_point
+        # Solve for the IAS
         angular_pts = [[0.0, 0.0, 0.0]] * len(self.maximas)
         angular_pts[i_basin] = new_ang_pts
         ias_lengths = [1] * len(self.maximas)
@@ -333,7 +336,7 @@ class SurfaceQTAIM():
                 np.hstack((r_func_new[i_basin][indices, None] - 0.01,  r_func_new[i_basin][indices, None] + 0.01))
             )
             solve_for_oas_points(
-                np.array([maxima]), [indices], [radial_grids], [new_ang_pts], dens_func, self.iso_val, iso_err,
+                np.array([maxima]), [indices], [new_ang_pts], dens_func, grad_func, self.iso_val, iso_err,
                 [r_func_new[i_basin]]
             )
             new_pts[indices] = maxima + r_func_new[i_basin][indices, None] * new_ang_pts[indices, :]

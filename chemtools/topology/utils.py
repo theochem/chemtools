@@ -79,8 +79,33 @@ def _solve_for_isosurface_pt(
     return bnd_pt
 
 
+def _solve_root_newton_raphson(initial_guess, angular_pts, root_and_grad, xtol, maxiter=1000):
+    not_converged = np.arange(len(initial_guess))
+    niter = 0  # Number of iterations
+    success = True
+    pts0 = initial_guess.copy()
+    pts_converged = np.zeros(len(initial_guess))
+    while len(not_converged) != 0:
+        if niter == maxiter:
+            success = False
+            break
+        dens_pts, grad_pts = root_and_grad(pts0, angular_pts[not_converged])
+
+        pts1 = pts0 - dens_pts / grad_pts
+        indices_converged = np.where(np.abs(pts1 - pts0) <= xtol)[0]
+        if len(indices_converged) != 0:
+            pts_converged[not_converged[indices_converged]] = pts0[indices_converged]
+
+        not_converged = np.delete(not_converged, indices_converged)
+        pts0 = pts1
+        pts0 = np.delete(pts0, indices_converged)
+        niter += 1
+
+    return pts_converged, success
+
+
 def solve_for_oas_points(
-        maximas, oas, radial_grid, angular_pts, dens_func, iso_val, iso_err, r_func
+        maximas, oas, angular_pts, dens_func, grad_func, iso_val, iso_err, r_func
 ):
     r"""
     For each index in outer-atomic surface (OAS) solves for the isovalue point along a ray.
@@ -117,38 +142,28 @@ def solve_for_oas_points(
 
     """
     for i_maxima in range(len(maximas)):
+        print("ATOM ", i_maxima)
         maxima = maximas[i_maxima]
-        radial = radial_grid[i_maxima]
         ang_pts = angular_pts[i_maxima]
+        initial_guess = np.array([0.2] * len(oas[i_maxima]))
 
-        initial_guess = []
-        for i_oas in oas[i_maxima]:
-            # Construct upper and lower bound of the isosurface equation
-            ang_pt = ang_pts[i_oas]
-            iso_eq = np.abs(dens_func(maxima + ang_pt * radial[:, None]) - iso_val)
-            i_iso = np.argsort(iso_eq)[0]
-            l_bnd = radial[i_iso - 1] if i_iso >= 0 else radial[i_iso] / 2.0
-            u_bnd = radial[i_iso + 1] if i_iso + 1 < len(radial) else radial[i_iso] * 2.0
-            initial_guess.append((u_bnd + l_bnd) / 2.0)
-        initial_guess = np.array(initial_guess)
-        root_func = lambda t: dens_func(maxima + t[:, None] * ang_pts[oas[i_maxima]]) - iso_val
+        def root_and_grad(t, angular_pts_max):
+            # Using logarithm increases accuracy and convergence as Newton-Ralphson has quadratic convergence.
+            real_pts = maxima + t[:, None] * angular_pts_max
+            dens_pts = dens_func(real_pts)
+            root = np.log(dens_pts) - np.log(iso_val)
+            grad = np.sum(grad_func(real_pts) * angular_pts_max, axis=1) / dens_pts
+            return root, grad
 
-        def l_infty_norm(x):
-            # Since this is independent optimization routine as in each t value doesn't depend on other t values
-            #  i.e. the jacobian is a multiple of the identity matrix, then it makes more sense to use the absolute
-            #  value rather than the default L2-norm.
-            return np.max(np.abs(x))
-
-        sol = root(
-            root_func, x0=initial_guess, method="df-sane",
-            options={"maxfev": 10000, "fnorm": l_infty_norm, "fatol": iso_err, "ftol": 0.0, "disp": True}
-        )
-        radial_results = sol.x
+        sol_x, success = _solve_root_newton_raphson(initial_guess, ang_pts[oas[i_maxima]], root_and_grad, xtol=iso_err)
+        radial_results = sol_x
+        sol_fun = dens_func(maxima + sol_x[:, None] * ang_pts[oas[i_maxima]])
         # The points that weren't successful, try again.
-        if not sol.success:
+        # if not sol.success:
+        if not success:
             # Get rid of the points that converge, and re-try with the points that didn't.
             print("Try solving the root equations for OAS again on individual points.")
-            indices = np.where(sol.fun > iso_err)[0]
+            indices = np.where(np.abs(sol_fun) > iso_err)[0]
 
             for i_oas in indices:
                 oas_pt = _solve_for_isosurface_pt(
@@ -156,7 +171,6 @@ def solve_for_oas_points(
                     dens_func, iso_val, iso_err
                 )
                 radial_results[i_oas] = np.linalg.norm(oas_pt - maxima)
-
         r_func[i_maxima][oas[i_maxima]] = radial_results
 
 
