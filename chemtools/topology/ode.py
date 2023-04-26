@@ -3,7 +3,18 @@ from scipy.spatial.distance import cdist
 
 from scipy.integrate import solve_ivp
 
-__all__ = ["find_basins_steepest_ascent_rk45", "gradient_path"]
+__all__ = ["find_basins_steepest_ascent_rk45", "gradient_path", "NonNuclearAttractionException"]
+
+
+class NonNuclearAttractionException(Exception):
+    """
+    Exception to handle non-nuclear attractors.
+
+    This is a simple hack in-order to get NNA to work without changing much of the code-base.
+    """
+
+    def __init__(self, nna_coordinate):
+        self.nna_coordinate = nna_coordinate
 
 
 def delete_duplicate_pts(pts, eps):
@@ -132,7 +143,8 @@ def find_basins_steepest_ascent_rk45(
     Returns
     -------
     ndarray(N,), ndarray(M, 3):
-        - Integer array that assigns each point to a basin/maxima/atom of the molecule.
+        - Integer array that assigns each point to a basin/maxima/atom of the molecule. If basin value is -2, then
+          the point converges to a BCP or RCP.
         If value is negative one, then the point wasn't assigned to a basin.
         - Array of 3D coordinates of the maximas. New potential maximas are found and updated here.
           This is only returned if `hess_func` is provided.
@@ -199,7 +211,7 @@ def find_basins_steepest_ascent_rk45(
         beta_sph = dist_maxima <= beta_spheres
         which_basins = np.where(beta_sph)
         # print("beta_sphereS ", beta_spheres)
-        #print("which pts are within basin based on beta-sphere", which_basins)
+        # print("which pts are within basin based on beta-sphere", which_basins)
         # print("basins", which_basins[1])
         if len(which_basins[0]) != 0:
             assigned_basins[not_found_indices[which_basins[0]]] = which_basins[1]
@@ -236,7 +248,6 @@ def find_basins_steepest_ascent_rk45(
                 if len(i_smallg) != 0:
                     # if Hessian is provided, then check for NNA
                     if hess_func is not None:
-
                         hess = hess_func(y_five[i_smallg])
                         eigs = np.linalg.eigvalsh(hess)
                         print(eigs)
@@ -256,6 +267,22 @@ def find_basins_steepest_ascent_rk45(
                             ss = np.delete(ss, nna_indices)[:, None]
                             dens_vals1 = np.delete(dens_vals1, nna_indices)
                             grad0 = np.delete(grad0, nna_indices, axis=0)
+
+                        # Check if it converged to a BCP or RCP, then it is precisely on the surface!
+                        which_is_bcp_rcp = np.where(eigs < -1e-10, axis=1)[0]
+                        if len(which_is_bcp_rcp) == 1 or len(which_is_bcp_rcp) == 2:
+                            nna_indices = i_smallg[which_is_nna]
+
+                            # Set them to -2
+                            assigned_basins[not_found_indices[nna_indices]] = -2
+                            not_found_indices = np.delete(not_found_indices, nna_indices)
+                            y_five = np.delete(y_five, nna_indices, axis=0)
+                            ss = np.delete(ss, nna_indices)[:, None]
+                            dens_vals1 = np.delete(dens_vals1, nna_indices)
+                            grad0 = np.delete(grad0, nna_indices, axis=0)
+
+                            raise RuntimeError(f"Found BCP and RCP points. Handle this later. \n")
+
                     else:
                         # Assign these points to basin -2,  delete them.
                         print(f"Maximas {maximas}")
@@ -263,9 +290,7 @@ def find_basins_steepest_ascent_rk45(
                         print(f"Gradient {grad_vals[i_smallg]}")
                         print(f"Density {dens_vals1[i_smallg]}")
                         print(f"Distance to each maxima {cdist(y_five[i_smallg], maximas)}")
-                        raise RuntimeError(
-                            f"Non-nuclear attractor was found! Exiting"
-                        )
+                        raise NonNuclearAttractionException(y_five[i_smallg])
 
         # Update next iteration
         pts = y_five.copy()
