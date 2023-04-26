@@ -105,7 +105,7 @@ def _solve_root_newton_raphson(initial_guess, angular_pts, root_and_grad, xtol, 
 
 
 def solve_for_oas_points(
-        maximas, oas, angular_pts, dens_func, grad_func, iso_val, iso_err, r_func
+     maximas, maximas_to_do, oas, angular_pts, dens_func, grad_func, iso_val, iso_err, r_func
 ):
     r"""
     For each index in outer-atomic surface (OAS) solves for the isovalue point along a ray.
@@ -123,7 +123,9 @@ def solve_for_oas_points(
     Parameters
     ----------
     maximas: ndarray(M, 3)
-        The maximas of the density
+        All maximas of the density
+    maximas_to_do: list[int]
+        List of indices to solve for the OAS for each maximas.
     oas: list[list]
         List of indices that correspond to angular points whose ray intersect the isosurface
         of the electron density.
@@ -141,7 +143,7 @@ def solve_for_oas_points(
         This holds the radial coordinate on the ray that intersects the OAS.
 
     """
-    for i_maxima in range(len(maximas)):
+    for i_maxima in maximas_to_do:
         print("ATOM ", i_maxima)
         maxima = maximas[i_maxima]
         ang_pts = angular_pts[i_maxima]
@@ -199,7 +201,7 @@ def construct_radial_grids(pts1, maximas, min_pts=0.2, pad=5.0, ss0=0.23):
     pts: ndarray(M_1, 3)
         Coordinates of the points to construct radial grids on.
     maximas: ndarray(M, 3)
-        Coordinates of the maximas
+        Coordinates of the maximas.
     min_pts: Union[float, list]
         The minimum radial value on [0, \infty) to construct a radial grid. If it is a list,
         it should be of size `M`.
@@ -261,7 +263,7 @@ def determine_beta_spheres_and_nna(
                     pts = maxima + rad_pt * angular_pts
                     # You want here for the ODE to be accurate in-order to find potential NNA.
                     if hess_func is None:
-                        basins = find_basins_steepest_ascent_rk45(
+                        basins, _ = find_basins_steepest_ascent_rk45(
                             pts, dens_func, grad_func, beta_spheres, maximas, ss_0=0.2, max_ss=0.2, tol=1e-9,
                             hess_func=hess_func
                         )

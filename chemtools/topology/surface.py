@@ -22,15 +22,15 @@ __all__ = ["SurfaceQTAIM"]
 
 
 class SurfaceQTAIM:
-    def __init__(self, r_func, angular_degs, maximas, oas, ias, basins_ias, iso_val, beta_spheres,
-                 refined_ang=None):
+    def __init__(
+            self, r_func, angular_degs, maximas, indices_maxima, oas, ias, basins_ias, iso_val, beta_spheres):
         self._r_func = r_func
         self._maximas = maximas
+        self._indices_maxima = indices_maxima
         self._angular_degs = angular_degs
         self._oas = oas
         self._ias = ias
         self._basins_ias = basins_ias
-        self._refined_ang = refined_ang
         self._iso_val = iso_val
         self._beta_spheres = beta_spheres
 
@@ -46,29 +46,38 @@ class SurfaceQTAIM:
     @property
     def r_func(self):
         # List[M, np.ndarray(N_i,)] ::math:`r_j(\theta_i, \phi_i)` for each M basins and N_i
-        # angular points.
+        # angular points. Length matches length of `maximas`.
         return self._r_func
 
     @property
     def oas(self):
         # List[List[int]] : First list is over basins, second over indices of points of outeratomic
-        # surface.
+        # surface. Length matches length of `indices_maxima`
         return self._oas
 
     @property
     def ias(self):
         # List[List[int]] : First list is over basins, second over indices of points of interatomic
-        # surface.
+        # surface. Length matches length of `indices_maxima`
         return self._ias
 
     @property
     def maximas(self):
-        # ndarray(M, 3) : The maxima of each basin.
+        # ndarray(M, 3) : The maxima of all basins.
         return self._maximas
 
     @property
+    def indices_maxima(self):
+        # list[int]: List of indices of `centers` that correspond to each row of `maximas`.
+        return self._indices_maxima
+
+    @indices_maxima.setter
+    def indices_maxima(self, value):
+        self._indices_maxima = value
+
+    @property
     def angular_degs(self):
-        # int or List[int] : List of angular degrees over each basin.
+        # int or List[int] : List of angular degrees over each basin. Length matches length of `indices_maxima`
         return self._angular_degs
 
     @property
@@ -80,18 +89,30 @@ class SurfaceQTAIM:
     def basins_ias(self):
         return self._basins_ias
 
-    @property
-    def refined_ang(self):
-        # List[M, np.ndarray(N_i, 2)] : Additional Angular points to append to the angular grid
-        return self._refined_ang
+    def __add__(self, other):
+        if np.abs(self.iso_val - other.iso_val) > 1e-8:
+            raise RuntimeError(f"Isosurface value should match each other when combing surface objects.")
+        object = SurfaceQTAIM(
+            self.r_func, self.angular_degs, self.maximas, self.indices_maxima, self.oas, self.ias,
+            self.basins_ias, self.iso_val, self.beta_spheres
+        )
+        object.indices_maxima = sorted(list(set(self.indices_maxima).union(set(other.indices_maxima))))
+        for i_replace in other.indices_maxima:
+            object.ias[i_replace] = other.ias[i_replace]
+            object.oas[i_replace] = other.oas[i_replace]
+            object.basins_ias[i_replace] = other.basins_ias[i_replace]
+            object.angular_degs[i_replace] = other.angular_degs[i_replace]
+            object.r_func[i_replace] = other.r_func[i_replace]
+        return object
 
     def save(self, filename):
         save_dict = {
-            "ias" : np.array(self.ias, dtype=np.object),
-            "oas" : np.array(self.oas, dtype=np.object),
+            "ias": np.array(self.ias, dtype=np.object),
+            "oas": np.array(self.oas, dtype=np.object),
             "basin_ias": np.array(self.basins_ias, dtype=np.object),
             "maximas": np.array(self.maximas),
-            "angular_degs" : np.array(self.angular_degs),
+            "indices_maxima": np.array(self.indices_maxima),
+            "angular_degs": np.array(self.angular_degs),
             "r_func": np.array(self.r_func, dtype=np.object),
             "iso_val": self.iso_val
         }
@@ -106,8 +127,6 @@ class SurfaceQTAIM:
     def generate_angular_pts_of_basin(self, i_basin):
         angular_grid = self.generate_angular_grid_of_basin(i_basin)
         points = angular_grid.points
-        if self.refined_ang is not None:
-            points = np.vstack((points, self.refined_ang[i_basin]))
         return points
 
     def get_atom_grid_over_basin(self, i_basin, rgrid=None):
@@ -133,13 +152,11 @@ class SurfaceQTAIM:
         indices_zero = np.array(start_indices + np.array(ias_indices_a, dtype=int)[ias_indices], dtype=int)
         atom_grid.weights[indices_zero] = 0.0
 
-
         indices_zero = np.where(atom_grid.weights == 0.0)[0]
         points = np.delete(atom_grid.points, indices_zero, axis=0)
         weights = np.delete(atom_grid.weights, indices_zero)
 
         return Grid(points, weights)
-
 
     def generate_pts_on_surface(self, i_basin, include_other_surfaces=False):
         r"""
@@ -159,9 +176,11 @@ class SurfaceQTAIM:
             3D-coordinates of each point on the surface.
 
         """
-
         sph_pts = self.generate_angular_pts_of_basin(i_basin)
-        points = self.maximas[i_basin] + self.r_func[i_basin][:, None] * sph_pts
+        if len(self.r_func[i_basin]) != 0:
+            points = self.maximas[i_basin] + self.r_func[i_basin][:, None] * sph_pts
+        else:
+            points = np.empty((0, 3), dtype=np.float64)
         if include_other_surfaces:
             for i in range(len(self.maximas)):
                 if i != i_basin:
@@ -181,7 +200,7 @@ class SurfaceQTAIM:
         points = self.maximas[i_basin] + self.r_func[i_basin][ias, None] * sph_pts[ias]
         if include_other_surfaces:
             for i in range(len(self.maximas)):
-                if i != i_basin:
+                if i != i_basin and i in self.indices_maxima:
                     # If this basin crosses the boundary.
                     indices = np.where(np.abs(i_basin - np.array(self.basins_ias[i])) < 1e-10)[0]
                     if len(indices) != 0:

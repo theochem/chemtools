@@ -299,9 +299,7 @@ def find_basins_steepest_ascent_rk45(
 
         # input("Next step")
     # print("Final basins ", assigned_basins)
-    if hess_func is not None:
-        return assigned_basins, maximas
-    return assigned_basins
+    return assigned_basins, maximas
 
 
 def steepest_ascent_rk45(

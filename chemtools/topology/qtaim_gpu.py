@@ -21,7 +21,7 @@ __all__ = ["qtaim_surface_vectorize"]
 
 
 def _classify_rays_as_ias_or_oas(
-        maximas, all_points, all_basins, index_to_atom, numb_rays_to_atom, numb_rad_to_radial_shell
+    maximas, maximas_to_do, all_points, all_basins, index_to_atom, numb_rays_to_atom, numb_rad_to_radial_shell
 ):
     r"""
     Classify all rays in a molecule as either crossing the outer or inner atomic surface.
@@ -31,7 +31,8 @@ def _classify_rays_as_ias_or_oas(
     Parameters
     ----------
     maximas: ndarray(M, 3)
-        Optimized centers of the electron density.
+        Optimized centers of the electron density where the rays need to be classified. Doesn't need to be
+        all of the centers.
     all_points: ndarray(N, 3)
         All points in all rays across each atom in a molecule.
     all_basins: ndarray(N, 3)
@@ -85,18 +86,18 @@ def _classify_rays_as_ias_or_oas(
     ias_bnds_3 = [OrderedDict() for _ in range(0, numb_maximas)]              # Keys are Points index
     ias_basins_3 = [OrderedDict() for _ in range(numb_maximas)]               # Keys are Points index
     np.set_printoptions(threshold=np.inf)
-    for i_maxima in range(0, numb_maximas):
+    for i_do, i_maxima in enumerate(maximas_to_do):
         # print("ATom i ", i_maxima)
         # print("Starting and Final index", index_to_atom[i_maxima], index_to_atom[i_maxima + 1])
-        basins_a = all_basins[index_to_atom[i_maxima]:index_to_atom[i_maxima + 1]]  # Basin of atom
-        points_a = all_points[index_to_atom[i_maxima]:index_to_atom[i_maxima + 1]]  # Points of atom
-        numb_rad_pts = numb_rad_to_radial_shell[i_maxima]
+        basins_a = all_basins[index_to_atom[i_do]:index_to_atom[i_do + 1]]  # Basin of atom
+        points_a = all_points[index_to_atom[i_do]:index_to_atom[i_do + 1]]  # Points of atom
+        numb_rad_pts = numb_rad_to_radial_shell[i_do]
 
         # print("Basins of atom ", basins_a)
         # print(index_to_atom[i_maxima], numb_rad_pts)
         # print("Number of angular points in this atom", numb_rays_to_atom[i_maxima])
         i_ray = 0
-        for i_ang in range(numb_rays_to_atom[i_maxima]):
+        for i_ang in range(numb_rays_to_atom[i_do]):
             # print("Angular pt j", i_ang)
             # print("Number of radial points in this angular pt ", numb_rad_pts[i_ang])
 
@@ -220,13 +221,12 @@ def _classify_rays_as_ias_or_oas(
                         #  the user wants to search for multiple intersections.
                         ias_bnds_2[i_maxima][i_ang] = [[r_ubnd, r_ubnd]]
 
-
             i_ray += numb_rad_pts[i_ang]
     return ias, oas, ias_bnds, ias_basins, ias_2, ias_bnds_2, ias_basins_2, ias_3, ias_bnds_3, ias_basins_3
 
 
 def construct_all_points_of_rays_of_atoms(
-    maximas, angular_pts, radial_grid, dens_func, iso_val
+    maximas, angular_pts, radial_grid, maximas_to_do, dens_func, iso_val
 ):
     r"""
     Construct all points of all rays across all molecules.
@@ -235,12 +235,12 @@ def construct_all_points_of_rays_of_atoms(
     #  Need a way to track which sets of points correspond to a ray
     #  index_to_atom = [0, i_1, i_1 + i_2, ..., \sum_j^M i_j] first index always zero and last
     #      always the number of points.
-    numb_maximas = len(maximas)
-    index_to_atom = [0] * (numb_maximas + 1)  # First index is always zero
-    NUMB_RAYS_TO_ATOM = [len(ang_grid) for ang_grid in angular_pts]
+    index_to_atom = [0] * (len(maximas_to_do) + 1)  # First index is always zero
+    NUMB_RAYS_TO_ATOM = [len(angular_pts[i]) for i in maximas_to_do]
     numb_rad_to_radial_shell = []  # List of List: Number of radius points per ray
     points = []
-    for i in range(0, numb_maximas):
+    print(NUMB_RAYS_TO_ATOM)
+    for i_do, i in enumerate(maximas_to_do):  #range(0, numb_maximas):
         # Construct all points on the atomic grid around atom i
         radial_shells = np.einsum("i,jk->jik", radial_grid[i], angular_pts[i])
         print("Number of radial points", len(radial_grid[i]))
@@ -249,7 +249,7 @@ def construct_all_points_of_rays_of_atoms(
         print("Total number of points ", rs.shape)
 
         # Record information what indices it corresponds to
-        numb_rad_to_radial_shell.append([len(radial_grid[i])] * NUMB_RAYS_TO_ATOM[i])
+        numb_rad_to_radial_shell.append([len(radial_grid[i])] * NUMB_RAYS_TO_ATOM[i_do])
 
         # First remove the density values that are less than isosurface values.
         density_vals = dens_func(rs)
@@ -258,9 +258,9 @@ def construct_all_points_of_rays_of_atoms(
             rs = np.delete(rs, indices, axis=0)
             # Convert from index I to (i) where i is the angular index and j is the radial.
             for k in indices:
-                numb_rad_to_radial_shell[i][k // len(radial_grid[i])] -= 1
+                numb_rad_to_radial_shell[i_do][k // len(radial_grid[i])] -= 1
 
-        index_to_atom[i + 1] = index_to_atom[i] + rs.shape[0]  # Add what index it is
+        index_to_atom[i_do + 1] = index_to_atom[i_do] + rs.shape[0]  # Add what index it is
         points.append(rs)
     points = np.vstack(points)  # has shape (Product_{i=1}^M K_i N_i, 3)
     print("Total number of points Over All Molecules ", points.shape)
@@ -331,7 +331,7 @@ def _solve_intersection_of_ias_interval(
         points = np.vstack(points)
 
         # Solve for basins
-        basins = find_basins_steepest_ascent_rk45(
+        basins, _ = find_basins_steepest_ascent_rk45(
             points, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=ss_0
         )
         # print("Basins", basins)
@@ -395,7 +395,8 @@ def _solve_intersection_of_ias_interval(
 
 
 def _solve_intersection_of_ias_point(
-    maximas, ias_indices, angular_pts, dens_func, grad_func, beta_spheres, bnd_err, ias_lengths, ss_0, max_ss, tol
+    maximas, ias_indices, angular_pts,
+        dens_func, grad_func, beta_spheres, bnd_err, ias_lengths, ss_0, max_ss, tol, hess_func=None
 ):
     r"""
     Solves the intersection of the ray to the inner-atomic surface.
@@ -448,20 +449,20 @@ def _solve_intersection_of_ias_point(
     if not isinstance(ias_indices, np.ndarray):
         raise TypeError(f"The parameters to solve indices should be numpy array instead of {type(ias_indices)}.")
     r_func = [np.zeros((len(angular_pts[i]),), dtype=np.float64) for i in range(len(maximas))]
-    basin_ias = [[-1] * ias_lengths[i] for i in range(len(maximas))]  # basin ids for inner atomic surface.
+    basin_ias = [[-1] * ias_lengths[i] for i in range(len(maximas))]
+
     while len(ias_indices) != 0:
         # Construct New Points
         points = []
         for (i_maxima, i_ang, l_bnd, u_bnd, _, _, _) in ias_indices:
-            # print((i_maxima, i_ang, l_bnd, u_bnd, ss))
             # Take the midpoint of interval [l_bnd, u_bnd]
             ray = maximas[int(i_maxima)] + (l_bnd + u_bnd) / 2.0 * angular_pts[int(i_maxima)][int(i_ang), :]
             points.append(ray)
         points = np.vstack(points)
 
         # Solve for basins
-        basins = find_basins_steepest_ascent_rk45(
-            points, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=ss_0
+        basins, _ = find_basins_steepest_ascent_rk45(
+            points, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=ss_0, hess_func=hess_func
         )
         # print("Basins", basins)
 
@@ -493,7 +494,7 @@ def _solve_intersection_of_ias_point(
                 ias_indices[i] = [i_maxima, i_ang, new_l_bnd, new_u_bnd, new_ss, basin_switch, i_ias]
 
         # Remove converged indices
-        # print("COnvergence indices", converge_indices)
+        # print("Convergence indices", converge_indices)
         ias_indices = np.delete(ias_indices, converge_indices, axis=0)
 
     # Solve for multiple intersections
@@ -516,6 +517,7 @@ def qtaim_surface_vectorize(
     optimize_centers=True,
     hess_func=None,
     find_multiple_intersections=False,
+    maximas_to_do=None
 ):
     r"""
     Parameters
@@ -557,6 +559,9 @@ def qtaim_surface_vectorize(
     find_multiple_intersections: bool
         If true, then it searches for up to three intersections of the inter-atomic surface. This is a
         time-consuming process but produces more accurate surfaces.
+    maximas_to_do: (None, list[int])
+        List of indices of the `centers`/`maximas` to solve for the QTAIM basin surface.  If this is provided,
+        then `angular` should also be of this length.
 
     Returns
     -------
@@ -583,16 +588,25 @@ def qtaim_surface_vectorize(
             f"Beta sphere length {len(beta_spheres)} should match the"
             f" number of centers {len(centers)}"
         )
+    if not isinstance(beta_spheres, (type(None), np.ndarray)):
+        raise TypeError(f"Beta_sphers {type(beta_spheres)} should be of numpy type.")
+    if maximas_to_do is not None and not isinstance(maximas_to_do, list):
+        raise TypeError(f"Maximas to do {type(maximas_to_do)} should be either None or a list of integers.")
+    if maximas_to_do is not None and max(maximas_to_do) >= len(centers):
+        raise ValueError(f"Length of maximas_to_do {len(maximas_to_do)} should be less then"
+                         f" length of centers {len(centers)}.")
+    if maximas_to_do is None:
+        maximas_to_do = np.arange(len(centers))
 
     # Using centers, update to the maximas
     maximas = centers
     if optimize_centers:
         # Using ODE solver to refine the maximas further.
-        maximas = find_optimize_centers(maximas, grad_func)
+        maximas = find_optimize_centers(centers, grad_func)
 
     # Construct a dense radial grid for each atom by taking distance to the closest five atoms.
     ss0 = 0.1
-    radial_grids = construct_radial_grids(maximas, maximas, min_pts=0.1, pad=1.0, ss0=ss0)
+    radial_grids = construct_radial_grids(maximas[maximas_to_do], maximas, min_pts=0.1, pad=1.0, ss0=ss0)
 
     # Determine beta-spheres and non-nuclear attractors from a smaller angular grid
     #  Degree can't be too small or else the beta-radius is too large and IAS point got classified
@@ -603,7 +617,7 @@ def qtaim_surface_vectorize(
             beta_spheres, maximas, radial_grids, ang_grid.points, dens_func, grad_func, hess_func
         )
         beta_spheres = np.array(beta_spheres)
-        print(f"Final Beta -shpheres {beta_spheres}")
+        print(f"Final Beta-spheres {beta_spheres}")
     # Check beta-spheres are not intersecting
     dist_maxs = cdist(maximas, maximas)
     condition = dist_maxs <= beta_spheres[:, None] + beta_spheres
@@ -614,20 +628,31 @@ def qtaim_surface_vectorize(
 
     # Construct a coarse radial grid for each atom starting at the beta-spheres.
     ss0 = 0.4
-    radial_grids = [
-        np.arange(beta_spheres[i], radial_grids[i][-1], ss0) for i in range(len(maximas))
-    ]
+    radial_grids_old = radial_grids
+    radial_grids = []
+    i_do = 0
+    for i_atom in range(len(maximas)):
+        if i_atom in maximas_to_do:
+            radial_grids.append(
+                np.arange(beta_spheres[i_atom], radial_grids_old[i_do][-1], ss0)
+            )
+            i_do += 1
+        else:
+            radial_grids.append([])
 
     # Construct Angular Points
     angular_pts = []
     for i in range(len(maximas)):
         # If it is not provided, then use what's specified
         if i < len(angular):
-            ang = angular[i]
-            if isinstance(ang, int):
-                angular_pts.append(AngularGrid(degree=ang, use_spherical=True).points)
+            if i in maximas_to_do:
+                ang = angular[i]
+                if isinstance(ang, int):
+                    angular_pts.append(AngularGrid(degree=ang, use_spherical=True).points)
+                else:
+                    angular_pts.append(ang.points)
             else:
-                angular_pts.append(ang.points)
+                angular_pts.append([])
         else:
             # If it is a Non-nuclear attractor
             angular.append(99)
@@ -636,15 +661,16 @@ def qtaim_surface_vectorize(
     # First step is to construct a grid that encloses all radial shells across all atoms
     points, index_to_atom, NUMB_RAYS_TO_ATOM, numb_rad_to_radial_shell = \
         construct_all_points_of_rays_of_atoms(
-            maximas, angular_pts, radial_grids, dens_func, iso_val
+            maximas, angular_pts, radial_grids, maximas_to_do, dens_func, iso_val
     )
     # print("Index to atom ", index_to_atom)
 
     # Then assign basins values for all the points.
     import time
     start = time.time()
-    basins = find_basins_steepest_ascent_rk45(
-        points, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=ss_0
+    basins, _ = find_basins_steepest_ascent_rk45(
+        points, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=ss_0,
+        hess_func=hess_func
     )
     final = time.time()
     # print("Basins", basins)
@@ -655,7 +681,7 @@ def qtaim_surface_vectorize(
     #   along the ray that intersects the IAS.
     ias, oas, ias_bnds, ias_basins, ias_2, ias_bnds_2, ias_basins_2, ias_3, ias_bnds_3, ias_basins_3 = \
         _classify_rays_as_ias_or_oas(
-            maximas, points, basins, index_to_atom, NUMB_RAYS_TO_ATOM, numb_rad_to_radial_shell
+            maximas, maximas_to_do, points, basins, index_to_atom, NUMB_RAYS_TO_ATOM, numb_rad_to_radial_shell
     )
     print("Total number of two intersections found ", [len(x) for x in ias_2])
     print("Total number of three intersections found ", [len(x) for x in ias_3])
@@ -665,33 +691,27 @@ def qtaim_surface_vectorize(
     ias_indices = np.array(list(
         itertools.chain.from_iterable(
             [[(i, y, ias_bnds[i][y][0], ias_bnds[i][y][1], max(ss0 / 10.0, bnd_err), ias_basins[i][y], i_ias)
-              for i_ias, y in enumerate(ias[i])] for i in range(len(maximas))]
+              for i_ias, y in enumerate(ias[i])] for i in maximas_to_do]
         )
     ))
     start = time.time()
     r_func, basin_ias = _solve_intersection_of_ias_point(
         maximas, ias_indices, angular_pts, dens_func, grad_func, beta_spheres, bnd_err,
-        ias_lengths=[len(x) for x in ias], tol=tol, max_ss=max_ss, ss_0=ss_0
+        ias_lengths=[len(x) for x in ias], tol=tol, max_ss=max_ss, ss_0=ss_0, hess_func=hess_func
     )
     final = time.time()
     print("Time Difference for Solving IAS ", final - start)
 
-
     # Solve OAS Points and updates r_func
-    # Update the radial grid step-size so that it samples more points, this shouldn't decrease computaitonal complextiy
+    # Update the radial grid step-size so that it samples more points, this shouldn't decrease computational complexity
     #  since the electron density is cheaper to compute with.
-    ss0 = 0.05
-    radial_grids = [
-        np.arange(0.05, radial_grids[i][-1], ss0) for i in range(len(maximas))
-    ]
     start = time.time()
-    solve_for_oas_points(maximas, oas, angular_pts, dens_func, grad_func, iso_val, iso_err, r_func)
+    solve_for_oas_points(maximas, maximas_to_do, oas, angular_pts, dens_func, grad_func, iso_val, iso_err, r_func)
     final = time.time()
     print("Time Difference for Solving OAS", final - start)
 
     # Double Check if the points are really IAS but should be classified as OAS
-    for i_atom in range(len(maximas)):
-        print("I I i ", i_atom)
+    for i_atom in maximas_to_do:
         pts = maximas[i_atom] + r_func[i_atom][ias[i_atom], None] * angular_pts[i_atom][ias[i_atom], :]
         dens_vals = dens_func(pts)
         # Decrease by the OAS surface error "iso_err"
@@ -711,4 +731,4 @@ def qtaim_surface_vectorize(
     if find_multiple_intersections:
         raise NotImplementedError(f"Multiple intersections was not implemented yet.")
 
-    return SurfaceQTAIM(r_func, angular, maximas, oas, ias, basin_ias, iso_val, beta_spheres)
+    return SurfaceQTAIM(r_func, angular, maximas, maximas_to_do, oas, ias, basin_ias, iso_val, beta_spheres)
