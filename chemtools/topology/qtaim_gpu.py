@@ -670,7 +670,7 @@ def qtaim_surface_vectorize(
     start = time.time()
     basins, _ = find_basins_steepest_ascent_rk45(
         points, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=ss_0,
-        hess_func=hess_func
+        hess_func=hess_func, check_for_nna=True
     )
     final = time.time()
     # print("Basins", basins)

@@ -98,7 +98,8 @@ def _RK45_step(pts, grad_func, step_size, grad0=None):
 
 def find_basins_steepest_ascent_rk45(
     initial_pts, dens_func, grad_func, beta_spheres, maximas, ss_0=1e-7,
-    tol=1e-7, max_ss=0.25, maxiter=2000, iter_nna=100, hess_func=None, terminate_if_other_basin_found=False
+    tol=1e-7, max_ss=0.25, maxiter=2000, iter_nna=100, hess_func=None, terminate_if_other_basin_found=False,
+    check_for_nna=False
 ):
     r"""
     Solves the following problem ODE using Runge-Kutta of order 4(5) with adaptive step-size
@@ -253,7 +254,7 @@ def find_basins_steepest_ascent_rk45(
                         print(eigs)
                         # Check if local maxima:
                         which_is_nna = np.where(np.all(eigs < -1e-10, axis=1))[0]
-                        if len(which_is_nna) != 0:
+                        if check_for_nna and len(which_is_nna) != 0:
                             nna_indices = i_smallg[which_is_nna]
                             # Found a NNA, Remove Duplicates, Update maxima and beta-spheres
                             new_maximas, indices_to_delete = delete_duplicate_pts(y_five[nna_indices], 1e-3)
@@ -283,7 +284,7 @@ def find_basins_steepest_ascent_rk45(
 
                             raise RuntimeError(f"Found BCP and RCP points. Handle this later. \n")
 
-                    else:
+                    elif not check_for_nna:
                         # Assign these points to basin -2,  delete them.
                         print(f"Maximas {maximas}")
                         print(f"Where the NNCP is {y_five[i_smallg]}")
