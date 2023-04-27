@@ -1,860 +1,733 @@
-# -*- coding: utf-8 -*-
-# ChemTools is a collection of interpretive chemical tools for
-# analyzing outputs of the quantum chemistry calculations.
-#
-# Copyright (C) 2016-2019 The ChemTools Development Team
-#
-# This file is part of ChemTools.
-#
-# ChemTools is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 3
-# of the License, or (at your option) any later version.
-#
-# ChemTools is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, see <http://www.gnu.org/licenses/>
-#
-# --
+from collections import OrderedDict
+import itertools
 import numpy as np
-
-from scipy.integrate import solve_ivp
-from scipy.interpolate import LSQSphereBivariateSpline, SmoothSphereBivariateSpline
-from scipy.optimize import root_scalar
-from scipy.spatial import ConvexHull, Voronoi
 from scipy.spatial.distance import cdist
 
-from scipy.sparse import lil_matrix
-
-from grid.atomgrid import AtomGrid
-from grid.cubic import UniformGrid, _HyperRectangleGrid
 from grid.angular import AngularGrid
-from grid.utils import convert_cart_to_sph
 
-from chemtools.topology.ode import steepest_ascent_rk45
 from chemtools.topology.surface import SurfaceQTAIM
+from chemtools.topology.utils import (
+    construct_radial_grids,
+    determine_beta_spheres_and_nna,
+    find_optimize_centers,
+    solve_for_oas_points,
+    _solve_for_isosurface_pt
+)
+from chemtools.topology.ode import find_basins_steepest_ascent_rk45
 
-import time
+
+__all__ = ["qtaim_surface_vectorize"]
 
 
-def construct_points_between_ias_and_oas(
-    ias: list, oas: int, angular_pts: np.ndarray, r_func_max: np.ndarray, maxima: np.ndarray
+def _classify_rays_as_ias_or_oas(
+    maximas, maximas_to_do, all_points, all_basins, index_to_atom, numb_rays_to_atom, numb_rad_to_radial_shell
 ):
     r"""
-    Construct points between the inner atomic surface and outer atomic surface.
+    Classify all rays in a molecule as either crossing the outer or inner atomic surface.
 
-    This is done by constructed a convex hull between IAS and OAS, seperetely.
-    Each point on the IAS, the two closest points are found on the OAS, then
-    a triangle is constructed.  Seven points are constructed within this triangle
-    and the Cartesian coordinates of the sphere centered at the maxima is solved
-    for each of these seven points.
-
-    Parameters
-    -----------
-    ias : List[int]
-        List of integers of `angular_pts` that are part of the inner atomic surface (IAS).
-    oas : List[int]
-        List of integers of `angular_pts` that are part of the outer atomic surface (OAS).
-    angular_pts : np.ndarray
-        Angular Points around the maxima for which rays are propgated from.
-    r_func_max : np.ndarray
-        The radial component for each angular point in `angular_pts` that either gives
-        the radial value that intersects the OAS or the IAS.
-    maxima : np.ndarray
-        Maxima of the basin.
-
-    Returns
-    -------
-    ndarray(K * 7, 3)
-        Cartesian coordinates of :math:`K` points on the sphere centered at `maxima` such that
-        they correspond to the seven points constructed above, where :math:`K` is the number
-        of points on the IAS of `maxima`.
-
-    """
-    # Take a convex hull of both IAS and OAS seperately.
-    ias_pts = maxima + r_func_max[ias, None] * angular_pts[ias, :]
-    oas_pts = maxima + r_func_max[oas, None] * angular_pts[oas, :]
-    ias_hull = ConvexHull(ias_pts)
-    oas_hull = ConvexHull(oas_pts)
-    ias_bnd = ias_hull.points[ias_hull.vertices]
-    oas_bnd = oas_hull.points[oas_hull.vertices]
-
-    # Compute the distance matrix
-    dist_mat = cdist(ias_bnd, oas_bnd)
-    # for each point in say ias take the closest two points in oas.
-    new_ang_pts = np.zeros((0, 3), dtype=np.float64)  # usually 7 points per ias boundary are added.
-    for i_ias, pt_ias in enumerate(ias_bnd):
-        # Get the two closest points on OAS to this IAS pt.
-        two_indices = dist_mat[i_ias].argsort()[:2]
-        pt1, pt2 = oas_bnd[two_indices[0]], oas_bnd[two_indices[1]]
-
-        # Take the center and midpoint between each line of the triangle (pt_ias, pt1, pt2)
-        midpoint = (pt1 + pt2 + pt_ias) / 3.0
-        line_pt1 = (pt1 + pt_ias) / 2.0
-        line_pt2 = (pt2 + pt_ias) / 2.0
-        line_pt3 = (pt1 + pt2) / 2.0
-
-        # The triangle with the center can be split into three polygons, take the center of each.
-        poly_pt1 = (midpoint + line_pt1 + line_pt2 + pt_ias) / 4.0
-        poly_pt2 = (midpoint + line_pt1 + line_pt3 + pt1) / 4.0
-        poly_pt3 = (midpoint + line_pt2 + line_pt3 + pt2) / 4.0
-
-        new_pts = np.array([midpoint, line_pt1, line_pt2, line_pt3, poly_pt1, poly_pt2, poly_pt3])
-        # Solve for the Cartesian angular coordinates of these 7 points by solving
-        #  r = m + t direction, where m is the maxima, direction has norm one, r is each of
-        #  these points
-
-        # print("new pts ", new_pts)
-        # matplotlib.use("Qt5Agg")
-        # fig = plt.figure()
-        # ax = plt.axes(projection='3d')
-        # p = ias_bnd
-        # ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
-        # p = oas_bnd
-        # ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
-        # p = new_pts
-        # ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="y")
-        # ax.scatter(pt1[0], pt1[1], pt1[2], color="m", s=30)
-        # ax.scatter(pt2[0], pt2[1], pt2[2], color="m", s=30)
-        # plt.show()
-
-        direction = new_pts - maxima
-        # Delete points that are on the maxima.
-        direction = np.delete(direction, np.all(np.abs(direction) < 1e-10, axis=1), axis=0)
-        print("Direction ", direction)
-        t = np.linalg.norm(direction, axis=1)
-        direction = direction / t[:, None]
-        # Delete directions that are the same
-        direction = np.unique(direction, axis=0)
-        new_ang_pts = np.vstack((new_ang_pts, direction))
-    return new_ang_pts
-
-
-def gradient_path(pt, grad_func, maximas=None, t_span=(0, 1000), method="LSODA", max_step=100,
-                  t_inc=400, max_tries=10, first_step=1e-3, beta_spheres=-np.inf):
-    # TODO: If the density value is low, normalized_gradient low and trying ODE did not move much,
-    #  then an option is to turn max_step tp np.inf
-    is_converged = False
-    y0 = pt.copy()
-    # print("PT ", pt)
-    numb_times = 0
-    def grad(t, x):
-        return grad_func(np.array([x]))[0]
-
-    while not is_converged and numb_times < max_tries:
-        sol = solve_ivp(
-            grad, #lambda t, x: grad_func(np.array([x]))[0].T,
-            y0=y0,
-            t_span=t_span,
-            method=method,
-            max_step=max_step,
-            first_step=first_step,
-            # vectorized=True,
-        )
-        # print(sol)
-        assert sol["success"], "ODE was not successful."
-        # TODO: Write in docs that it summes all local maximas are identified.
-        # If it is close to a maxima or within any of the beta-spheres, then stop.
-        if maximas is not None:
-            last_y_val = sol["y"][:, -1]
-            dist_maxima = np.linalg.norm(last_y_val - maximas, axis=1)
-            if np.any(dist_maxima < 0.1) or np.any(dist_maxima <= beta_spheres):
-                return sol["y"][:, -1]
-        # if maximas not specified, then just look at if it converged.
-        else:
-            convergence = np.linalg.norm(sol["y"][:, -2] - sol["y"][:, -1])
-            if convergence < 1e-1:
-                return sol["y"][:, -1]
-        # No convergence occured, so increaes t-span.
-        # print(sol["y"][:, -1], t_span, "YE")
-        t_span = (t_span[1], t_span[1] + t_inc)
-        y0 = sol["y"][:, -1]
-        numb_times += 1
-
-    if numb_times == max_tries:
-        raise RuntimeError(f"No convergence in normalized_gradient path pt {pt},"
-                           f" solution {sol['y'][:, -1]}, t_span {t_span}")
-
-
-def gradient_path_all_pts(
-    pts, grad_func, beta_spheres, i_maxima, maximas=None, t_span=(0, 1000), method="LSODA", max_step=100,
-    t_inc=500, first_step=1e-3, rtol=1e-4, atol=1e-7, is_watershed_pt=False
-):
-    # i_maxima is the index of the maxima where the ray originates from
-    def grad(t, x):
-        return grad_func(np.array([x]))[0]
-
-    basins = np.zeros((len(pts),))
-    for i_pt, pt in enumerate(pts):
-        found_basin = False
-        y0 = pt.copy()
-        print("Pt to backtrace", pt)
-
-        while not found_basin:
-            sol = solve_ivp(
-                grad,
-                y0=y0,
-                t_span=t_span,
-                method=method,
-                max_step=max_step,
-                first_step=first_step,
-                rtol=rtol,
-                atol=atol,
-            )
-            assert sol["success"], "ODE was not successful."
-            y_vals = sol["y"][:, -1]
-
-            # See if any of the points converge to their beta-spheres.
-            dist_maxima = cdist(np.array([y_vals]), maximas)
-            beta_sph = dist_maxima <= beta_spheres
-            # print("Dist maxima ", dist_maxima)
-            # print("Beta-Sphere ", beta_sph, beta_spheres)
-            if np.any(beta_sph):
-                which_basin = np.where(beta_sph[0])
-                assert len(which_basin[0]) == 1, "More than one basin was found"
-                print("Which basin ", which_basin)
-                found_basin = True
-                basins[i_pt] = which_basin[0][0]
-
-                # If it is a point that is guaranteed to be watershed point
-                # then stop when the point that it isn't i_maxima is found.
-                if is_watershed_pt and which_basin[0][0] != i_maxima:
-                    return basins
-
-            # Could not found basin, so update
-            t_span = (t_span[1], t_span[1] + t_inc)
-            y0 = y_vals
-    return basins
-
-
-def gradient_path_vectorized(pts, grad_func, maximas=None, t_span=(0, 1000), method="LSODA", max_step=100,
-                  t_inc=400, max_tries=10, first_step=1e-3, beta_spheres=-np.inf, rtol=1e-4, atol=1e-7):
-    y0 = np.ravel(pts, order="C")
-    numb_pts = len(pts)
-    print("Numb_pts ", numb_pts)
-    numb_tries = 0
-
-    def grad(t, pts, numb_rays):
-        pts_arr = np.reshape(pts, (numb_rays, 3), order="C")
-        pts_arr = pts_arr.copy()
-        return np.ravel(grad_func(pts_arr), order="C")
-
-    indices = np.arange(0, numb_pts)  # indices not converged
-    basins = np.zeros((numb_pts), dtype=int)
-    while len(indices) != 0:
-        sol = solve_ivp(
-            grad,
-            y0=y0,
-            t_span=t_span,
-            method=method,
-            max_step=max_step,
-            first_step=first_step,
-            args=(numb_pts,),
-            rtol=rtol,
-            atol=atol,
-            vectorized=False,
-        )
-        assert sol["success"]
-        # print(sol)
-        y_vals = sol["y"][:, -1]
-        print("Yvals", np.reshape(y_vals, (numb_pts, 3)))
-        y_vals = np.reshape(y_vals, (numb_pts, 3), order="C")
-
-        # See if any of the points converge to maximas or their beta-spheres.
-        dist_maxima = cdist(y_vals, maximas)
-        print("Dist Maxima", dist_maxima)
-        print("Which less than 0.1 ", np.any(dist_maxima < 0.1, axis=1))
-        conv_to_maxima = np.any(dist_maxima < 0.1, axis=1)
-
-        which_basins = np.argmin(dist_maxima, axis=1)  # which maximas it is closest to
-        print("Which basins it converged to ", which_basins)
-
-        beta_sph = dist_maxima <= beta_spheres
-
-        print("Dist maxima <= beta_sphere ", beta_sph)
-        which_beta_basins = np.where(dist_maxima <= beta_spheres)
-        print("which pts are within basin based on beta-sphere", which_beta_basins)
-        conv_to_beta = np.any(beta_sph, axis=1)
-        print("Conv to maxima", conv_to_maxima)
-        print("Conv to bet asphere", conv_to_beta)
-        which_converged = (conv_to_maxima | conv_to_beta)
-        print("which converged ", which_converged)
-        print(np.argmin(which_converged, axis=0))
-
-        # Update which basins it converged to
-        basins[indices[which_converged]] = which_basins[which_converged]
-        if len(which_beta_basins[1]) != 0:
-            # If the distance to beta-sphere where found, then replace it with those values.
-            print("basins", basins)
-            print("indices", indices)
-            print("which converged", which_converged)
-            print(which_beta_basins[1], conv_to_beta)
-            basins[indices[conv_to_beta]] = which_beta_basins[1]
-        print("Basins ", basins)
-
-        # delete indices that converged
-        indices = np.delete(indices, which_converged)
-        y_vals = np.delete(y_vals, which_converged, axis=0)
-        print("indices didn't converge: ", indices)
-
-        # the rest are continued increasing the t_span accordingly.
-        numb_pts = len(indices)
-        y0 = np.ravel(y_vals, order="C")
-        t_span = (t_span[1], t_span[1] + t_inc)
-        numb_tries += 1
-
-        if numb_tries == max_tries:
-            raise RuntimeError(f"No convergence in normalized_gradient path pt {y0},"
-                               f" solution {sol['y'][:, -1]}, t_span {t_span}")
-        # input("sds")
-    return basins
-
-
-def solve_for_isosurface_pt(
-    l_bnd, u_bnd, maxima, cart_sphere_pt, density_func, iso_val, iso_err
-):
-    r"""
-    Solves for the point on a ray that satisfies the isosurface value equation.
-
-    .. math::
-        f(r) := \rho(\textbf{A} + r \textbf{\theta}) - c,
-
-    where A is the position of the atom, :math:`\theta` is the Cartesian coordinates of the
-    point on the sphere, r is the radius, and c is the isosurface value.  The radius
-    is solved using a root-finding algorithm over an interval that contains the isosurface
-    value.
+    Also provides the interval limits [r_0, r_1] of each ray that crosses the IAS.
 
     Parameters
     ----------
-    l_bnd: float
-        The lower-bound on the radius for the root-solver. Needs to be less than the
-        isosurface value.
-    u_bnd: float
-        The upper-bound on the radius for the root-solver. Needs to be greater than the
-        isosurface value.
-    maxima: ndarray(3,)
-        The maximum of the atom.
-    cart_sphere_pt: ndarray(3,)
-        The Cartesian coordinates of the point on the sphere.
-    density_func: callable(ndarray(M,3), ndarray(M,))
-        The electron density function.
-    iso_val: float
-        The isosurface value.
-    iso_err: float
-        The xtol for the root-solver.
+    maximas: ndarray(M, 3)
+        Optimized centers of the electron density where the rays need to be classified. Doesn't need to be
+        all of the centers.
+    all_points: ndarray(N, 3)
+        All points in all rays across each atom in a molecule.
+    all_basins: ndarray(N, 3)
+        All basin values that were assigned for each point in all rays
+    index_to_atom:  list[int]
+        Gives the indices that assings each point in `all_points` to each atom, i.e.
+        [0, i_1, i_2, ..., N] implies `all_points[0: i_1]` corresponds to atom 1.
+    numb_rays_to_atom: list[int]
+        List of size `M`, that holds the number of angular points or rays in each atom.
+        Used to assign which points in `all_points` corresponds to which ray.
+    numb_rad_to_radial_shell: list[list[int]]
+        For each atom, for each angular pt/ray, tells the number of radial point.
+        Used to assign which points in `all_points` corresponds to which point in each ray.
 
     Returns
     -------
-    ndarray(3,):
-        The point :math:`\textbf{A} + r \textbf{\theta}` that satisfies the isosurface value.
+    ias, oas, ias_bnds, ias_basins: list[list[int]], list[list[int]], list[OrderedDict], list[list[int]]
+        A list of size `M`, that holds a list of indices of which angular pt/ray corresponds to
+        either intersecting the ias or oas. The final element is a list of size `M`, of
+        ordered dictionary whose keys are the indices of ias and items are the lower
+        and upper-bound of the radius where the intersection occurs somewhere inbetween.
+        `ias_basins` contains which basin each ias pt in `ias` switches to, when it crosses the boundary.
 
-    """
-    # Given a series of points based on a maxima defined by angles `cart_sphere_pt` with
-    #  radial pts `rad_pts`.   The `index_iso` tells us where on these points to construct another
-    #  refined grid from finding l_bnd and u_bnd.
-    dens_l_bnd = density_func(np.array([maxima + l_bnd * cart_sphere_pt]))
-    dens_u_bnd = density_func(np.array([maxima + u_bnd * cart_sphere_pt]))
-    if iso_val < dens_u_bnd or dens_l_bnd < iso_val:
-        if iso_val < dens_u_bnd:
-            u_bnd += 1.5
-        elif dens_l_bnd < iso_val:
-            l_bnd -= 1.5
-        # raise ValueError(f"Radial grid {l_bnd, u_bnd} did not bound {dens_l_bnd, dens_u_bnd} "
-        #                  f"the isosurface value {iso_val}. Use larger radial grid.")
-
-    # Use Root-finding algorithm to find the isosurface point.
-    root_func = lambda t: density_func(np.array([maxima + t * cart_sphere_pt]))[0] - iso_val
-    sol = root_scalar(root_func, method="toms748", bracket=(l_bnd, u_bnd), xtol=iso_err)
-    assert sol.converged, f"Root function did not converge {sol}."
-    bnd_pt = maxima + sol.root * cart_sphere_pt
-    return bnd_pt
-
-
-def solve_for_basin_bnd_pt(
-    dens_cutoff, i_maxima, maximas, radial, cart_sphere_pt, dens_func, grad_func, bnd_err,
-    iso_val, beta_spheres
-):
-    # Construct the ray and compute its density values based on a maxima defined by angles
-    #  `cart_sphere_pt` with radial pts `rad_pts`.    It goes through each point on the ray
-    #   if the ray density value is greater than dens_cutoff, then it is likely this ray
-    #   tends towards infinity and has no basin boundary.  If density value is larger, then
-    #   it solves for the normalized_gradient path via solving normalized_gradient ode.  If this ode solution,
-    #   is close to other basins, then we found when it switched basins.  Then we take
-    #  the two points where it switches basin and compute the distance, if this distance
-    #  is less than `bnd_err`, then we take the midpoint to be the boundary point on the ray
-    #  that intersects the ias.  If not, then we construct a new ray with different l_bnd
-    #  and u_bnd and reduce the step-size further and repeat this process.
-    rad_pts = radial.copy()
-    ss_ray = np.mean(np.diff(rad_pts))   # Stay with a coarse ray then refine further.
-    index_iso = None  # Needed to refine if the ray tends towards infinity.
-    bnd_pt = None  # Boundary or Isosurface Point
-    is_ray_to_inf = False  # Does this ray instead go towards infinity
-
-    found_watershed_on_ray = False
-    is_watershed_pt = False
-    basin_id = None
-    counter = 0
-    while not found_watershed_on_ray:
-        ray = maximas[i_maxima] + rad_pts[:, None] * cart_sphere_pt
-        ray_density = dens_func(ray)
-        print("Start of Ray ", ray[0], " Cartesian pt of Sphere ", cart_sphere_pt, "Final Ray Pt: ",
-              ray[-1])
-
-        # Cut off ray points that are less than dens_cutoff.
-        ray_cutoff = ray_density < dens_cutoff
-        ray = np.delete(ray, ray_cutoff, axis=0)
-        ray_density = np.delete(ray_density, ray_cutoff)
-
-        # print("The Ray", ray)
-        # print("The Ray Density ", ray_density)
-        grad_norm = np.min(np.linalg.norm(grad_func(ray), axis=1))
-        print("Range ", min(max(0.5 / grad_norm, 10), 50))
-
-        import time
-        start = time.time()
-        # basins = gradient_path_all_pts(
-        #     ray, grad_func, beta_spheres, i_maxima, maximas,
-        #     t_span=(0, min(max(0.5 / grad_norm, 10), 50)),
-        #     max_step=np.inf,
-        #     first_step=1e-6,
-        #     method="LSODA",
-        #     rtol=bnd_err,
-        #     atol=1e-6,
-        #     is_watershed_pt=is_watershed_pt
-        # )
-        basins = steepest_ascent_rk45(
-            ray, dens_func, grad_func, beta_spheres, maximas, tol=1e-6
-        )
-        final = time.time()
-        print("Difference ", final - start)
-        print("basins ", basins)
-
-        # If they all converged to the same basins, then it is ray to infinity.
-        if np.all(basins == i_maxima):
-            if counter == 0:
-                is_ray_to_inf = True
-                index_iso = np.argsort(np.abs(ray_density - iso_val))[0]
-                print("Ray to infinity with index ", index_iso)
-                break
-            else:
-                raise ValueError("Went from intersecting basin boundary to classifying as ray to inf.")
-        elif len(np.unique(basins)) == 1:
-            raise ValueError(f"Went from intersecting basin boundary to classifying as ray to inf."
-                             f"{basins}.")
-
-        # if some converged to other basins then refine further
-        # first, find which points it switched from basin 1 to basin 2.
-        i_switch = np.argmin(basins == i_maxima)
-        # print("i_switch", i_switch)
-        dist = np.linalg.norm(ray[i_switch - 1, :] - ray[i_switch, :])
-        # print("Dist ", dist, np.linalg.norm(rad_pts[i_switch - 1] - rad_pts[i_switch]))
-
-        # If the distance between the two points is less than bnd_err, then stop else refine.
-        if np.abs(dist - bnd_err) < 1e-8:
-            # Take the midpoint to be the boundary point.
-            found_watershed_on_ray = True
-            bnd_pt = (ray[i_switch] + ray[i_switch - 1]) / 2.0
-            basin_id = basins[i_switch] # basins starts at 1
-            print("Found the Watershed point ", bnd_pt, basin_id)
-        else:
-            # Refine Grid Further
-            l_bnd = np.linalg.norm(ray[i_switch - 1] - maximas[i_maxima]) if i_switch != 0 else rad_pts[0] - 1e-3
-            u_bnd = np.linalg.norm(ray[i_switch] - maximas[i_maxima])
-            ss_ray = max(ss_ray / 10.0, bnd_err)  # Decrease step-size.
-            rad_pts = np.arange(l_bnd, u_bnd + ss_ray, ss_ray)
-            print("Refine the ray further with l_bnd, u_bnd, ss: ", l_bnd, u_bnd, ss_ray, rad_pts[-1])
-            is_watershed_pt = True  # Update that it is a watershed point
-        counter += 1   # increment counter so that it doesn't check if entire ray goes to infity.
-        # input("Refine further")
-    return bnd_pt, is_ray_to_inf, index_iso, found_watershed_on_ray, basin_id
-
-
-def _optimize_centers(centers, grad_func):
-    maximas = np.array(
-        [gradient_path(x, grad_func, t_span=(0, 10), method="BDF",
-                       first_step=1e-9, max_step=1e-1) for x in centers],
-        dtype=np.float64
-    )
-    print("New maximas: \n ", maximas)
-    # Check for duplicates
-    distance = cdist(maximas, maximas)
-    distance[np.diag_indices(len(maximas))] = 1.0  # Set diagonal elements to one
-    if np.any(distance < 1e-6):
-        raise RuntimeError(f"Optimized maximas contains duplicates: \n {maximas}.")
-    return maximas
-
-
-def determine_beta_spheres(beta_spheres, maximas, radial_grid, angular_pts, dens_func, grad_func):
-    r"""
-
-    Notes this assumes the initial beta-sphere is 0.01, and so the distance between maximas
-    cannot be smaller than this.
+        These are repeat again for searching for second intersection ias_2, ias_basins_2, ias_bnds_2, and
+        similarly for the third intersection.
 
     """
     numb_maximas = len(maximas)
-    initial_beta_sph = 0.01
-    if beta_spheres is None:
-        beta_spheres = [initial_beta_sph] * numb_maximas
-    # Determine the beta-spheres
-    for i_maxima, maxima in enumerate(maximas):
-        if beta_spheres[i_maxima] == initial_beta_sph:
-            optimal_rad = -np.inf
-            for rad_pt in radial_grid[i_maxima]:
-                if rad_pt > initial_beta_sph:
-                    # Determine the points on the sphere with this radius
-                    pts = maxima + rad_pt * angular_pts
-                    print(pts)
+    oas = [[] for _ in range(numb_maximas)]  # outer atomic surface
+    ias = [[] for _ in range(numb_maximas)]  # inner atomic surface for first intersection.
 
-                    # basins = gradient_path_all_pts(
-                    #     pts, grad_func, beta_spheres, i_maxima, maximas,
-                    #     t_span=(0, 100), max_step=np.inf, method="LSODA",
-                    #     first_step=1e-7
-                    # )
-                    basins = steepest_ascent_rk45(
-                        pts, dens_func, grad_func, beta_spheres, maximas
-                    )
-                    basins = np.array(basins, dtype=np.int)
-                    # If all the basins went to same maxima, then update radius
-                    # else then break out of this for loop.
-                    if np.all(basins == i_maxima):
-                        optimal_rad = rad_pt
-                        beta_spheres[i_maxima] = optimal_rad
-                        print(beta_spheres)
-                        print("Optimal radius is ", optimal_rad)
+    # The points that all converge to the same point are OAS, and are isosurface points. Remove
+    #  them
+    #     First to get the maxima, you would use index_to_atom.
+    #     To get each ray, assuming the number of pts in each ray is the same, you would do
+    #            use numb_rad_to_atom
+    #     Initially each ray has the same number of points, then one can re-shape both
+    #     points and basins to make it easy to index each ray of each maxima, then classify
+    #     it as either a IAS or OAS.   Here you can determine whether it crosses twice, and
+    #     determine which ray requires special attention.
+    #
+    # print("Index to atom ", index_to_atom, all_points.shape)
+    ias_bnds = [OrderedDict() for _ in range(0, numb_maximas)]              # Keys are Points index
+    ias_basins = [OrderedDict() for _ in range(numb_maximas)]               # Keys are Points index
+
+
+    ias_2 = [[] for _ in range(numb_maximas)]  # inner atomic surface for second intersection.
+    ias_3 = [[] for _ in range(numb_maximas)]  # inner atomic surface for third intersection.
+    ias_bnds_2 = [OrderedDict() for _ in range(0, numb_maximas)]              # Keys are Points index
+    ias_basins_2 = [OrderedDict() for _ in range(numb_maximas)]               # Keys are Points index
+    ias_bnds_3 = [OrderedDict() for _ in range(0, numb_maximas)]              # Keys are Points index
+    ias_basins_3 = [OrderedDict() for _ in range(numb_maximas)]               # Keys are Points index
+    np.set_printoptions(threshold=np.inf)
+    for i_do, i_maxima in enumerate(maximas_to_do):
+        # print("ATom i ", i_maxima)
+        # print("Starting and Final index", index_to_atom[i_maxima], index_to_atom[i_maxima + 1])
+        basins_a = all_basins[index_to_atom[i_do]:index_to_atom[i_do + 1]]  # Basin of atom
+        points_a = all_points[index_to_atom[i_do]:index_to_atom[i_do + 1]]  # Points of atom
+        numb_rad_pts = numb_rad_to_radial_shell[i_do]
+
+        # print("Basins of atom ", basins_a)
+        # print(index_to_atom[i_maxima], numb_rad_pts)
+        # print("Number of angular points in this atom", numb_rays_to_atom[i_maxima])
+        i_ray = 0
+        for i_ang in range(numb_rays_to_atom[i_do]):
+            # print("Angular pt j", i_ang)
+            # print("Number of radial points in this angular pt ", numb_rad_pts[i_ang])
+
+            # Get the basin of the ray
+            basins_ray = basins_a[i_ray:i_ray + numb_rad_pts[i_ang]]
+            # print("Basin of the ray ", basins_ray)
+
+            # Classify basins as either OAS and IAS, if IAS, then count the number of
+            #     intersections of the IAS. In addition, get the l_bnd, u_bnd of each intersection.
+            # Groups basins i.e. [1, 1, 1, 0, 0, 0, 1, 1, 2, 2] -> [1, 0, 1, 2]
+            group_by = [(k, list(g)) for k, g in itertools.groupby(basins_ray)]
+            unique_basins = np.array([x[0] for x in group_by])
+            # print(basins_ray == i_maxima)
+
+            # All pts in the ray got assigned to the same basin of the maxima
+            if len(unique_basins) == 1 and unique_basins[0] == i_maxima:
+                # This implies it is an OAS point, else then it is an IAS with a bad ray.
+                # print("OAS Point")
+                oas[i_maxima].append(i_ang)
+            else:
+                # The point is an IAS, determine the number of intersections.
+                conv_to_atom = unique_basins == i_maxima
+                numb_intersections = np.sum(conv_to_atom)
+                l_bnd_pad = 0.0  # This is the case with a bad ray, loweres the l_bnd by this amount
+                if numb_intersections == 0:
+                    # This is IAS with a bad ray, would have to re-determine the l_bnd. This was an IAS point
+                    # Whose ray at the boundary is assigned to different basins depending on the accuracy of ODE solver.
+                    # This is IAS with a bad ray, would have to re-determine the l_bnd
+                    l_bnd_pad = 0.1
+
+                if 0 <= numb_intersections:
+                    # print("IAS With one Intersection.")
+                    # Determine lower and upper-bound Point on ray.
+                    if group_by[0][1][0] == i_maxima:
+                        # if the ray started with a basin that converged ot i_maxima, then take the upper bound
+                        #   to be the when it started to switch to a different basin.
+                        index_u_bnd = len(group_by[0][1])
+                        index_l_bnd = index_u_bnd - 1
                     else:
-                        break
-        print("optimal radius", optimal_rad)
-        # input("next maxima")
-    return beta_spheres
+                        # Here the ray is a bad ray in the sense that the start of the ray should have converged to
+                        #  i_maxima but it dind't, and so take the u_bnd to be when it or sure converges to the
+                        #  different maxima from i_maxima.
+                        index_u_bnd = min(2, len(group_by[0][1]))
+                        index_l_bnd = 0
+                        if index_u_bnd == index_l_bnd:
+                            raise RuntimeError(f"Algorithm Error .")
+                    # Determine radius from the upper and lower bound.
+                    r_ubnd = np.linalg.norm(points_a[i_ray + index_u_bnd] - maximas[i_maxima])
+                    r_lbnd = np.linalg.norm(points_a[i_ray + index_l_bnd] - maximas[i_maxima])
+                    # Update containers
+                    ias_bnds[i_maxima][i_ang] = [max(0.1, r_lbnd - l_bnd_pad), r_ubnd]
+                    ias[i_maxima].append(i_ang)
+                    # Get the basins where it switches
+                    ias_basins[i_maxima][i_ang] = unique_basins[np.argmax(unique_basins != i_maxima)]
+                    # print("Radius Lower and Upper bound ", r_lbnd, r_ubnd)
+
+                    # Gather information about other intersections
+                    if numb_intersections > 1:
+                        # print("Angular pt j", i_ang)
+                        # print("Number of radial points in this angular pt ", numb_rad_pts[i_ang])
+                        # print("IAS With Multiple Intersections")
+                        # print(group_by)
+                        # print(unique_basins)
+
+                        # Figure out if the number intersections is two or three. Code only checks up to three.
+                        index_ray = 0  # Keeps track of how many points to go further
+                        more_than_three = False
+                        for i, (basin, assigned_basin_vals) in enumerate(group_by):
+                            if i != 0:
+                                # Multiple intersections found, find correct intervals to search for intersections
+                                if basin == i_maxima:
+                                    if more_than_three:
+                                        print("Angular pt j", i_ang)
+                                        print("Number of radial points in this angular pt ", numb_rad_pts[i_ang])
+                                        print(f"Unique basins {unique_basins}")
+                                        print(f"Group by {group_by}")
+                                        raise RuntimeError(f"More than three intersections was found."
+                                                           f" Code doesn't check.")
+
+                                    # Add the second intersection
+                                    ias_2[i_maxima].append(i_ang)
+                                    ias_basins_2[i_maxima][i_ang] = group_by[i - 1][0]
+                                    l_bnd = points_a[i_ray + index_ray - 1]
+                                    u_bnd = points_a[i_ray + index_ray]
+                                    r_ubnd = np.linalg.norm(u_bnd - maximas[i_maxima])
+                                    r_lbnd = np.linalg.norm(l_bnd - maximas[i_maxima])
+                                    ias_bnds_2[i_maxima][i_ang] = [r_lbnd, r_ubnd]
+
+                                    # Check for the third intersection that occurs afterwards
+                                    if i + 1 < len(group_by):
+                                        ias_3[i_maxima].append(i_ang)
+                                        ias_basins_3[i_maxima][i_ang] = group_by[i + 1][0]
+                                        i_lbnd = i_ray + index_ray + len(assigned_basin_vals) - 1
+                                        i_ubnd = i_ray + index_ray + len(assigned_basin_vals)
+                                        l_bnd = points_a[i_lbnd]
+                                        u_bnd = points_a[i_ubnd]
+                                        r_ubnd = np.linalg.norm(u_bnd - maximas[i_maxima])
+                                        r_lbnd = np.linalg.norm(l_bnd - maximas[i_maxima])
+                                        ias_bnds_3[i_maxima][i_ang] = [r_lbnd, r_ubnd]
+                                        more_than_three = True
+                            index_ray += len(assigned_basin_vals)
+
+                        # print(ias_2[i_maxima])
+                        # print(ias_basins_2[i_maxima])
+                        # print(ias_bnds_2[i_maxima])
+                        # print(ias_3[i_maxima])
+                        # print(ias_basins_3[i_maxima])
+                        # print(ias_bnds_3[i_maxima])
+                        # import matplotlib
+                        # import matplotlib.pyplot as plt
+                        # from mpl_toolkits import mplot3d
+                        # matplotlib.use("Qt5Agg")
+                        # fig = plt.figure()
+                        # ax = plt.axes(projection='3d')
+                        # p = points_a[i_ray: i_ray + numb_rad_pts[i_ang]]
+                        # ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="g", s=60)
+                        # ax.scatter(maximas[:, 0], maximas[:, 1], maximas[:, 2], color="r", s=60)
+                        # plt.show()
+                    else:
+                        # Store [l_bnd, u_bnd] inside ias_bnds_2[i_maxima] for searching to the IAS in case
+                        #  the user wants to search for multiple intersections.
+                        ias_bnds_2[i_maxima][i_ang] = [[r_ubnd, r_ubnd]]
+
+            i_ray += numb_rad_pts[i_ang]
+    return ias, oas, ias_bnds, ias_basins, ias_2, ias_bnds_2, ias_basins_2, ias_3, ias_bnds_3, ias_basins_3
 
 
-def qtaim_surface(angular, centers, dens_func, grad_func, iso_val=0.001,
-                  dens_cutoff=1e-5, bnd_err=1e-4, iso_err=1e-6,
-                  beta_spheres=None, optimize_centers=True, refine=False):
+def construct_all_points_of_rays_of_atoms(
+    maximas, angular_pts, radial_grid, maximas_to_do, dens_func, iso_val
+):
     r"""
-    Find the outer atomic and inner atomic surface based on QTAIM.
+    Construct all points of all rays across all molecules.
+    """
+    #  Need a way to track which points correspond to which maxima,
+    #  Need a way to track which sets of points correspond to a ray
+    #  index_to_atom = [0, i_1, i_1 + i_2, ..., \sum_j^M i_j] first index always zero and last
+    #      always the number of points.
+    index_to_atom = [0] * (len(maximas_to_do) + 1)  # First index is always zero
+    NUMB_RAYS_TO_ATOM = [len(angular_pts[i]) for i in maximas_to_do]
+    numb_rad_to_radial_shell = []  # List of List: Number of radius points per ray
+    points = []
+    print(NUMB_RAYS_TO_ATOM)
+    for i_do, i in enumerate(maximas_to_do):  #range(0, numb_maximas):
+        # Construct all points on the atomic grid around atom i
+        radial_shells = np.einsum("i,jk->jik", radial_grid[i], angular_pts[i])
+        print("Number of radial points", len(radial_grid[i]))
+        rs = maximas[i, None, None, :] + radial_shells   # has shape (K, N, 3)
+        rs = np.reshape(rs, (rs.shape[0] * rs.shape[1], 3)) # has shape (KN, 3)
+        print("Total number of points ", rs.shape)
 
-    For each maxima, a sphere is determined based on `angular` and for each
-     point on the angular/sphere, a ray is created based on the radial grid `rgrids`.
-     The ray is then determines to either go to infinity and cross the isosurface of the
-     electron density or the ray intersects the inner-atomic surface (IAS) of another basin.
-     This is determined for each point on the sphere.
+        # Record information what indices it corresponds to
+        numb_rad_to_radial_shell.append([len(radial_grid[i])] * NUMB_RAYS_TO_ATOM[i_do])
+
+        # First remove the density values that are less than isosurface values.
+        density_vals = dens_func(rs)
+        indices = np.where(density_vals < iso_val)[0]
+        if len(indices) != 0:
+            rs = np.delete(rs, indices, axis=0)
+            # Convert from index I to (i) where i is the angular index and j is the radial.
+            for k in indices:
+                numb_rad_to_radial_shell[i_do][k // len(radial_grid[i])] -= 1
+
+        index_to_atom[i_do + 1] = index_to_atom[i_do] + rs.shape[0]  # Add what index it is
+        points.append(rs)
+    points = np.vstack(points)  # has shape (Product_{i=1}^M K_i N_i, 3)
+    print("Total number of points Over All Molecules ", points.shape)
+    return points, index_to_atom, NUMB_RAYS_TO_ATOM, numb_rad_to_radial_shell
+
+
+def _solve_intersection_of_ias_interval(
+    maximas, ias_indices, angular_pts, dens_func, grad_func, beta_spheres, bnd_err, ss_0, max_ss, tol
+):
+    r"""
+    Solves the intersection of the ray to the inner-atomic surface.
+
+    A radial grid is constructed over each ray based on `ias_indices`.  The basin value
+    is assigned to each point, and the point where it swtiches basins is recorded.
+     The process is further repeated with a smaller step-size until the distance between two
+     points on the ray is less than `bnd_err`.
 
     Parameters
     ----------
-    angular: List[int] or ndarray(N, 3)
-        Either integer specifying the degree to construct angular/Lebedev grid around each maxima
-        or array of points on the sphere in Cartesian coordinates.
-    centers: ndarray(M,3)
-        List of local maximas of the density.
-    dens_func: Callable(ndarray(N,3) ->  ndarray(N,))
-        The density function.
-    grad_func: Callable(ndarray(N,3) -> ndarray(N,3))
-        The normalized_gradient of the density function.
-    iso_val: float
-        The isosurface value of the outer atomic surface.
-    dens_cutoff: float
-        Points on the ray whose density is less than this cutoff are ignored.
+    maximas: ndarray(M, 3)
+        Optimized centers of the electron density.
+    ias_indices: ndarray(N, 5)
+       Rows correspond to each ray that intersects the IAS.
+       First index is which index of maxima it originates from, then second
+       index is index of angular point/ray, third index is the lower bound radius and fourth
+       index is the upper-bound radius, fifth index is the step-size.
+       The sixth index holds which index of the `IAS` list it points to.
+    angular_pts: list[ndarray]
+        List of size `M` of the angular points over each maxima.
+    dens_func:
+        The density of electron density.
+    grad_func:
+        The gradient of the electron density.
+    beta_spheres: ndarray(M,)
+        Beta-spheres radius of each atom.
     bnd_err: float
-        This determines the accuracy of points on the inner atomic surface (IAS) by controlling
-        the step-size of the ray that cross the IAS.
+        The error of the intersection of the IAS. When the distance to two consequent points
+        on the ray crosses different basins is less than this error, then the midpoint is accepted
+        as the final radius value.
+    ss_0: float, optional
+        The initial step-size of the ODE (RK45) solver.
+    max_ss: float, optional
+        Maximum step-size of the ODE (RK45) solver.
+    tol: float, optional
+        Tolerance for the adaptive step-size.
+
+    Return
+    -------
+    List[ndarray()], list[list[int]]:
+        The first list holds arrays that gives the radius value that intersects the IAS or OAS.
+        The second list of size `M`, holds which ias crosses which other basin.
+
+    """
+    r_func = [np.zeros((len(angular_pts[i]),), dtype=np.float64) for i in range(len(maximas))]
+    basin_ias = [[] for _ in range(len(maximas))]  # basin ids for inner atomic surface.
+    while len(ias_indices) != 0:
+        # Construct New Points
+        points = []
+        numb_pts_per_ray = []
+        for (i_maxima, i_ang, l_bnd, u_bnd, ss, _) in ias_indices:
+            # print((i_maxima, i_ang, l_bnd, u_bnd, ss))
+            ray = (
+                maximas[int(i_maxima)] +
+                np.arange(l_bnd, u_bnd + ss, ss)[:, None] * angular_pts[int(i_maxima)][int(i_ang), :]
+            )
+            points.append(ray)
+            numb_pts_per_ray.append(len(ray))
+        points = np.vstack(points)
+
+        # Solve for basins
+        basins, _ = find_basins_steepest_ascent_rk45(
+            points, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=ss_0
+        )
+        # print("Basins", basins)
+
+        # Refine the rays further
+        index_basins = 0  # Index to iterate through basins
+        converge_indices = []
+        # print("Average step-size", np.mean(ias_indices[:, -1]))
+        make_ode_solver_more_accurate = False
+        for i, (i_maxima, i_ang, l_bnd, u_bnd, ss, basin_switch, i_ias) in enumerate(ias_indices):
+            basins_ray = basins[index_basins:index_basins + numb_pts_per_ray[i]]
+            print((i_maxima, i_ang, l_bnd, u_bnd, ss))
+            # print("Basins ", i, basins_ray)
+
+            # Basins that switch index
+            i_switch = np.argmax(basins_ray != i_maxima)
+            # print("Index of switch ", i_switch)
+            if i_switch == 0:
+                print("Basins with bad ray: ", basins_ray, (i_maxima, i_ang, l_bnd, u_bnd, ss))
+                # raise ValueError(f"This ray lost it's ability to be an IAS point, as all points converged to the same maxima. "
+                #                  f"Fix this.")
+
+                # Update ias_indices for the next iteration for example l_bnd, u_bnd, step-size
+                # This lower and upper bound is chosen to guarantee that the IAS point will be found.
+                new_l_bnd = l_bnd - 20.0 * ss
+                new_u_bnd = u_bnd + 20.0 * ss
+                new_ss = max(ss / 10.0, bnd_err)
+                # Make ODE solver more accurate
+                make_ode_solver_more_accurate = True
+                # print("New step-size ", new_ss)
+                ias_indices[i] = [i_maxima, i_ang, new_l_bnd, new_u_bnd, new_ss, basin_switch, i_ias]
+            else:
+                # If ss was less than bnd_err, then we converge and should stop.
+                if ss <= bnd_err:
+                    # Take midpoint to be the radius of intersection
+                    radius_mid_pt = (2.0 * l_bnd + ss * i_switch) / 2.0
+                    r_func[int(i_maxima)][int(i_ang)] = radius_mid_pt
+                    basin_ias[int(i_maxima)][int(i_ias)] = basins_ray[i_switch]
+                    converge_indices.append(i)  # Put in list to remove indices.
+                else:
+                    # Update ias_indices for the next iteration for example l_bnd, u_bnd, step-size
+                    new_l_bnd = l_bnd + ss * (i_switch - 1)
+                    new_u_bnd = l_bnd + ss * (i_switch)
+                    new_ss = max(ss / 10.0, bnd_err)
+                    # print("New step-size ", new_ss)
+                    ias_indices[i] = [i_maxima, i_ang, new_l_bnd, new_u_bnd, new_ss, basin_switch, i_ias]
+
+            # Update index for the next ray
+            index_basins += numb_pts_per_ray[i]
+            # print("COnvergence indices", converge_indices)
+        if make_ode_solver_more_accurate:
+            tol /= 2.0
+            max_ss = min(0.1, max_ss)
+            ss_0 /= 2.0
+
+        # Remove converged indices
+        ias_indices = np.delete(ias_indices, converge_indices, axis=0)
+
+    # Solve for multiple intersections
+    return r_func, basin_ias
+
+
+def _solve_intersection_of_ias_point(
+    maximas, ias_indices, angular_pts,
+        dens_func, grad_func, beta_spheres, bnd_err, ias_lengths, ss_0, max_ss, tol, hess_func=None
+):
+    r"""
+    Solves the intersection of the ray to the inner-atomic surface.
+
+    A point is associated to each ray based on `ias_indices`.  The basin value
+    is assigned to each point, and the point is moved along the ray until it keeps switching basins.
+     The process is further repeated with a smaller step-size until the distance between two
+     points on the ray is less than `bnd_err`.
+
+    Parameters
+    ----------
+    maximas: ndarray(M, 3)
+        Optimized centers of the electron density.
+    ias_indices: ndarray(N, 6)
+       Rows correspond to each ray that intersects the IAS.
+       First index is which index of maxima it originates from, then second
+       index is index of angular point/ray, third index is the lower bound radius
+       and fourth index is the upper-bound radius, fifth index is the step-size.
+       The fifth index holds which basin the IAS point switches to. Note it may
+       not be the true basin value that it switches to.
+       The sixth index holds which index of the `IAS` list it points to.
+    angular_pts: list[ndarray]
+        List of size `M` of the angular points over each maxima.
+    dens_func:
+        The density of electron density.
+    grad_func:
+        The gradient of the electron density.
+    beta_spheres: ndarray(M,)
+        Beta-spheres radius of each atom.
+    bnd_err: float
+        The error of the intersection of the IAS. When the distance to two consequent points
+        on the ray crosses different basins is less than this error, then the midpoint is accepted
+        as the final radius value.
+    ias_lengths: list[int]
+        List of length `M` atoms that contains the number of IAS points
+    ss_0: float, optional
+        The initial step-size of the ODE (RK45) solver.
+    max_ss: float, optional
+        Maximum step-size of the ODE (RK45) solver.
+    tol: float, optional
+        Tolerance for the adaptive step-size.
+
+    Return
+    -------
+    List[ndarray()], list[list[int]]:
+        The first list holds arrays that gives the radius value that intersects the IAS or OAS.
+        The second list of size `M`, holds which ias crosses which other basin.
+
+    """
+    if not isinstance(ias_indices, np.ndarray):
+        raise TypeError(f"The parameters to solve indices should be numpy array instead of {type(ias_indices)}.")
+    r_func = [np.zeros((len(angular_pts[i]),), dtype=np.float64) for i in range(len(maximas))]
+    basin_ias = [[-1] * ias_lengths[i] for i in range(len(maximas))]
+
+    while len(ias_indices) != 0:
+        # Construct New Points
+        points = []
+        for (i_maxima, i_ang, l_bnd, u_bnd, _, _, _) in ias_indices:
+            # Take the midpoint of interval [l_bnd, u_bnd]
+            ray = maximas[int(i_maxima)] + (l_bnd + u_bnd) / 2.0 * angular_pts[int(i_maxima)][int(i_ang), :]
+            points.append(ray)
+        points = np.vstack(points)
+
+        # Solve for basins
+        basins, _ = find_basins_steepest_ascent_rk45(
+            points, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=ss_0, hess_func=hess_func
+        )
+        # print("Basins", basins)
+
+        # Refine the rays further
+        # print("Average step-size", np.mean(ias_indices[:, 4]))
+        converge_indices = []
+        # Note it always assumes that `l_bnd` goes to `i_maxima` and `u_bnd` goes to `basin_switch`.
+        for i, (i_maxima, i_ang, l_bnd, u_bnd, ss, basin_switch, i_ias) in enumerate(ias_indices):
+            #print((i_maxima, i_ang, l_bnd, u_bnd, ss, basin_switch))
+            if basins[i] == i_maxima:
+                # Calculate new step-size between [(l_bnd + u_bnd) / 2,  u_bnd]
+                new_l_bnd = (l_bnd + u_bnd) / 2
+                new_u_bnd = u_bnd
+            else:
+                # Calculate new stepsize between [l_bnd, (l_bnd + u_bnd) / 2]
+                new_l_bnd = l_bnd
+                new_u_bnd = (l_bnd + u_bnd) / 2
+                # Update the basin that it switches to.
+                if basin_switch != basins[i]:
+                    basin_switch = basins[i]
+            new_ss = (new_u_bnd - new_l_bnd)
+            # If new stepsize was less than bnd_err, then we converge and should stop.
+            if new_ss <= bnd_err:
+                r_func[int(i_maxima)][int(i_ang)] = (new_l_bnd + new_u_bnd) / 2
+                basin_ias[int(i_maxima)][int(i_ias)] = int(basin_switch)
+                converge_indices.append(i)  # Put in list to remove indices.
+            else:
+                # Update ias_indices for the next iteration for example l_bnd, u_bnd, step-size
+                ias_indices[i] = [i_maxima, i_ang, new_l_bnd, new_u_bnd, new_ss, basin_switch, i_ias]
+
+        # Remove converged indices
+        # print("Convergence indices", converge_indices)
+        ias_indices = np.delete(ias_indices, converge_indices, axis=0)
+
+    # Solve for multiple intersections
+    return r_func, basin_ias
+
+
+def qtaim_surface_vectorize(
+    angular,
+    centers,
+    dens_func,
+    grad_func,
+    iso_val=0.001,
+    bnd_err=1e-4,
+    iso_err=1e-6,
+    beta_spheres=None,
+    beta_sphere_deg=27,
+    ss_0=0.1,
+    max_ss=0.25,
+    tol=1e-7,
+    optimize_centers=True,
+    hess_func=None,
+    find_multiple_intersections=False,
+    maximas_to_do=None
+):
+    r"""
+    Parameters
+    ----------
+    angular: List[AngularGrid] or List[int]
+        List of angular grids over each atom, or a list of their degrees.
+    centers: ndarray(M, 3)
+        Atomic coordinates.
+    dens_func: callable(ndarray(N, 3)->ndarray(N,))
+        The electron density function.
+    grad_func: callable(ndarray(N, 3)->ndarray(N,3))
+        The gradient of the electron density.
+    iso_val: float
+        Isosurface value of the outer-atomic surface.
+    bnd_err: float
+        The error of the points on the inner-atomic surface.
     iso_err: float
-        The error associated to points on the OAS and how close they are to the isosurface value.
-    beta_spheres : list[float]
-        List of size `M` of radius of the sphere centered at each maxima. It avoids backtracing
-        of points within the circle. If None is provided, then beta-sphere is determined
-        computationally.
+        The error in solving for the isosurface points on the outer-atomic surface.
+    ss_0: float
+        Initial step-size of the coarse radial grid to determine whether the ray
+        is part of the outer atomic surface or inner.
+    beta_spheres: (List[float] or None)
+        The radius of confidence that points are assigned to the atom. Should have length `M`.
+    beta_sphere_deg: int
+        Integer specifying angular grid of degree `beta_sphere_deg` that is used to find the beta-sphere
+        automatically, if `beta_spheres` isn't provided. Default value is 21.
+    ss_0: float, optional
+        The initial step-size of the ODE (RK45) solver.
+    max_ss: float, optional
+        Maximum step-size of the ODE (RK45) solver.
+    tol: float, optional
+        Tolerance for the adaptive step-size.
     optimize_centers: bool
-        If true, then it will optimize the centers/maximas to get the exact local maximas.
-    refine : (bool, int)
-        If true, then additional points between the IAS and OAS are constructed, added and
-        solved for whether it is on the IAS or OAS.
+        If true, then the steepest-ascent is performed on the centers to find the local maximas.
+    hess_func: callable(ndarray(N, 3)->ndarray(N, 3, 3))
+        The Hessian of the electron density. If this is provided, then non-nuclear attractors will be found.
+        Adds a default Lebedev/angular grid of degree fifty and 0.1 a.u. to the `beta-spheres` if it is
+        provided.
+    find_multiple_intersections: bool
+        If true, then it searches for up to three intersections of the inter-atomic surface. This is a
+        time-consuming process but produces more accurate surfaces.
+    maximas_to_do: (None, list[int])
+        List of indices of the `centers`/`maximas` to solve for the QTAIM basin surface.  If this is provided,
+        then `angular` should also be of this length.
 
     Returns
     -------
-    SurfaceQTAIM
-        Class that contains the inner-atomic surface, outer-atomic surface for each maxima.
+    SurfaceQTAIM:
+        Object that holds all information regarding the surface of each atom.
 
     Notes
     -----
-    - It is possible for a Ray to intersect the zero-flux surface but this algorithm will
-        classify it as a ray to infinity because the points on the other side of the basin have
-        density values so small that the ode doesn't converge to the maxima of the other basin.
-        In this scenario it might be worthwhile to have a denser radial grid with less points
-        away from infinity or have a smaller density cut-off.  Alternative for the developer,
-        is to implement highly accurate ode solver at the expense of computation time.
+    The algorithm is as follows:
+    1. Optimize the centers provided to obtain the local maximas.
+    2. Determine the beta-spheres over all atoms.
+    3. Using an angular grid and radial grid, construct all rays propogating across all atoms.
+    4. Solve for each basin value for each point.
+    5. Analyze the basin values and classify each ray as either an outer-atomic or inner-atomic
+        surface point.
+    6. For the inner-atomic rays, find the point of intersection to the surface boundary.
 
     """
-    if not isinstance(refine, (bool, int)):
-        raise TypeError(f"Refine {type(refine)} should be either boolean or integer.")
-    if dens_cutoff > iso_val:
-        raise ValueError(f"Density cutoff {dens_cutoff} is greater than isosurface val {iso_val}.")
+    if len(angular) != len(centers):
+        raise ValueError(f"Length of angular {len(angular)} should be the same as the"
+                         f"number of centers {len(centers)}.")
     if beta_spheres is not None and len(centers) != len(beta_spheres):
         raise ValueError(
             f"Beta sphere length {len(beta_spheres)} should match the"
             f" number of centers {len(centers)}"
         )
+    if not isinstance(beta_spheres, (type(None), np.ndarray)):
+        raise TypeError(f"Beta_sphers {type(beta_spheres)} should be of numpy type.")
+    if maximas_to_do is not None and not isinstance(maximas_to_do, list):
+        raise TypeError(f"Maximas to do {type(maximas_to_do)} should be either None or a list of integers.")
+    if maximas_to_do is not None and max(maximas_to_do) >= len(centers):
+        raise ValueError(f"Length of maximas_to_do {len(maximas_to_do)} should be less then"
+                         f" length of centers {len(centers)}.")
+    if maximas_to_do is None:
+        maximas_to_do = np.arange(len(centers))
 
     # Using centers, update to the maximas
     maximas = centers
     if optimize_centers:
         # Using ODE solver to refine the maximas further.
-        maximas = _optimize_centers(maximas, grad_func)
+        maximas = find_optimize_centers(centers, grad_func)
 
-    # Construct a radial grid for each atom by taking distance to the closest five atoms.
-    #  Added an extra padding in the case of carbon in CH4
-    #  TODO: the upper-bound should depend on distance to isosurface value and distance
-    #         between atoms
-    dist_maxs = cdist(maximas, maximas)
-    distance_maximas = np.sort(dist_maxs, axis=1)[:, min(5, maximas.shape[0] - 1)]
-    print(cdist(maximas, maximas))
-    print(distance_maximas + 5.0)
-    ss0 = 0.23
-    radial_grid = [
-        np.arange(0.2, x + 5.0, ss0) for x in distance_maximas
-    ]
-    input("Hello")
+    # Construct a dense radial grid for each atom by taking distance to the closest five atoms.
+    ss0 = 0.1
+    radial_grids = construct_radial_grids(maximas[maximas_to_do], maximas, min_pts=0.1, pad=1.0, ss0=ss0)
 
-    numb_maximas = len(maximas)
-    angular_pts = AngularGrid(degree=angular).points if isinstance(angular, int) else angular
-    r, thetas, phis = convert_cart_to_sph(angular_pts).T
-    numb_ang_pts = len(thetas)
-
-    # Determine beta-spheres from a smaller angular grid
-    #  Degree can't be too small or else the beta-radius is too large and a IAS poitn got
-    #  classified as a OAS point
-    ang_grid = AngularGrid(degree=10)
-    # TODO: Do the spherical trick then do the beta-sphere
+    # Determine beta-spheres and non-nuclear attractors from a smaller angular grid
+    #  Degree can't be too small or else the beta-radius is too large and IAS point got classified
+    #  as OAS point.
+    ang_grid = AngularGrid(degree=beta_sphere_deg, use_spherical=True)
     if beta_spheres is None:
-        beta_spheres = determine_beta_spheres(
-            beta_spheres, maximas, radial_grid, ang_grid.points, dens_func, grad_func
+        beta_spheres, maximas, radial_grids = determine_beta_spheres_and_nna(
+            beta_spheres, maximas, radial_grids, ang_grid.points, dens_func, grad_func, hess_func
         )
         beta_spheres = np.array(beta_spheres)
+        print(f"Final Beta-spheres {beta_spheres}")
     # Check beta-spheres are not intersecting
+    dist_maxs = cdist(maximas, maximas)
     condition = dist_maxs <= beta_spheres[:, None] + beta_spheres
     condition[range(len(maximas)), range(len(maximas))] = False  # Diagonal always true
     if np.any(condition):
         raise ValueError(f"Beta-spheres {beta_spheres} overlap with one another.")
+    # TODO : Check Rotation of Beta-sphere is still preserved.
 
-    r_func = [np.zeros((numb_ang_pts,), dtype=np.float64) for _ in range(numb_maximas)]
-    oas = [[] for _ in range(numb_maximas)]  # outer atomic surface
-    ias = [[] for _ in range(numb_maximas)]  # inner atomic surface.
-    basin_ias = [[] for _ in range(numb_maximas)]  # basin ids for inner atomic surface.
-    refined_ang = [] if refine else None
-    maxima_to_do = range(0, numb_maximas) if type(refine) == type(True) else [refine]  # refining
-    for i_maxima, maxima in enumerate(maximas):
-        # Maximas aren't usually large, so doing this is okay. Quick fix to use refinement without
-        #  re-writing this function into seperate functions.
-        if i_maxima in maxima_to_do:
-            print("Start: Maxima ", maxima)
+    # Construct a coarse radial grid for each atom starting at the beta-spheres.
+    ss0 = 0.4
+    radial_grids_old = radial_grids
+    radial_grids = []
+    i_do = 0
+    for i_atom in range(len(maximas)):
+        if i_atom in maximas_to_do:
+            radial_grids.append(
+                np.arange(beta_spheres[i_atom], radial_grids_old[i_do][-1], ss0)
+            )
+            i_do += 1
+        else:
+            radial_grids.append([])
 
-            # First classify points as either watershed/IAS or isosurface/OAS
-            # Each angular point would have a different radial grid associated with it.
-            radial = radial_grid[i_maxima][radial_grid[i_maxima] >= beta_spheres[i_maxima]]
-            ias_indices = []
-            ias_basin = []
-            ias_radius = []  # Radius to start at
-            indices_to_classify = np.arange(len(angular_pts))
-            for i_rad in range(0, len(radial)):  # Go through each radial shell
-                # Construct points on the angular points that aren't classified yet.
-                all_points = maxima + radial[i_rad, None] * angular_pts[indices_to_classify, :]
+    # Construct Angular Points
+    angular_pts = []
+    for i in range(len(maximas)):
+        # If it is not provided, then use what's specified
+        if i < len(angular):
+            if i in maximas_to_do:
+                ang = angular[i]
+                if isinstance(ang, int):
+                    angular_pts.append(AngularGrid(degree=ang, use_spherical=True).points)
+                else:
+                    angular_pts.append(ang.points)
+            else:
+                angular_pts.append([])
+        else:
+            # If it is a Non-nuclear attractor
+            angular.append(99)
+            angular_pts.append(AngularGrid(degree=99, use_spherical=True).points)
 
-                start = time.time()
-                basins = steepest_ascent_rk45(
-                    all_points, dens_func, grad_func, beta_spheres, maximas, tol=1e-7, max_ss=0.5, ss_0=0.23
+    # First step is to construct a grid that encloses all radial shells across all atoms
+    points, index_to_atom, NUMB_RAYS_TO_ATOM, numb_rad_to_radial_shell = \
+        construct_all_points_of_rays_of_atoms(
+            maximas, angular_pts, radial_grids, maximas_to_do, dens_func, iso_val
+    )
+    # print("Index to atom ", index_to_atom)
+
+    # Then assign basins values for all the points.
+    import time
+    start = time.time()
+    basins, _ = find_basins_steepest_ascent_rk45(
+        points, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=ss_0,
+        hess_func=hess_func, check_for_nna=True
+    )
+    final = time.time()
+    # print("Basins", basins)
+    # print("Length of basins ", len(basins))
+    print("Difference ", final - start)
+
+    # Using basin values, classify each ray as either IAS or OAS and if IAS, find the interval
+    #   along the ray that intersects the IAS.
+    ias, oas, ias_bnds, ias_basins, ias_2, ias_bnds_2, ias_basins_2, ias_3, ias_bnds_3, ias_basins_3 = \
+        _classify_rays_as_ias_or_oas(
+            maximas, maximas_to_do, points, basins, index_to_atom, NUMB_RAYS_TO_ATOM, numb_rad_to_radial_shell
+    )
+    print("Total number of two intersections found ", [len(x) for x in ias_2])
+    print("Total number of three intersections found ", [len(x) for x in ias_3])
+
+    # The IAS is just refining the ray, till you find the exact intersection with the surface.
+    # Checks docs of `_solve_intersection_of_ias` for what ias_indices is.
+    ias_indices = np.array(list(
+        itertools.chain.from_iterable(
+            [[(i, y, ias_bnds[i][y][0], ias_bnds[i][y][1], max(ss0 / 10.0, bnd_err), ias_basins[i][y], i_ias)
+              for i_ias, y in enumerate(ias[i])] for i in maximas_to_do]
+        )
+    ))
+    start = time.time()
+    r_func, basin_ias = _solve_intersection_of_ias_point(
+        maximas, ias_indices, angular_pts, dens_func, grad_func, beta_spheres, bnd_err,
+        ias_lengths=[len(x) for x in ias], tol=tol, max_ss=max_ss, ss_0=ss_0, hess_func=hess_func
+    )
+    final = time.time()
+    print("Time Difference for Solving IAS ", final - start)
+
+    # Solve OAS Points and updates r_func
+    # Update the radial grid step-size so that it samples more points, this shouldn't decrease computational complexity
+    #  since the electron density is cheaper to compute with.
+    start = time.time()
+    solve_for_oas_points(maximas, maximas_to_do, oas, angular_pts, dens_func, grad_func, iso_val, iso_err, r_func)
+    final = time.time()
+    print("Time Difference for Solving OAS", final - start)
+
+    # Double Check if the points are really IAS but should be classified as OAS
+    for i_atom in maximas_to_do:
+        pts = maximas[i_atom] + r_func[i_atom][ias[i_atom], None] * angular_pts[i_atom][ias[i_atom], :]
+        dens_vals = dens_func(pts)
+        # Decrease by the OAS surface error "iso_err"
+        ias_indices = np.where(dens_vals - iso_err < iso_val)[0]
+        if len(ias_indices) != 0:
+            oas[i_atom] += list(np.array(ias[i_atom], dtype=int)[ias_indices])
+            oas[i_atom] = sorted(oas[i_atom])
+            for i_oas in ias_indices:
+                oas_pt = _solve_for_isosurface_pt(
+                    r_func[i_atom][ias[i_atom]][i_oas] - 0.1, r_func[i_atom][ias[i_atom]][i_oas] + 0.1, maximas[i_atom],
+                    angular_pts[i_atom][i_oas], dens_func, iso_val, iso_err
                 )
-                final = time.time()
-                print("Basins", basins)
-                print("Difference ", final - start)
+                r_func[i_atom][ias[i_atom]][i_oas] = np.linalg.norm(oas_pt - maximas[i_atom])
+            ias[i_atom] = [k for j, k in enumerate(ias[i_atom]) if j not in ias_indices]
+            basin_ias[i_atom] = [k for j, k in enumerate(basin_ias[i_atom]) if j not in ias_indices]
 
-                # Get indices of where they went to a different basin
-                basin_switch_ind_local = np.where(basins != i_maxima)[0]
-                watershed_indices = indices_to_classify[basin_switch_ind_local]
-                print("Global indices (Points) that needs to be refined", watershed_indices)
+    if find_multiple_intersections:
+        raise NotImplementedError(f"Multiple intersections was not implemented yet.")
 
-                # If some points went to a different a basin, then record them as IAS
-                indices_to_classify = np.delete(indices_to_classify, basin_switch_ind_local)
-                ias_indices += list(watershed_indices)
-                ias_basin += list(basins[basin_switch_ind_local])
-                ias_radius += [radial[i_rad - 1]] * len(basin_switch_ind_local)
-
-
-            # Rest of the points are OAS
-            oas_indices = indices_to_classify
-
-            # Sort the IAS points
-            indices = np.argsort(ias_indices)
-            ias_indices = np.array(ias_indices, dtype=int)[indices]
-            ias_basin = np.array(ias_basin, dtype=int)[indices]
-            ias_radius = np.array(ias_radius)[indices]
-
-            print("IAS indices ", ias_indices)
-            print("IAS basins", ias_basin)
-            print("OAS indices ", oas_indices)
-
-            """
-            #Useful for debugging the classification process
-            old_points = maxima + angular_pts
-            import matplotlib
-            import matplotlib.pyplot as plt
-            from mpl_toolkits import mplot3d
-            matplotlib.use("Qt5Agg")
-            fig = plt.figure()
-            ax = plt.axes(projection='3d')
-            p = maximas
-            ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="g", s=60)
-            p = old_points[ias_indices]
-            ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
-            p = old_points[oas_indices]
-            ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
-            p = old_points[[99, 100]]
-            ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="m", s=40)
-            p = np.array([
-                           [3.33215211e+00, 3.63210261e+00, -6.14962715e-01],
-                           [3.33214688e+00, -3.63213146e+00, 6.14961201e-01]])
-            ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="y", s=50)
-            plt.show()
-            """
-
-            # Solve for the watershed/IAS points.
-            all_ss = np.array([ss0 / 10.0] * len(ias_indices))  # Step-size of each watershed point
-            all_ss = np.fmax(all_ss, bnd_err)
-            ias_radius = np.array(ias_radius) + all_ss  # increase by ss
-            indices_to_solve = ias_indices.copy()
-            while len(indices_to_solve) != 0:
-                print("Indices to solve watershed ", indices_to_solve)
-                print("Current step-size ", all_ss)
-                # Construct points on the angular points that aren't classified yet.
-                all_points = maxima + ias_radius[:, None] * angular_pts[indices_to_solve, :]
-
-                # If the density values is less than the isosurface value, then the point
-                #  should have been classified as a OAS
-                dens_vals = dens_func(all_points)
-                print("Density Values ", dens_vals)
-                dens_small_ind = np.where(dens_vals < iso_val)[0]
-                if len(dens_small_ind) != 0:
-                    print("(Local) Indices where density is small ", dens_small_ind)
-                    print("(Global) indices where density is small ", indices_to_solve[dens_small_ind])
-                    print("Before ias_indices ", ias_indices)
-                    # Remove (globally) from ias_indices, add to oas_indices
-                    is_in = np.isin(ias_indices, indices_to_solve[dens_small_ind])
-                    oas_indices = np.hstack((oas_indices, ias_indices[np.where(is_in)[0]]))
-                    ias_indices = ias_indices[np.where(~is_in)[0]]
-                    ias_basin = ias_basin[np.where(~is_in)[0]]
-                    # Delete from local information
-                    indices_to_solve = np.delete(indices_to_solve, dens_small_ind)
-                    ias_radius = np.delete(ias_radius, dens_small_ind)
-                    all_ss = np.delete(all_ss, dens_small_ind)
-                    all_points = np.delete(all_points, dens_small_ind, axis=0)
-
-                # Calculate basins of all of these points
-                start = time.time()
-                basins = steepest_ascent_rk45(
-                    all_points, dens_func, grad_func, beta_spheres, maximas, tol=1e-7, max_ss=0.5, ss_0=0.23
-                )
-                final = time.time()
-                print("Basins Assigned ", basins)
-                print("Difference ", final - start)
-                # Get indices of where they went to a different basin
-                basin_switch_ind_local = np.where(basins != i_maxima)[0]
-                print("Global indices (Points) that needs to be refined: ", indices_to_solve[basin_switch_ind_local])
-
-                # If basins are different, make sure they match the correct basins
-                if len(basin_switch_ind_local) != 0:
-                    basins_vals = basins[basin_switch_ind_local]
-                    print("Basin_vals that switched ", basins_vals)
-                    print("Local Indices that switched ", basin_switch_ind_local)
-                    print("IAS indices ", ias_indices)
-                    print("IAS basins", ias_basin)
-                    print("Actual indices ", np.where(np.in1d(ias_indices, indices_to_solve[basin_switch_ind_local]))[0])
-                    original_basins = ias_basin[np.where(np.in1d(ias_indices, indices_to_solve[basin_switch_ind_local]))[0]]
-                    print("Original Basins ", original_basins)
-                    # if np.any(basins_vals != original_basins):
-                    #     raise ValueError(f"Basin switched")
-
-                # Check convergence of watershed points that switch to different basin
-                watershed_conv_ind = np.where(all_ss <= bnd_err)[0]
-                print(all_ss[basin_switch_ind_local], bnd_err, all_ss[basin_switch_ind_local] <= bnd_err)
-                indices_conv = indices_to_solve[watershed_conv_ind]
-                if len(indices_conv) != 0:
-                    print("Global Indices that converged ", indices_conv)
-                    # Get the boundary points:
-                    radius_bnd_pts = (2.0 * ias_radius[watershed_conv_ind] + all_ss[watershed_conv_ind]) / 2.0
-                    bnd_pts = maxima + radius_bnd_pts[:, None] * angular_pts[watershed_conv_ind]
-
-                    # Store the result:
-                    r_func[i_maxima][indices_conv] = np.linalg.norm(bnd_pts - maxima, axis=1)
-                    [ias[i_maxima].append(x) for x in indices_conv]
-                    original_basins = ias_basin[np.where(np.in1d(ias_indices, indices_to_solve[basin_switch_ind_local]))[0]]
-                    [basin_ias[i_maxima].append(x) for x in original_basins]
-
-                    # Delete to avoid for the next iteration
-                    indices_to_solve = np.delete(indices_to_solve, watershed_conv_ind)
-                    ias_radius = np.delete(ias_radius, watershed_conv_ind)
-                    all_ss = np.delete(all_ss, watershed_conv_ind)
-                    basins = np.delete(basins, watershed_conv_ind)
-
-
-                # The ones that different converge, adjust its radius and step-size
-                basin_same_ind_local = np.where(basins == i_maxima)[0]
-                basin_switch_ind_local = np.where(basins != i_maxima)[0]
-                # The ones that basins didn't switch, take a step with step-size
-                #   if it reached upper-bound then a problem occured.
-                ias_radius[basin_same_ind_local] += all_ss[basin_same_ind_local]
-                # TODO: Add a upper-bound check
-                # The ones that basins switched, take a step-back and adjust step-size
-                #  adjust upper-bound to be the current point.
-                ias_radius[basin_switch_ind_local] -= all_ss[basin_switch_ind_local]
-                all_ss[basin_switch_ind_local] = np.fmax(all_ss[basin_switch_ind_local] / 10.0, bnd_err)
-
-                print("\n")
-
-            # Solve for the root of each OAS indices
-            for i_oas in oas_indices:
-                # Construct upper and lower bound of the isosurface equation
-                ang_pt = angular_pts[i_oas]
-                iso_eq = np.abs(dens_func(maxima + ang_pt * radial[:, None]) - iso_val)
-                i_iso = np.argsort(iso_eq)[0]
-                l_bnd = radial[i_iso - 1] if i_iso >= 0 else radial[i_iso] / 2.0
-                u_bnd = radial[i_iso + 1] if i_iso + 1 < len(radial) else radial[i_iso] * 2.0
-                # Solve for the isosurface point
-                oas_pt = solve_for_isosurface_pt(
-                    l_bnd, u_bnd, maxima, angular_pts[i_oas], dens_func, iso_val, iso_err
-                )
-                # print("Check isosurface pt", oas_pt, dens_func(np.array([oas_pt])))
-                # Record them
-                r_func[i_maxima][i_oas] = np.linalg.norm(oas_pt - maxima)
-                oas[i_maxima].append(i_oas)
-
-            if type(refine) == type(True) and refine:  # refine can be integer, so this ignores it.
-                # Take convex hull between ias and oas and construct additional points in that region.
-                #  `new_pts` is concatenated to angular grids and is in cartesian coordinates.
-                print("IAS ", ias[i_maxima])
-                print("OAS", oas[i_maxima])
-                new_pts = construct_points_between_ias_and_oas(
-                    ias[i_maxima], oas[i_maxima], angular_pts, r_func[i_maxima], maxima
-                )
-                print("new pts ", new_pts, np.linalg.norm(new_pts, axis=1))
-                # Re-do this qtaim algortihm only on this center
-                refined_qtaim = qtaim_surface(new_pts, maximas, dens_func,
-                                              grad_func, iso_val, dens_cutoff,
-                                              bnd_err, iso_err, beta_spheres=beta_spheres,
-                                              optimize_centers=False, refine=i_maxima)
-                print("Refined", refined_qtaim.ias, refined_qtaim.oas)
-                # Update this basin's result from the refined, + numb_ang_pts: corrects indices
-                ias[i_maxima] += [x + numb_ang_pts for x in refined_qtaim.ias[i_maxima]]
-                oas[i_maxima] += [x + numb_ang_pts for x in refined_qtaim.oas[i_maxima]]
-                basin_ias[i_maxima] += refined_qtaim.basins_ias[i_maxima]
-                refined_ang.append(new_pts)
-                print(refined_qtaim.r_func, r_func[i_maxima].shape)
-                r_func[i_maxima] = np.hstack((r_func[i_maxima], refined_qtaim.r_func[i_maxima]))
-                # input("Why")
-
-    print("\n")
-    return SurfaceQTAIM(r_func, angular, maximas, oas, ias, basin_ias, refined_ang)
-
-
+    return SurfaceQTAIM(r_func, angular, maximas, maximas_to_do, oas, ias, basin_ias, iso_val, beta_spheres)

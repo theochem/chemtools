@@ -6,7 +6,7 @@ Can be used for
 - analyzing the IAS and OAS.
 - integration over basins.
 """
-from chemtools.topology.utils import solve_for_oas_points
+from chemtools.topology.utils import solve_for_oas_points, solve_intersection_of_ias_point
 
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
@@ -330,8 +330,6 @@ class SurfaceQTAIM:
         ias_parameters = np.array(ias_parameters)
 
         print("Solve for the new refinement")
-        # This import can be outside to the cyclication, should move it to utils
-        from chemtools.topology.qtaim_gpu import _solve_intersection_of_ias_point
         # Solve for the IAS
 
         angular_pts = [[0.0, 0.0, 0.0]] * len(self.maximas)

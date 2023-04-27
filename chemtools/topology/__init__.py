@@ -26,4 +26,3 @@
 from chemtools.topology.point import *
 from chemtools.topology.critical import *
 from chemtools.topology.qtaim import *
-from chemtools.topology.qtaim_gpu import *
