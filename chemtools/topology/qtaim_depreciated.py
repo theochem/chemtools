@@ -515,7 +515,7 @@ def determine_beta_spheres(beta_spheres, maximas, radial_grid, angular_pts, dens
                     #     first_step=1e-7
                     # )
                     basins = steepest_ascent_rk45(
-                        pts, dens_func, grad_func, beta_spheres, maximas
+                        pts, dens_func, grad_func#, beta_spheres, maximas
                     )
                     basins = np.array(basins, dtype=np.int)
                     # If all the basins went to same maxima, then update radius
@@ -664,8 +664,11 @@ def qtaim_surface(angular, centers, dens_func, grad_func, iso_val=0.001,
                 all_points = maxima + radial[i_rad, None] * angular_pts[indices_to_classify, :]
 
                 start = time.time()
+                # basins = steepest_ascent_rk45(
+                #     all_points, dens_func, grad_func, beta_spheres, maximas, tol=1e-7, max_ss=0.5, ss_0=0.23
+                # )
                 basins = steepest_ascent_rk45(
-                    all_points, dens_func, grad_func, beta_spheres, maximas, tol=1e-7, max_ss=0.5, ss_0=0.23
+                    all_points, dens_func, grad_func #, beta_spheres, maximas, tol=1e-7, max_ss=0.5, ss_0=0.23
                 )
                 final = time.time()
                 print("Basins", basins)

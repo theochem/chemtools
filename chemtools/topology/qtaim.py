@@ -1,3 +1,25 @@
+# -*- coding: utf-8 -*-
+# ChemTools is a collection of interpretive chemical tools for
+# analyzing outputs of the quantum chemistry calculations.
+#
+# Copyright (C) 2016-2019 The ChemTools Development Team
+#
+# This file is part of ChemTools.
+#
+# ChemTools is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 3
+# of the License, or (at your option) any later version.
+#
+# ChemTools is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>
+#
+# --
 from collections import OrderedDict
 import itertools
 import numpy as np
@@ -11,7 +33,7 @@ from chemtools.topology.utils import (
     determine_beta_spheres_and_nna,
     find_optimize_centers,
     solve_for_oas_points,
-    _solve_for_isosurface_pt
+    solve_for_isosurface_pt
 )
 from chemtools.topology.ode import find_basins_steepest_ascent_rk45
 
@@ -267,7 +289,7 @@ def construct_all_points_of_rays_of_atoms(
 
 
 def _solve_intersection_of_ias_interval(
-    maximas, ias_indices, angular_pts, dens_func, grad_func, beta_spheres, bnd_err, ss_0, max_ss, tol
+    maximas, ias_indices, angular_pts, dens_func, grad_func, beta_spheres, bnd_err, ss_0, max_ss, tol, ias_lengths
 ):
     r"""
     Solves the intersection of the ray to the inner-atomic surface.
@@ -314,12 +336,12 @@ def _solve_intersection_of_ias_interval(
 
     """
     r_func = [np.zeros((len(angular_pts[i]),), dtype=np.float64) for i in range(len(maximas))]
-    basin_ias = [[] for _ in range(len(maximas))]  # basin ids for inner atomic surface.
+    basin_ias = [[-1] * ias_lengths[i] for i in range(len(maximas))]
     while len(ias_indices) != 0:
         # Construct New Points
         points = []
         numb_pts_per_ray = []
-        for (i_maxima, i_ang, l_bnd, u_bnd, ss, _) in ias_indices:
+        for (i_maxima, i_ang, l_bnd, u_bnd, ss, _, _) in ias_indices:
             # print((i_maxima, i_ang, l_bnd, u_bnd, ss))
             ray = (
                 maximas[int(i_maxima)] +
@@ -342,7 +364,7 @@ def _solve_intersection_of_ias_interval(
         make_ode_solver_more_accurate = False
         for i, (i_maxima, i_ang, l_bnd, u_bnd, ss, basin_switch, i_ias) in enumerate(ias_indices):
             basins_ray = basins[index_basins:index_basins + numb_pts_per_ray[i]]
-            print((i_maxima, i_ang, l_bnd, u_bnd, ss))
+            # print((i_maxima, i_ang, l_bnd, u_bnd, ss))
             # print("Basins ", i, basins_ray)
 
             # Basins that switch index
@@ -460,8 +482,10 @@ def _solve_intersection_of_ias_point(
         points = np.vstack(points)
 
         # Solve for basins
+        # Take the initial step-size of ODE solver based on step-size of ss_0
+        step_size = ias_indices[:, 4][:, None]
         basins, _ = find_basins_steepest_ascent_rk45(
-            points, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=ss_0, hess_func=hess_func
+            points, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=step_size, hess_func=hess_func
         )
         # print("Basins", basins)
 
@@ -507,7 +531,7 @@ def qtaim_surface_vectorize(
     grad_func,
     iso_val=0.001,
     bnd_err=1e-4,
-    iso_err=1e-6,
+    iso_err=1e-5,
     beta_spheres=None,
     beta_sphere_deg=27,
     ss_0=0.1,
@@ -516,7 +540,9 @@ def qtaim_surface_vectorize(
     optimize_centers=True,
     hess_func=None,
     find_multiple_intersections=False,
-    maximas_to_do=None
+    maximas_to_do=None,
+    padding_radial=3.0,
+    ss_radial=0.24,
 ):
     r"""
     Parameters
@@ -548,7 +574,7 @@ def qtaim_surface_vectorize(
     max_ss: float, optional
         Maximum step-size of the ODE (RK45) solver.
     tol: float, optional
-        Tolerance for the adaptive step-size.
+        Tolerance for the adaptive step-size of the ODE solver.
     optimize_centers: bool
         If true, then the steepest-ascent is performed on the centers to find the local maximas.
     hess_func: callable(ndarray(N, 3)->ndarray(N, 3, 3))
@@ -561,6 +587,13 @@ def qtaim_surface_vectorize(
     maximas_to_do: (None, list[int])
         List of indices of the `centers`/`maximas` to solve for the QTAIM basin surface.  If this is provided,
         then `angular` should also be of this length.
+    padding_radial: float
+        Adds a padding to the maximum of each radial grids that are constructed over each atom.
+        The default maximum is taken based on the maximum distance between the closest five atoms.
+        It affects the decision that the ray crosses the IAS or OAS.
+    ss_radial: float
+        The step-size of the radial grids over each atom. It affects the decision that the ray crosses the IAS or OAS.
+        Smaller step-size is able to capture more points that should be on the IAS.
 
     Returns
     -------
@@ -572,11 +605,15 @@ def qtaim_surface_vectorize(
     The algorithm is as follows:
     1. Optimize the centers provided to obtain the local maximas.
     2. Determine the beta-spheres over all atoms.
-    3. Using an angular grid and radial grid, construct all rays propogating across all atoms.
+    3. Using an angular grid and radial grid, construct all rays propagating across all atoms.
     4. Solve for each basin value for each point.
     5. Analyze the basin values and classify each ray as either an outer-atomic or inner-atomic
         surface point.
-    6. For the inner-atomic rays, find the point of intersection to the surface boundary.
+    6. For the inner-atomic rays, find the point of intersection to the surface boundary based on moving
+        along the ray.
+    7. For the points on the outer-atomic surface, solve for when the point has density equal to the isosurface value.
+    8. Analyze points on the IAS, and if their density values are less than the outer-atomic surface, then
+        re-classify them as a OAS point.
 
     """
     if len(angular) != len(centers):
@@ -605,7 +642,7 @@ def qtaim_surface_vectorize(
 
     # Construct a dense radial grid for each atom by taking distance to the closest five atoms.
     ss0 = 0.1
-    radial_grids = construct_radial_grids(maximas[maximas_to_do], maximas, min_pts=0.1, pad=1.0, ss0=ss0)
+    radial_grids = construct_radial_grids(maximas[maximas_to_do], maximas, min_pts=0.1, pad=padding_radial, ss0=ss0)
 
     # Determine beta-spheres and non-nuclear attractors from a smaller angular grid
     #  Degree can't be too small or else the beta-radius is too large and IAS point got classified
@@ -626,14 +663,13 @@ def qtaim_surface_vectorize(
     # TODO : Check Rotation of Beta-sphere is still preserved.
 
     # Construct a coarse radial grid for each atom starting at the beta-spheres.
-    ss0 = 0.4
     radial_grids_old = radial_grids
     radial_grids = []
     i_do = 0
     for i_atom in range(len(maximas)):
         if i_atom in maximas_to_do:
             radial_grids.append(
-                np.arange(beta_spheres[i_atom], radial_grids_old[i_do][-1], ss0)
+                np.arange(beta_spheres[i_atom], radial_grids_old[i_do][-1], ss_radial)
             )
             i_do += 1
         else:
@@ -689,14 +725,14 @@ def qtaim_surface_vectorize(
     # Checks docs of `_solve_intersection_of_ias` for what ias_indices is.
     ias_indices = np.array(list(
         itertools.chain.from_iterable(
-            [[(i, y, ias_bnds[i][y][0], ias_bnds[i][y][1], max(ss0 / 10.0, bnd_err), ias_basins[i][y], i_ias)
+            [[(i, y, ias_bnds[i][y][0], ias_bnds[i][y][1], max(ss_radial / 10.0, bnd_err), ias_basins[i][y], i_ias)
               for i_ias, y in enumerate(ias[i])] for i in maximas_to_do]
         )
     ))
     start = time.time()
     r_func, basin_ias = _solve_intersection_of_ias_point(
         maximas, ias_indices, angular_pts, dens_func, grad_func, beta_spheres, bnd_err,
-        ias_lengths=[len(x) for x in ias], tol=tol, max_ss=max_ss, ss_0=ss_0, hess_func=hess_func
+         tol=tol, max_ss=max_ss, ss_0=ss_0, ias_lengths=[len(x) for x in ias], hess_func=hess_func
     )
     final = time.time()
     print("Time Difference for Solving IAS ", final - start)
@@ -705,7 +741,7 @@ def qtaim_surface_vectorize(
     # Update the radial grid step-size so that it samples more points, this shouldn't decrease computational complexity
     #  since the electron density is cheaper to compute with.
     start = time.time()
-    solve_for_oas_points(maximas, maximas_to_do, oas, angular_pts, dens_func, grad_func, iso_val, iso_err, r_func)
+    solve_for_oas_points(maximas, maximas_to_do, oas, angular_pts, dens_func, iso_val, iso_err, r_func)
     final = time.time()
     print("Time Difference for Solving OAS", final - start)
 
@@ -716,10 +752,11 @@ def qtaim_surface_vectorize(
         # Decrease by the OAS surface error "iso_err"
         ias_indices = np.where(dens_vals - iso_err < iso_val)[0]
         if len(ias_indices) != 0:
+            print("Points that are IAS should be OAS")
             oas[i_atom] += list(np.array(ias[i_atom], dtype=int)[ias_indices])
             oas[i_atom] = sorted(oas[i_atom])
             for i_oas in ias_indices:
-                oas_pt = _solve_for_isosurface_pt(
+                oas_pt = solve_for_isosurface_pt(
                     r_func[i_atom][ias[i_atom]][i_oas] - 0.1, r_func[i_atom][ias[i_atom]][i_oas] + 0.1, maximas[i_atom],
                     angular_pts[i_atom][i_oas], dens_func, iso_val, iso_err
                 )
