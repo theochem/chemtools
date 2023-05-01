@@ -1,4 +1,25 @@
-
+# -*- coding: utf-8 -*-
+# ChemTools is a collection of interpretive chemical tools for
+# analyzing outputs of the quantum chemistry calculations.
+#
+# Copyright (C) 2016-2019 The ChemTools Development Team
+#
+# This file is part of ChemTools.
+#
+# ChemTools is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 3
+# of the License, or (at your option) any later version.
+#
+# ChemTools is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>
+#
+# --
 r"""
 Data structure that holds the outer-atomic (OAS) and intra-atomic (IAS) surfaces.
 
@@ -22,8 +43,7 @@ __all__ = ["SurfaceQTAIM"]
 
 
 class SurfaceQTAIM:
-    def __init__(
-            self, r_func, angular_degs, maximas, indices_maxima, oas, ias, basins_ias, iso_val, beta_spheres):
+    def __init__(self, r_func, angular_degs, maximas, indices_maxima, oas, ias, basins_ias, iso_val, beta_spheres):
         self._r_func = r_func
         self._maximas = maximas
         self._indices_maxima = indices_maxima
@@ -144,6 +164,7 @@ class SurfaceQTAIM:
 
         ias_indices_a = self.ias[i_basin]
         r_limits = self.r_func[i_basin][ias_indices_a]
+
         # Holds indices of each point on the angular grid, where the radial points should be zero afterwards.
         ias_indices, rad_indices = np.where(atom_grid.rgrid.points[None, :] > r_limits[:, None])
         start_indices = atom_grid.indices[rad_indices]  # Get the radial shell that includes the index rad_indices.
@@ -337,7 +358,7 @@ class SurfaceQTAIM:
         for i, i_basin in enumerate(basin_ids):
             angular_pts[i_basin] = all_angular_pts[i]
             ias_lengths[i_basin] = len(all_angular_pts[i])
-        r_func_new, _ = _solve_intersection_of_ias_point(
+        r_func_new, _ = solve_intersection_of_ias_point(
             self.maximas, ias_parameters, angular_pts, dens_func, grad_func, self.beta_spheres,
             bnd_err=1e-5, ias_lengths=ias_lengths, ss_0=ss_0, max_ss=max_ss, tol=tol,
         )
@@ -355,7 +376,7 @@ class SurfaceQTAIM:
                 # Construct bounded interval to solve for the root.
                 solve_for_oas_points(
                     np.array([self.maximas[i_basin]]), [0], [indices], [all_angular_pts[i]],
-                    dens_func, grad_func, self.iso_val, iso_err, [r_func_new[i_basin]]
+                    dens_func, self.iso_val, iso_err, [r_func_new[i_basin]]
                 )
                 new_pts[indices] = self.maximas[i_basin] + r_func_new[i_basin][indices, None] * all_angular_pts[i][indices, :]
 

@@ -1,8 +1,29 @@
+# -*- coding: utf-8 -*-
+# ChemTools is a collection of interpretive chemical tools for
+# analyzing outputs of the quantum chemistry calculations.
+#
+# Copyright (C) 2016-2019 The ChemTools Development Team
+#
+# This file is part of ChemTools.
+#
+# ChemTools is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 3
+# of the License, or (at your option) any later version.
+#
+# ChemTools is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>
+#
+# --
 from grid.cubic import UniformGrid
 import numpy as np
-from scipy.spatial import ConvexHull
 from scipy.spatial.distance import cdist
-from scipy.optimize import root, root_scalar
+from scipy.optimize import root_scalar
 
 from chemtools.topology.ode import find_basins_steepest_ascent_rk45, steepest_ascent_rk45, gradient_path
 
@@ -19,7 +40,7 @@ __all__ = [
 ]
 
 
-def _solve_for_isosurface_pt(
+def solve_for_isosurface_pt(
     l_bnd, u_bnd, maxima, cart_sphere_pt, density_func, iso_val, iso_err
 ):
     r"""
@@ -105,8 +126,38 @@ def _solve_root_newton_raphson(initial_guess, angular_pts, root_and_grad, xtol, 
     return pts_converged, success
 
 
+def _solve_root_grid_movement(initial_guess, angular_pts, root_func, iso_err, xtol=1e-3, maxiter=10000):
+    not_converged = np.arange(len(initial_guess))
+    niter = 0  # Number of iterations
+    success = True
+    pts0 = initial_guess.copy()
+    root_pts = root_func(pts0, angular_pts[not_converged])
+    pts_converged = np.zeros(len(initial_guess))
+    while len(not_converged) != 0:
+        if niter == maxiter:
+            success = False
+            break
+
+        # Take a step based on the sign of the root equation, and take the step-size to be minimum of xtol
+        #       and root_pts, i.e. you want the step-size to be smaller when you're closer to the root.
+        pts1 = pts0 + np.sign(root_pts) * np.minimum(xtol, root_pts * 10)
+        root_pts = root_func(pts1, angular_pts[not_converged])
+
+        indices_converged = np.where(np.abs(root_pts) < iso_err)[0]
+        if len(indices_converged) != 0:
+            pts_converged[not_converged[indices_converged]] = pts1[indices_converged]
+
+        not_converged = np.delete(not_converged, indices_converged)
+        pts0 = pts1
+        pts0 = np.delete(pts0, indices_converged)
+        root_pts = np.delete(root_pts, indices_converged)
+        niter += 1
+
+    return pts_converged, success
+
+
 def solve_for_oas_points(
-     maximas, maximas_to_do, oas, angular_pts, dens_func, grad_func, iso_val, iso_err, r_func
+     maximas, maximas_to_do, oas, angular_pts, dens_func, iso_val, iso_err, r_func
 ):
     r"""
     For each index in outer-atomic surface (OAS) solves for the isovalue point along a ray.
@@ -154,28 +205,26 @@ def solve_for_oas_points(
             # Using logarithm increases accuracy and convergence as Newton-Ralphson has quadratic convergence.
             real_pts = maxima + t[:, None] * angular_pts_max
             dens_pts = dens_func(real_pts)
-            root = np.log(dens_pts) - np.log(iso_val)
-            grad = np.sum(grad_func(real_pts) * angular_pts_max, axis=1) / dens_pts
-            return root, grad
+            return dens_pts - iso_val
 
-        sol_x, success = _solve_root_newton_raphson(initial_guess, ang_pts[oas[i_maxima]], root_and_grad, xtol=iso_err)
+        sol_x, success = _solve_root_grid_movement(
+            initial_guess, ang_pts[oas[i_maxima]], root_and_grad, xtol=0.01, iso_err=iso_err
+        )
         radial_results = sol_x
         sol_fun = dens_func(maxima + sol_x[:, None] * ang_pts[oas[i_maxima]])
         # The points that weren't successful, try again.
-        # if not sol.success:
         if not success:
             # Get rid of the points that converge, and re-try with the points that didn't.
             print("Try solving the root equations for OAS again on individual points.")
-            indices = np.where(np.abs(sol.fun) > iso_err)[0]
+            indices = np.where(np.abs(sol_fun) > iso_err)[0]
 
             for i_oas in indices:
-                oas_pt = _solve_for_isosurface_pt(
+                oas_pt = solve_for_isosurface_pt(
                     radial_results[i_oas] - 0.1, radial_results[i_oas] + 0.1, maxima, ang_pts[i_oas],
                     dens_func, iso_val, iso_err
                 )
                 radial_results[i_oas] = np.linalg.norm(oas_pt - maxima)
         r_func[i_maxima][oas[i_maxima]] = radial_results
-
 
 
 def find_optimize_centers(centers, grad_func):
