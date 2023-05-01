@@ -1,9 +1,35 @@
+# -*- coding: utf-8 -*-
+# ChemTools is a collection of interpretive chemical tools for
+# analyzing outputs of the quantum chemistry calculations.
+#
+# Copyright (C) 2016-2019 The ChemTools Development Team
+#
+# This file is part of ChemTools.
+#
+# ChemTools is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 3
+# of the License, or (at your option) any later version.
+#
+# ChemTools is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>
+#
+# --
 import numpy as np
 from scipy.spatial.distance import cdist
 
 from scipy.integrate import solve_ivp
 
-__all__ = ["find_basins_steepest_ascent_rk45", "gradient_path", "NonNuclearAttractionException"]
+__all__ = [
+    "find_basins_steepest_ascent_rk45",
+    "gradient_path",
+    "NonNuclearAttractionException"
+]
 
 
 class NonNuclearAttractionException(Exception):
@@ -97,8 +123,18 @@ def _RK45_step(pts, grad_func, step_size, grad0=None):
 
 
 def find_basins_steepest_ascent_rk45(
-    initial_pts, dens_func, grad_func, beta_spheres, maximas, ss_0=1e-7,
-    tol=1e-7, max_ss=0.25, maxiter=2000, iter_nna=100, hess_func=None, terminate_if_other_basin_found=False,
+    initial_pts,
+    dens_func,
+    grad_func,
+    beta_spheres,
+    maximas,
+    ss_0=1e-7,
+    tol=1e-7,
+    max_ss=0.25,
+    maxiter=2000,
+    iter_nna=100,
+    hess_func=None,
+    terminate_if_other_basin_found=False,
     check_for_nna=False
 ):
     r"""
@@ -140,6 +176,8 @@ def find_basins_steepest_ascent_rk45(
         If true, then if multiple basin values were found, then the ODE solver will exit.
         If false, then the ODE solver will run until all points enter one of the
         beta-sphere/trust-region.
+    check_for_nna: bool
+        If true, then it checks for Non-nuclear attractor. Requires `hess_func` to be provided.
 
     Returns
     -------
@@ -149,6 +187,11 @@ def find_basins_steepest_ascent_rk45(
         If value is negative one, then the point wasn't assigned to a basin.
         - Array of 3D coordinates of the maximas. New potential maximas are found and updated here.
           This is only returned if `hess_func` is provided.
+
+    Notes
+    -----
+    - Setting tolerance to 1e-10 is equivalent to rtol=1e-4, atol=1e-7 for method="RK45" in scipy.integrate.solve_ivp.
+    - Setting tolerance to 1e-9 is equivalent to rtol=1e-3, atol=1e-6 for method="RK45" in scipy.integrate.solve_ivp.
     
     """
     norm_grad_func = _get_normalized_gradient_func(grad_func)
@@ -270,7 +313,7 @@ def find_basins_steepest_ascent_rk45(
                             grad0 = np.delete(grad0, nna_indices, axis=0)
 
                         # Check if it converged to a BCP or RCP, then it is precisely on the surface!
-                        which_is_bcp_rcp = np.where(eigs < -1e-10, axis=1)[0]
+                        which_is_bcp_rcp = np.where(np.any(eigs < -1e-10, axis=1))[0]
                         if len(which_is_bcp_rcp) == 1 or len(which_is_bcp_rcp) == 2:
                             nna_indices = i_smallg[which_is_nna]
 
