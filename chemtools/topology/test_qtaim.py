@@ -20,8 +20,8 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-from chemtools.topology.qtaim import qtaim_surface
-from chemtools.topology.qtaim_gpu import qtaim_surface_vectorize
+from chemtools.topology.qtaim_depreciated import qtaim_surface
+# from chemtools.topology.qtaim import qtaim_surface_vectorize
 from chemtools.topology.yu_trinkle import qtaim, _get_area_of_coplanar_polygon
 
 import numpy as np
@@ -440,7 +440,7 @@ class TestQTAIMSurfaceOnTwoBodyGaussian():
 )
 def test_density_and_laplacian(mol_fchk, degs):
     r"""Test the integration of laplacian is zero over basin and electron density integration."""
-    file_path = pathlib.Path(__file__).parent.resolve().__str__()[:-13]
+    file_path = pathlib.Path(__file__).parent.resolve().__str__()[:-8]
     file_path += "data/examples/" + mol_fchk
 
     # from chemtools.wrappers import Molecule
@@ -450,14 +450,15 @@ def test_density_and_laplacian(mol_fchk, degs):
     # gradient_func = lambda pts: mol.compute_gradient(pts)
     import gbasis_cuda
     from iodata import load_one
-    centers = load_one(file_path).coordinates
+    centers = load_one(file_path).atcoords
     mol = gbasis_cuda.Molecule(file_path)
     gaussian_func = lambda pts: mol.compute_electron_density(pts)
     gradient_func = lambda pts: mol.compute_electron_density_gradient(pts)
 
-    result = qtaim_surface_vectorize(degs, centers, gaussian_func, gradient_func,
-                                     iso_val=1e-10, bnd_err=1e-5, iso_err=1e-6, optimize_centers=True)
-
+    # result = qtaim_surface_vectorize(degs, centers, gaussian_func, gradient_func,
+    #                                  iso_val=1e-10, bnd_err=1e-5, iso_err=1e-6, optimize_centers=True)
+    result = qtaim_surface(70, centers, gaussian_func, gradient_func, iso_val=1e-10, bnd_err=1e-5, iso_err=1e-6, optimize_centers=True,
+                           dens_cutoff=1e-12)
     result.save("delete_test.npz")
     assert 1 == 0
     # Test Laplacian and density
