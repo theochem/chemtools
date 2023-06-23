@@ -20,6 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+import warnings
 from collections import OrderedDict
 import itertools
 import numpy as np
@@ -196,7 +197,9 @@ def _classify_rays_as_ias_or_oas(
                                         print("Number of radial points in this angular pt ", numb_rad_pts[i_ang])
                                         print(f"Unique basins {unique_basins}")
                                         print(f"Group by {group_by}")
-                                        raise RuntimeError(f"More than three intersections was found."
+                                        # raise RuntimeError(f"More than three intersections was found."
+                                        #                    f" Code doesn't check.")
+                                        warnings.warn(f"More than three intersections was found."
                                                            f" Code doesn't check.")
 
                                     # Add the second intersection
