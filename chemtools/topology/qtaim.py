@@ -595,7 +595,7 @@ def qtaim_surface_vectorize(
         Adds a padding to the maximum of each radial grids that are constructed over each atom.
         The default maximum is taken based on the maximum distance between the closest five atoms.
         It affects the decision that the ray crosses the IAS or OAS.
-    ss_radial: float
+    ss_radial: float, list[float]
         The step-size of the radial grids over each atom. It affects the decision that the ray crosses the IAS or OAS.
         Smaller step-size is able to capture more points that should be on the IAS.
 
@@ -635,6 +635,11 @@ def qtaim_surface_vectorize(
     if maximas_to_do is not None and max(maximas_to_do) >= len(centers):
         raise ValueError(f"Length of maximas_to_do {len(maximas_to_do)} should be less then"
                          f" length of centers {len(centers)}.")
+    if isinstance(ss_radial, float):
+        ss_radial = [ss_radial] * len(centers)
+    if len(ss_radial) != len(centers):
+        raise ValueError(f"The step-size for each radial grid {len(ss_radial)} should be"
+                         f" equal to the number of molecules {len(centers)}.")
     if maximas_to_do is None:
         maximas_to_do = np.arange(len(centers))
 
@@ -687,7 +692,7 @@ def qtaim_surface_vectorize(
     for i_atom in range(len(maximas)):
         if i_atom in maximas_to_do:
             radial_grids.append(
-                np.arange(beta_spheres[i_atom], radial_grids_old[i_do][-1], ss_radial)
+                np.arange(beta_spheres[i_atom], radial_grids_old[i_do][-1], ss_radial[i_atom])
             )
             i_do += 1
         else:
@@ -743,7 +748,7 @@ def qtaim_surface_vectorize(
     # Checks docs of `_solve_intersection_of_ias` for what ias_indices is.
     ias_indices = np.array(list(
         itertools.chain.from_iterable(
-            [[(i, y, ias_bnds[i][y][0], ias_bnds[i][y][1], max(ss_radial / 10.0, bnd_err), ias_basins[i][y], i_ias)
+            [[(i, y, ias_bnds[i][y][0], ias_bnds[i][y][1], max(ss_radial[i] / 10.0, bnd_err), ias_basins[i][y], i_ias)
               for i_ias, y in enumerate(ias[i])] for i in maximas_to_do]
         )
     ))
