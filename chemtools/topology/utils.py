@@ -314,7 +314,7 @@ def determine_beta_spheres_and_nna(
                     # You want here for the ODE to be accurate in-order to find potential NNA.
                     if hess_func is None:
                         basins, _ = find_basins_steepest_ascent_rk45(
-                            pts, dens_func, grad_func, beta_spheres, maximas, ss_0=0.2, max_ss=0.2, tol=1e-9,
+                            pts, dens_func, grad_func, beta_spheres, maximas, ss_0=0.1, max_ss=0.2, tol=1e-9,
                             hess_func=hess_func
                         )
                     else:
