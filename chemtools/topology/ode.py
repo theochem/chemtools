@@ -283,7 +283,7 @@ def find_basins_steepest_ascent_rk45(
             grad_vals = grad_func(y_five)
             grad0 = grad_vals / np.linalg.norm(grad_vals, axis=1)[:, None]
             # Check maxiter is relatively large, to avoid computing the Hessian multiple times.
-            if niter >= iter_nna:
+            if niter >= maxiter - iter_nna:
                 i_smallg = np.where(
                     (np.all(np.abs(grad_vals) < 1e-5, axis=1)) & (dens_vals1 > 0.001)
                 )[0]
