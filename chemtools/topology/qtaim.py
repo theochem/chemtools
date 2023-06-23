@@ -24,6 +24,7 @@ from collections import OrderedDict
 import itertools
 import numpy as np
 from scipy.spatial.distance import cdist
+from scipy.spatial.transform.rotation import Rotation as r
 
 from grid.angular import AngularGrid
 
@@ -660,7 +661,21 @@ def qtaim_surface_vectorize(
     condition[range(len(maximas)), range(len(maximas))] = False  # Diagonal always true
     if np.any(condition):
         raise ValueError(f"Beta-spheres {beta_spheres} overlap with one another.")
-    # TODO : Check Rotation of Beta-sphere is still preserved.
+    # Rotate the beta-sphere and double check the radius is correct
+    rot_mat = r.from_euler("z", 10, degrees=True).as_matrix()  # Generate rotation by 10 degrees in z-axis
+    ang_pts = ang_grid.points.dot(rot_mat.T)                   # Rotate the angular points
+    assert np.all(np.abs(np.linalg.norm(ang_pts, axis=1) - 1.0) < 1e-8)
+    for i_maxima, radius in enumerate(beta_spheres):
+        pts_at_rad = maximas[i_maxima] + radius * ang_pts
+        basins, _ = find_basins_steepest_ascent_rk45(
+            pts_at_rad, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=ss_0,
+            hess_func=hess_func, check_for_nna=True
+        )
+        assert np.all(basins == i_maxima)
+        if not np.all(basins == i_maxima):
+            # Decrease the beta-sphere by the step-size if all of the beta-sphere didn't converge to the
+            #   correct atom.
+            beta_spheres[i_maxima] -= ss0
 
     # Construct a coarse radial grid for each atom starting at the beta-spheres.
     radial_grids_old = radial_grids
