@@ -320,7 +320,7 @@ def determine_beta_spheres_and_nna(
                     else:
                         basins, maximas = find_basins_steepest_ascent_rk45(
                             pts, dens_func, grad_func, beta_spheres, maximas, ss_0=0.2, max_ss=0.2, tol=1e-9,
-                            hess_func=hess_func
+                            hess_func=hess_func, check_for_nna=True
                         )
                     basins = np.array(basins, dtype=np.int)
 
