@@ -314,7 +314,9 @@ def find_basins_steepest_ascent_rk45(
 
                         # Check if it converged to a BCP or RCP, then it is precisely on the surface!
                         numb_neg = np.sum((eigs < -1e-10).astype(int), axis=1) 
-                        if len(numb_neg) == 1 or len(numb_neg) == 2:
+                        which_bcp = np.where(numb_neg == 1)[0]
+                        which_rcp = np.where(numb_neg == 2)[0]
+                        if len(which_bcp) == 1 or len(which_rcp) == 2:
                             nna_indices = i_smallg[which_is_nna]
 
                             # Set them to -2
