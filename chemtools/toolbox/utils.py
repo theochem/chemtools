@@ -358,3 +358,125 @@ def get_dict_population(molecule, approach, scheme, **kwargs):
         # Store number of electron and populations in a dictionary
         dict_pops[nelec] = pops
     return dict_pops
+
+def get_libxc_energy_density(molecule, grid, exchange=None, correlation=None):
+    from horton.meanfield import RLibXCLDA,RLibXCGGA, RLibXCHybridGGA, RLibXCMGGA, RLibXCHybridMGGA
+    from horton.meanfield import ULibXCLDA,ULibXCGGA, ULibXCHybridGGA, ULibXCMGGA, ULibXCHybridMGGA
+    from horton.meanfield import RTwoIndexTerm, RDirectTerm, RGridGroup, RTwoIndexTerm
+    from horton.meanfield import UTwoIndexTerm, UDirectTerm, UGridGroup, UTwoIndexTerm
+    from horton.meanfield import REffHam, UEffHam
+    from horton import compute_nucnuc
+
+    horton_libxc = {
+        "restricted": {
+            "lda": RLibXCLDA,
+            "gga": RLibXCGGA,
+            "hybridgga": RLibXCHybridGGA,
+            "mgga": RLibXCMGGA,
+            "hybridmgga": RLibXCHybridMGGA,
+        },
+        "unrestricted": {
+            "lda": ULibXCLDA,
+            "gga": ULibXCGGA,
+            "hybridgga": ULibXCHybridGGA,
+            "mgga": ULibXCMGGA,
+            "hybridmgga": ULibXCHybridMGGA,
+        }
+    }
+
+
+
+    # check atomic coordinates & numbers of grid object against loaded wave-function
+    if np.max(abs(molecule.coordinates - grid.centers)):
+        raise ValueError(
+            f"Coordinates from molecule and grid arguments does not match"
+        )
+    if np.max(abs(molecule.numbers - grid.numbers)):
+        raise ValueError(
+            f"Coordinates from molecule and grid arguments does not match"
+        )
+
+    # get Gaussian basis set
+    obasis = molecule.obasis
+
+    # get molecular orbitals and density matrix
+    orb_alpha = molecule.orb_alpha
+    dm_alpha = orb_alpha.to_dm()
+
+    # check whether wave-function is restricted or not
+    # Note: if called from iqa class only restricted wave-function
+    restricted = True
+    orb_beta, dm_beta = None, None
+    if hasattr(molecule, "orb_beta") and molecule.orb_beta is not None:
+        restricted = False
+        orb_beta = molecule.orb_beta
+        dm_beta = orb_beta.to_dm()
+
+    # get libxc functionals
+    libxc = horton_libxc["restricted" if restricted else "unrestricted"]
+    func_x, type_exch = exchange.lower().split("_", 1)
+    func_c, type_corr = correlation.lower().split("_", 1)
+    if func_x not in libxc:
+        raise ValueError(
+            f"Does not support exchange functional {func_x}. Options: {libxc.keys()}"
+        )
+    if func_c not in libxc:
+         raise ValueError(
+            f"Does not support correlation functional {func_c}. Options {libxc.keys()}"
+        )
+
+    # compute Gaussian integrals
+    olp = obasis.compute_overlap()
+    kin = obasis.compute_kinetic()
+    na = obasis.compute_nuclear_attraction(molecule.coordinates, molecule.pseudo_numbers)
+    er_vecs = obasis.compute_electron_repulsion_cholesky()
+
+    # construct hamiltonian
+    external = {'nn': compute_nucnuc(molecule.coordinates, molecule.pseudo_numbers)}
+    grid_terms = [libxc[func_x](type_exch), libxc[func_c](type_corr)]
+
+    if restricted:
+        terms = [
+            RTwoIndexTerm(kin, 'kin'),
+            RDirectTerm(er_vecs, 'hartree'),
+            RGridGroup(obasis, grid, grid_terms),
+            RTwoIndexTerm(na, 'ne'),
+        ]
+        ham = REffHam(terms, external=external)
+        fock_alpha = np.zeros(olp.shape)
+        ham.reset(dm_alpha)
+        ham.compute_energy()
+        ham.compute_fock(fock_alpha)
+        orb_alpha.from_fock_and_dm(fock_alpha, dm_alpha, olp)
+    else:
+        terms = [
+            UTwoIndexTerm(kin, 'kin'),
+            UDirectTerm(er_vecs, 'hartree'),
+            UGridGroup(obasis, grid, grid_terms),
+            UTwoIndexTerm(na, 'ne'),
+        ]
+        ham = UEffHam(terms, external=external)
+        fock_alpha = np.zeros(olp.shape)
+        fock_beta = np.zeros(olp.shape)
+        ham.reset(dm_alpha, dm_beta)
+        ham.compute_energy()
+        ham.compute_fock(fock_alpha, fock_beta)
+        orb_alpha.from_fock_and_dm(fock_alpha, dm_alpha, olp)
+        orb_beta.from_fock_and_dm(fock_beta, dm_beta, olp)
+
+    # dictionary of results from HORTON
+    results = {
+        # energy terms
+        "energy": ham.cache["energy"],
+        "energy_ne": ham.cache["energy_ne"],
+        "energy_kin": ham.cache["energy_kin"],
+        "energy_nn": ham.cache["energy_nn"],
+        "energy_x": ham.cache[f"energy_libxc_{exchange}"],
+        "energy_c": ham.cache[f"energy_libxc_{correlation}"],
+        # electron density & energy density for exchange and correlation
+        "rho": ham.cache["rho_full"],
+        "edens_x": ham.cache[f"edens_libxc_{exchange}_full"],
+        "edens_c": ham.cache[f"edens_libxc_{correlation}_full"],
+    }
+
+    return results
