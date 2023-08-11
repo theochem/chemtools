@@ -26,10 +26,11 @@ import numpy as np
 
 from numpy.testing import assert_raises
 
-from chemtools import UniformGrid
+from chemtools import UniformGrid, MolecularGrid
 from chemtools.wrappers.molecule import Molecule
-from chemtools.toolbox.utils import get_matching_attr, get_molecular_grid
+from chemtools.toolbox.utils import get_matching_attr, get_molecular_grid, get_libxc_energy_density
 from chemtools.toolbox.utils import get_dict_energy, get_dict_density, get_dict_population
+from numpy.testing import assert_allclose
 try:
     from importlib_resources import path
 except ImportError:
@@ -153,3 +154,29 @@ def test_get_dict_population_raises():
                             Molecule.from_file(file2),
                             Molecule.from_file(file3),]
     assert_raises(ValueError, get_dict_population, molecule, "rmf", "gibberish")
+
+def test_get_libxc_energy_density_raises():
+    with path('chemtools.data', 'h2o_upbepbe_sto3g.fchk') as file1:
+        with path('chemtools.data', 'h2o_q-1_ub3lyp_ccpvtz.fchk') as file2:
+            mol_chemtools1 = Molecule.from_file(str(file1))
+            mol_chemtools2 = Molecule.from_file(str(file2))
+            # Check grid
+            grid1 = MolecularGrid.from_molecule(mol_chemtools1, specs="insane", k=3, rotate=False)
+            grid2 = MolecularGrid.from_molecule(mol_chemtools2, specs="insane", k=3, rotate=False)
+            assert_raises(ValueError, get_libxc_energy_density, mol_chemtools1, grid2,  exchange="gga_x_pbe", correlation="gga_c_pbe")
+            # Check exchange/correlation functional
+            assert_raises(ValueError, get_libxc_energy_density, mol_chemtools1, grid1,  exchange="wrong_x_funct", correlation="gga_c_pbe")
+            assert_raises(ValueError, get_libxc_energy_density, mol_chemtools1, grid1,  exchange="gga_x_pbe", correlation="wrong_c_funct")
+
+def test_get_libxc_energy_density_ch3_utpsstpss_321g():
+    # check total libxc integrated values against in ch3_utpsstpss_321g.log
+    mol_chemtools = Molecule.from_file('ch3_utpsstpss_321g.fchk')
+    grid = MolecularGrid.from_molecule(mol_chemtools, specs="insane", k=3, rotate=False)
+    results_libxc = get_libxc_energy_density(mol_chemtools, grid, exchange="mgga_x_tpss", correlation="mgga_c_tpss")
+    assert_allclose(results_libxc['energy_nn'], 9.0797849876 , rtol=1.e-4, atol=0.)
+    assert_allclose(results_libxc['energy_ne'], -1.092368840422e+02 , rtol=1.e-4, atol=0.)
+    assert_allclose(results_libxc['energy_kin'], 3.898408903123e+01 , rtol=1.e-4, atol=0.)
+    energy_x = grid.integrate(results_libxc["edens_x"], results_libxc["rho"])
+    energy_c = grid.integrate(results_libxc["edens_c"], results_libxc["rho"])
+    assert_allclose(energy_x, -6.157462 , rtol=1.e-4, atol=0.)
+    assert_allclose(energy_c, -0.258610 , rtol=1.e-4, atol=0.)
