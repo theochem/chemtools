@@ -127,14 +127,15 @@ class SurfaceQTAIM:
 
     def save(self, filename):
         save_dict = {
-            "ias": np.array(self.ias, dtype=np.object),
-            "oas": np.array(self.oas, dtype=np.object),
-            "basin_ias": np.array(self.basins_ias, dtype=np.object),
+            "ias": np.array(self.ias, dtype=object),
+            "oas": np.array(self.oas, dtype=object),
+            "basin_ias": np.array(self.basins_ias, dtype=object),
             "maximas": np.array(self.maximas),
             "indices_maxima": np.array(self.indices_maxima),
             "angular_degs": np.array(self.angular_degs),
-            "r_func": np.array(self.r_func, dtype=np.object),
-            "iso_val": self.iso_val
+            "r_func": np.array(self.r_func, dtype=object),
+            "iso_val": self.iso_val,
+            "beta_spheres": np.array(self.beta_spheres, dtype=float)
         }
         np.savez(filename + ".npz", **save_dict, allow_pickle=True)
 
