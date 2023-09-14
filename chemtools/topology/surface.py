@@ -387,15 +387,19 @@ class SurfaceQTAIM:
             all_pts.append(new_pts)
         return all_pts
 
-    def plot_basins(self, i_basin, include_other_surfaces=False):
+    def plot_basins(self, basins, include_other_surfaces=False, annotate_maximas=True):
         fig = plt.figure()
         ax = plt.axes(projection='3d')
         p = self.maximas
         ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="g", s=60, label="Maximas")
-        p = self.get_ias_pts_of_basin(i_basin, include_other_surfaces=include_other_surfaces)
-        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
-        p = self.get_oas_pts_of_basin(i_basin)
-        ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
+        for i_basin in basins:
+            p = self.get_ias_pts_of_basin(i_basin, include_other_surfaces=include_other_surfaces)
+            ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="k")
+            p = self.get_oas_pts_of_basin(i_basin)
+            ax.scatter(p[:, 0], p[:, 1], p[:, 2], color="r")
+        if annotate_maximas:
+            for i, x in enumerate(self.maximas):
+                ax.text(x[0], x[1], x[2], "%s" % (str(i)), size=12, zorder=1)
         plt.show()
 
     def interpolate_radial_func(self, method="smooth", ias=False, oas=False):
