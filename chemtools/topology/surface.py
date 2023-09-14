@@ -32,7 +32,7 @@ from chemtools.topology.utils import solve_for_oas_points, solve_intersection_of
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 import numpy as np
-from scipy.spatial import ConvexHull
+from scipy.spatial import ConvexHull, Delaunay, KDTree
 from scipy.spatial.distance import cdist
 
 from grid.angular import AngularGrid
@@ -224,14 +224,14 @@ class SurfaceQTAIM:
         sph_pts = self.generate_angular_pts_of_basin(i_basin)
         points = self.maximas[i_basin] + self.r_func[i_basin][ias, None] * sph_pts[ias]
         if include_other_surfaces:
-            for i in range(len(self.maximas)):
-                if i != i_basin and i in self.indices_maxima:
+            for i_other in range(len(self.maximas)):
+                if i_other != i_basin and i_other in self.indices_maxima:
                     # If this basin crosses the boundary.
-                    indices = np.where(np.abs(i_basin - np.array(self.basins_ias[i])) < 1e-10)[0]
+                    indices = np.where(np.abs(i_basin - np.array(self.basins_ias[i_other])) < 1e-10)[0]
                     if len(indices) != 0:
-                        ias_indices = np.array(self.ias[i])[indices]
-                        sph_pts = self.generate_angular_pts_of_basin(i)
-                        new_pts = self.maximas[i] + self.r_func[i][ias_indices, None] * sph_pts[ias_indices]
+                        ias_indices = np.array(self.ias[i_other])[indices]
+                        sph_pts = self.generate_angular_pts_of_basin(i_other)
+                        new_pts = self.maximas[i_other] + self.r_func[i_other][ias_indices, None] * sph_pts[ias_indices]
                         points = np.vstack((points, new_pts))
         return np.unique(np.round(points, 16), axis=0)
 
@@ -239,6 +239,74 @@ class SurfaceQTAIM:
         oas = self.oas[i_basin]
         sph_pts = self.generate_angular_pts_of_basin(i_basin)
         return self.maximas[i_basin] + self.r_func[i_basin][oas, None] * sph_pts[oas]
+
+    def get_surface_of_groups_of_atoms(self, atom_indices, tau=0.1, include_other_surfaces=False):
+        # Automatically generate radius, don't want the radius to be too large or too small
+        dist = np.max(cdist(self.maximas[atom_indices], self.maximas[atom_indices]), axis=1)
+        max_dist = [np.max(self.r_func[i]) for i in atom_indices]
+        radius = [dist[i] + max_dist[i] + tau for i in range(len(atom_indices))]
+
+        # Get all points of all surfaces
+        surface_pts = [self.generate_pts_on_surface(i, include_other_surfaces) for i in atom_indices]
+        # indices [0, l_1, l_1 + l_2, ...], where l_1 is the length of surface_pts[0]
+        numb_pts_indices = [0] + [sum([len(x) for x in surface_pts[:(i + 1)]]) for i in range(len(atom_indices))]
+
+        points_of_all_surfaces = np.vstack(surface_pts)
+        kd_tree = KDTree(points_of_all_surfaces)
+        delaunay = Delaunay(points_of_all_surfaces)
+
+        # It's true if the points are already included
+        is_included = np.zeros(len(points_of_all_surfaces), dtype=bool)
+
+        points = np.empty((0, 3), dtype=float)
+        for i, i_atom in enumerate(atom_indices):
+            # Generate centers to run this procedure on
+            all_centers = [self.maximas[i_atom]]
+            nbh_basins = np.unique(self.basins_ias[i_atom])
+            for i_nbh_basin in nbh_basins:
+                # Construct line (pt2 -pt1) t + pt1,   between the two basins centers pt1, pt2
+                line = ((self.maximas[i_nbh_basin] - self.maximas[i_atom]) *
+                        np.linspace(0.0, 1.0, num=100)[:, None] + self.maximas[i_atom])
+
+                # Find the closest point on the atomic surface to the line
+                dist, indices = kd_tree.query(line, k=1, workers=-1)
+                i_dist = np.argmin(dist)
+                center_on_IAS = points_of_all_surfaces[indices[i_dist]]
+
+                # Add the new center to all_centers
+                all_centers.append(center_on_IAS)
+
+            # For each center, construct a ray across each point around the sphere. Then remove the points
+            #     that are inside the convex hull.  Then find the closest point on the surface
+            #     of the rays outside.
+            for center in all_centers:
+                # Generate the grid, using radial grid and angular points, has shape nij
+                radial_g = np.arange(0.1, radius[i], 0.1)
+                ang_pts = self.generate_angular_pts_of_basin(i_atom)
+                pts = center[None, None, :] + np.einsum("n,ij->nij", radial_g, ang_pts)
+                # TODO: If you remove the reshape, then use argmax to find the closest point to the surface that
+                #       is not inside, then you can simply the rest. THis is useful if memory becomes issue.
+                pts = pts.reshape((len(radial_g) * len(ang_pts), 3))
+
+                # Remove the points that are inside the surface.
+                indices = delaunay.find_simplex(pts) >= 0
+                pts = np.delete(pts, indices, axis=0)
+
+                # Find closest points on the grid to the surface
+                dist, indices = kd_tree.query(pts, k=1, workers=-1)
+
+                # Remove indices that are already included
+                indices = np.delete(indices, is_included[indices] == True)
+                is_included[indices] = True
+                points = np.vstack((points, points_of_all_surfaces[indices, :]))
+
+        # Get the indices of each atom that were selected
+        indices_per_atom = dict({})
+        for i in range(len(atom_indices)):
+            is_included_atom = is_included[numb_pts_indices[i]:numb_pts_indices[i + 1]]
+            indices_per_atom[atom_indices[i]] = np.where(is_included_atom)
+
+        return points, indices_per_atom
 
     def construct_points_between_ias_and_oas(self, basin_ids, dens_func, grad_func, ss_0, max_ss, tol, iso_err):
         r"""
