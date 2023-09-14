@@ -35,7 +35,6 @@ from chemtools.topology.utils import (
     determine_beta_spheres_and_nna,
     find_optimize_centers,
     solve_for_oas_points,
-    solve_for_isosurface_pt
 )
 from chemtools.topology.ode import find_basins_steepest_ascent_rk45
 
@@ -486,8 +485,8 @@ def _solve_intersection_of_ias_point(
         points = np.vstack(points)
 
         # Solve for basins
-        # Take the initial step-size of ODE solver based on step-size of ss_0
-        step_size = ias_indices[:, 4][:, None]
+        # Take the initial step-size of ODE solver based on step-size of ss_0 and the interval of [l_bnd, u_bnd]
+        step_size = np.minimum(ias_indices[:, 4][:, None], ss_0)
         basins, _ = find_basins_steepest_ascent_rk45(
             points, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=step_size, hess_func=hess_func
         )
@@ -518,7 +517,9 @@ def _solve_intersection_of_ias_point(
                 converge_indices.append(i)  # Put in list to remove indices.
             else:
                 # Update ias_indices for the next iteration for example l_bnd, u_bnd, step-size
-                ias_indices[i] = [i_maxima, i_ang, new_l_bnd, new_u_bnd, new_ss, basin_switch, i_ias]
+                # decrease stepsize by two to make it smaller than the interval bound
+                new_step_size = np.minimum(new_ss / 2.0, ss_0)
+                ias_indices[i] = [i_maxima, i_ang, new_l_bnd, new_u_bnd, new_step_size, basin_switch, i_ias]
 
         # Remove converged indices
         # print("Convergence indices", converge_indices)
@@ -565,9 +566,6 @@ def qtaim_surface_vectorize(
         The error of the points on the inner-atomic surface.
     iso_err: float
         The error in solving for the isosurface points on the outer-atomic surface.
-    ss_0: float
-        Initial step-size of the coarse radial grid to determine whether the ray
-        is part of the outer atomic surface or inner.
     beta_spheres: (List[float] or None)
         The radius of confidence that points are assigned to the atom. Should have length `M`.
     beta_sphere_deg: int
@@ -760,6 +758,20 @@ def qtaim_surface_vectorize(
     final = time.time()
     print("Time Difference for Solving IAS ", final - start)
 
+    # Pts on IAS that should be OAS are solved here. TODO:, the _solve_intersection should handle it
+    #  so it doesn't solve it again.
+    for i_atom in maximas_to_do:
+        pts = maximas[i_atom] + r_func[i_atom][ias[i_atom], None] * angular_pts[i_atom][ias[i_atom], :]
+        dens_vals = dens_func(pts)
+        # Decrease by the OAS surface error "iso_err"
+        ias_indices = np.where(dens_vals - iso_err < iso_val)[0]
+        if len(ias_indices) != 0:
+            print(f"Atom {i_atom} points that are IAS should be OAS")
+            oas[i_atom] += list(np.array(ias[i_atom], dtype=int)[ias_indices])
+            oas[i_atom] = sorted(oas[i_atom])
+            ias[i_atom] = [k for j, k in enumerate(ias[i_atom]) if j not in ias_indices]
+            basin_ias[i_atom] = [k for j, k in enumerate(basin_ias[i_atom]) if j not in ias_indices]
+
     # Solve OAS Points and updates r_func
     # Update the radial grid step-size so that it samples more points, this shouldn't decrease computational complexity
     #  since the electron density is cheaper to compute with.
@@ -767,25 +779,6 @@ def qtaim_surface_vectorize(
     solve_for_oas_points(maximas, maximas_to_do, oas, angular_pts, dens_func, iso_val, iso_err, r_func)
     final = time.time()
     print("Time Difference for Solving OAS", final - start)
-
-    # Double Check if the points are really IAS but should be classified as OAS
-    for i_atom in maximas_to_do:
-        pts = maximas[i_atom] + r_func[i_atom][ias[i_atom], None] * angular_pts[i_atom][ias[i_atom], :]
-        dens_vals = dens_func(pts)
-        # Decrease by the OAS surface error "iso_err"
-        ias_indices = np.where(dens_vals - iso_err < iso_val)[0]
-        if len(ias_indices) != 0:
-            print("Points that are IAS should be OAS")
-            oas[i_atom] += list(np.array(ias[i_atom], dtype=int)[ias_indices])
-            oas[i_atom] = sorted(oas[i_atom])
-            for i_oas in ias_indices:
-                oas_pt = solve_for_isosurface_pt(
-                    r_func[i_atom][ias[i_atom]][i_oas] - 0.1, r_func[i_atom][ias[i_atom]][i_oas] + 0.1, maximas[i_atom],
-                    angular_pts[i_atom][i_oas], dens_func, iso_val, iso_err
-                )
-                r_func[i_atom][ias[i_atom]][i_oas] = np.linalg.norm(oas_pt - maximas[i_atom])
-            ias[i_atom] = [k for j, k in enumerate(ias[i_atom]) if j not in ias_indices]
-            basin_ias[i_atom] = [k for j, k in enumerate(basin_ias[i_atom]) if j not in ias_indices]
 
     if find_multiple_intersections:
         raise NotImplementedError(f"Multiple intersections was not implemented yet.")
