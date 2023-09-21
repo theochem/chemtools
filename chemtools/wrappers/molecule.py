@@ -24,7 +24,10 @@
 
 import logging
 import numpy as np
-from horton import IOData
+from horton.gbasis.cext import GOBasis
+from horton.meanfield.orbitals import Orbitals
+from iodata import load_one
+from iodata.basis import HORTON2_CONVENTIONS,  convert_conventions
 
 try:
     from importlib_resources import path
@@ -35,7 +38,7 @@ __all__ = ["Molecule"]
 
 
 class Molecule(object):
-    """Molecule class from HORTON package."""
+    """Molecule class from IOData and HORTON a packages."""
 
     def __init__(self, iodata):
         """
@@ -43,19 +46,41 @@ class Molecule(object):
 
         Parameters
         ----------
-        iodata : horton.IOData
-           An instance of horton.IOData object.
+        iodata : An instance of IOData object.
         """
         self._iodata = iodata
-        if hasattr(self._iodata, "obasis"):
-            self._ao = AtomicOrbitals.from_molecule(self)
+        self._coordinates = self._iodata.atcoords
+        self._numbers = self._iodata.atnums
+        self._pseudo_numbers = self._iodata.atcorenums
+        if hasattr(self._iodata, "obasis") and hasattr(self._iodata.obasis, "shells"):
+            # Create a Horton-obasis object
+            shell_map = []
+            shell_types = []
+            nprims = []
+            alphas = []
+            con_coeffs = []
+            for shell in self._iodata.obasis.shells:
+                for id_l in range(len(shell.angmoms)):
+                    if shell.angmoms[id_l] > 1 and shell.kinds[id_l] == 'p':
+                        shell_types.append(shell.angmoms[id_l] * -1)
+                    else:
+                        shell_types.append(shell.angmoms[id_l])
+                    shell_map.append(shell.icenter)
+                    nprims.append(shell.exponents.shape[0])
+                    alphas.append(shell.exponents[:])
+                    con_coeffs.append(shell.coeffs[:, id_l])
+
+            shell_map = np.array(shell_map)
+            shell_types = np.array(shell_types)
+            nprims = np.array(nprims)
+            alphas = np.concatenate(alphas)
+            con_coeffs = np.concatenate(con_coeffs).reshape(-1)
+            obasis = GOBasis(self._coordinates, shell_map, nprims, shell_types, alphas, con_coeffs)
+            self._ao = AtomicOrbitals(obasis)
         else:
             self._ao = None
 
-        self._coordinates = self._iodata.coordinates
-        self._numbers = self._iodata.numbers
-
-        if hasattr(self._iodata, "orb_alpha"):
+        if hasattr(self._iodata, "mo") and hasattr(self._iodata.mo, "kind"):
             self._mo = MolecularOrbitals.from_molecule(self)
         else:
             self._mo = None
@@ -101,18 +126,18 @@ class Molecule(object):
         Parameters
         ----------
         fname : str
-            Path to molecule"s files.
+            Wavefunction file path.
 
         """
         # load molecule
         logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
         try:
-            iodata = IOData.from_file(str(fname))
+            iodata = load_one(str(fname))
         except IOError as _:
             try:
                 with path("chemtools.data.examples", str(fname)) as fname:
                     logging.info("Loading {0}".format(str(fname)))
-                    iodata = IOData.from_file(str(fname))
+                    iodata = load_one(str(fname))
             except IOError as error:
                 logging.info(error)
         return cls(iodata)
