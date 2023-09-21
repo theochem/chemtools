@@ -218,12 +218,20 @@ class Molecule(object):
             if np.any(index < 0):
                 raise ValueError("Argument index={0} cannot be less than one!".format(index + 1))
 
+        dic_orbs = {'a': self._mo._orb_alpha, 'b': self._mo._orb_alpha}
         # get orbital expression of specified spin
         if spin == 'b' and not hasattr(self._iodata, "orb_beta"):
-            exp = self._iodata.orb_alpha
+            exp = self._mo._orb_alpha
+            return self._ao.compute_orbitals(exp, points, index)
+        elif spin == 'a' or spin == 'b':
+            exp = dic_orbs[spin]
+            return self._ao.compute_orbitals(exp, points, index)
+        elif spin == 'ab':
+            exp_a = self._mo._orb_alpha
+            exp_b = self._mo._orb_beta
+            return self._ao.compute_orbitals(exp_a, points, index) +  self._ao.compute_orbitals(exp_b, points, index)
         else:
-            exp = getattr(self._iodata, "orb_" + {'a': 'alpha', 'b': 'beta'}[spin])
-        return self._ao.compute_orbitals(exp, points, index)
+            raise ValueError(f'Specify spin a,b or ab. Got {spin}')
 
     def compute_density(self, points, spin="ab", index=None):
         r"""Return electron density.
@@ -402,10 +410,12 @@ class Molecule(object):
 class MolecularOrbitals(object):
     """Molecular orbital class."""
 
-    def __init__(self, occs_a, occs_b, energy_a, energy_b, coeffs_a, coeffs_b):
+    def __init__(self, occs_a, occs_b, energy_a, energy_b, coeffs_a, coeffs_b, orb_alpha, orb_beta):
         self._occs_a, self._occs_b = occs_a, occs_b
         self._energy_a, self._energy_b = energy_a, energy_b
         self._coeffs_a, self._coeffs_b = coeffs_a, coeffs_b
+        self._orb_alpha = orb_alpha
+        self._orb_beta = orb_beta
 
     @classmethod
     def from_molecule(cls, mol):
@@ -417,14 +427,36 @@ class MolecularOrbitals(object):
             An instance of `Molecule` class.
 
         """
-        if hasattr(mol, "orb_beta") and mol.orb_beta is not None:
-            exp_a, exp_b = mol.orb_alpha, mol.orb_beta
-        else:
-            exp_a, exp_b = mol.orb_alpha, mol.orb_alpha
-        occs_a, occs_b = exp_a.occupations, exp_b.occupations
-        energy_a, energy_b = exp_a.energies, exp_b.energies
-        coeffs_a, coeffs_b = exp_a.coeffs, exp_b.coeffs
-        return cls(occs_a, occs_b, energy_a, energy_b, coeffs_a, coeffs_b)
+        # from IOData MolecularOrbital class
+        # restricted: shape = (nbasis, norba) = (nbasis, norbb)
+        # unstricted: shape = (nbasis, norba) = (nbasis, norbb)
+        # generalized: shape = (2 * nbasis, norb), where norb is the total number of orbitals
+        if mol._iodata.mo.kind == 'generalized':
+            raise NotImplementedError()
+
+        occs_a = mol._iodata.mo.occsa
+        occs_b = mol._iodata.mo.occsb
+        energy_a = mol._iodata.mo.energiesa
+        energy_b = mol._iodata.mo.energiesb
+        coeffs_a = mol._iodata.mo.coeffsa
+        coeffs_b = mol._iodata.mo.coeffsa
+        # Using loaded file format and HORTON conventions to convert coefficients
+        permutation, signs = convert_conventions(mol._iodata.obasis, HORTON2_CONVENTIONS)
+        coeffs_a = coeffs_a[permutation] * signs.reshape(-1, 1)
+        coeffs_b = coeffs_b[permutation] * signs.reshape(-1, 1)
+
+        # compute_molecular_orbitals() needs Horton Orbital objects `orbital_a` and `orbital_b`
+        orb_alpha = Orbitals(mol._iodata.obasis.nbasis, occs_a.shape[0])
+        orb_alpha.coeffs[:] = coeffs_a
+        orb_alpha.energies[:] = energy_a
+        orb_alpha.occupations[:] = occs_a
+
+        orb_beta = Orbitals(mol._iodata.obasis.nbasis, occs_b.shape[0])
+        orb_beta.coeffs[:] = coeffs_b
+        orb_beta.energies[:] = energy_b
+        orb_beta.occupations[:] = occs_b
+
+        return cls(occs_a, occs_b, energy_a, energy_b, coeffs_a, coeffs_b, orb_alpha, orb_beta)
 
     @classmethod
     def from_file(cls, fname):
