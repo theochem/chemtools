@@ -276,7 +276,7 @@ def get_dict_population(molecule, approach, scheme, **kwargs):
                 np.all([isinstance(mol, Molecule) for mol in molecule])):
             raise ValueError("Condensing with scheme={0} needs 3 molecules!".format(scheme))
         # get populations
-        pops = [getattr(mol, scheme + "_charges") for mol in molecule]
+        pops = [mol.atcharges[f"{scheme}"] for mol in molecule]
         if np.any([isinstance(pop, type(None)) for pop in pops]):
             raise ValueError("Condensing scheme={0} is not possible, because attribute {1}_charges "
                              "of molecule instances is 'None'.".format(scheme, scheme.lower()))

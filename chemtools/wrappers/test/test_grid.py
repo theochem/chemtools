@@ -52,14 +52,14 @@ def test_wrapper_grid_raises():
 def test_wrapper_grid_ch4():
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fpath:
         mol = Molecule.from_file(fpath)
-    grid = MolecularGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, 'exp:1e-5:25:80:230')
+    grid = MolecularGrid(mol.coordinates, mol.numbers, mol.atcorenums, 'exp:1e-5:25:80:230')
     assert grid.weights.ndim == 1
     assert grid.points.shape[0] == grid.weights.shape[0]
     assert grid.points.shape == (grid.npoints, 3)
     # check grid basics
     assert_allclose(mol.coordinates, grid.coordinates, rtol=0., atol=1.e-7)
     assert_allclose(mol.numbers, grid.numbers, rtol=0., atol=1.e-7)
-    assert_allclose(mol.pseudo_numbers, grid.pseudo_numbers, rtol=0., atol=1.e-7)
+    assert_allclose(mol.atcorenums, grid.pseudo_numbers, rtol=0., atol=1.e-7)
     # check integrate
     assert_allclose(10., grid.integrate(mol.compute_density(grid.points)), rtol=0., atol=1.e-4)
 

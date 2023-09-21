@@ -76,12 +76,10 @@ def test_nci_h2o_dimer_wfn():
         assert_almost_equal(dmol1.coordinates, mol2.coordinates, decimal=6)
         assert_equal(dmol1.numbers, mol2.numbers)
         # Check grid data
-        ugrid1 = dmol1.grid
-        ugrid2 = mol2.grid
-        assert_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
-        assert_equal(ugrid1.shape, ugrid2.shape)
-        data1 = dmol1.cube_data / dmol1.cube_data
-        data2 = mol2.cube_data / dmol1.cube_data
+        assert_almost_equal(dmol1.cellvecs, mol2.cellvecs, decimal=6)
+        assert_equal(dmol1.cube.data.shape, mol2.cube.data.shape)
+        data1 = dmol1.cube.data / dmol1.cube.data
+        data2 = mol2.cube.data / dmol1.cube.data
         assert_almost_equal(data1, data2, decimal=4)
         assert_equal(dmol1.pseudo_numbers, mol2.pseudo_numbers)
 
@@ -91,12 +89,10 @@ def test_nci_h2o_dimer_wfn():
         assert_almost_equal(gmol1.coordinates, mol2.coordinates, decimal=6)
         assert_equal(gmol1.numbers, mol2.numbers)
         # Check grid data
-        ugrid1 = gmol1.grid
-        ugrid2 = mol2.grid
-        assert_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
-        assert_equal(ugrid1.shape, ugrid2.shape)
-        data1 = gmol1.cube_data / gmol1.cube_data
-        data2 = mol2.cube_data / gmol1.cube_data
+        assert_almost_equal(dmol1.cellvecs, mol2.cellvecs, decimal=6)
+        assert_equal(gmol1.cube.data.shape, mol2.cube.data.shape)
+        data1 = gmol1.cube.data / gmol1.cube.data
+        data2 = mol2.cube.data / gmol1.cube.data
         assert_almost_equal(data1, data2, decimal=4)
         assert_equal(gmol1.pseudo_numbers, mol2.pseudo_numbers)
 
@@ -122,12 +118,10 @@ def test_nci_h2o_dimer_fchk():
         assert_almost_equal(dmol1.coordinates, mol2.coordinates, decimal=6)
         assert_equal(dmol1.numbers, mol2.numbers)
         # Check grid data
-        ugrid1 = dmol1.grid
-        ugrid2 = mol2.grid
-        assert_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
-        assert_equal(ugrid1.shape, ugrid2.shape)
-        data1 = dmol1.cube_data / dmol1.cube_data
-        data2 = mol2.cube_data / dmol1.cube_data
+        assert_almost_equal(dmol1.cellvecs, mol2.cellvecs, decimal=6)
+        assert_equal(dmol1.cube.data.shape, mol2.cube.data.shape)
+        data1 = dmol1.cube.data / dmol1.cube.data
+        data2 = mol2.cube.data / dmol1.cube.data
         assert_almost_equal(data1, data2, decimal=4)
         assert_equal(dmol1.pseudo_numbers, mol2.pseudo_numbers)
 
@@ -137,12 +131,10 @@ def test_nci_h2o_dimer_fchk():
         assert_almost_equal(gmol1.coordinates, mol2.coordinates, decimal=6)
         assert_equal(gmol1.numbers, mol2.numbers)
         # Check grid data
-        ugrid1 = gmol1.grid
-        ugrid2 = mol2.grid
-        assert_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
-        assert_equal(ugrid1.shape, ugrid2.shape)
-        data1 = gmol1.cube_data / gmol1.cube_data
-        data2 = mol2.cube_data / gmol1.cube_data
+        assert_almost_equal(gmol1.cellvecs, mol2.cellvecs, decimal=6)
+        assert_equal(gmol1.cube.data.shape, mol2.cube.data.shape)
+        data1 = gmol1.cube.data / gmol1.cube.data
+        data2 = mol2.cube.data / gmol1.cube.data
         assert_almost_equal(data1, data2, decimal=4)
         assert_equal(gmol1.pseudo_numbers, mol2.pseudo_numbers)
 
