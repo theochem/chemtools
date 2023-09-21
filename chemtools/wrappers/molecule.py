@@ -713,7 +713,7 @@ class AtomicOrbitals(object):
         return hess
 
     def compute_esp(self, dm, points, coordinates, charges):
-        """Return electrostatic potential evaluated on the a set of points.
+        """Return electrostatic potential evaluated on the set of points.
 
         Parameters
         ----------
@@ -721,6 +721,10 @@ class AtomicOrbitals(object):
            First order reduced density matrix of B basis sets given as a 2D array of (B, B) shape.
         points : ndarray
            Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
+        coordinates: ndarray
+            Grid to compute numerical calculation of electrostatic potential
+        charges: ndarray
+            N point charges to use for computing electrostatic potential with electron density
 
         """
         return self._basis.compute_grid_esp_dm(dm, coordinates, charges, points)
