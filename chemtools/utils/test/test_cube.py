@@ -139,19 +139,17 @@ def test_cube_h2o_dimer():
 
     with tmpdir('chemtools.test.test_base.test_cube_h2o_dimer') as dn:
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')
-        cube.generate_cube(cube2, mol1.cube_data)
+        cube.generate_cube(cube2, mol1.cube.data)
         cube2 = '%s/%s' % (dn, 'h2o_dimer_pbe_sto3g-dens.cube')
         mol2 = Molecule.from_file(cube2)
         # Check coordinates
         np.testing.assert_array_almost_equal(mol1.coordinates, mol2.coordinates, decimal=6)
         np.testing.assert_equal(mol1.numbers, mol2.numbers)
         # Check grid data
-        ugrid1 = mol1.grid
-        ugrid2 = mol2.grid
-        np.testing.assert_array_almost_equal(ugrid1.grid_rvecs, ugrid2.grid_rvecs, decimal=6)
-        np.testing.assert_equal(ugrid1.shape, ugrid2.shape)
-        data1 = mol1.cube_data / mol1.cube_data
-        data2 = mol2.cube_data / mol1.cube_data
+        np.testing.assert_array_almost_equal(mol1.cellvecs, mol2.cellvecs, decimal=6)
+        np.testing.assert_equal(mol1.shape, mol2.shape)
+        data1 = mol1.cube.data / mol1.cube.data
+        data2 = mol2.cube.data / mol1.cube.data
         np.testing.assert_array_almost_equal(data1, data2, decimal=4)
         np.testing.assert_equal(mol1.pseudo_numbers, mol2.pseudo_numbers)
 

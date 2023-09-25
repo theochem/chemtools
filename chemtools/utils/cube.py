@@ -268,9 +268,9 @@ class UniformGrid(object):
         """
         if not fname.endswith('.cube'):
             raise ValueError('Argument fname should be a cube file with `*.cube` extension!')
-        if data.size != self._npoints:
+        if np.prod(data.shape) != self._npoints:
             raise ValueError('Argument data should have the same size as the grid. ' +
-                             '{0}!={1}'.format(data.size, self._npoints))
+                             '{0}!={1}'.format(np.prod(data.shape), self._npoints))
 
         # Write data into the cube file
         with open(fname, 'w') as f:
