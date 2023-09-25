@@ -165,6 +165,11 @@ class Molecule(object):
         return self._numbers
 
     @property
+    def pseudo_numbers(self):
+        """Pseudo-potential core charges."""
+        return self._pseudo_numbers
+
+    @property
     def ao(self):
         """Atomic orbital instance."""
         return self._ao
