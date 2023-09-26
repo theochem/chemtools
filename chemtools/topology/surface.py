@@ -340,6 +340,9 @@ class SurfaceQTAIM:
             maxima = self.maximas[i_basin]
             ias = self.ias[i_basin]
             oas = self.oas[i_basin]
+
+            if len(oas) <= 3:
+                return np.empty((0, 3), dtype=float) 
             r_func_max = self.r_func[i_basin]
             angular_pts = self.generate_angular_pts_of_basin(i_basin)
             # Take a convex hull of both IAS and OAS seperately.
