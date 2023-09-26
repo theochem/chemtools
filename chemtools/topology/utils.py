@@ -326,10 +326,11 @@ def determine_beta_spheres_and_nna(
 
                     which_nna = np.where(basins >= numb_maximas)[0]
                     if len(which_nna) != 0:
+                        # TODO: Easy way to determin min_pt is to take minimum distance between NNA and other maximas.
                         # Copy a radial grid from the previous method
                         radial_grids += \
                             construct_radial_grids(maximas[numb_maximas:], maximas[:numb_maximas],
-                                                   min_pts=0.1, pad=5.0, ss0=0.2)
+                                                   min_pts=0.01, pad=5.0, ss0=0.01)
 
                         print(maximas)
                         print(beta_spheres)
