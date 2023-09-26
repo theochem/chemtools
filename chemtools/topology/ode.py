@@ -131,7 +131,7 @@ def find_basins_steepest_ascent_rk45(
     ss_0=1e-7,
     tol=1e-7,
     max_ss=0.25,
-    maxiter=2000,
+    maxiter=5000,
     iter_nna=100,
     hess_func=None,
     terminate_if_other_basin_found=False,
@@ -298,6 +298,7 @@ def find_basins_steepest_ascent_rk45(
                         # Check if local maxima:
                         which_is_nna = np.where(np.all(eigs < -1e-10, axis=1))[0]
                         if check_for_nna and len(which_is_nna) != 0:
+                            print("Found NNA")
                             nna_indices = i_smallg[which_is_nna]
                             # Found a NNA, Remove Duplicates, Update maxima and beta-spheres
                             new_maximas, indices_to_delete = delete_duplicate_pts(y_five[nna_indices], 1e-3)
