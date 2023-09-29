@@ -313,6 +313,42 @@ class SurfaceQTAIM:
 
         return points, indices_per_atom
 
+    def get_surface_of_groups_of_atoms2(self, atom_indices, include_other_surfaces=False):
+        all_pts = np.empty((0, 3), dtype=float)
+
+        for i_basin in atom_indices:
+            # Add Oas points
+            all_pts = np.vstack((all_pts, self.get_oas_pts_of_basin(i_basin)))
+
+            # Generate Points On IAS
+            pts_ias = self.get_ias_pts_of_basin(i_basin, False)
+
+            # Remove pts on ias that are in atom indices
+            basin_ids = self.basins_ias[i_basin]
+            indices_remove = np.full(len(pts_ias), False, dtype=bool)
+            for i_other_atom in atom_indices:
+                if i_basin != i_other_atom:
+                    # Get the indices of this basin IAS that borders `i_other_atom`
+                    indices = np.where(np.abs(i_other_atom - np.array(basin_ids)) < 1e-10)[0]
+                    indices_remove[indices] = True
+            pts_ias = np.delete(pts_ias, indices_remove, axis=0)
+
+            # Add the new ias pts
+            all_pts = np.vstack((all_pts, pts_ias))
+
+            # Include other surfaces that aren't bordering the atom indices
+            if include_other_surfaces:
+                for i in range(len(self.maximas)):
+                    if i != i_basin and i in self.indices_maxima and i not in atom_indices:
+                        # If this basin crosses the boundary.
+                        indices = np.where(np.abs(i_basin - np.array(self.basins_ias[i])) < 1e-10)[0]
+                        if len(indices) != 0:
+                            ias_indices = np.array(self.ias[i])[indices]
+                            sph_pts = self.generate_angular_pts_of_basin(i)
+                            new_pts = self.maximas[i] + self.r_func[i][ias_indices, None] * sph_pts[ias_indices]
+                            all_pts = np.vstack((all_pts, new_pts))
+        return all_pts
+
     def construct_points_between_ias_and_oas(self, basin_ids, dens_func, grad_func, ss_0, max_ss, tol, iso_err):
         r"""
         Construct points between the inner atomic surface and outer atomic surface.
