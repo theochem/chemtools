@@ -517,7 +517,7 @@ def _solve_intersection_of_ias_point(
                 converge_indices.append(i)  # Put in list to remove indices.
             else:
                 # Update ias_indices for the next iteration for example l_bnd, u_bnd, step-size
-                # decrease stepsize by two to make it smaller than the interval bound
+                # decrease step-size by two to make it smaller than the interval bound
                 new_step_size = np.minimum(new_ss / 2.0, ss_0)
                 ias_indices[i] = [i_maxima, i_ang, new_l_bnd, new_u_bnd, new_step_size, basin_switch, i_ias]
 
@@ -649,7 +649,8 @@ def qtaim_surface_vectorize(
 
     # Construct a dense radial grid for each atom by taking distance to the closest five atoms.
     ss0 = 0.1
-    radial_grids = construct_radial_grids(maximas[maximas_to_do], maximas, min_pts=0.1, pad=padding_radial, ss0=ss0)
+    # radial_grids = construct_radial_grids(maximas[maximas_to_do], maximas, min_pts=0.1, pad=padding_radial, ss0=ss0)
+    radial_grids = construct_radial_grids(maximas, maximas, min_pts=0.1, pad=padding_radial, ss0=ss0)
 
     # Determine beta-spheres and non-nuclear attractors from a smaller angular grid
     #  Degree can't be too small or else the beta-radius is too large and IAS point got classified
