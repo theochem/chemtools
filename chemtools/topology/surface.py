@@ -216,13 +216,15 @@ class SurfaceQTAIM:
                         sph_pts = self.generate_angular_pts_of_basin(i)
                         new_pts = self.maximas[i] + self.r_func[i][ias_indices, None] * sph_pts[ias_indices]
                         points = np.vstack((points, new_pts))
-        # TODO: Probably better to round it and check if it is unique,
-        return np.unique(np.round(points, 16), axis=0)
+            # There could be multiple points close to each other, this removes them
+            points, indices = np.unique(np.round(points, 16), axis=0, return_index=True)
+            return points[np.argsort(indices), :]
+        return points
 
     def get_ias_pts_of_basin(self, i_basin, include_other_surfaces=False):
         ias = self.ias[i_basin]
         sph_pts = self.generate_angular_pts_of_basin(i_basin)
-        points = self.maximas[i_basin] + self.r_func[i_basin][ias, None] * sph_pts[ias]
+        points = self.maximas[i_basin] + self.r_func[i_basin][ias, None] * sph_pts[ias, :]
         if include_other_surfaces:
             for i_other in range(len(self.maximas)):
                 if i_other != i_basin and i_other in self.indices_maxima:
@@ -233,7 +235,10 @@ class SurfaceQTAIM:
                         sph_pts = self.generate_angular_pts_of_basin(i_other)
                         new_pts = self.maximas[i_other] + self.r_func[i_other][ias_indices, None] * sph_pts[ias_indices]
                         points = np.vstack((points, new_pts))
-        return np.unique(np.round(points, 16), axis=0)
+            # There could be multiple points close to each other, this removes them
+            points, indices = np.unique(np.round(points, 16), axis=0, return_index=True)
+            return points[np.argsort(indices), :]
+        return points
 
     def get_oas_pts_of_basin(self, i_basin):
         oas = self.oas[i_basin]
