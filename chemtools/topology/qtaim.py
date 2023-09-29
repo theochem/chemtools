@@ -739,15 +739,17 @@ def qtaim_surface_vectorize(
         _classify_rays_as_ias_or_oas(
             maximas, maximas_to_do, points, basins, index_to_atom, NUMB_RAYS_TO_ATOM, numb_rad_to_radial_shell
     )
+
     print("Total number of two intersections found ", [len(x) for x in ias_2])
     print("Total number of three intersections found ", [len(x) for x in ias_3])
 
     # The IAS is just refining the ray, till you find the exact intersection with the surface.
     # Checks docs of `_solve_intersection_of_ias` for what ias_indices is.
+    # i_maxima, i_ang, l_bnd, u_bnd, ss, basin_switch, i_ias
     ias_indices = np.array(list(
         itertools.chain.from_iterable(
-            [[(i, y, ias_bnds[i][y][0], ias_bnds[i][y][1], max(ss_radial[i] / 10.0, bnd_err), ias_basins[i][y], i_ias)
-              for i_ias, y in enumerate(ias[i])] for i in maximas_to_do]
+            [[(i, i_ang, ias_bnds[i][i_ang][0], ias_bnds[i][i_ang][1], max(ss_radial[i] / 10.0, bnd_err), ias_basins[i][i_ang], i_ias)
+              for i_ias, i_ang in enumerate(ias[i])] for i in maximas_to_do]
         )
     ))
     start = time.time()
