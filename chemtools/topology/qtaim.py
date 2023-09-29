@@ -546,6 +546,7 @@ def qtaim_surface_vectorize(
     hess_func=None,
     find_multiple_intersections=False,
     maximas_to_do=None,
+    min_pt_radial=0.1,
     padding_radial=3.0,
     ss_radial=0.24,
 ):
@@ -589,6 +590,9 @@ def qtaim_surface_vectorize(
     maximas_to_do: (None, list[int])
         List of indices of the `centers`/`maximas` to solve for the QTAIM basin surface.  If this is provided,
         then `angular` should also be of this length.
+    min_pt_radial: float
+        The minimum point to each radial grids that are constructed over each atom. Sometimes, two
+        maximas are very close to one another and so it controls how the beta-spheres are determined. 
     padding_radial: float
         Adds a padding to the maximum of each radial grids that are constructed over each atom.
         The default maximum is taken based on the maximum distance between the closest five atoms.
@@ -675,10 +679,9 @@ def qtaim_surface_vectorize(
     for i_maxima, radius in enumerate(beta_spheres):
         pts_at_rad = maximas[i_maxima] + radius * ang_pts
         basins, _ = find_basins_steepest_ascent_rk45(
-            pts_at_rad, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=ss_0,
-            hess_func=hess_func, check_for_nna=True
+            pts_at_rad, dens_func, grad_func, beta_spheres, maximas, tol=tol, max_ss=max_ss, ss_0=ss_0
         )
-        assert np.all(basins == i_maxima)
+        #assert np.all(basins == i_maxima)
         if not np.all(basins == i_maxima):
             # Decrease the beta-sphere by the step-size if all of the beta-sphere didn't converge to the
             #   correct atom.
