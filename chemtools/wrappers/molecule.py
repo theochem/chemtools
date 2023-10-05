@@ -444,7 +444,7 @@ class MolecularOrbitals(object):
         energy_a = mol._iodata.mo.energiesa
         energy_b = mol._iodata.mo.energiesb
         coeffs_a = mol._iodata.mo.coeffsa
-        coeffs_b = mol._iodata.mo.coeffsa
+        coeffs_b = mol._iodata.mo.coeffsb
         # Using loaded file format and HORTON conventions to convert coefficients
         permutation, signs = convert_conventions(mol._iodata.obasis, HORTON2_CONVENTIONS)
         coeffs_a = coeffs_a[permutation] * signs.reshape(-1, 1)
