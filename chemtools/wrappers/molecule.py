@@ -24,10 +24,11 @@
 
 import logging
 import numpy as np
+
 from horton.gbasis.cext import GOBasis
 from horton.meanfield.orbitals import Orbitals
 from iodata import load_one
-from iodata.basis import HORTON2_CONVENTIONS,  convert_conventions
+from iodata.basis import HORTON2_CONVENTIONS, convert_conventions
 
 try:
     from importlib_resources import path
@@ -41,17 +42,20 @@ class Molecule(object):
     """Molecule class from IOData and HORTON a packages."""
 
     def __init__(self, iodata):
-        """
-        Initialize class.
+        """Initialize class.
 
         Parameters
         ----------
-        iodata : An instance of IOData object.
+        iodata : iodata.IOData
+            An instance of IOData object.
         """
         self._iodata = iodata
         self._coordinates = self._iodata.atcoords
         self._numbers = self._iodata.atnums
         self._pseudo_numbers = self._iodata.atcorenums
+
+        # make an instance of AtomicOrbitals (which wraps HORTON-obasis)
+        self._ao = None
         if hasattr(self._iodata, "obasis") and hasattr(self._iodata.obasis, "shells"):
             # Create a Horton-obasis object
             shell_map = []
@@ -60,15 +64,15 @@ class Molecule(object):
             alphas = []
             con_coeffs = []
             for shell in self._iodata.obasis.shells:
-                for id_l in range(len(shell.angmoms)):
-                    if shell.angmoms[id_l] > 1 and shell.kinds[id_l] == 'p':
-                        shell_types.append(shell.angmoms[id_l] * -1)
+                for index, angmom in enumerate(shell.angmoms):
+                    if angmom > 1 and shell.kinds[index] == "p":
+                        shell_types.append(angmom * -1)
                     else:
-                        shell_types.append(shell.angmoms[id_l])
+                        shell_types.append(angmom)
                     shell_map.append(shell.icenter)
                     nprims.append(shell.exponents.shape[0])
                     alphas.append(shell.exponents[:])
-                    con_coeffs.append(shell.coeffs[:, id_l])
+                    con_coeffs.append(shell.coeffs[:, index])
 
             shell_map = np.array(shell_map)
             shell_types = np.array(shell_types)
@@ -77,13 +81,10 @@ class Molecule(object):
             con_coeffs = np.concatenate(con_coeffs).reshape(-1)
             obasis = GOBasis(self._coordinates, shell_map, nprims, shell_types, alphas, con_coeffs)
             self._ao = AtomicOrbitals(obasis)
-        else:
-            self._ao = None
 
+        self._mo = None
         if hasattr(self._iodata, "mo") and hasattr(self._iodata.mo, "kind"):
             self._mo = MolecularOrbitals.from_molecule(self)
-        else:
-            self._mo = None
 
         # FIXME: following code is pretty hacky. it will be used for the orbital partitioning code
         # GOBasis object stores basis set to atom and angular momentum mapping
@@ -223,20 +224,22 @@ class Molecule(object):
             if np.any(index < 0):
                 raise ValueError("Argument index={0} cannot be less than one!".format(index + 1))
 
-        dic_orbs = {'a': self._mo._orb_alpha, 'b': self._mo._orb_alpha}
+        dic_orbs = {"a": self._mo._orb_alpha, "b": self._mo._orb_alpha}
         # get orbital expression of specified spin
-        if spin == 'b' and not hasattr(self._iodata, "orb_beta"):
+        if spin == "b" and not hasattr(self._iodata, "orb_beta"):
             exp = self._mo._orb_alpha
             return self._ao.compute_orbitals(exp, points, index)
-        elif spin == 'a' or spin == 'b':
+        elif spin == "a" or spin == "b":
             exp = dic_orbs[spin]
             return self._ao.compute_orbitals(exp, points, index)
-        elif spin == 'ab':
+        elif spin == "ab":
             exp_a = self._mo._orb_alpha
             exp_b = self._mo._orb_beta
-            return self._ao.compute_orbitals(exp_a, points, index) +  self._ao.compute_orbitals(exp_b, points, index)
+            return self._ao.compute_orbitals(exp_a, points, index) + self._ao.compute_orbitals(
+                exp_b, points, index
+            )
         else:
-            raise ValueError(f'Specify spin a,b or ab. Got {spin}')
+            raise ValueError(f"Specify spin a, b or ab. Got {spin}")
 
     def compute_density(self, points, spin="ab", index=None):
         r"""Return electron density.
@@ -271,13 +274,13 @@ class Molecule(object):
                 mo_a = self.compute_molecular_orbital(points, "a", index)
                 mo_b = self.compute_molecular_orbital(points, "b", index)
                 # add density of alpha & beta molecular orbitals
-                np.sum(mo_a ** 2, axis=1, out=output)
-                output += np.sum(mo_b ** 2, axis=1)
+                np.sum(mo_a**2, axis=1, out=output)
+                output += np.sum(mo_b**2, axis=1)
             else:
                 # compute mo expression of specified molecular orbitals
                 mo = self.compute_molecular_orbital(points, spin, index)
                 # add density of specified molecular orbitals
-                np.sum(mo ** 2, axis=1, out=output)
+                np.sum(mo**2, axis=1, out=output)
         return output
 
     def compute_gradient(self, points, spin="ab", index=None):
@@ -366,8 +369,9 @@ class Molecule(object):
         if charges is None:
             charges = self.pseudo_numbers
         elif not isinstance(charges, np.ndarray) or charges.shape != self.numbers.shape:
-            raise ValueError("Argument charges should be a 1d-array "
-                             "with {0} shape.".format(self.numbers.shape))
+            raise ValueError(
+                "Argument charges should be a 1d-array with {0} shape.".format(self.numbers.shape)
+            )
         dm = self.mo.compute_dm(spin, index=index)
         return self._ao.compute_esp(dm, points, self.coordinates, charges)
 
@@ -434,10 +438,12 @@ class MolecularOrbitals(object):
         """
         # from IOData MolecularOrbital class
         # restricted: shape = (nbasis, norba) = (nbasis, norbb)
-        # unstricted: shape = (nbasis, norba) = (nbasis, norbb)
+        # unrestricted: shape = (nbasis, norba) = (nbasis, norbb)
         # generalized: shape = (2 * nbasis, norb), where norb is the total number of orbitals
-        if mol._iodata.mo.kind == 'generalized':
-            raise NotImplementedError()
+        if mol._iodata.mo.kind == "generalized":
+            raise NotImplementedError(
+                f"The generalized MOs are not supported, got {mol._iodata.mo.kind}"
+            )
 
         occs_a = mol._iodata.mo.occsa
         occs_b = mol._iodata.mo.occsb
@@ -479,8 +485,8 @@ class MolecularOrbitals(object):
     def homo_index(self):
         """Index of alpha and beta HOMO orbital."""
         # HORTON indexes the orbitals from 0, so 1 is added to get the intuitive index
-        index_a = np.argwhere(self._occs_a == 0.)[0, 0]
-        index_b = np.argwhere(self._occs_b == 0.)[0, 0]
+        index_a = np.argwhere(self._occs_a == 0.0)[0, 0]
+        index_b = np.argwhere(self._occs_b == 0.0)[0, 0]
         return index_a, index_b
 
     @property
@@ -559,9 +565,7 @@ class MolecularOrbitals(object):
                 raise ValueError("Indices should be given as a one-dimensional numpy array.")
             index -= 1
             if np.any(index < 0):
-                raise ValueError(
-                    "Indices cannot be less than 1. Note that indices start from 1."
-                )
+                raise ValueError("Indices cannot be less than 1. Note that indices start from 1.")
             arr = arr[index[:, np.newaxis], index[np.newaxis, :]]
         return arr
 
@@ -714,7 +718,7 @@ class AtomicOrbitals(object):
         hess = hess.reshape(len(points), 3, 3)
         hess += np.transpose(hess, axes=(0, 2, 1))
         for index in range(len(points)):
-            hess[index][np.diag_indices(3)] /= 2.
+            hess[index][np.diag_indices(3)] /= 2.0
         return hess
 
     def compute_esp(self, dm, points, coordinates, charges):
