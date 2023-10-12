@@ -1,7 +1,6 @@
 ChemTools
 =========
 
-[![Python](https://img.shields.io/badge/python-2.7-blue.svg)](https://docs.python.org/2.7/)
 [![codecov](https://codecov.io/gh/QuantumElephant/chemtools/branch/master/graph/badge.svg?token=s2f4Ilawut)](https://codecov.io/gh/QuantumElephant/chemtools)
 [![Build Status](https://travis-ci.com/QuantumElephant/chemtools.svg?token=wtCKs521Yw1urAV4F5DM&branch=master)](https://travis-ci.com/QuantumElephant/chemtools)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/QuantumElephant/chemtools/blob/master/LICENSE)
@@ -9,86 +8,53 @@ ChemTools
 
 About
 -----
-
-<a href='https://chemtools.org'> ChemTools</a> is a free and open source Python library for interpreting the results of quantum
+[ChemTools](https://chemtools.org)  is a free and open source Python library for interpreting the results of quantum
 chemistry calculations. The goal of ChemTools is to provide a toolbox by which the
 quantitative output of electronic structure theory calculations can be expressed in chemical
 language. ChemTools provides easy-to-use core functionality to compute fundamental descriptors
 of conceptual quantum chemistry, together with a flexible set of utilities allowing scientists
-to easily test their own discoveries.
+to easily test their own discoveries. Visit [ChemTools website](https://chemtools.org) for more information.
 
-Website: https://chemtools.org
+Citation
+--------
+Please use the following citation when using ChemTools in your research:
 
+> L. Pujal, A. Tehrani, and F. Heidar-Zadeh. ChemTools: Gain Chemical
+  Insight from Quantum Chemistry Calculations. In Conceptual Density Functional Theory: Towards A New Chemical Reactivity Theory (Editor: Shubin Liu), [Wiley, 2022; pp 649-661](https://onlinelibrary.wiley.com/doi/abs/10.1002/9783527829941.ch32).
 
-License
--------
-
-ChemTools is distributed under GPL License version 3 (GPLv3)
-
-Dependencies
-------------
-
-The following dependencies will be necessary for ChemTools to build properly,
-
-* Python >= 2.7, < 3.0: http://www.python.org/ (Also install development files.)
-* PIP >= 7.0: https://pip.pypa.io/ (Not required in some scenarios but never bad to have.)
-* SciPy >= 0.11.0: http://www.scipy.org/
-* NumPy >= 1.16.0: http://www.numpy.org/
-* SymPy >= 0.7.1: http://code.google.com/p/sympy/
-* Matplotlib >= 1.0: http://matplotlib.org/
-* Nosetests >= 1.1.2: http://readthedocs.org/docs/nose/en/latest/
-* HORTON >= 2.0.1: http://theochem.github.io/horton/2.0.1/index.html
-* LFS >= 2.0.1: https://git-lfs.github.com/
+> F. Heidar-Zadeh, M. Richer, S. Fias, R.A. Miranda-Quintana, M. Chan,
+  M. Franco-Perez, C. E. Gonzalez-Espinoza, T.D. Kim, C. Lanssens, A.H.G. Patel, X.D. Yang, E. Vohringer-Martinez, C. Cardenas, T. Verstraelen, and P. W. Ayers. An explicit approach to conceptual density functional theory descriptors of arbitrary order. [Chem. Phys. Lett., 660:307–312, 2016.](http://www.sciencedirect.com/science/article/pii/S0009261416305280)
 
 Installation
 ------------
-
-To install HORTON and Git-LFS with conda:
+To install ChemTools and its dependencies using Anaconda,
 ```bash
-conda install -c theochem horton=2.1.0
+# make a conda environment and activate it
+conda create -n qcdevs python=3.7
+conda activate qcdevs
+
+# install HORTON and Git-LFS
+conda install -c theochem horton
 conda install -c conda-forge git-lfs
-```
 
-To install chemtools:
-```bash
+# run HORTON's tests
+nosetests -v horton
+
+# Option 1) install ChemTools without getting the source code
+pip install git+https://github.com/theochem/iodata.git
+
+# Option 2) install ChemTools from source code
+git clone https://github.com/theochem/iodata.git
+cd chemtools
 pip install -e .
-```
 
-Check our website for more detailed
-<a href='https://chemtools.org/usr_doc_installation.html'>installation guide</a>
-
-Testing
--------
-
-To run tests:
-
-```bash
+# run ChemTool's tests
 nosetests -v chemtools
 ```
 
+Check our website for more detailed [installation guide](https://chemtools.org/usr_doc_installation.html).
+
 Development
 -----------
-New contributors of all programming levels are welcome to join us. You can follow
-our <a href='https://chemtools.org/tech_dev.html'>developer guidelines</a> for detailed information about contributing code, building
+New contributors of all programming levels are welcome to join us. You can follow our [developer guidelines](https://chemtools.org/tech_dev.html) for detailed information about contributing code, building
 documentation and quality assurance.
-
-Reference
----------
-In anticipation of the first announcement of ChemTools in a scientific journal, please reference ChemTools as follows:
-* F. Heidar-Zadeh, M. Richer, S. Fias, R.A. Miranda-Quintana, M. Chan,
-M. Franco-Perez, C. E. Gonzalez-Espinoza, T.D. Kim, C. Lanssens,
-A.H.G. Patel, X.D. Yang, E. Vohringer-Martinez, C. Cardenas, T. Verstraelen,
-and P. W. Ayers. An explicit approach to conceptual density functional theory
-descriptors of arbitrary order. Chem. Phys. Lett., 660:307–312, 2016. <a href='http://www.sciencedirect.com/science/article/pii/S0009261416305280'>
-doi:10.1016/j.cplett.2016.07.039</a>.
-
-Acknowledgements
-----------------
-This software was developed using funding from a variety of international
-sources including, but not limited to: Canarie, the Canada Research Chairs,
-Compute Canada, the European Union's Horizon 2020 Marie Sklodowska-Curie Actions
-(Individual Fellowship No 800130), the Foundation of Scientific
-Research--Flanders (FWO), McMaster University, the National Fund for Scientific
-and Technological Development of Chile (FONDECYT), the Natural Sciences and
-Engineering Research Council of Canada (NSERC), the Research Board of Ghent
-University (BOF), and Sharcnet.
