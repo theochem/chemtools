@@ -29,7 +29,7 @@ Installation
 
 Supported System
 ================
-ChemTools is available on ``Linux`` and ``MacOS`` with ``Python 2.7``.
+ChemTools is available on ``Linux`` and ``MacOS`` with ``Python 3.0``.
 In the future release, we will support ``Windows 10`` and ``Python 3.6+``.
 
 
@@ -50,7 +50,7 @@ Dependencies
 
 The following dependencies will be necessary for ChemTools to build properly,
 
-* Python >= 3.7: http://www.python.org/ (Also install development files.)
+* Python >= 3.7, <3.9: http://www.python.org/ (Also install development files.)
 * PIP >= 7.0: https://pip.pypa.io/ (Not required in some scenarios but never bad to have.)
 * SciPy >= 0.11.0: http://www.scipy.org/
 * NumPy >= 1.9.1: http://www.numpy.org/
@@ -80,7 +80,7 @@ To create a virtual environment for ChemTools:
 
 .. code-block:: bash
 
-    $ conda create -n chemtools python=3.9
+    $ conda create -n chemtools python=3.7
 
 To activate ``ChemTools`` virtual environment:
 
