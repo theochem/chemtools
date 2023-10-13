@@ -81,7 +81,7 @@ class IQA(object):
         # check grid and part
         if part is not None and not isinstance(part, DensPart):
             raise TypeError("Argument part should be an instance of DensPart class.")
-        if not (part.numbers == molecule.atnums).all():
+        if part is not None and not (part.numbers == molecule.atnums).all():
             raise ValueError("DensPart molecule different from molecule")
         if not isinstance(grid, UniformGrid) and not isinstance(grid, MolecularGrid):
             raise TypeError(
@@ -146,7 +146,9 @@ class IQA(object):
             raise ValueError("Molecule and Grid initialized from different molecules")
 
         # Check/Initialize DensPart object
-        if part:
+        if part is None and scheme is None:
+            print("No atomic partition scheme provided. No atomic decomposition will be performed.")
+        elif part is not None:
             if not isinstance(part, DensPart):
                 raise TypeError("Argument part should be an instance of DensPart class.")
         elif scheme == "H":
