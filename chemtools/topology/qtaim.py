@@ -133,9 +133,12 @@ def _classify_rays_as_ias_or_oas(
             group_by = [(k, list(g)) for k, g in itertools.groupby(basins_ray)]
             unique_basins = np.array([x[0] for x in group_by])
             # print(basins_ray == i_maxima)
+            # print(group_by)
 
             # All pts in the ray got assigned to the same basin of the maxima
-            if len(unique_basins) == 1 and unique_basins[0] == i_maxima:
+            #     or if the numb_rad_pts is zero, then this means that the ray has density value less than
+            #     the isosurface value (starting from the beta-sphere determination), thus it is an oas point.
+            if (len(unique_basins) == 1 and unique_basins[0] == i_maxima) or numb_rad_pts[i_ang] == 0:
                 # This implies it is an OAS point, else then it is an IAS with a bad ray.
                 # print("OAS Point")
                 oas[i_maxima].append(i_ang)
@@ -283,7 +286,7 @@ def construct_all_points_of_rays_of_atoms(
             # Convert from index I to (i) where i is the angular index and j is the radial.
             for k in indices:
                 numb_rad_to_radial_shell[i_do][k // len(radial_grid[i])] -= 1
-
+        
         index_to_atom[i_do + 1] = index_to_atom[i_do] + rs.shape[0]  # Add what index it is
         points.append(rs)
     points = np.vstack(points)  # has shape (Product_{i=1}^M K_i N_i, 3)
