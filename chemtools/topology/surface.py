@@ -321,7 +321,7 @@ class SurfaceQTAIM:
         return points, indices_per_atom
 
     def get_surface_of_groups_of_atoms2(self, atom_indices, include_other_surfaces=False):
-        if np.any(atom_indices < 0.0):
+        if np.any(np.array(atom_indices) < 0.0):
             raise ValueError(f"Atom indices {atom_indices} cannot be negative here.")
 
         all_pts = np.empty((0, 3), dtype=float)
