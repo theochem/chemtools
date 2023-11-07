@@ -207,6 +207,9 @@ class SurfaceQTAIM:
         else:
             points = np.empty((0, 3), dtype=np.float64)
         if include_other_surfaces:
+            if i_basin < 0.0:
+                raise ValueError(f"Basin Index {i_basin} cannot be negative here.")
+            
             for i in range(len(self.maximas)):
                 if i != i_basin:
                     # If this basin crosses the boundary.
@@ -226,6 +229,9 @@ class SurfaceQTAIM:
         sph_pts = self.generate_angular_pts_of_basin(i_basin)
         points = self.maximas[i_basin] + self.r_func[i_basin][ias, None] * sph_pts[ias, :]
         if include_other_surfaces:
+            if i_basin < 0.0:
+                raise ValueError(f"Basin Index {i_basin} cannot be negative here.")
+
             for i_other in range(len(self.maximas)):
                 if i_other != i_basin and i_other in self.indices_maxima:
                     # If this basin crosses the boundary.
@@ -236,6 +242,7 @@ class SurfaceQTAIM:
                         new_pts = self.maximas[i_other] + self.r_func[i_other][ias_indices, None] * sph_pts[ias_indices]
                         points = np.vstack((points, new_pts))
             # There could be multiple points close to each other, this removes them
+            points = points.astype(float)
             points, indices = np.unique(np.round(points, 16), axis=0, return_index=True)
             return points[np.argsort(indices), :]
         return points
@@ -314,8 +321,10 @@ class SurfaceQTAIM:
         return points, indices_per_atom
 
     def get_surface_of_groups_of_atoms2(self, atom_indices, include_other_surfaces=False):
-        all_pts = np.empty((0, 3), dtype=float)
+        if np.any(atom_indices < 0.0):
+            raise ValueError(f"Atom indices {atom_indices} cannot be negative here.")
 
+        all_pts = np.empty((0, 3), dtype=float)
         for i_basin in atom_indices:
             # Add Oas points
             all_pts = np.vstack((all_pts, self.get_oas_pts_of_basin(i_basin)))
