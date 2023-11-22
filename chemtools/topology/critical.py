@@ -147,9 +147,12 @@ class Topology(object):
                     if abs(dens) < 1.e-4 and np.all(abs(grad) < 1.e-4):
                         continue
                     # compute rank & signature of critical point
-                    eigenvals, eigenvecs = np.linalg.eigh(self.hess(coord))
-                    cp = CriticalPoint(coord, eigenvals, eigenvecs, 1e-4)
-                    self._cps.setdefault((cp.rank[0], cp.signature[0]), []).append(cp)
+                    try:
+                        eigenvals, eigenvecs = np.linalg.eigh(self.hess(coord))
+                        cp = CriticalPoint(coord, eigenvals, eigenvecs, 1e-4)
+                        self._cps.setdefault((cp.rank[0], cp.signature[0]), []).append(cp)
+                    except np.linalg.LinAlgError:
+                        pass
         # check Poincare–Hopf equation
         if not self.poincare_hopf_equation:
             warnings.warn("Poincare–Hopf equation is not satisfied.", RuntimeWarning)
