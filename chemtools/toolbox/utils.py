@@ -480,3 +480,37 @@ def get_libxc_xc_density(molecule, grid, one_elec, libxc_label):
     elif func_type.startswith('x'):
         results = {"edens_x": ham.cache[f"edens_libxc_{func_group}_{func_type}_full"], 'coeff_mix':coeff_mix}
         return results
+
+
+def get_horton_analytical_components(molecule, grid):
+    from horton import compute_nucnuc
+
+    # check atomic coordinates & numbers of grid object against loaded wave-function
+    if np.max(abs(molecule.coordinates - grid.centers)):
+        raise ValueError(
+            f"Coordinates from molecule and grid arguments does not match"
+        )
+    if np.max(abs(molecule.numbers - grid.numbers)):
+        raise ValueError(
+            f"Coordinates from molecule and grid arguments does not match"
+        )
+
+    # get Gaussian basis set
+    obasis = molecule.obasis
+
+    # compute Gaussian integrals
+    olp = obasis.compute_overlap()
+    kin = obasis.compute_kinetic()
+    na = obasis.compute_nuclear_attraction(molecule.coordinates, molecule.pseudo_numbers)
+    er_vecs = obasis.compute_electron_repulsion_cholesky()
+    nn = compute_nucnuc(molecule.coordinates, molecule.pseudo_numbers)
+
+    one_elect_analytical = {
+        'nn': nn,
+        'olp': olp,
+        'kin': kin,
+        'na': na,
+        'er_vecs': er_vecs
+    }
+
+    return one_elect_analytical
