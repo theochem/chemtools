@@ -197,17 +197,8 @@ class IQA(object):
         molecule_chemtools = Molecule.from_file(fname)
 
         # Initialize grid
-        if grid_type == "cube":
-            grid = UniformGrid.from_molecule(
-                molecule_chemtools, spacing=0.2, extension=3.30, rotate=False
-            )
-            print("Number of grid points in x, y, & z directions = ", grid.shape)
-        elif grid_type == "becke":
-            grid = MolecularGrid.from_molecule(
-                molecule_chemtools, specs="insane", k=3, rotate=False
-            )
-        else:
-            raise ValueError(f"{grid_type} is not a valid grid. Choose from: cube, becke")
+        # TODO: Add grid type argument to get_molecular_grid
+        grid = get_molecular_grid(molecule_chemtools)
 
         return cls.from_molecule(molecule_iodata, molecule_chemtools, grid, scheme=scheme)
 
