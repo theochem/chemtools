@@ -584,39 +584,30 @@ class IQA(object):
         print()
         return total_exch, total_col, at_exch, at_colomb
 
-    def ee_iqa_dft(self, dft_dens, dft_exch_dens, dft_col_dens):
+    def ee_iqa_dft(self, dft_dens, dft_xc_dens):
+
         molecule = self.molecule
         grid = self.grid
         part = self.part
 
         natoms = molecule.atnums.shape[0]
 
-        dft_exch_total = grid.integrate(dft_exch_dens, dft_dens)
-        dft_col_total = grid.integrate(dft_col_dens, dft_dens)
+        dft_xc_total = grid.integrate(dft_xc_dens, dft_dens)
 
-        at_dft_exch = None
-        at_dft_coulomb = None
+        at_dft_xc = None
         if part:
             # Doing a for loop to get all at_weights. Using Part object from Horton does not allow
             # to get all at the same time
             at_weights = np.zeros((natoms, grid.points.shape[0]))
             for i in range(molecule.natom):
                 at_weights[i] = part.part.cache.load("at_weights", i)
-            at_dft_exch_raw = at_weights * dft_exch_dens[None, :]
-            at_dft_col_raw = at_weights * dft_col_dens[None, :]
-            at_dft_exch = np.array(
-                [grid.integrate(at_dft_exch_raw[i], dft_dens) for i in range(natoms)]
-            )
-            at_dft_coulomb = np.array(
-                [grid.integrate(at_dft_col_raw[i], dft_dens) for i in range(natoms)]
-            )
-            logging.info("Decomposing Coulomb and Exchange into atomic contributions.")
-            print("Exchange")
-            print(at_dft_exch)
-            print("Coulomb")
-            print(at_dft_coulomb)
-            assert_almost_equal(np.sum(at_dft_exch), dft_exch_total, decimal=2)
-            assert_almost_equal(np.sum(at_dft_coulomb), dft_col_total, decimal=2)
+            at_dft_xc_raw = at_weights * dft_xc_dens[None, :]
+            at_dft_xc = np.array(
+                [grid.integrate(at_dft_xc_raw[i], dft_dens) for i in range(natoms)])
+            logging.info("Decomposing XC into atomic contributions.")
+            print('XC component')
+            print(at_dft_xc)
+            assert_almost_equal(np.sum(at_dft_xc), dft_xc_total, decimal=2)
 
         print()
-        return dft_exch_total, dft_col_total, at_dft_exch, at_dft_coulomb
+        return dft_xc_total, at_dft_xc
