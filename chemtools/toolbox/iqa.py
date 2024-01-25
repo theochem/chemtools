@@ -250,23 +250,22 @@ class IQA(object):
         # todo: test gbasis
 
         dft_xc_edens = {}
-        if dft_corr:
-            dft_xc_edens.update(get_libxc_xc_density(molecule_chemtools, grid, analytical_comp, dft_corr))
+        # assuming dft_corr and dft_exch specified together
+        if dft_corr and dft_exch:
+            dft_xc_edens.update(get_libxc_xc_density(molecule_chemtools, grid, analytical_comp, dft_exch, dft_corr))
             iqa_results['x_hf_total'], iqa_results['coul_total'], iqa_results['x_hf_atomic'], \
             iqa_results['coul_atomic'] = self.ee_iqa_hf(dens=rho)
             iqa_results['c_total'], iqa_results['c_atomic'] = self.ee_iqa_dft(rho, dft_xc_edens["edens_c"])
-            if dft_exch:
-                dft_xc_edens.update(
-                    get_libxc_xc_density(molecule_chemtools, grid, analytical_comp, dft_exch))
-                iqa_results['x_total'], iqa_results['x_atomic'] = self.ee_iqa_dft(rho, dft_xc_edens["edens_x"])
-                if 'coeff_mix' in dft_xc_edens.keys():
-                    if dft_xc_edens['coeff_mix']:
-                        # Scaling HF exchange
-                        iqa_results['x_hf_total'] = iqa_results['x_hf_total'] * dft_xc_edens[
-                            'coeff_mix']
-                else:
-                    iqa_results.pop('x_hf_total')
-                    iqa_results.pop('x_hf_atomic')
+            iqa_results['x_total'], iqa_results['x_atomic'] = self.ee_iqa_dft(rho, dft_xc_edens["edens_x"])
+            if 'coeff_mix' in dft_xc_edens.keys() and dft_xc_edens['coeff_mix']:
+                if dft_xc_edens['coeff_mix']:
+                    # Scaling HF exchange
+                    iqa_results['x_hf_total'] = iqa_results['x_hf_total'] * dft_xc_edens[
+                        'coeff_mix']
+            else:
+                iqa_results.pop('x_hf_total')
+                iqa_results.pop('x_hf_atomic')
+
         elif dft_exch:
             dft_xc_edens.update(
                 get_libxc_xc_density(molecule_chemtools, grid, analytical_comp, dft_exch))
@@ -287,9 +286,7 @@ class IQA(object):
             iqa_results['x_total'], iqa_results['coul_total'], iqa_results['x_atomic'], iqa_results[
                 'coul_atomic'] = self.ee_iqa_hf(dens=rho)
         else:
-            raise NotImplementedError(
-                'Dont know how to obtain exchange and corelation functionals.'
-                'Parser from gaussian fchk file not implemented')
+            raise ValueError(f'Need to specify an exchange functional too. Got {dft_exch}')
         logging.info('Summary IQA')
         print('Nucleus-Nucleus repulsion energy: ', iqa_results['nn_total'])
         print('Nucleus-Nucleus repulsion energy (HORTON): ', nn_horton)
@@ -333,7 +330,7 @@ class IQA(object):
             if part:
                 print('Atomic DFT Exchange energy:')
                 for idx, at in enumerate(molecule.atnums):
-                    print(f"{at}   {iqa_results['ex_atomic'][idx]}")
+                    print(f"{at}   {iqa_results['x_atomic'][idx]}")
                 print('Atomic DFT Correlation energy:')
                 for idx, at in enumerate(molecule.atnums):
                     print(f"{at}   {iqa_results['c_atomic'][idx]}")

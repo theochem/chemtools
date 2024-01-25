@@ -359,9 +359,9 @@ def get_dict_population(molecule, approach, scheme, **kwargs):
         dict_pops[nelec] = pops
     return dict_pops
 
-def get_libxc_xc_density(molecule, grid, one_elec, libxc_label):
-    from horton.meanfield import RLibXCLDA,RLibXCGGA, RLibXCHybridGGA, RLibXCMGGA, RLibXCHybridMGGA
-    from horton.meanfield import ULibXCLDA,ULibXCGGA, ULibXCHybridGGA, ULibXCMGGA, ULibXCHybridMGGA
+def get_libxc_xc_density(molecule, grid, one_elec, libxc_label, libxc_c_label=None):
+    from horton.meanfield import RLibXCLDA, RLibXCGGA, RLibXCHybridGGA, RLibXCMGGA, RLibXCHybridMGGA
+    from horton.meanfield import ULibXCLDA, ULibXCGGA, ULibXCHybridGGA, ULibXCMGGA, ULibXCHybridMGGA
     from horton.meanfield import RTwoIndexTerm, RDirectTerm, RGridGroup, RTwoIndexTerm
     from horton.meanfield import UTwoIndexTerm, UDirectTerm, UGridGroup, UTwoIndexTerm
     from horton.meanfield import REffHam, UEffHam
@@ -392,10 +392,6 @@ def get_libxc_xc_density(molecule, grid, one_elec, libxc_label):
         raise ValueError(
             f"Coordinates from molecule and grid arguments does not match"
         )
-    # Check libxc_label
-    if libxc_label:
-        if not isinstance(libxc_label, str):
-            raise ValueError(f'Libxc label must be a string. Got{libxc_label}')
 
     # get Gaussian basis set
     obasis = molecule.obasis
@@ -416,12 +412,19 @@ def get_libxc_xc_density(molecule, grid, one_elec, libxc_label):
     # get libxc functionals
     libxc = horton_libxc["restricted" if restricted else "unrestricted"]
     func = libxc_label.lower().split("_")
+    if libxc_c_label:
+        func_c = libxc_c_label.lower().split("_")
+
+    # Assuming for now hybrid functionals always specified as xc together
     if func[0] == 'hyb':
         func_group = func[0] + '_' + func[1]
         func_type = func[-2] + '_' + func[-1]
     else:
         func_group = func[0]
         func_type = func[-2] + '_' + func[-1]
+        if libxc_c_label:
+            func_group_c = func_c[0]
+            func_type_c = func_c[-2] + '_' + func_c[-1]
 
     if func_group not in libxc:
         raise ValueError(
@@ -436,11 +439,13 @@ def get_libxc_xc_density(molecule, grid, one_elec, libxc_label):
 
     # construct hamiltonian
     external = {'nn': one_elec['nn']}
-    grid_terms = [libxc[func_group](func_type)]
+    if libxc_c_label:
+        grid_terms = [libxc[func_group](func_type), libxc[func_group_c](func_type_c)]
+    else:
+        grid_terms = [libxc[func_group](func_type)]
     coeff_mix = None
     if func_group in ['hyb_gga', 'hyb_mgga']:
         coeff_mix = grid_terms[0].get_exx_fraction()
-
 
     if restricted:
         terms = [
@@ -471,15 +476,15 @@ def get_libxc_xc_density(molecule, grid, one_elec, libxc_label):
         orb_alpha.from_fock_and_dm(fock_alpha, dm_alpha, olp)
         orb_beta.from_fock_and_dm(fock_beta, dm_beta, olp)
 
-    if func_type.startswith('c'):
-        results = {"edens_c": ham.cache[f"edens_libxc_{func_type}_full"]}
-        return results
-    elif func_type.startswith('xc'):
+    if func_type.startswith('xc'):
         results = {"edens_xc": ham.cache[f"edens_libxc_{func_group}_{func_type}_full"], 'coeff_mix':coeff_mix}
         return results
-    elif func_type.startswith('x'):
-        results = {"edens_x": ham.cache[f"edens_libxc_{func_group}_{func_type}_full"], 'coeff_mix':coeff_mix}
+    elif func_type.startswith('x') and func_type_c.startswith('c'):
+        results = {"edens_x": ham.cache[f"edens_libxc_{func_group}_{func_type}_full"],
+                   "edens_c": ham.cache[f"edens_libxc_{func_group_c}_{func_type_c}_full"],
+                   'coeff_mix':coeff_mix}
         return results
+
 
 
 def get_horton_analytical_components(molecule, grid):
