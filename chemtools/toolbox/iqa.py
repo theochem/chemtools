@@ -468,7 +468,7 @@ class IQA(object):
         print()
         return total_kin, at_kin
 
-    def ee_iqa(self, dens=None):
+    def ee_iqa_hf(self, dens=None):
         r"""Compute Hartree Fock electron-electron interaction energy.
 
         .. math::
