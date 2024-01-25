@@ -376,7 +376,6 @@ class IQA(object):
             dens = evaluate_density(dm, basis[0], grid.points, coord_type=basis[1])
 
         rij = np.linalg.norm(molecule.atcoords[:, None, :] - grid.points, axis=-1)
-        rij[rij < 1.0e-10] = 0
         total_en = grid.integrate(np.sum((-molecule.atnums[:, None] * (dens / rij)), axis=0))
         print("TOTAL EN ENERGY: ", total_en)
 
