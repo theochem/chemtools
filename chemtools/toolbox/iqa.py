@@ -38,7 +38,6 @@ from chemtools.utils.cube import UniformGrid
 from chemtools.wrappers.grid import MolecularGrid
 from chemtools.wrappers.molecule import Molecule
 from chemtools.wrappers.part import DensPart
-from horton import ProAtomDB
 
 
 class IQA(object):
@@ -151,12 +150,13 @@ class IQA(object):
         elif part is not None:
             if not isinstance(part, DensPart):
                 raise TypeError("Argument part should be an instance of DensPart class.")
-        elif scheme == "H":
-            proatomdb = ProAtomDB.from_refatoms(molecule_chemtools.numbers)
-            part = DensPart.from_molecule(
-                molecule_chemtools, grid=grid, scheme="h", proatomdb=proatomdb, local=False
-            )
-        elif scheme is not None and scheme != "H":
+        elif scheme == 'H':
+            part = DensPart.from_molecule(molecule_chemtools, grid=grid, scheme="h",
+                                              local=False)
+        elif scheme == 'HI':
+            part = DensPart.from_molecule(molecule_chemtools, grid=grid, scheme="hi",
+                                              local=False)
+        elif scheme is not None and scheme not in ['H', 'HI']:
             raise NotImplementedError(f"Atomic partition {scheme} not yet available")
 
         # Initialize gbasis
