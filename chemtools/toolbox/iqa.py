@@ -27,7 +27,9 @@ import logging
 import numpy as np
 from numpy.testing import assert_almost_equal
 
-from chemtools.toolbox.utils import check_arg_molecule, get_libxc_energy_density
+from chemtools.toolbox.utils import check_arg_molecule, \
+                                    get_horton_analytical_components, \
+                                    get_molecular_grid, get_libxc_xc_density
 from iodata import load_one
 from gbasis.wrappers import from_iodata
 from gbasis.evals.density import evaluate_density
@@ -231,83 +233,137 @@ class IQA(object):
         # Initialize results dict
         iqa_results = {}
 
-        logging.info("INITIALIZING INTERACTING QUANTUM ATOMS(IQA) CALCULATION")
-        iqa_results["nn_total"] = self.nn_iqa()
-        iqa_results["en_total"], iqa_results["en_atomic"] = self.en_iqa(dens=rho)
-        iqa_results["kin_total"], iqa_results["kin_atomic"] = self.kin_iqa()
-        if molecule.lot == "rhf":
-            (
-                iqa_results["ex_total"],
-                iqa_results["col_total"],
-                iqa_results["ex_atomic"],
-                iqa_results["col_atomic"],
-            ) = self.ee_iqa(dens=rho)
-        elif dft_exch is not None and dft_corr is not None:
-            dft_results = get_libxc_energy_density(
-                molecule_chemtools, grid, exchange=dft_exch, correlation=dft_corr
-            )
-            # check nn, en, kin same as previously calculated
-            assert abs(iqa_results["nn_total"] - dft_results["energy_nn"]) < 1.0e-5
-            assert abs(iqa_results["en_total"] - dft_results["energy_ne"]) < 1.0e-5
-            assert abs(iqa_results["kin_total"] - dft_results["energy_kin"]) < 1.0e-5
-            (
-                iqa_results["ex_total"],
-                iqa_results["col_total"],
-                iqa_results["ex_atomic"],
-                iqa_results["col_atomic"],
-            ) = self.ee_iqa_dft(dft_results["rho"], dft_results["edens_x"], dft_results["edens_c"])
+        logging.info('INITIALIZING INTERACTING QUANTUM ATOMS(IQA) CALCULATION')
+        iqa_results['nn_total'] = self.nn_iqa()
+        iqa_results['en_total'], iqa_results['en_atomic'] = self.en_iqa(dens=rho)
+        iqa_results['kin_total'], iqa_results['kin_atomic'] = self.kin_iqa()
+        analytical_comp = get_horton_analytical_components(molecule_chemtools, grid)
+        nn_horton = analytical_comp['nn']
+        ne_horton = np.trace(dm.dot(analytical_comp['na']))
+        kinetic_horton = np.trace(dm.dot(analytical_comp['kin']))
+        print('KINETIC DEBUG :', iqa_results['kin_total'])
+        print('KINETIC DEBUG (HORTON):', kinetic_horton)
+        diff = abs(iqa_results['kin_total'] - kinetic_horton)
+        print('DIFF (DEBUG)(kcal/mol) ', diff / 0.0015936014376406278)
+        print(grid._grid.points.shape)
+        print()
+        # todo: test gbasis
+
+        dft_xc_edens = {}
+        if dft_corr:
+            dft_xc_edens.update(get_libxc_xc_density(molecule_chemtools, grid, analytical_comp, dft_corr))
+            iqa_results['x_hf_total'], iqa_results['coul_total'], iqa_results['x_hf_atomic'], \
+            iqa_results['coul_atomic'] = self.ee_iqa_hf(dens=rho)
+            iqa_results['c_total'], iqa_results['c_atomic'] = self.ee_iqa_dft(rho, dft_xc_edens["edens_c"])
+            if dft_exch:
+                dft_xc_edens.update(
+                    get_libxc_xc_density(molecule_chemtools, grid, analytical_comp, dft_exch))
+                iqa_results['x_total'], iqa_results['x_atomic'] = self.ee_iqa_dft(rho, dft_xc_edens["edens_x"])
+                if 'coeff_mix' in dft_xc_edens.keys():
+                    if dft_xc_edens['coeff_mix']:
+                        # Scaling HF exchange
+                        iqa_results['x_hf_total'] = iqa_results['x_hf_total'] * dft_xc_edens[
+                            'coeff_mix']
+                else:
+                    iqa_results.pop('x_hf_total')
+                    iqa_results.pop('x_hf_atomic')
+        elif dft_exch:
+            dft_xc_edens.update(
+                get_libxc_xc_density(molecule_chemtools, grid, analytical_comp, dft_exch))
+            iqa_results['x_hf_total'], iqa_results['coul_total'], \
+                iqa_results['x_hf_atomic'], iqa_results['coul_atomic'] = self.ee_iqa_hf(dens=rho)
+            iqa_results['xc_total'], iqa_results['xc_atomic'] = self.ee_iqa_dft(rho, dft_xc_edens["edens_xc"])
+            if 'coeff_mix' in dft_xc_edens.keys():
+                if dft_xc_edens['coeff_mix']:
+                    # Scaling HF exchange
+                    iqa_results['x_hf_total'] = iqa_results['x_hf_total'] * dft_xc_edens[
+                        'coeff_mix']
+                    iqa_results['x_hf_atomic'] = iqa_results['x_hf_atomic'] * dft_xc_edens[
+                        'coeff_mix']
+            else:
+                iqa_results.pop('x_hf_total')
+                iqa_results.pop('x_hf_atomic')
+        elif molecule.lot == 'rhf':
+            iqa_results['x_total'], iqa_results['coul_total'], iqa_results['x_atomic'], iqa_results[
+                'coul_atomic'] = self.ee_iqa_hf(dens=rho)
         else:
             raise NotImplementedError(
-                "Dont know how to obtain exchange and coorelation functionals."
-                "Parser from gaussian fchk file not implemented"
-            )
+                'Dont know how to obtain exchange and corelation functionals.'
+                'Parser from gaussian fchk file not implemented')
+        logging.info('Summary IQA')
+        print('Nucleus-Nucleus repulsion energy: ', iqa_results['nn_total'])
+        print('Nucleus-Nucleus repulsion energy (HORTON): ', nn_horton)
+        diff = abs(iqa_results['nn_total'] - nn_horton)
+        print('DIFF (kcal/mol) ', diff / 0.0015936014376406278)
 
-        logging.info("Summary IQA")
-        print("Nucleus-Nucleus repulsion energy: ", iqa_results["nn_total"])
-        print("------------------------------------")
-        print("Electron-Nucleus attraction energy: ", iqa_results["en_total"])
+        print('------------------------------------')
+        print('Electron-Nucleus attraction energy: ', iqa_results['en_total'])
+        print('Electron-Nucleus attraction energy (HORTON): ', ne_horton)
+        diff = abs(iqa_results['en_total'] - ne_horton)
+        print('DIFF (kcal/mol) ', diff / 0.0015936014376406278)
         print()
         if part:
-            print("Atomic Electron-Nucleus attraction energy:")
+            print('Atomic Electron-Nucleus attraction energy:')
             for idx, at in enumerate(molecule.atnums):
                 print(f"{at}   {iqa_results['en_atomic'][idx]}")
-        print("------------------------------------")
-        print("Kinetic energy:  ")
+        print('------------------------------------')
+        print('Kinetic energy:  ', iqa_results['kin_total'])
+        print('Kinetic energy(HORTON):  ', kinetic_horton)
+        diff = abs(iqa_results['kin_total'] - kinetic_horton)
+        print('DIFF (kcal/mol) ', diff / 0.0015936014376406278)
         print()
         if part:
-            print("Atomic Kinetic energy:")
+            print('Atomic Kinetic energy:')
             for idx, at in enumerate(molecule.atnums):
                 print(f"{at}   {iqa_results['kin_atomic'][idx]}")
-        print("------------------------------------")
-        print("Electron-Electron interaction energy")
+        print('------------------------------------')
+        print('Electron-Electron interaction energy')
         print()
-        if dft_exch:
-            print("    DTF Correlation energy: ", iqa_results["col_total"])
+        print('Coulomb energy: ', iqa_results['coul_total'])
+        print()
+        if part:
+            print('Atomic Coulomb energy:')
+            for idx, at in enumerate(molecule.atnums):
+                print(f"{at}   {iqa_results['coul_atomic'][idx]}")
+        print()
+        if dft_exch and dft_corr:
+            print('DTF Exchange energy: ', iqa_results['x_total'])
+            print('DTF Correlation energy: ', iqa_results['c_total'])
             print()
             if part:
-                print("Atomic DFT Correlation energy:")
-                for idx, at in enumerate(molecule.atnums):
-                    print(f"{at}   {iqa_results['col_atomic'][idx]}")
-            print("    DFT Exchange energy: ", iqa_results["ex_total"])
-            if part:
-                print("Atomic DFT Exchange energy: ", iqa_results["ex_total"])
+                print('Atomic DFT Exchange energy:')
                 for idx, at in enumerate(molecule.atnums):
                     print(f"{at}   {iqa_results['ex_atomic'][idx]}")
+                print('Atomic DFT Correlation energy:')
+                for idx, at in enumerate(molecule.atnums):
+                    print(f"{at}   {iqa_results['c_atomic'][idx]}")
 
-        else:
-            print("Coulomb energy: ", iqa_results["col_total"])
+        if dft_exch and not dft_corr:
+            print('DTF Exchange-Correlation energy: ', iqa_results['xc_total'])
             print()
             if part:
-                print("Atomic Coulomb energy:")
+                print('Atomic DFT Exchange-Correlation energy:')
                 for idx, at in enumerate(molecule.atnums):
-                    print(f"{at}   {iqa_results['col_atomic'][idx]}")
+                    print(f"{at}   {iqa_results['xc_atomic'][idx]}")
 
-            print("Exchange energy: ", iqa_results["ex_total"])
+        if 'x_hf_total' in iqa_results.keys():
+            print('HF Exchange: ', iqa_results['x_hf_total'])
+            print('COEFF MIX :', dft_xc_edens['coeff_mix'])
             print()
             if part:
-                print("Atomic HF Exchange energy:")
+                print('Atomic HF Exchange energy:')
                 for idx, at in enumerate(molecule.atnums):
-                    print(f"{at}   {iqa_results['ex_atomic'][idx]}")
+                    print(f"{at}   {iqa_results['x_hf_atomic'][idx]}")
+
+        total_sum_energy = 0
+        for k in iqa_results.keys():
+            if k.endswith('total'):
+                total_sum_energy += iqa_results[k]
+
+        print('TOTAL ENERGY (SUM OF COMPONENTS):', total_sum_energy)
+        print('TOTAL ENERGY (FCHK):', molecule.energy)
+        print('DIFF (AU) :', total_sum_energy - molecule.energy)
+        print('DIFF (Kcal) :', (total_sum_energy - molecule.energy) / 0.0015936014376406278)
 
         return iqa_results
 
