@@ -241,12 +241,6 @@ class IQA(object):
         nn_horton = analytical_comp['nn']
         ne_horton = np.trace(dm.dot(analytical_comp['na']))
         kinetic_horton = np.trace(dm.dot(analytical_comp['kin']))
-        print('KINETIC DEBUG :', iqa_results['kin_total'])
-        print('KINETIC DEBUG (HORTON):', kinetic_horton)
-        diff = abs(iqa_results['kin_total'] - kinetic_horton)
-        print('DIFF (DEBUG)(kcal/mol) ', diff / 0.0015936014376406278)
-        print(grid._grid.points.shape)
-        print()
         # todo: test gbasis
 
         dft_xc_edens = {}
