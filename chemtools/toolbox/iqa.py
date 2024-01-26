@@ -504,11 +504,7 @@ class IQA(object):
         if part:
             # Doing a for loop to get all at_weights. Using Part object from Horton does not allow
             # to get all at the same time
-            at_weights = np.zeros((natoms, grid.points.shape[0]))
-            for i in range(molecule.natom):
-                at_weights[i] = part.part.cache.load("at_weights", i)
-            at_kin_raw = at_weights * output[None, :]
-            at_kin = np.array([grid.integrate(at_kin_raw[i]) for i in range(natoms)])
+            at_kin = part.condense_to_atoms(output)
             logging.info("Decomposing Kinetic energy into atomic contributions.")
             print(at_kin)
 
@@ -568,7 +564,7 @@ class IQA(object):
         eval_mo = np.sum((molecule.mo.coeffs.T[:, :, None] * eval_ao), axis=1)
         logging.warning("Calculating Coulomb and Exchange: expect long integrals")
         # Eval falta math
-        total_col_raw = np.zeros((grid.npoints))
+        total_coul_raw = np.zeros((grid.npoints))
         total_exch_raw = np.zeros((grid.npoints))
         istart = 0
         chunk_size = 250000000 // (nao**2)
@@ -587,7 +583,7 @@ class IQA(object):
             )
             # Coulomb
             vab_rho = np.trace(np.tensordot(dm, (vab * chunk_dens), axes=(1, 0)))
-            total_col_chunk = -0.5 * vab_rho
+            total_coul_chunk = -0.5 * vab_rho
             # Exchange
             occupied_mo = np.zeros(molecule.mo.occs.shape[0])
             occupied_mo[molecule.mo.occs > 0] = 1
@@ -600,36 +596,29 @@ class IQA(object):
                 (eval_mo[:, istart:iend] * occupied_mo[:, None]),
             )
 
-            total_col_raw[istart:iend] = total_col_chunk
+            total_coul_raw[istart:iend] = total_coul_chunk
             total_exch_raw[istart:iend] = total_exch_chunk
             istart = iend
 
-        total_col = grid.integrate(total_col_raw)
+        total_coul = grid.integrate(total_coul_raw)
         total_exch = grid.integrate(total_exch_raw)
 
-        print("TOTAL COULOMB: ", total_col)
+        print("TOTAL COULOMB: ", total_coul)
         print("TOTAL EXCHANGE: ", total_exch)
 
         at_exch = None
-        at_colomb = None
+        at_coulomb = None
         if part:
-            # Doing a for loop to get all at_weights. Using Part object from Horton does not allow
-            # to get all at the same time
-            at_weights = np.zeros((natoms, grid.points.shape[0]))
-            for i in range(molecule.natom):
-                at_weights[i] = part.part.cache.load("at_weights", i)
-            at_coulomb_raw = at_weights * total_col_raw[None, :]
-            at_exch_raw = at_weights * total_exch_raw[None, :]
-            at_colomb = np.array([grid.integrate(at_coulomb_raw[i]) for i in range(natoms)])
-            at_exch = np.array([grid.integrate(at_exch_raw[i]) for i in range(natoms)])
+            at_coulomb = part.condense_to_atoms(total_coul_raw)
+            at_exch = part.condense_to_atoms(total_exch_raw)
             logging.info("Decomposing Coulomb and Exchange into atomic contributions.")
             print("Exchange")
-            print(at_colomb)
+            print(at_coulomb)
             print("Coulomb")
             print(at_exch)
 
         print()
-        return total_exch, total_col, at_exch, at_colomb
+        return total_exch, total_coul, at_exch, at_coulomb
 
     def ee_iqa_dft(self, dft_dens, dft_xc_dens):
 
@@ -643,14 +632,7 @@ class IQA(object):
 
         at_dft_xc = None
         if part:
-            # Doing a for loop to get all at_weights. Using Part object from Horton does not allow
-            # to get all at the same time
-            at_weights = np.zeros((natoms, grid.points.shape[0]))
-            for i in range(molecule.natom):
-                at_weights[i] = part.part.cache.load("at_weights", i)
-            at_dft_xc_raw = at_weights * dft_xc_dens[None, :]
-            at_dft_xc = np.array(
-                [grid.integrate(at_dft_xc_raw[i], dft_dens) for i in range(natoms)])
+            at_dft_xc = part.condense_to_atoms((dft_xc_dens * dft_dens))
             logging.info("Decomposing XC into atomic contributions.")
             print('XC component')
             print(at_dft_xc)
