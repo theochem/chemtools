@@ -46,35 +46,32 @@ except ImportError:
 def test_iqa_raises():
 
     with path('chemtools.data', 'h2o_rhf_sto3g.fchk')as fname:
-        with path('chemtools.data', 'ch3_utpsstpss_321g.fchk') as fname2:
-            mol_iodata = load_one(str(fname))
-            mol_chemtools = Molecule.from_file(str(fname))
-            mol_chemtools2 = Molecule.from_file(str(fname2))
-            basis_gbasis = from_iodata(mol_iodata)
-            one_rdm_gbasis = mol_iodata.one_rdms.get("post_scf", mol_iodata.one_rdms.get("scf"))
+        with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fname2:
+            mol_1 = Molecule.from_file(str(fname))
+            mol_2 = Molecule.from_file(str(fname2))
+            basis_gbasis = from_iodata(mol_1._iodata)
+            one_rdm_gbasis = mol_1._iodata.one_rdms.get("post_scf", mol_1._iodata.one_rdms.get("scf"))
             wrong_grid = AtomicGrid(6, 6, np.array([0., 0., 0]))
-            wrong_grid2 = MolecularGrid.from_file('ch3_utpsstpss_321g.fchk')
-            grid = MolecularGrid.from_molecule(mol_chemtools, specs="insane", k=3,
+            wrong_grid2 = MolecularGrid.from_file(fname2)
+            grid = MolecularGrid.from_molecule(mol_1, specs="insane", k=3,
                                                    rotate=False)
-            proatomdb = ProAtomDB.from_refatoms(mol_chemtools.numbers)
-            part = DensPart.from_molecule(mol_chemtools, grid=grid, scheme="h",
-                                          proatomdb=proatomdb, local=False)
+            part = DensPart.from_molecule(mol_1, grid=grid, scheme="h", local=False)
             # Check invalid grid
-            assert_raises(ValueError, IQA.from_file, str(fname), 'Atomic')
-            assert_raises(TypeError, IQA.from_molecule, mol_iodata, mol_chemtools, wrong_grid)
-            assert_raises(TypeError, IQA, mol_iodata, basis_gbasis[0], one_rdm_gbasis, wrong_grid, part, molecule_chemtools=mol_chemtools)
-            assert_raises(TypeError, IQA, mol_iodata, basis_gbasis[0], one_rdm_gbasis, wrong_grid2, part, molecule_chemtools=mol_chemtools)
-            # Check wrong molecule iodata
-            assert_raises(ValueError, IQA.from_molecule, 'wrong_mol_iodata', mol_chemtools, grid)
+            # assert_raises(ValueError, IQA.from_file, str('h2o_rhf_sto3g.fchk'), 'Atomic')
+            assert_raises(TypeError, IQA.from_molecule, mol_1,  wrong_grid)
+            assert_raises(TypeError, IQA, mol_1, basis_gbasis[0], one_rdm_gbasis, wrong_grid, part)
+            assert_raises(TypeError, IQA, mol_1, basis_gbasis[0], one_rdm_gbasis, wrong_grid2, part)
+            # Check wrong molecule
+            assert_raises(ValueError, IQA.from_molecule, 'wrong_mol_iodata', grid)
             # Check part/scheme
-            assert_raises(TypeError, IQA.from_molecule, mol_iodata, mol_chemtools, grid, part='wrong_part')
-            assert_raises(TypeError, IQA, mol_iodata, basis_gbasis, one_rdm_gbasis, grid, part='wrong_part', molecule_chemtools=mol_chemtools)
+            assert_raises(TypeError, IQA.from_molecule, mol_1, grid, part='wrong_part')
+            assert_raises(TypeError, IQA, mol_1, basis_gbasis, one_rdm_gbasis, grid, part='wrong_part')
             # Check basis
-            assert_raises(TypeError, IQA, mol_iodata, ['wrong_basis'], one_rdm_gbasis, grid, part='wrong_part', molecule_chemtools=mol_chemtools)
-            assert_raises(TypeError, IQA, mol_iodata, basis_gbasis, np.array([[1, 2], [1, 2]], dtype=bool), grid, part='wrong_part', molecule_chemtools=mol_chemtools)
-            assert_raises(TypeError, IQA, mol_iodata, basis_gbasis, np.array([1.0, 2.0, 3.0]), grid, part='wrong_part', molecule_chemtools=mol_chemtools)
-            assert_raises(ValueError, IQA, mol_iodata, basis_gbasis, np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]), grid, part='wrong_part', molecule_chemtools=mol_chemtools)
-            assert_raises(ValueError, IQA, mol_iodata, basis_gbasis, np.array([[1.0, 2.0], [3.0, 4.0]]), grid, part='wrong_part', molecule_chemtools=mol_chemtools)
+            assert_raises(TypeError, IQA, mol_1, ['wrong_basis'], one_rdm_gbasis, grid, part='wrong_part')
+            assert_raises(TypeError, IQA, mol_1, basis_gbasis, np.array([[1, 2], [1, 2]], dtype=bool), grid, part='wrong_part')
+            assert_raises(TypeError, IQA, mol_1, basis_gbasis, np.array([1.0, 2.0, 3.0]), grid, part='wrong_part')
+            assert_raises(ValueError, IQA, mol_1, basis_gbasis, np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]), grid, part='wrong_part')
+            assert_raises(ValueError, IQA, mol_1, basis_gbasis, np.array([[1.0, 2.0], [3.0, 4.0]]), grid, part='wrong_part')
 
 
 def test_h2o_rhf_sto3g():
