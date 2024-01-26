@@ -394,11 +394,11 @@ def get_libxc_xc_density(molecule, grid, one_elec, libxc_label, libxc_c_label=No
         )
 
     # get Gaussian basis set
-    obasis = molecule.obasis
+    obasis = molecule._ao._basis
 
     # get molecular orbitals and density matrix
-    orb_alpha = molecule.orb_alpha
-    dm_alpha = orb_alpha.to_dm()
+    orb_alpha = molecule._mo._orb_alpha
+    dm_alpha = molecule._mo.compute_dm(spin='a')
 
     # check whether wave-function is restricted or not
     # Note: if called from iqa class only restricted wave-function
@@ -501,7 +501,7 @@ def get_horton_analytical_components(molecule, grid):
         )
 
     # get Gaussian basis set
-    obasis = molecule.obasis
+    obasis = molecule._ao._basis
 
     # compute Gaussian integrals
     olp = obasis.compute_overlap()

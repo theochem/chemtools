@@ -45,13 +45,14 @@ from chemtools.wrappers.part import DensPart
 class IQA(object):
     """Interacting Quantum Atoms (IQA) Class."""
 
-    def __init__(self, molecule, basis, dm, grid, part=None, molecule_chemtools=None):
+    # def __init__(self, molecule, basis, dm, grid, part=None, molecule_chemtools=None):
+    def __init__(self, molecule, basis, dm, grid, part=None):
         """Initialize class.
 
         Parameters
         ----------
         molecule : `Molecule`
-            Instance of `Molecular` class from IOData.
+            Instance of `Molecular` class from Chemtools.
         basis: tuple of gbasis.contraction.GeneralizedContractionShell
             Basis set object used within the `gbasis` module.
         `   GeneralizedContractionShell` corresponds to the `Shell` object within `iodata.basis`.
@@ -62,13 +63,10 @@ class IQA(object):
             Instance of `Grid` class from Chemtools.
         part : `DensePart`, optional
             Instance of `DensePart` class from Chemtools.
-        molecule_chemtools: `Molecule`, optional
-            Instance of `Molecular` class from Chemtools(Horton). This molecule class is needed
-            to perform IQA decomposition for DFT wavefunctions.
 
         """
         # check basis
-        if not basis[0][0].__class__.__name__ == "IODataShell":
+        if not basis[0].__class__.__name__ == "IODataShell":
             raise TypeError("basis should have been created with Gbasis")
 
         # check dm
@@ -92,25 +90,23 @@ class IQA(object):
             raise ValueError("Grid molecule different from molecule")
 
         self.molecule = molecule
-        if molecule_chemtools:
-            self.molecule_chemtools = molecule_chemtools
         self.basis = basis
         self.dm = dm
         self.grid = grid
         self.part = None
         if part is not None:
             self.part = part
+        dens = evaluate_density(dm, basis, grid.points)
+        self.dens = dens
 
     @classmethod
-    def from_molecule(cls, molecule_iodata, molecule_chemtools, grid, part=None, scheme=None):
+    def from_molecule(cls, molecule, grid, part=None, scheme=None):
         """Initialize Interacting Quantum Atoms (IQA) class from `Molecules` object.
 
         Parameters
         ----------
-        molecule_iodata : `Molecule`
-            Instance of `Molecular` class from IOData.
-        molecule_chemtools : `Molecule`
-             Instance of `Molecular` class from Chemtools(Horton).
+        molecule : `Molecule`
+             Instance of `Molecular` class from Chemtools.
         grid : `grid`
             Instance of `Grid` class from Chemtools.
         part : `DensePart`, optional
@@ -122,20 +118,13 @@ class IQA(object):
             DensPart class object must be passed.
 
         """
-        molecule_chemtools = check_arg_molecule(molecule_chemtools)
-        # Check molecule_iodata
-        if not (
-            molecule_iodata.__class__.__name__ == "IOData" and hasattr(molecule_iodata, "obasis")
-        ):
-            raise ValueError("`molecule_iodata` must be a `IOData` instance.")
-        if not (molecule_chemtools.numbers == molecule_iodata.atnums).all():
-            raise ValueError(
-                "molecule_chemtools and molecule_iodata do not correspond to the same calculation"
-            )
+        molecule = check_arg_molecule(molecule)
         # Check restricted closed shell single-determinant wave-function (molecule_iodata)
-        if molecule_iodata.mo.kind != "restricted":
+        if not isinstance(molecule, Molecule):
+            raise ValueError("`molecule` must be an instance of class `Molecule` in Chemtools.")
+        if molecule._iodata.mo.kind != "restricted":
             raise ValueError("Currently, only 'restricted' wave-functions are supported")
-        if int(np.sum(molecule_iodata.mo.occsa)) != int(np.sum(molecule_iodata.mo.occsb)):
+        if int(np.sum(molecule._mo._occs_a)) != int(np.sum(molecule._mo._occs_b)):
             raise ValueError("Code is not tested for open-shell wave-functions.")
 
         # Check Grid
@@ -143,7 +132,7 @@ class IQA(object):
             raise TypeError(
                 f"Argument grid should be an instance of MolecularGrid or UniformGrid class. Got {grid.__class__.__name__}"
             )
-        if not (molecule_iodata.atcoords == grid.centers).all():
+        if not (molecule.coordinates == grid.centers).all():
             raise ValueError("Molecule and Grid initialized from different molecules")
 
         # Check/Initialize DensPart object
@@ -153,32 +142,27 @@ class IQA(object):
             if not isinstance(part, DensPart):
                 raise TypeError("Argument part should be an instance of DensPart class.")
         elif scheme == 'H':
-            part = DensPart.from_molecule(molecule_chemtools, grid=grid, scheme="h",
+            part = DensPart.from_molecule(molecule, grid=grid, scheme="h",
                                               local=False)
         elif scheme == 'HI':
-            part = DensPart.from_molecule(molecule_chemtools, grid=grid, scheme="hi",
+            part = DensPart.from_molecule(molecule, grid=grid, scheme="hi",
                                               local=False)
         elif scheme is not None and scheme not in ['H', 'HI']:
             raise NotImplementedError(f"Atomic partition {scheme} not yet available")
 
         # Initialize gbasis
-        basis = from_iodata(molecule_iodata)
-        one_rdm = molecule_iodata.one_rdms.get("post_scf", molecule_iodata.one_rdms.get("scf"))
+        basis = from_iodata(molecule._iodata)
+        one_rdm = molecule._iodata.one_rdms.get("post_scf", molecule._iodata.one_rdms.get("scf"))
         # Check if dm present
         if one_rdm is None:
             # Check if mo present to construct dm
-            if molecule_iodata.mo is None:
+            if molecule.mo is None:
                 raise NotImplementedError("Missing molecule.mo object.Density matrix...")
             else:
                 print("Couldn't read Density matrix. Calculating from its components.")
-                coeffs, occs = molecule_iodata.mo.coeffs, molecule_iodata.mo.occs
-                one_rdm = np.dot(coeffs * occs, coeffs.T)
-        # check scf one_rdm is the same for molecule_chemtools and molecule_iodata
-        assert_almost_equal(one_rdm, molecule_chemtools.mo.compute_dm(), decimal=1)
+                one_rdm = molecule._mo.compute_dm()
 
-        return cls(
-            molecule_iodata, basis, one_rdm, grid, part, molecule_chemtools=molecule_chemtools
-        )
+        return cls(molecule, basis, one_rdm, grid, part)
 
     @classmethod
     def from_file(cls, fname, grid_type=None, scheme=None):
@@ -195,14 +179,13 @@ class IQA(object):
             of the IQA components is performed.
         """
 
-        molecule_iodata = load_one(fname)
-        molecule_chemtools = Molecule.from_file(fname)
+        molecule = Molecule.from_file(fname)
 
         # Initialize grid
         # TODO: Add grid type argument to get_molecular_grid
-        grid = get_molecular_grid(molecule_chemtools)
+        grid = get_molecular_grid(molecule)
 
-        return cls.from_molecule(molecule_iodata, molecule_chemtools, grid, scheme=scheme)
+        return cls.from_molecule(molecule, grid, scheme=scheme)
 
     def iqa(self, dft_exch=None, dft_corr=None):
         """Return the Interacting Quantum Atoms (IQA) components integrated at the evaluated given points
@@ -221,23 +204,20 @@ class IQA(object):
 
         """
         molecule = self.molecule
-        molecule_chemtools = self.molecule_chemtools
         basis = self.basis
         dm = self.dm
         grid = self.grid
         part = self.part
-
-        # Computing electron density
-        rho = evaluate_density(dm, basis[0], grid.points, coord_type=basis[1])
+        rho = self.dens
 
         # Initialize results dict
         iqa_results = {}
 
         logging.info('INITIALIZING INTERACTING QUANTUM ATOMS(IQA) CALCULATION')
         iqa_results['nn_total'] = self.nn_iqa()
-        iqa_results['en_total'], iqa_results['en_atomic'] = self.en_iqa(dens=rho)
+        iqa_results['en_total'], iqa_results['en_atomic'] = self.en_iqa()
         iqa_results['kin_total'], iqa_results['kin_atomic'] = self.kin_iqa()
-        analytical_comp = get_horton_analytical_components(molecule_chemtools, grid)
+        analytical_comp = get_horton_analytical_components(molecule, grid)
         nn_horton = analytical_comp['nn']
         ne_horton = np.trace(dm.dot(analytical_comp['na']))
         kinetic_horton = np.trace(dm.dot(analytical_comp['kin']))
@@ -246,9 +226,9 @@ class IQA(object):
         dft_xc_edens = {}
         # assuming dft_corr and dft_exch specified together
         if dft_corr and dft_exch:
-            dft_xc_edens.update(get_libxc_xc_density(molecule_chemtools, grid, analytical_comp, dft_exch, dft_corr))
+            dft_xc_edens.update(get_libxc_xc_density(molecule, grid, analytical_comp, dft_exch, dft_corr))
             iqa_results['x_hf_total'], iqa_results['coul_total'], iqa_results['x_hf_atomic'], \
-            iqa_results['coul_atomic'] = self.ee_iqa_hf(dens=rho)
+            iqa_results['coul_atomic'] = self.ee_iqa_hf()
             iqa_results['c_total'], iqa_results['c_atomic'] = self.ee_iqa_dft(rho, dft_xc_edens["edens_c"])
             iqa_results['x_total'], iqa_results['x_atomic'] = self.ee_iqa_dft(rho, dft_xc_edens["edens_x"])
             if 'coeff_mix' in dft_xc_edens.keys() and dft_xc_edens['coeff_mix']:
@@ -262,7 +242,7 @@ class IQA(object):
 
         elif dft_exch:
             dft_xc_edens.update(
-                get_libxc_xc_density(molecule_chemtools, grid, analytical_comp, dft_exch))
+                get_libxc_xc_density(molecule, grid, analytical_comp, dft_exch))
             iqa_results['x_hf_total'], iqa_results['coul_total'], \
                 iqa_results['x_hf_atomic'], iqa_results['coul_atomic'] = self.ee_iqa_hf(dens=rho)
             iqa_results['xc_total'], iqa_results['xc_atomic'] = self.ee_iqa_dft(rho, dft_xc_edens["edens_xc"])
@@ -278,7 +258,7 @@ class IQA(object):
                 iqa_results.pop('x_hf_atomic')
         elif molecule.lot == 'rhf':
             iqa_results['x_total'], iqa_results['coul_total'], iqa_results['x_atomic'], iqa_results[
-                'coul_atomic'] = self.ee_iqa_hf(dens=rho)
+                'coul_atomic'] = self.ee_iqa_hf()
         else:
             raise ValueError(f'Need to specify an exchange functional too. Got {dft_exch}')
         logging.info('Summary IQA')
@@ -385,7 +365,7 @@ class IQA(object):
 
         return total_nn
 
-    def en_iqa(self, dens=None, share_factor=0.5):
+    def en_iqa(self, share_factor=0.5):
         r"""Compute IQA's electron-nuclear attraction energy.
 
          math::
@@ -395,8 +375,6 @@ class IQA(object):
 
         Parameters
         ----------
-        dens: np.array(npoints)
-            Electron density evaluated at the grid points.
         share_factor: float
             How much of the energy is given to atom i when its density interacts with other nuclei j(x)
             and how much energy is given to atom i when its nucleus interacts with other atomic densities j(1-x)
@@ -414,13 +392,14 @@ class IQA(object):
         grid = self.grid
         part = self.part
         basis = self.basis
+        dens = self.dens
 
         # Compute Electron-Nucleus attraction
         logging.info("CALCULATING ELECTRON-NUCLEI ATTRACTION ENERGY")
         natoms = molecule.atnums.shape[0]
         if dens is None:
             dm = molecule.one_rdms.get("post_scf", molecule.one_rdms.get("scf"))
-            dens = evaluate_density(dm, basis[0], grid.points, coord_type=basis[1])
+            dens = evaluate_density(dm, basis, grid.points)
 
         rij = np.linalg.norm(molecule.atcoords[:, None, :] - grid.points, axis=-1)
         total_en = grid.integrate(np.sum((-molecule.atnums[:, None] * (dens / rij)), axis=0))
@@ -493,10 +472,8 @@ class IQA(object):
         logging.info("CALCULATING KINETIC ENERGY")
         dm = molecule.one_rdms.get("post_scf", molecule.one_rdms.get("scf"))
 
-        natoms = molecule.atnums.shape[0]
-        output = evaluate_general_kinetic_energy_density(
-            dm, basis[0], grid.points, -0.25, coord_type=basis[1]
-        )
+        # natoms = molecule.atnums.shape[0]
+        output = evaluate_general_kinetic_energy_density(dm, basis, grid.points, -0.25)
         total_kin = grid.integrate(output)
         print("TOTAL KINETIC ENERGY: ", total_kin)
 
@@ -552,20 +529,19 @@ class IQA(object):
         grid = self.grid
         part = self.part
         basis = self.basis
+        dm = self.dm
+        dens = self.dens
 
         logging.info("CALCULATING COULOMB AND HF EXCHANGE ENERGY")
-        dm = molecule.one_rdms.get("post_scf", molecule.one_rdms.get("scf"))
-        if dens is None:
-            dens = evaluate_density(dm, basis[0], grid.points, coord_type=basis[1])
 
-        natoms = molecule.atnums.shape[0]
+        # natoms = molecule.atnums.shape[0]
         nao = dm.shape[0]
-        eval_ao = evaluate_basis(basis[0], grid.points, coord_type=basis[1])
-        eval_mo = np.sum((molecule.mo.coeffs.T[:, :, None] * eval_ao), axis=1)
+        eval_ao = evaluate_basis(basis, grid.points)
+        eval_mo = np.sum((molecule._mo._coeffs_a.T[:, :, None] * eval_ao), axis=1)
         logging.warning("Calculating Coulomb and Exchange: expect long integrals")
         # Eval falta math
-        total_coul_raw = np.zeros((grid.npoints))
-        total_exch_raw = np.zeros((grid.npoints))
+        total_coul_raw = np.zeros(grid.npoints)
+        total_exch_raw = np.zeros(grid.npoints)
         istart = 0
         chunk_size = 250000000 // (nao**2)
         while istart < grid.npoints:
@@ -578,17 +554,16 @@ class IQA(object):
             )
             chunk_grid = grid.points[istart:iend, :]
             chunk_dens = dens[istart:iend]
-            vab = point_charge_integral(
-                basis[0], chunk_grid, np.ones(chunk_dens.shape[0]), coord_type=basis[1]
-            )
+            vab = point_charge_integral(basis, chunk_grid, np.ones(chunk_dens.shape[0]))
             # Coulomb
             vab_rho = np.trace(np.tensordot(dm, (vab * chunk_dens), axes=(1, 0)))
             total_coul_chunk = -0.5 * vab_rho
             # Exchange
-            occupied_mo = np.zeros(molecule.mo.occs.shape[0])
-            occupied_mo[molecule.mo.occs > 0] = 1
-            t1 = np.einsum("abn,ai->ibn", vab, molecule.mo.coeffs)
-            t2 = np.einsum("ibn,bj->ijn", t1, molecule.mo.coeffs)
+            # Because only restricted _occs_a.shape[0] == _occs_b.shape[0]
+            occupied_mo = np.zeros(molecule._mo._occs_a.shape[0])
+            occupied_mo[molecule._mo._occs_a> 0] = 1
+            t1 = np.einsum("abn,ai->ibn", vab, molecule._mo._coeffs_a)
+            t2 = np.einsum("ibn,bj->ijn", t1, molecule._mo._coeffs_a)
             total_exch_chunk = np.einsum(
                 "ijn,in,jn->n",
                 (t2 * occupied_mo[:, None, None]),
@@ -622,11 +597,10 @@ class IQA(object):
 
     def ee_iqa_dft(self, dft_dens, dft_xc_dens):
 
-        molecule = self.molecule
         grid = self.grid
         part = self.part
 
-        natoms = molecule.atnums.shape[0]
+        # natoms = molecule.atnums.shape[0]
 
         dft_xc_total = grid.integrate(dft_xc_dens, dft_dens)
 
