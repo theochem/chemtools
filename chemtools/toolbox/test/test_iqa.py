@@ -76,31 +76,33 @@ def test_iqa_raises():
 
 def test_h2o_rhf_sto3g():
     # check total values of decomposition against in h2o_rhf_sto3g.log
-    mol_iqa = IQA.from_file('h2o_rhf_sto3g.fchk', grid_type='becke', scheme='H')
-    results_iqa = mol_iqa.iqa()
-    assert_allclose(results_iqa['nn_total'],  9.1559536481, rtol=1.e-4, atol=0.)
-    assert_allclose(results_iqa['en_total'],  -1.968747462907e+02, rtol=1.e-4, atol=0.)
-    assert_allclose(results_iqa['kin_total'],  7.457892107183e+01, rtol=1.e-4, atol=0.)
-    assert_allclose(results_iqa['coul_total'],  47.276218, rtol=1.e-4, atol=0.)
-    assert_allclose(results_iqa['x_total'],  -9.100148, rtol=1.e-4, atol=0.)
-    # Check sum of atomic components equals total values
-    assert_allclose(np.sum(results_iqa['en_atomic']), -1.968747462907e+02, rtol=1.e-4, atol=0.)
-    assert_allclose(np.sum(results_iqa['kin_atomic']), 7.457892107183e+01, rtol=1.e-4, atol=0.)
-    assert_allclose(np.sum(results_iqa['coul_atomic']), 47.276218, rtol=1.e-4, atol=0.)
-    assert_allclose(np.sum(results_iqa['x_total']), -9.100148, rtol=1.e-4, atol=0.)
+    with path('chemtools.data', 'h2o_rhf_sto3g.fchk') as fname:
+        mol_iqa = IQA.from_file(fname, grid_type='becke', scheme='H')
+        results_iqa = mol_iqa.iqa()
+        assert_allclose(results_iqa['nn_total'],  9.1559536481, rtol=1.e-4, atol=0.)
+        assert_allclose(results_iqa['en_total'],  -1.968747462907e+02, rtol=1.e-4, atol=0.)
+        assert_allclose(results_iqa['kin_total'],  7.457892107183e+01, rtol=1.e-4, atol=0.)
+        assert_allclose(results_iqa['coul_total'],  47.276218, rtol=1.e-4, atol=0.)
+        assert_allclose(results_iqa['x_total'],  -9.100148, rtol=1.e-4, atol=0.)
+        # Check sum of atomic components equals total values
+        assert_allclose(np.sum(results_iqa['en_atomic']), -1.968747462907e+02, rtol=1.e-4, atol=0.)
+        assert_allclose(np.sum(results_iqa['kin_atomic']), 7.457892107183e+01, rtol=1.e-4, atol=0.)
+        assert_allclose(np.sum(results_iqa['coul_atomic']), 47.276218, rtol=1.e-4, atol=0.)
+        assert_allclose(np.sum(results_iqa['x_total']), -9.100148, rtol=1.e-4, atol=0.)
 
 
 def test_h2o_rpbepbe_ccpvtz():
     # check total values of decomposition against in h2o_rpbepbe_sto3g.log
-    mol_iqa = IQA.from_file('h2o_rpbepbe_sto3g.fchk', grid_type='becke', scheme='H')
-    results_iqa = mol_iqa.iqa(dft_exch="gga_x_pbe", dft_corr="gga_c_pbe")
-    assert_allclose(results_iqa['nn_total'], 9.1559536481, rtol=1.e-4, atol=0.)
-    assert_allclose(results_iqa['en_total'], -1.968736981462e+02    , rtol=1.e-4, atol=0.)
-    assert_allclose(results_iqa['kin_total'], 7.459229919735e+01, rtol=1.e-4, atol=0.)
-    assert_allclose(results_iqa['c_total'], -0.343334, rtol=1.e-4, atol=0.)
-    assert_allclose(results_iqa['x_total'], -9.018861, rtol=1.e-4, atol=0.)
-    # Check sum of atomic components equals total values
-    assert_allclose(np.sum(results_iqa['en_atomic']), -1.968736981462e+02, rtol=1.e-4, atol=0.)
-    assert_allclose(np.sum(results_iqa['kin_atomic']), 7.459229919735e+01, rtol=1.e-4, atol=0.)
-    assert_allclose(np.sum(results_iqa['c_atomic']), -0.343334, rtol=1.e-4, atol=0.)
-    assert_allclose(np.sum(results_iqa['x_total']), -9.018861, rtol=1.e-4, atol=0.)
+    with path('chemtools.data', 'h2o_rpbepbe_sto3g.fchk') as fname:
+        mol_iqa = IQA.from_file(fname, grid_type='becke', scheme='H')
+        results_iqa = mol_iqa.iqa(dft_exch="gga_x_pbe", dft_corr="gga_c_pbe")
+        assert_allclose(results_iqa['nn_total'], 9.1559536481, rtol=1.e-4, atol=0.)
+        assert_allclose(results_iqa['en_total'], -1.968736981462e+02    , rtol=1.e-4, atol=0.)
+        assert_allclose(results_iqa['kin_total'], 7.459229919735e+01, rtol=1.e-4, atol=0.)
+        assert_allclose(results_iqa['c_total'], -0.343334, rtol=1.e-4, atol=0.)
+        assert_allclose(results_iqa['x_total'], -9.018861, rtol=1.e-4, atol=0.)
+        # Check sum of atomic components equals total values
+        assert_allclose(np.sum(results_iqa['en_atomic']), -1.968736981462e+02, rtol=1.e-4, atol=0.)
+        assert_allclose(np.sum(results_iqa['kin_atomic']), 7.459229919735e+01, rtol=1.e-4, atol=0.)
+        assert_allclose(np.sum(results_iqa['c_atomic']), -0.343334, rtol=1.e-4, atol=0.)
+        assert_allclose(np.sum(results_iqa['x_total']), -9.018861, rtol=1.e-4, atol=0.)
