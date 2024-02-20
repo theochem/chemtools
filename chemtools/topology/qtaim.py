@@ -109,38 +109,38 @@ def _classify_rays_as_ias_or_oas(
     ias_basins_3 = [OrderedDict() for _ in range(numb_maximas)]               # Keys are Points index
     np.set_printoptions(threshold=np.inf)
     for i_do, i_maxima in enumerate(maximas_to_do):
-        # print("ATom i ", i_maxima)
-        # print("Starting and Final index", index_to_atom[i_maxima], index_to_atom[i_maxima + 1])
+        #print("ATom i ", i_maxima)
+        #print("Starting and Final index", index_to_atom[i_maxima], index_to_atom[i_maxima + 1])
         basins_a = all_basins[index_to_atom[i_do]:index_to_atom[i_do + 1]]  # Basin of atom
         points_a = all_points[index_to_atom[i_do]:index_to_atom[i_do + 1]]  # Points of atom
         numb_rad_pts = numb_rad_to_radial_shell[i_do]
 
-        # print("Basins of atom ", basins_a)
-        # print(index_to_atom[i_maxima], numb_rad_pts)
-        # print("Number of angular points in this atom", numb_rays_to_atom[i_maxima])
+        #print("Basins of ith atom ", basins_a)
+        #print(f"Number of radial points (Size M) {numb_rad_pts},  numb_rad_pts.shape {len(numb_rad_pts)}   Sum of num_rad_pts {np.sum(numb_rad_pts)}")
+        #print("Number of angular points in this atom", numb_rays_to_atom[i_maxima])
         i_ray = 0
         for i_ang in range(numb_rays_to_atom[i_do]):
-            # print("Angular pt j", i_ang)
-            # print("Number of radial points in this angular pt ", numb_rad_pts[i_ang])
+            #print("Angular pt j", i_ang)
+            #print("Number of radial points in this angular pt ", numb_rad_pts[i_ang])
 
             # Get the basin of the ray
             basins_ray = basins_a[i_ray:i_ray + numb_rad_pts[i_ang]]
-            # print("Basin of the ray ", basins_ray)
+            #print("Basin of the ray ", basins_ray)
 
             # Classify basins as either OAS and IAS, if IAS, then count the number of
             #     intersections of the IAS. In addition, get the l_bnd, u_bnd of each intersection.
             # Groups basins i.e. [1, 1, 1, 0, 0, 0, 1, 1, 2, 2] -> [1, 0, 1, 2]
+            # group_by = {(0, [0, 0, 0, 0, etc], (1, [1, 1, 1, etc)]}
             group_by = [(k, list(g)) for k, g in itertools.groupby(basins_ray)]
             unique_basins = np.array([x[0] for x in group_by])
-            # print(basins_ray == i_maxima)
-            # print(group_by)
+            #print(basins_ray == i_maxima)
+            #print(group_by)
 
             # All pts in the ray got assigned to the same basin of the maxima
             #     or if the numb_rad_pts is zero, then this means that the ray has density value less than
             #     the isosurface value (starting from the beta-sphere determination), thus it is an oas point.
             if (len(unique_basins) == 1 and unique_basins[0] == i_maxima) or numb_rad_pts[i_ang] == 0:
                 # This implies it is an OAS point, else then it is an IAS with a bad ray.
-                # print("OAS Point")
                 oas[i_maxima].append(i_ang)
             else:
                 # The point is an IAS, determine the number of intersections.
@@ -152,7 +152,6 @@ def _classify_rays_as_ias_or_oas(
                     # Whose ray at the boundary is assigned to different basins depending on the accuracy of ODE solver.
                     # This is IAS with a bad ray, would have to re-determine the l_bnd
                     l_bnd_pad = 0.1
-
                 if 0 <= numb_intersections:
                     # print("IAS With one Intersection.")
                     # Determine lower and upper-bound Point on ray.
@@ -162,11 +161,11 @@ def _classify_rays_as_ias_or_oas(
                         index_u_bnd = len(group_by[0][1])
                         index_l_bnd = index_u_bnd - 1
                     else:
-                        # Here the ray is a bad ray in the sense that the start of the ray should have converged to
-                        #  i_maxima but it dind't, and so take the u_bnd to be when it or sure converges to the
-                        #  different maxima from i_maxima.
-                        index_u_bnd = min(2, len(group_by[0][1]))
-                        index_l_bnd = 0
+                        # Here the ray is a bad ray (numb_intersections == 0) in the sense that the start of the ray
+                        #  should have converged to i_maxima but it dind't, and so take the u_bnd to be when it or sure 
+                        #  converges to to different maxima from i_maxima. 
+                        index_u_bnd = min(2, len(group_by[0][1]) - 1)  # Subtract one so that i_ray + index_u_bnd <= length of ray
+                        index_l_bnd = 0  # Take it to be zero since l_bnd_pad in this case is set to 0..
                         if index_u_bnd == index_l_bnd:
                             raise RuntimeError(f"Algorithm Error .")
                     # Determine radius from the upper and lower bound.
