@@ -231,7 +231,7 @@ def find_optimize_centers(centers, grad_func):
     maximas = np.array(
         [gradient_path(x, grad_func, t_span=(0, 10), method="BDF",
                        first_step=1e-9, max_step=1e-1) for x in centers],
-        dtype=np.float64
+        dtype=float
     )
     print("New maximas: \n ", maximas)
     # Check for duplicates
@@ -274,7 +274,7 @@ def construct_radial_grids(pts1, maximas, min_pts=0.2, pad=5.0, ss0=0.23):
     #  Added an extra padding in the case of carbon in CH4
     #  TODO: the upper-bound should depend on distance to isosurface value and distance
     #         between atoms
-    if isinstance(min_pts, (float, np.float)):
+    if isinstance(min_pts, (float, float)):
         # If it is a float, convert it to a list.
         min_pts = [min_pts] * len(maximas)
     dist_maxs = cdist(pts1, maximas)
@@ -322,7 +322,7 @@ def determine_beta_spheres_and_nna(
                             pts, dens_func, grad_func, beta_spheres, maximas, ss_0=0.2, max_ss=0.2, tol=1e-9,
                             hess_func=hess_func, check_for_nna=True
                         )
-                    basins = np.array(basins, dtype=np.int)
+                    basins = np.array(basins, dtype=int)
 
                     which_nna = np.where(basins >= numb_maximas)[0]
                     if len(which_nna) != 0:
@@ -398,7 +398,7 @@ def find_non_nuclear_attractors(maximas, dens_func, grad_func, hess_func):
             nna_attractors = np.array(
                 [gradient_path(x, grad_func, t_span=(0, 30), method="BDF",
                                first_step=1e-9, max_step=1e-1) for x in pts],
-                dtype=np.float64
+                dtype=float
             )
             # Round to two decimal places mostly due to empirical evidence of convergence of these ODE.
             nna_attractors = np.unique(np.round(nna_attractors, 2), axis=0)
@@ -467,7 +467,7 @@ def solve_intersection_of_ias_point(
     """
     if not isinstance(ias_indices, np.ndarray):
         raise TypeError(f"The parameters to solve indices should be numpy array instead of {type(ias_indices)}.")
-    r_func = [np.zeros((len(angular_pts[i]),), dtype=np.float64) for i in range(len(maximas))]
+    r_func = [np.zeros((len(angular_pts[i]),), dtype=float) for i in range(len(maximas))]
     basin_ias = [[-1] * ias_lengths[i] for i in range(len(maximas))]
 
     while len(ias_indices) != 0:

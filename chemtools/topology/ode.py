@@ -210,7 +210,7 @@ def find_basins_steepest_ascent_rk45(
     dens_vals0 = dens_func(initial_pts)
     # print("Intial density values ", dens_vals0)
 
-    assigned_basins = (-1) * np.ones((numb_pts,), dtype=np.int)
+    assigned_basins = (-1) * np.ones((numb_pts,), dtype=int)
     not_found_indices = np.arange(numb_pts)
     first_basin = None  # First basin value that was found
     niter = 0  # Number of iterations
