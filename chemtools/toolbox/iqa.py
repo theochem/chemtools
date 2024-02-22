@@ -30,7 +30,6 @@ from numpy.testing import assert_almost_equal
 from chemtools.toolbox.utils import check_arg_molecule, \
                                     get_horton_analytical_components, \
                                     get_molecular_grid, get_libxc_xc_density
-from iodata import load_one
 from gbasis.wrappers import from_iodata
 from gbasis.evals.density import evaluate_density
 from gbasis.evals.density import evaluate_general_kinetic_energy_density
@@ -217,7 +216,7 @@ class IQA(object):
         iqa_results['nn_total'] = self.nn_iqa()
         iqa_results['en_total'], iqa_results['en_atomic'] = self.en_iqa()
         iqa_results['kin_total'], iqa_results['kin_atomic'] = self.kin_iqa()
-        analytical_comp = get_horton_analytical_components(molecule, grid)
+        analytical_comp = get_horton_analytical_components(molecule)
         nn_horton = analytical_comp['nn']
         ne_horton = np.trace(dm.dot(analytical_comp['na']))
         kinetic_horton = np.trace(dm.dot(analytical_comp['kin']))
@@ -244,7 +243,7 @@ class IQA(object):
             dft_xc_edens.update(
                 get_libxc_xc_density(molecule, grid, analytical_comp, dft_exch))
             iqa_results['x_hf_total'], iqa_results['coul_total'], \
-                iqa_results['x_hf_atomic'], iqa_results['coul_atomic'] = self.ee_iqa_hf(dens=rho)
+                iqa_results['x_hf_atomic'], iqa_results['coul_atomic'] = self.ee_iqa_hf()
             iqa_results['xc_total'], iqa_results['xc_atomic'] = self.ee_iqa_dft(rho, dft_xc_edens["edens_xc"])
             if 'coeff_mix' in dft_xc_edens.keys():
                 if dft_xc_edens['coeff_mix']:
@@ -291,6 +290,8 @@ class IQA(object):
         print('Electron-Electron interaction energy')
         print()
         print('Coulomb energy: ', iqa_results['coul_total'])
+        print()
+        print('Exchange energy: ', iqa_results['x_total'])
         print()
         if part:
             print('Atomic Coulomb energy:')
@@ -391,15 +392,11 @@ class IQA(object):
         molecule = self.molecule
         grid = self.grid
         part = self.part
-        basis = self.basis
         dens = self.dens
 
         # Compute Electron-Nucleus attraction
         logging.info("CALCULATING ELECTRON-NUCLEI ATTRACTION ENERGY")
         natoms = molecule.atnums.shape[0]
-        if dens is None:
-            dm = molecule.one_rdms.get("post_scf", molecule.one_rdms.get("scf"))
-            dens = evaluate_density(dm, basis, grid.points)
 
         rij = np.linalg.norm(molecule.atcoords[:, None, :] - grid.points, axis=-1)
         total_en = grid.integrate(np.sum((-molecule.atnums[:, None] * (dens / rij)), axis=0))
@@ -468,9 +465,9 @@ class IQA(object):
         grid = self.grid
         part = self.part
         basis = self.basis
+        dm = self.dm
 
         logging.info("CALCULATING KINETIC ENERGY")
-        dm = molecule.one_rdms.get("post_scf", molecule.one_rdms.get("scf"))
 
         # natoms = molecule.atnums.shape[0]
         output = evaluate_general_kinetic_energy_density(dm, basis, grid.points, -0.25)
@@ -488,7 +485,7 @@ class IQA(object):
         print()
         return total_kin, at_kin
 
-    def ee_iqa_hf(self, dens=None):
+    def ee_iqa_hf(self):
         r"""Compute Hartree Fock electron-electron interaction energy.
 
         .. math::

@@ -487,18 +487,8 @@ def get_libxc_xc_density(molecule, grid, one_elec, libxc_label, libxc_c_label=No
 
 
 
-def get_horton_analytical_components(molecule, grid):
+def get_horton_analytical_components(molecule):
     from horton import compute_nucnuc
-
-    # check atomic coordinates & numbers of grid object against loaded wave-function
-    if np.max(abs(molecule.coordinates - grid.centers)):
-        raise ValueError(
-            f"Coordinates from molecule and grid arguments does not match"
-        )
-    if np.max(abs(molecule.numbers - grid.numbers)):
-        raise ValueError(
-            f"Coordinates from molecule and grid arguments does not match"
-        )
 
     # get Gaussian basis set
     obasis = molecule._ao._basis
