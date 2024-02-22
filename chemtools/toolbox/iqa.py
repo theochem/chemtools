@@ -539,11 +539,11 @@ class IQA(object):
         eval_ao = evaluate_basis(basis, grid.points)
         # The broadcast operation is the same as the for loop. Summing over mu because broadcasting
         # allocates too much memory
-        eval_mo = np.zeros((molecule._mo._coeffs_a.T.shape[0], eval_ao.shape[1]))
-        for i in range(molecule._mo._coeffs_a.T.shape[0]):
+        eval_mo = np.zeros((molecule._iodata.mo.coeffs.T.shape[0], eval_ao.shape[1]))
+        for i in range(molecule._iodata.mo.coeffs.T.shape[0]):
             mo = np.zeros((eval_ao.shape[1]))
-            for mu in range(nao):
-                mo += molecule._mo._coeffs_a.T[i, mu] * eval_ao[mu, :]
+            for mu in range(eval_ao.shape[0]):
+                mo += molecule._iodata.mo.coeffs.T[i, mu] * eval_ao[mu, :]
             eval_mo[i] = mo
         logging.warning("Calculating Coulomb and Exchange: expect long integrals")
         # math
@@ -569,8 +569,8 @@ class IQA(object):
             # Because only restricted _occs_a.shape[0] == _occs_b.shape[0]
             occupied_mo = np.zeros(molecule._mo._occs_a.shape[0])
             occupied_mo[molecule._mo._occs_a> 0] = 1
-            t1 = np.einsum("abn,ai->ibn", vab, molecule._mo._coeffs_a)
-            t1 = np.einsum("ibn,bj->ijn", t1, molecule._mo._coeffs_a)
+            t1 = np.einsum("abn,ai->ibn", vab, molecule._iodata.mo.coeffs)
+            t1 = np.einsum("ibn,bj->ijn", t1, molecule._iodata.mo.coeffs)
             t1 = t1 * occupied_mo[:, None, None]
             total_exch_chunk = np.einsum(
                 "ijn,in,jn->n",
