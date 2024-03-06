@@ -30,6 +30,7 @@ from chemtools.conceptual import *
 from chemtools.denstools import *
 from chemtools.utils import *
 from chemtools.outputs import *
+from chemtools.topology import *
 import horton
 
 
