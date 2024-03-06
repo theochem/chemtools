@@ -287,12 +287,11 @@ class Topology(object):
         - Newton-Ralphson equation is used to find the roots of the gradient.
 
         - The algorithm is as follows:
-            1. Constructs an atomic grid over each atomic center.
-            2. Points that are close to center and that have small gradients are
+            1. Points that are close to center and that have small gradients are
                 included to be initial guesses. Points whose density values is small are not.
-            3. While-loop is done until each point from the initial guess converged.
-            4. Points whose density values are too small are removed from the iteration process.
-            5. Points that are identical are merged together by first rounding to some decimal
+            2. While-loop is done until each point from the initial guess converged.
+            3. Points whose density values are too small are removed from the iteration process.
+            4. Points that are identical are merged together by first rounding to some decimal
                places and then a KDTree is used to group the points into small balls and the
                points with the smallest gradient are picked out of each ball.
 
@@ -371,7 +370,6 @@ class Topology(object):
             return_index=True
         )
         converged_pts = test[np.argsort(indices)]
-        print(converged_pts)
 
         # Get final gradients
         final_gradients = np.linalg.norm(self.grad(converged_pts), axis=1)
@@ -397,7 +395,7 @@ class Topology(object):
 
         if verbose:
             print(f"Final number of points found {len(converged_pts)}")
-        print(final_gradients)
+
         # Check the gradient are all small
         if np.any(final_gradients > 1e-5):
             warnings.warn("Gradient of the final critical points are not all smaller than 1e-5.",
