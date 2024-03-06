@@ -1,4 +1,90 @@
+# -*- coding: utf-8 -*-
+# ChemTools is a collection of interpretive chemical tools for
+# analyzing outputs of the quantum chemistry calculations.
+#
+# Copyright (C) 2016-2019 The ChemTools Development Team
+#
+# This file is part of ChemTools.
+#
+# ChemTools is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 3
+# of the License, or (at your option) any later version.
+#
+# ChemTools is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>
+#
+# --
 """Test critical point finder."""
+
+
+import numpy as np
+import pathlib
+import pytest
+from scipy.spatial.distance import cdist
+
+from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers.grid import MolecularGrid
+from chemtools.topology.critical import Topology
+
+
+def _run_critical_point_algorithm(fchk):
+    file_path = pathlib.Path(__file__).parent.resolve().__str__()[:-13]
+    file_path += "data/examples/" + fchk
+
+    mol = Molecule.from_file(file_path)
+    centers = mol.coordinates
+
+    # Generate points
+    pts = MolecularGrid.from_molecule(mol).points
+
+    result = Topology(
+        mol.compute_density,
+        mol.compute_gradient,
+        mol.compute_hessian,
+        pts
+    )
+    result.find_critical_points_vectorized(centers, verbose=False)
+    return mol, result
+
+@pytest.mark.parametrize(
+    "fchk, numb_bcp", [("h2o.fchk", 2), ("nh3.fchk", 3), ("ch4.fchk", 4)]
+)
+def test_critical_points_has_correct_number(fchk, numb_bcp):
+    mol, result = _run_critical_point_algorithm(fchk)
+
+    assert len(result.bcp) == numb_bcp
+    assert len(result.nna) == len(mol.coordinates)
+    assert len(result.rcp) == 0
+    assert len(result.ccp) == 0
+    assert len(result.cps) == (len(result.nna) + len(result.bcp))
+    assert result.poincare_hopf_equation == 1
+
+
+@pytest.mark.parametrize(
+    "fchk, numb_bcp", [("h2o.fchk", 2), ("nh3.fchk", 3), ("ch4.fchk", 4)]
+)
+def test_bond_paths_terminate_at_maxima(fchk, numb_bcp):
+    r"""Test that the bond paths terminate at a maxima"""
+    mol, result = _run_critical_point_algorithm(fchk)
+    result.find_bond_paths(max_ss=1e-3)
+
+    # Test there is only two directions for each bcp
+    for i in range(0, numb_bcp):
+        assert len(result.bp[i]) == 2
+
+    # Test the termination point is an atomic coordinate
+    for i in range(0, numb_bcp):
+        for j in range(0, 2):
+            bond_path1 = result.bp[j][0][-1, :]
+            dist = np.linalg.norm(bond_path1 - mol.coordinates, axis=1)
+            assert np.any(dist < 0.1)
+
 
 """
 from unittest import TestCase
@@ -6,6 +92,7 @@ from unittest import TestCase
 from chemtools.topology.critical import Topology, CriticalPoint
 
 import numpy as np
+     
 from numpy.testing import assert_allclose
 
 
