@@ -412,7 +412,7 @@ class Topology(object):
         if not self.poincare_hopf_equation:
             warnings.warn("Poincare–Hopf equation is not satisfied.", RuntimeWarning)
 
-    def find_bond_paths(self, eps_dir=1e-4, tol=1e-14, ss_0=1e-8, max_ss=0.01, maxiter=2000):
+    def find_bond_paths(self, eps_dir=1e-4, tol=1e-8, ss_0=1e-8, max_ss=0.25, maxiter=2000):
         r"""
         Find bond paths of each bond critical point.
 

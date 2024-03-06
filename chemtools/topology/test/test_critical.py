@@ -81,7 +81,7 @@ def test_bond_paths_terminate_at_maxima(fchk, numb_bcp):
     # Test the termination point is an atomic coordinate
     for i in range(0, numb_bcp):
         for j in range(0, 2):
-            bond_path1 = result.bp[j][0][-1, :]
+            bond_path1 = result.bp[i][j][-1, :]
             dist = np.linalg.norm(bond_path1 - mol.coordinates, axis=1)
             assert np.any(dist < 0.1)
 
