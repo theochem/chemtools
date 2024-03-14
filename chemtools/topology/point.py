@@ -170,3 +170,8 @@ class CriticalPoint(EigenValueTool):
     def coordinate(self):
         """Cartesian coordinate of critical point."""
         return self._coord
+
+    @property
+    def eigenvectors(self):
+        """Eigenvectors of the critical point."""
+        return self._eigenvectors
