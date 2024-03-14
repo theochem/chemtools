@@ -26,6 +26,7 @@ r"""Functionality for finding critical points of any scalar function."""
 import warnings
 import numpy as np
 
+from scipy.optimize import root
 from scipy.spatial import cKDTree, KDTree
 from scipy.spatial.distance import cdist
 
@@ -226,6 +227,50 @@ class Topology(object):
 
         return pts - alpha[:, None] * solution, np.linalg.norm(grad, axis=1), hess
 
+    def remove_duplicates(self, pts_converged, decimal_uniq, rad_uniq):
+        r"""
+        Remove duplicates found in `pts_converged`.
+
+        The procedure is as follows:
+        1. Points are rounded to `decimal_uniq` decimal place and grouped together. If
+           the distance between points is still less than `rad_uniq`, then step 2 is performed.
+        2. Using a KDTree, each point a ball of radius `rad_uniq` is constructed and
+            the point within the ball with the smallest gradient norm is selected as
+            the "unique" point. This process is iterated until all points are within a ball.
+
+        """
+        # Round to `decimal_uniq` decimal place and remove any non-unique points.
+        test, indices = np.unique(
+            np.round(pts_converged, decimals=decimal_uniq),
+            axis=0,
+            return_index=True
+        )
+        pts_converged = test[np.argsort(indices)]
+
+        # Get final gradients
+        final_gradients = np.linalg.norm(self.grad(pts_converged), axis=1)
+
+        # See if any duplicates were found then run the kdtree algorithm
+        dist = cdist(pts_converged, pts_converged)
+        dist[np.diag_indices(len(pts_converged))] = 1.0
+        maxim = np.any(dist < rad_uniq, axis=1)
+        if np.any(maxim):
+            indices = set(range(len(pts_converged)))
+            tree = KDTree(pts_converged)
+            indices_include = []
+            while len(indices) != 0:
+                index = indices.pop()
+                query = tree.query_ball_point(pts_converged[index], r=rad_uniq)
+                gradient_ball = final_gradients[query]
+                sort_indices = np.argsort(gradient_ball)
+                indices_include.append(query[sort_indices[0]])  # Pick the point with smallest gradient
+                indices = indices.difference(query)
+
+            final_gradients = final_gradients[indices_include]
+            pts_converged = pts_converged[indices_include]
+
+        return pts_converged, final_gradients
+
     def find_critical_points_vectorized(
         self,
         atom_coords,
@@ -237,8 +282,10 @@ class Topology(object):
         dens_cutoff=1e-5,
         decimal_uniq=12,
         rad_uniq=0.01,
+        maxiter=250,
+        failure_use_scipy=True,
         use_log=False,
-        verbose=False
+        verbose=True
     ):
         r"""
         Find and store the critical points with a vectorization approach.
@@ -258,11 +305,11 @@ class Topology(object):
             Points that are 2`ss_rad` away from the atomic coordinates are included as
             initial guesses.
         init_norm_cutoff: float, optional
-            Points whose gradient norm is less than `init_norm_cutoff` are excluded when
-            constructing the initial atomic grid.
+            Points whose gradient norm is less than `init_norm_cutoff` are excluded when constructing
+            the initial atomic grid.
         dens_cutoff: float, optional
-            If the point diverges during the critical point finding process then it excludes it
-            based on its density value being less than `dens_cutoff`.
+            If the point diverges during the critical point finding process then it excludes it based
+            on its density value being less than `dens_cutoff`.
         decimal_uniq: float, optional
             Rounds each critical point to this `decimal_uniq` decimal place. Used to condense points
             together that are close together.
@@ -287,11 +334,14 @@ class Topology(object):
         - Newton-Ralphson equation is used to find the roots of the gradient.
 
         - The algorithm is as follows:
-            1. Points that are close to center and that have small gradients are
+            1. Constructs an atomic grid over each atomic center.
+            2. Points that are close to center and that have small gradients are
                 included to be initial guesses. Points whose density values is small are not.
-            2. While-loop is done until each point from the initial guess converged.
-            3. Points whose density values are too small are removed from the iteration process.
-            4. Points that are identical are merged together by first rounding to some decimal
+            3. While-loop is done until each point from the initial guess converged.
+            4. Points whose density values are too small are removed from the iteration process.
+            5. If points didn't converge then Scipy is used instead but points are reduced
+               considerably since Scipy is slower as it doesn't accept vectorization.
+            6. Points that are identical are merged together by first rounding to some decimal
                places and then a KDTree is used to group the points into small balls and the
                points with the smallest gradient are picked out of each ball.
 
@@ -330,7 +380,7 @@ class Topology(object):
         converged_pts = np.empty((0, 3), dtype=float)
         niter = 0
 
-        while len(p1) != 0:
+        while len(p1) != 0 and niter < maxiter:
             # Take Newton-Ralphson Step
             p1, grad_norm1, hess = self.newton_step(p0, alpha=alpha, use_log=use_log)
 
@@ -363,35 +413,29 @@ class Topology(object):
             p0 = p1
             niter += 1
 
-        # Round to `decimal_uniq` decimal place and remove any non-unique points.
-        test, indices = np.unique(
-            np.round(converged_pts, decimals=decimal_uniq),
-            axis=0,
-            return_index=True
-        )
-        converged_pts = test[np.argsort(indices)]
+        if niter == maxiter:
+            if failure_use_scipy:
+                p1, _ = self.remove_duplicates(p1, decimal_uniq, rad_uniq)
+                if verbose:
+                    print(f"Convergence not achieved, attempt using Scipy."
+                          f" Number of points didn't converge: {len(p1)}")
 
-        # Get final gradients
-        final_gradients = np.linalg.norm(self.grad(converged_pts), axis=1)
+                # Try Scipy instead: Go through each pt individually.
+                #  Note this is slower but convergence is guaranteed.
+                other_converged_pts = []
+                for x in p1:
+                    sol = root(lambda pt: self.grad(np.array([pt]))[0], x0=x,
+                               # jac=lambda pt: self.hess(np.array([pt]))[0],
+                               method="df-sane")
+                    assert sol.success, f"One of the roots did not converge using scipy {sol}"
+                    other_converged_pts.append(sol.x)
 
-        # See if any duplicates were found then run the kdtree algorithm
-        dist = cdist(converged_pts, converged_pts)
-        dist[np.diag_indices(len(converged_pts))] = 1.0
-        maxim = np.any(dist < rad_uniq, axis=1)
-        if np.any(maxim):
-            indices = set(range(len(converged_pts)))
-            tree = KDTree(converged_pts)
-            indices_include = []
-            while len(indices) != 0:
-                index = indices.pop()
-                query = tree.query_ball_point(converged_pts[index], r=rad_uniq)
-                gradient_ball = final_gradients[query]
-                sort_indices = np.argsort(gradient_ball)
-                indices_include.append(query[sort_indices[0]])  # Pick the point with smallest gradient
-                indices = indices.difference(query)
+                converged_pts = np.vstack((converged_pts, np.array(other_converged_pts, dtype=float)))
+            else:
+                raise RuntimeError(f"Maximum number of iterations {niter} == {maxiter} was reached.")
 
-            final_gradients = final_gradients[indices_include]
-            converged_pts = converged_pts[indices_include]
+        # Remove duplicates from entire set of points.
+        converged_pts, final_gradients = self.remove_duplicates(converged_pts, decimal_uniq, rad_uniq)
 
         if verbose:
             print(f"Final number of points found {len(converged_pts)}")
