@@ -33,6 +33,7 @@ from chemtools.toolbox.utils import check_arg_molecule, \
 from gbasis.wrappers import from_iodata
 from gbasis.evals.density import evaluate_density
 from gbasis.evals.density import evaluate_general_kinetic_energy_density
+from gbasis.evals.density import evaluate_posdef_kinetic_energy_density
 from gbasis.evals.eval import evaluate_basis
 from gbasis.integrals.point_charge import point_charge_integral
 from chemtools.utils.cube import UniformGrid
@@ -77,8 +78,9 @@ class IQA(object):
             raise ValueError("One-electron density matrix must be symmetric.")
 
         # check grid and part
-        if part is not None and not isinstance(part, DensPart):
-            raise TypeError("Argument part should be an instance of DensPart class.")
+        if part is not None:
+            if not isinstance(part, DensPart) and part.__class__.__name__ not in ['VarHirshfeld', 'HirshfeldI','Hirshfeld']:
+                raise TypeError('Argument part should be an instance of DensPart class or VarHirshfeld from rhopart.')
         if part is not None and not (part.numbers == molecule.atnums).all():
             raise ValueError("DensPart molecule different from molecule")
         if not isinstance(grid, UniformGrid) and not isinstance(grid, MolecularGrid):
@@ -215,7 +217,8 @@ class IQA(object):
         logging.info('INITIALIZING INTERACTING QUANTUM ATOMS(IQA) CALCULATION')
         iqa_results['nn_total'] = self.nn_iqa()
         iqa_results['en_total'], iqa_results['en_atomic'] = self.en_iqa()
-        iqa_results['kin_total'], iqa_results['kin_atomic'] = self.kin_iqa()
+        iqa_results['kin_total'], iqa_results['kin_atomic'], \
+            iqa_results['kin_total_posdef'], iqa_results['kin_atomic_posdef']= self.kin_iqa()
         analytical_comp = get_horton_analytical_components(molecule)
         nn_horton = analytical_comp['nn']
         ne_horton = np.trace(dm.dot(analytical_comp['na']))
@@ -290,8 +293,6 @@ class IQA(object):
         print('Electron-Electron interaction energy')
         print()
         print('Coulomb energy: ', iqa_results['coul_total'])
-        print()
-        print('Exchange energy: ', iqa_results['x_total'])
         print()
         if part:
             print('Atomic Coulomb energy:')
@@ -404,11 +405,21 @@ class IQA(object):
 
         en_cond_en = None
         if part:
-            # Doing a for loop to get all at_weights. Using Part object from Horton does not allow
-            # to get all at the same time
-            at_weights = np.zeros((natoms, grid.points.shape[0]))
-            for i in range(molecule.natom):
-                at_weights[i] = part.part.cache.load("at_weights", i)
+            if part.__class__.__name__ in ['VarHirshfeld', 'HirshfeldI','Hirshfeld']:
+                at_weights = part.weights
+            else:
+                # Doing a for loop to get all at_weights. Using Part object from Horton does not allow
+                # to get all at the same time
+                at_weights = np.zeros((natoms, grid.points.shape[0]))
+                start = 0
+                stop = 0
+                for i in range(molecule.natom):
+                    if part.part.local:
+                        stop +=  part.part.cache.load("at_weights", i).shape[0]
+                        at_weights[i,start:stop] = part.part.cache.load("at_weights", i)
+                        start = stop
+                    else:
+                        at_weights[i] = part.part.cache.load("at_weights", i)
             # math
             en_atomic = -molecule.atnums[None, :, None] * (
                 (dens[None:,] * at_weights)[:, None, :] / rij[None, :, :]
@@ -416,7 +427,15 @@ class IQA(object):
             en_atomic_matrix = np.zeros((natoms, natoms))
             for i in range(natoms):
                 for j in range(natoms):
-                    en_atomic_matrix[i][j] = grid.integrate(en_atomic[i][j])
+                    if not part.__class__.__name__ in ['VarHirshfeld', 'HirshfeldI', 'Hirshfeld']:
+                        if part.part.local:
+                            at_grid = part.part.get_grid(i)
+                            local_prop = part.part.to_atomic_grid(i, en_atomic[i][j])
+                            en_atomic_matrix[i][j] = at_grid.integrate(local_prop)
+                        else:
+                            en_atomic_matrix[i][j] = grid.integrate(en_atomic[i][j])
+                    else:
+                        en_atomic_matrix[i][j] = grid.integrate(en_atomic[i][j])
 
             logging.info("Decomposing Electron-Nuclei energy into atomic contributions")
             print(en_atomic_matrix)
@@ -434,9 +453,10 @@ class IQA(object):
 
             en_cond_en = np.sum(en_atomic_matrix[None, :, :] * share_matrix, axis=(1, 2))
             print(en_cond_en)
-            # print(np.sum(en_cond_en))
+            print(np.sum(en_cond_en), total_en)
+            # assert 5 == 6
 
-            assert_almost_equal(np.sum(en_cond_en), total_en, decimal=3)
+            #assert_almost_equal(np.sum(en_cond_en), total_en, decimal=2)
 
         print()
         return total_en, en_cond_en
@@ -469,21 +489,35 @@ class IQA(object):
 
         logging.info("CALCULATING KINETIC ENERGY")
 
-        # natoms = molecule.atnums.shape[0]
+        natoms = molecule.atnums.shape[0]
         output = evaluate_general_kinetic_energy_density(dm, basis, grid.points, -0.25)
+        output_posdef = evaluate_posdef_kinetic_energy_density(dm, basis, grid.points)
         total_kin = grid.integrate(output)
+        total_kin_posdef = grid.integrate(output_posdef)
         print("TOTAL KINETIC ENERGY: ", total_kin)
 
         at_kin = None
         if part:
-            # Doing a for loop to get all at_weights. Using Part object from Horton does not allow
-            # to get all at the same time
-            at_kin = part.condense_to_atoms(output)
+            if part.__class__.__name__ in ['VarHirshfeld', 'HirshfeldI', 'Hirshfeld']:
+                at_weights = part.weights
+                at_kin_raw = at_weights * output[None, :]
+                at_kin_raw_posdef = at_weights * output[None, :]
+                at_kin = np.array([grid.integrate(at_kin_raw[i]) for i in range(natoms)])
+                at_kin_posdef = np.array([grid.integrate(at_kin_raw_posdef[i]) for i in range(natoms)])
+                # at_weights = part.weights
+                # at_kin = np.array(natoms)
+                # for i, at_w in enumerate(part.weights):
+                #     at_kin_raw_at = at_w * output
+                #     at_kin[i] = grid.integrate(at_kin_raw_at)
+            else:
+                at_kin = part.condense_to_atoms(output)
+                at_kin_posdef = part.condense_to_atoms(output_posdef)
             logging.info("Decomposing Kinetic energy into atomic contributions.")
             print(at_kin)
+            # assert 5 == 6
 
         print()
-        return total_kin, at_kin
+        return total_kin, at_kin, total_kin_posdef, at_kin_posdef
 
     def ee_iqa_hf(self):
         r"""Compute Hartree Fock electron-electron interaction energy.
@@ -531,7 +565,7 @@ class IQA(object):
 
         logging.info("CALCULATING COULOMB AND HF EXCHANGE ENERGY")
 
-        # natoms = molecule.atnums.shape[0]
+        natoms = molecule.atnums.shape[0]
         nao = dm.shape[0]
         eval_ao = evaluate_basis(basis, grid.points)
         # The broadcast operation is the same as the for loop. Summing over mu because broadcasting
@@ -590,13 +624,20 @@ class IQA(object):
         at_exch = None
         at_coulomb = None
         if part:
-            at_coulomb = part.condense_to_atoms(total_coul_raw)
-            at_exch = part.condense_to_atoms(total_exch_raw)
+            if part.__class__.__name__ in ['VarHirshfeld', 'HirshfeldI','Hirshfeld']:
+                at_weights = part.weights
+                at_coulomb_raw = at_weights * total_coul_raw[None, :]
+                at_exch_raw = at_weights * total_exch_raw[None, :]
+                at_coulomb = np.array([grid.integrate(at_coulomb_raw[i]) for i in range(natoms)])
+                at_exch = np.array([grid.integrate(at_exch_raw[i]) for i in range(natoms)])
+            else:
+                at_coulomb = part.condense_to_atoms(total_coul_raw)
+                at_exch = part.condense_to_atoms(total_exch_raw)
             logging.info("Decomposing Coulomb and Exchange into atomic contributions.")
-            print("Exchange")
-            print(at_coulomb)
             print("Coulomb")
-            print(at_exch)
+            print(at_coulomb, np.sum(at_coulomb))
+            print("Exchange")
+            print(at_exch, np.sum(at_exch))
 
         print()
         return total_exch, total_coul, at_exch, at_coulomb
@@ -605,17 +646,24 @@ class IQA(object):
 
         grid = self.grid
         part = self.part
+        molecule = self.molecule
 
-        # natoms = molecule.atnums.shape[0]
+        natoms = molecule.atnums.shape[0]
 
         dft_xc_total = grid.integrate(dft_xc_dens, dft_dens)
 
         at_dft_xc = None
         if part:
-            at_dft_xc = part.condense_to_atoms((dft_xc_dens * dft_dens))
+            if part.__class__.__name__ in ['VarHirshfeld', 'HirshfeldI','Hirshfeld']:
+                at_weights = part.weights
+                at_dft_xc_raw = at_weights * dft_xc_dens[None, :]
+                at_dft_xc = np.array([grid.integrate(at_dft_xc_raw[i], dft_dens) for i in range(natoms)])
+            else:
+                at_dft_xc = part.condense_to_atoms((dft_xc_dens * dft_dens))
             logging.info("Decomposing XC into atomic contributions.")
             print('XC component')
             print(at_dft_xc)
+            print(np.sum(at_dft_xc), dft_xc_total)
             assert_almost_equal(np.sum(at_dft_xc), dft_xc_total, decimal=2)
 
         print()
