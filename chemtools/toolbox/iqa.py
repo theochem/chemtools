@@ -501,7 +501,7 @@ class IQA(object):
             if part.__class__.__name__ in ['VarHirshfeld', 'HirshfeldI', 'Hirshfeld']:
                 at_weights = part.weights
                 at_kin_raw = at_weights * output[None, :]
-                at_kin_raw_posdef = at_weights * output[None, :]
+                at_kin_raw_posdef = at_weights * output_posdef[None, :]
                 at_kin = np.array([grid.integrate(at_kin_raw[i]) for i in range(natoms)])
                 at_kin_posdef = np.array([grid.integrate(at_kin_raw_posdef[i]) for i in range(natoms)])
                 # at_weights = part.weights
