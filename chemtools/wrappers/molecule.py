@@ -586,6 +586,7 @@ class AtomicOrbitals(object):
             An instance of `Molecule` class.
 
         """
+        #Todo: Forgot to change this. This assumes old IOData
         basis = mol._iodata.obasis
         return cls(basis)
 

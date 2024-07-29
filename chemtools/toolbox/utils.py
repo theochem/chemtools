@@ -28,6 +28,7 @@ import numpy as np
 
 from horton import ProAtomDB
 from horton.scripts.wpart import wpart_schemes
+from horton.cache import Cache
 
 from chemtools.wrappers.grid import MolecularGrid
 from chemtools.wrappers.molecule import Molecule
@@ -384,14 +385,14 @@ def get_libxc_xc_density(molecule, grid, one_elec, libxc_label, libxc_c_label=No
     }
 
     # check atomic coordinates & numbers of grid object against loaded wave-function
-    if np.max(abs(molecule.coordinates - grid.centers)):
-        raise ValueError(
-            f"Coordinates from molecule and grid arguments does not match"
-        )
-    if np.max(abs(molecule.numbers - grid.numbers)):
-        raise ValueError(
-            f"Coordinates from molecule and grid arguments does not match"
-        )
+    # if np.max(abs(molecule.coordinates - grid.centers)):
+    #     raise ValueError(
+    #         f"Coordinates from molecule and grid arguments does not match"
+    #     )
+    # if np.max(abs(molecule.numbers - grid.numbers)):
+    #     raise ValueError(
+    #         f"Coordinates from molecule and grid arguments does not match"
+    #     )
 
     # get Gaussian basis set
     obasis = molecule._ao._basis
@@ -420,8 +421,14 @@ def get_libxc_xc_density(molecule, grid, one_elec, libxc_label, libxc_c_label=No
         func_group = func[0] + '_' + func[1]
         func_type = func[-2] + '_' + func[-1]
     else:
-        func_group = func[0]
-        func_type = func[-2] + '_' + func[-1]
+        if func[-1] == 'x':
+            func_type = 'x'
+            func_group = func[0]
+        if func[-1] != 'x':
+            func_group = func[0]
+            func_type = func[-2] + '_' + func[-1]
+            print(func_type)
+            print(func_group)
         if libxc_c_label:
             func_group_c = func_c[0]
             func_type_c = func_c[-2] + '_' + func_c[-1]
@@ -439,13 +446,21 @@ def get_libxc_xc_density(molecule, grid, one_elec, libxc_label, libxc_c_label=No
 
     # construct hamiltonian
     external = {'nn': one_elec['nn']}
+    # Get libxc object
     if libxc_c_label:
+        # e.g This libxc[func_group](func_type) is equal to RLibXCLDA('x')
+        meanfield_x = libxc[func_group](func_type)
+        meanfield_c = libxc[func_group_c](func_type_c)
         grid_terms = [libxc[func_group](func_type), libxc[func_group_c](func_type_c)]
+
     else:
+        meanfield_xc = libxc[func_group](func_type)
         grid_terms = [libxc[func_group](func_type)]
     coeff_mix = None
     if func_group in ['hyb_gga', 'hyb_mgga']:
         coeff_mix = grid_terms[0].get_exx_fraction()
+
+    # assert 5 == 6
 
     if restricted:
         terms = [
@@ -478,12 +493,13 @@ def get_libxc_xc_density(molecule, grid, one_elec, libxc_label, libxc_c_label=No
 
     if func_type.startswith('xc'):
         results = {"edens_xc": ham.cache[f"edens_libxc_{func_group}_{func_type}_full"], 'coeff_mix':coeff_mix}
-        return results
+        return results, meanfield_xc
     elif func_type.startswith('x') and func_type_c.startswith('c'):
         results = {"edens_x": ham.cache[f"edens_libxc_{func_group}_{func_type}_full"],
                    "edens_c": ham.cache[f"edens_libxc_{func_group_c}_{func_type_c}_full"],
                    'coeff_mix':coeff_mix}
-        return results
+
+        return results, meanfield_x, meanfield_c
 
 
 
@@ -509,3 +525,19 @@ def get_horton_analytical_components(molecule):
     }
 
     return one_elect_analytical
+
+
+def compute_molecular_orbitals_from_ao(molecule, ao_basis):
+
+    eval_ao = ao_basis
+    eval_mo = np.zeros((molecule._iodata.mo.coeffs.T.shape[0], eval_ao.shape[1]))
+    for i in range(molecule._iodata.mo.coeffs.T.shape[0]):
+        mo = np.zeros((eval_ao.shape[1]))
+        for mu in range(eval_ao.shape[0]):
+            mo += molecule._iodata.mo.coeffs.T[i, mu] * eval_ao[mu, :]
+        eval_mo[i] = mo
+
+    return eval_mo
+
+
+

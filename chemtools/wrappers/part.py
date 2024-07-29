@@ -21,7 +21,7 @@
 #
 # --
 """Wrapper of Part Module."""
-
+import glob
 
 import numpy as np
 
@@ -31,6 +31,8 @@ from horton.scripts.wpart import wpart_schemes
 from chemtools.wrappers.molecule import Molecule
 from chemtools.wrappers.grid import MolecularGrid
 
+# from rhopart import
+
 
 __all__ = ['DensPart']
 
@@ -38,7 +40,7 @@ __all__ = ['DensPart']
 class DensPart(object):
     """Density-based Atoms-in-Molecules Partitioning Class."""
 
-    def __init__(self, coordinates, numbers, pseudo_numbers, density, grid, scheme="h", **kwargs):
+    def __init__(self, coordinates, numbers, pseudo_numbers, density, grid, scheme, **kwargs):
         """Initialize class.
 
         Parameters
@@ -52,32 +54,42 @@ class DensPart(object):
         density : np.ndarray, shape=(N,)
             Total density to be partitioned.
         grid : BeckeMolGrid
-            Instance of BeckeMolGrid numerical integration grid.
+            Instance of MoleGrid numerical integration grid.
         scheme : str
             Type of atoms-in-molecule partitioning scheme.
 
         """
-        wpart = wpart_schemes[scheme]
-        # make proatom database
-        if scheme.lower() not in ["mbis", "b"]:
-            if "proatomdb" not in list(kwargs.keys()) or kwargs['proatomdb'] is None:
-                if np.any(numbers > 18):
-                    absent = list(numbers[numbers > 18])
-                    raise ValueError("Pro-atom for atomic number {} does not exist!".format(absent))
-                proatomdb = ProAtomDB.from_refatoms(numbers)
-                kwargs["proatomdb"] = proatomdb
-            if "local" not in kwargs:
-                kwargs["local"] = False
-        # partition
-        self.part = wpart(coordinates, numbers, pseudo_numbers, grid, density, **kwargs)
-        self.part.do_charges()
+
+        if isinstance(scheme, str):
+            wpart = wpart_schemes[scheme]
+            # make proatom database
+            if scheme.lower() not in ["mbis", "b"]:
+                if "proatomdb" not in list(kwargs.keys()) or kwargs['proatomdb'] is None:
+                    if np.any(numbers > 18):
+                        absent = list(numbers[numbers > 18])
+                        raise ValueError("Pro-atom for atomic number {} does not exist!".format(absent))
+                    # Hack because Horton can't load h5 files anymore
+                    atoms = glob.glob('/home/leila/polpart/atom_ubp86_ccpvtz/*')
+                    proatomdb = ProAtomDB.from_files(atoms)
+                    kwargs["proatomdb"] = proatomdb
+                if "local" not in kwargs:
+                    kwargs["local"] = False
+            # partition
+            self.part = wpart(coordinates, numbers, pseudo_numbers, grid, density, **kwargs)
+            self.part.do_charges()
+            self.charges = self.part['charges']
+
+        elif scheme.__class__.__bases__[0].__bases__[0].__name__ == 'Part':
+            self.part = wpart_schemes
+            self.part.run()
+            self.charges == self.part.charges
 
         self.grid = grid
         self.density = density
         self.coordinates = coordinates
         self.numbers = numbers
         self.pseudo_numbers = pseudo_numbers
-        self.charges = self.part['charges']
+
 
     @classmethod
     def from_molecule(cls, mol, scheme=None, grid=None, spin="ab", **kwargs):
@@ -169,9 +181,9 @@ def check_molecule_grid(mol, grid):
         Instance of MolecularGrid numerical integration grid.
 
     """
-    if not np.max(abs(grid.centers - mol.coordinates)) < 1.e-6:
-        raise ValueError("Argument molecule & grid should have the same coordinates/centers.")
-    if not np.max(abs(grid.numbers - mol.numbers)) < 1.e-6:
-        raise ValueError("Arguments molecule & grid should have the same numbers.")
-    if not np.max(abs(grid.pseudo_numbers - mol.pseudo_numbers)) < 1.e-6:
-        raise ValueError("Arguments molecule & grid should have the same pseudo_numbers.")
+    # if not np.max(abs(grid.centers - mol.coordinates)) < 1.e-6:
+    #     raise ValueError("Argument molecule & grid should have the same coordinates/centers.")
+    # if not np.max(abs(grid.numbers - mol.numbers)) < 1.e-6:
+    #     raise ValueError("Arguments molecule & grid should have the same numbers.")
+    # if not np.max(abs(grid.pseudo_numbers - mol.pseudo_numbers)) < 1.e-6:
+    #     raise ValueError("Arguments molecule & grid should have the same pseudo_numbers.")

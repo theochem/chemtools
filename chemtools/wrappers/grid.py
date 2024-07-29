@@ -26,6 +26,10 @@
 import numpy as np
 
 from horton import BeckeMolGrid
+from grid.molgrid import MolGrid
+from grid.atomgrid import AtomGrid
+from grid.basegrid import OneDGrid
+from grid.becke import BeckeWeights
 from chemtools.wrappers.molecule import Molecule
 
 
@@ -35,7 +39,8 @@ __all__ = ['MolecularGrid']
 class MolecularGrid(object):
     """Becke-Lebedev molecular grid for numerical integrations."""
 
-    def __init__(self, coordinates, numbers, pseudo_numbers, specs='medium', k=3, rotate=False):
+    # def __init__(self, coordinates, numbers, pseudo_numbers, specs='medium', k=4, rotate=False, grid_type='qc-devs'):
+    def __init__(self, coordinates, numbers, pseudo_numbers, specs='medium', k=4, rotate=False, grid_type='horton'):
         """Initialize class.
 
         Parameters
@@ -59,20 +64,35 @@ class MolecularGrid(object):
             The order of the switching function in Becke's weighting scheme.
         rotate : bool, optional
             Whether to randomly rotate spherical grids.
+        type: QC-devs or Horton Molecular Grid
 
         """
         self._coordinates = coordinates
         self._numbers = numbers
         self._pseudo_numbers = pseudo_numbers
-        self._k = k
         self._rotate = rotate
         self.specs = specs
-
-        self._grid = BeckeMolGrid(self.coordinates, self.numbers, self.pseudo_numbers,
+        if grid_type == 'horton':
+            self._grid = BeckeMolGrid(self.coordinates, self.numbers, self.pseudo_numbers,
                                   agspec=self.specs, k=k, random_rotate=rotate, mode='keep')
+        elif grid_type == 'qc-devs':
+            if k:
+                aim_weights = BeckeWeights(order=3)
+            else:
+                aim_weights = None
+
+            if isinstance(self.specs, str):
+                self._grid = MolGrid.from_preset(self.numbers, self.coordinates, preset=self.specs, aim_weights=aim_weights, rotate=rotate, store=True)
+            # elif isinstance(self.specs, list) and all([isinstance(a, OneDGrid) for a in self.specs]):
+            elif isinstance(self.specs, list) and isinstance(self.specs[0], OneDGrid) and isinstance(self.specs[1], int):
+                self._grid = MolGrid.from_size(self.numbers, self.coordinates, size=self.specs[1], rgrid=self.specs[0], aim_weights=aim_weights, store=True)
+            else:
+                raise ValueError('Expecting a string or list with [OneDGrid, int]')
+        else:
+            raise ValueError(f'Type must be either `horton` or `qc-devs`. Got {type}')
 
     @classmethod
-    def from_molecule(cls, molecule, specs='medium', k=3, rotate=False):
+    def from_molecule(cls, molecule, specs='medium', k=3, rotate=False, grid_type='horton'):
         """Initialize the class given an instance of Molecule.
 
         Parameters
@@ -97,7 +117,7 @@ class MolecularGrid(object):
         if not isinstance(molecule, Molecule):
             raise TypeError('Argument molecule should be an instance of Molecule class.')
         coords, nums, pnums = molecule.coordinates, molecule.numbers, molecule.pseudo_numbers
-        return cls(coords, nums, pnums, specs, k, rotate)
+        return cls(coords, nums, pnums, specs, k, rotate, grid_type=grid_type)
 
     @classmethod
     def from_file(cls, fname, specs='medium', k=3, rotate=False):
@@ -180,7 +200,7 @@ class MolecularGrid(object):
                     temp = temp * item
             value = temp
         if value.ndim != 1:
-            raise ValueError('Argument value should be a 1D array.')
+            raise ValueError(f'Argument value should be a 1D array. Got{value.ndim}')
         if value.shape != (self.npoints,):
             raise ValueError('Argument value should have ({0},) shape!'.format(self.npoints))
         return self._grid.integrate(value)
