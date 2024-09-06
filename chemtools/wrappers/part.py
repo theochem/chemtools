@@ -69,7 +69,7 @@ class DensPart(object):
                         absent = list(numbers[numbers > 18])
                         raise ValueError("Pro-atom for atomic number {} does not exist!".format(absent))
                     # Hack because Horton can't load h5 files anymore
-                    atoms = glob.glob('/home/leila/polpart/atom_ubp86_ccpvtz/*')
+                    # atoms = glob.glob('/home/leila/polpart/atom_ubp86_ccpvtz/*')
                     proatomdb = ProAtomDB.from_files(atoms)
                     kwargs["proatomdb"] = proatomdb
                 if "local" not in kwargs:

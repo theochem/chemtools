@@ -384,12 +384,27 @@ class IQA(object):
             meanfield_obj_x, meanfield_obj_c  = data_meanfield[-2:]
             dft_exch_ab = self.ee_iqa_dft_pairwise(meanfield_obj_x)
             dft_coul_ab = self.ee_iqa_dft_pairwise(meanfield_obj_c)
+            logging.info("CALCULATION: DFT EXCHANGE/CORRELATION PAIRWISE")
             print('dft_exch_ab')
             print(dft_exch_ab)
             print('dft_coul_ab')
             print(dft_coul_ab)
             print('dft_total_ab')
             print(dft_exch_ab + dft_coul_ab)
+            logging.info("CALCULATION: HF COULOMB AND EXCHANGE PAIRWISE")
+            logging.warning("6n integrals can be long")
+            ab_hf_coul, ab_hf_exch = self.ee_iqa_hf_pairwise()
+            print('ab_hf_coul')
+            print(ab_hf_coul)
+            print('ab_hf_exch')
+            print(ab_hf_exch)
+            iqa_pairwise_results = {
+                # 'dft_exch_ab':dft_exch_ab, 'dft_coul_ab':dft_coul_ab,
+                 'ab_hf_exch':ab_hf_exch, 'ab_hf_coul':ab_hf_coul
+            }
+
+            return iqa_pairwise_results
+
 
         elif dft_exch:
             data_meanfield = get_libxc_xc_density(molecule, grid, analytical_comp, dft_exch)
@@ -397,6 +412,18 @@ class IQA(object):
             dft_xc_ab = self.ee_iqa_dft_pairwise(meanfield_obj_xc)
             print('dft_xc_ab')
             print(dft_xc_ab)
+            ab_hf_coul, ab_hf_exch = self.ee_iqa_hf_pairwise()
+            print('ab_hf_coul')
+            print(ab_hf_coul)
+            print('ab_hf_exch')
+            print(ab_hf_exch)
+            iqa_pairwise_results = {
+                # 'dft_xc_ab': dft_xc_ab,
+                'ab_hf_exch': ab_hf_exch, 'ab_hf_coul': ab_hf_coul
+            }
+
+            return iqa_pairwise_results
+
 
 
     def nn_iqa(self):
@@ -720,10 +747,10 @@ class IQA(object):
         Note: Sum of AA and AB terms should get back ee_iqa_hf
         """
 
-        if not isinstance(self.grid._grid, MolGrid) or not isinstance(self.grid_2._grid, MolGrid):
-            raise TypeError(
-                f"Both grids should be an instance of MolGrid from qc-devs."
-            )
+        # if not isinstance(self.grid._grid, MolGrid) or not isinstance(self.grid_2._grid, MolGrid):
+        #     raise TypeError(
+        #         f"Both grids should be an instance of MolGrid from qc-devs."
+        #     )
 
         # Draft 6N integration
         molecule = self.molecule
@@ -755,15 +782,30 @@ class IQA(object):
                 raise ValueError("6N integration uses local grids and 2 partition objects")
 
         for a in range(natoms):
-            p_start_a = grid1.indices[a]
-            p_end_a = grid1.indices[a + 1]
-            atgrid_a = self.grid._grid._atgrids[a]
+            if isinstance(self.grid._grid, MolGrid):
+                p_start_a = grid1.indices[a]
+                p_end_a = grid1.indices[a + 1]
+                atgrid_a = self.grid._grid._atgrids[a]
+            elif self.grid._grid.__class__.__name__ == 'BeckeMolGrid':
+                atgrid_a = grid1.subgrids[a]
+                p_start_a = atgrid_a.begin
+                p_end_a = atgrid_a.end
             for b in range(a + 1):
-                p_start_b = grid2.indices[b]
-                p_end_b = grid2.indices[b + 1]
+                if isinstance(self.grid_2._grid, MolGrid):
+                    p_start_b = grid2.indices[b]
+                    p_end_b = grid2.indices[b + 1]
+                    atgrid_b = grid2._atgrids[b]
+                elif self.grid_2._grid.__class__.__name__ == 'BeckeMolGrid':
+                    atgrid_b = grid2.subgrids[b]
+                    p_start_b = atgrid_b.begin
+                    p_end_b = atgrid_b.end
                 integral_coul_ab = 0
                 integral_ex_ab = 0
                 for i_d1 in range(atgrid_a.points.shape[0]):
+                    progress = i_d1 / atgrid_a.points.shape[0]
+                    if progress * 100 in [15.0, 25.0, 50.0, 75.0, 90.0]:
+                        # print('asdfasdf')
+                        print('Progress: ', progress * 100)
                     d_coul = 0
                     d_ex = 0
                     for i in range(occupied_mo):
@@ -781,8 +823,8 @@ class IQA(object):
                     d_coul_b = d_coul[p_start_b: p_end_b]
                     d_ex_b = d_ex[p_start_b: p_end_b]
                     # Atomic integration for r2 using part weights
-                    part_coul_b = grid2._atgrids[b].integrate(d_ex_b * w_subset_b)
-                    part_ex_b = grid2._atgrids[b].integrate(d_coul_b * w_subset_b)
+                    part_coul_b = atgrid_b.integrate(d_coul_b * w_subset_b)
+                    part_ex_b = atgrid_b.integrate(d_ex_b * w_subset_b)
                     integral_coul_ab += part_coul_b * (atgrid_a.weights[i_d1] * part.weights[a, p_start_a : p_end_a][i_d1])
                     integral_ex_ab += part_ex_b * (atgrid_a.weights[i_d1] * part.weights[a, p_start_a : p_end_a][i_d1])
 
