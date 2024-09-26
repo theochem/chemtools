@@ -57,7 +57,7 @@ from grid.atomgrid import AtomGrid
 def test_wrapper_grid_ch4():
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fpath:
         mol = Molecule.from_file(fpath)
-    # Old test had this specifications 'exp:1e-5:25:80:230'
+    # Old test had these specifications 'exp:1e-5:25:80:230'
     atom_grids = []
     for i, at in enumerate(mol.numbers):
         onedg = UniformInteger(100)

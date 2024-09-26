@@ -22,12 +22,17 @@
 # --
 """Test chemtools.toolbox.oxidation."""
 
-
-import glob
+from os.path import dirname, join
+import glob as glob
 import numpy as np
+import os as os
 from numpy.testing import assert_equal, assert_almost_equal, assert_approx_equal
 
-from horton import ProAtomDB
+from rhopart import ProAtomDB
+
+from grid.onedgrid import GaussChebyshev
+from grid.rtransform import BeckeRTransform
+
 from chemtools.wrappers.grid import MolecularGrid
 from chemtools.wrappers.molecule import Molecule
 from chemtools.wrappers.part import DensPart
@@ -42,12 +47,15 @@ except ImportError:
 
 def _get_eos(filename, scheme):
     # build proatom database
-    atoms = glob.glob('chemtools/data/atom_0*')
-    proatomdb = ProAtomDB.from_files(atoms, "power:5e-8:20:40:146")
+    atoms = glob.glob(f"{os.path.dirname(os.path.realpath(__file__)).split('toolbox')[0]}data/atom_0*")
+    oned = GaussChebyshev(60)
+    rgrid = BeckeRTransform(1e-5, 1).transform_1d_grid(oned)
+    proatomdb = ProAtomDB.from_files(atoms, agspec=[rgrid, 590])
     # load molecule & make grid, denspart, and eos instances
     with path('chemtools.data', filename) as file_path:
         mol = Molecule.from_file(file_path)
-    grid = MolecularGrid.from_molecule(mol, specs='power:5e-8:20:40:146', k=4, rotate=False)
+    # grid = MolecularGrid.from_molecule(mol, specs='power:5e-8:20:40:146', k=4, rotate=False)
+    grid = MolecularGrid.from_molecule(mol, specs=[rgrid, 590], k=4, rotate=False)
     part = DensPart.from_molecule(mol, scheme=scheme, grid=grid, local=False, proatomdb=proatomdb)
     return EOS(mol, part)
 

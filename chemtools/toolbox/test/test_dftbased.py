@@ -28,6 +28,8 @@ import numpy as np
 
 from numpy.testing import assert_raises, assert_array_almost_equal
 
+from iodata.utils import FileFormatError
+
 from chemtools.wrappers.molecule import Molecule
 from chemtools.toolbox.dftbased import DFTBasedTool
 try:
@@ -38,7 +40,7 @@ except ImportError:
 
 def test_orbital_based_raises():
     # check file name
-    assert_raises(ValueError, DFTBasedTool.from_file, "gibberish", np.array([0.0, 1.0]))
+    assert_raises(FileFormatError, DFTBasedTool.from_file, "gibberish", np.array([0.0, 1.0]))
     with path("chemtools.data", "h2o_dimer_pbe_sto3g.wfn") as fname:
         assert_raises(ValueError, DFTBasedTool.from_file, fname, np.array([0.0, 1.0]))
         assert_raises(ValueError, DFTBasedTool.from_file, fname, np.array([0.0, 1.0]))
@@ -117,37 +119,37 @@ def test_orbital_based_from_molecule_ch4_rhf_ccpvdz():
 def check_orbital_expression(tool, data):
     """Check OrbitalLocalTool.compute_orbital_expression against stored data array."""
     result = tool._compute_orbital_expression(5)
-    assert_array_almost_equal(result[:, 0], data["orb_05"], decimal=6)
+    assert_array_almost_equal(result, data["orb_05"], decimal=5)
     result = tool._compute_orbital_expression(np.array([5]), spin="b")
-    assert_array_almost_equal(result[:, 0], data["orb_05"], decimal=6)
+    assert_array_almost_equal(result[0, :], data["orb_05"], decimal=5)
     result = tool._compute_orbital_expression(6)
-    assert_array_almost_equal(result[:, 0], data["orb_06"], decimal=6)
+    assert_array_almost_equal(result, data["orb_06"], decimal=6)
     result = tool._compute_orbital_expression(8)
-    assert_array_almost_equal(result[:, 0], data["orb_08"], decimal=6)
+    assert_array_almost_equal(result, data["orb_08"], decimal=6)
     result = tool._compute_orbital_expression(9)
-    assert_array_almost_equal(result[:, 0], data["orb_09"], decimal=6)
+    assert_array_almost_equal(result, data["orb_09"], decimal=6)
     result = tool._compute_orbital_expression([8, 9])
-    assert_array_almost_equal(result[:, 0], data["orb_08"], decimal=6)
-    assert_array_almost_equal(result[:, 1], data["orb_09"], decimal=6)
+    assert_array_almost_equal(result[0, :], data["orb_08"], decimal=6)
+    assert_array_almost_equal(result[1, :], data["orb_09"], decimal=6)
     result = tool._compute_orbital_expression([5, 8, 9], spin="b")
-    assert_array_almost_equal(result[:, 0], data["orb_05"], decimal=6)
-    assert_array_almost_equal(result[:, 1], data["orb_08"], decimal=6)
-    assert_array_almost_equal(result[:, 2], data["orb_09"], decimal=6)
+    assert_array_almost_equal(result[0, :], data["orb_05"], decimal=5)
+    assert_array_almost_equal(result[1, :], data["orb_08"], decimal=6)
+    assert_array_almost_equal(result[2, :], data["orb_09"], decimal=6)
     result = tool._compute_orbital_expression((8, 9, 5))
-    assert_array_almost_equal(result[:, 0], data["orb_08"], decimal=6)
-    assert_array_almost_equal(result[:, 1], data["orb_09"], decimal=6)
-    assert_array_almost_equal(result[:, 2], data["orb_05"], decimal=6)
+    assert_array_almost_equal(result[1, :], data["orb_08"], decimal=6)
+    assert_array_almost_equal(result[2, :], data["orb_09"], decimal=6)
+    assert_array_almost_equal(result[0, :], data["orb_05"], decimal=5)
     result = tool._compute_orbital_expression(np.array([8, 9]))
-    assert_array_almost_equal(result[:, 0], data["orb_08"], decimal=6)
-    assert_array_almost_equal(result[:, 1], data["orb_09"], decimal=6)
+    assert_array_almost_equal(result[0, :], data["orb_08"], decimal=6)
+    assert_array_almost_equal(result[1, :], data["orb_09"], decimal=6)
     result = tool._compute_orbital_expression(np.array([6, 5]), spin="b")
-    assert_array_almost_equal(result[:, 0], data["orb_06"], decimal=6)
-    assert_array_almost_equal(result[:, 1], data["orb_05"], decimal=6)
+    assert_array_almost_equal(result[1, :], data["orb_06"], decimal=6)
+    assert_array_almost_equal(result[0, :], data["orb_05"], decimal=5)
     result = tool._compute_orbital_expression(np.array([5, 6, 8, 9]), spin="a")
-    assert_array_almost_equal(result[:, 0], data["orb_05"], decimal=6)
-    assert_array_almost_equal(result[:, 1], data["orb_06"], decimal=6)
-    assert_array_almost_equal(result[:, 2], data["orb_08"], decimal=6)
-    assert_array_almost_equal(result[:, 3], data["orb_09"], decimal=6)
+    assert_array_almost_equal(result[0, :], data["orb_05"], decimal=5)
+    assert_array_almost_equal(result[1, :], data["orb_06"], decimal=6)
+    assert_array_almost_equal(result[2, :], data["orb_08"], decimal=6)
+    assert_array_almost_equal(result[3, :], data["orb_09"], decimal=6)
 
 
 def test_orbital_based_from_file_orbital_expression_ch4_uhf_ccpvdz():

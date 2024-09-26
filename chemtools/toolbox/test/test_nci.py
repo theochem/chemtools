@@ -31,6 +31,8 @@ from contextlib import contextmanager
 import numpy as np
 from numpy.testing import assert_raises, assert_equal, assert_almost_equal
 
+from iodata.utils import FileFormatError
+
 from chemtools.utils import UniformGrid
 from chemtools.toolbox.interactions import NCI
 from chemtools.wrappers.molecule import Molecule
@@ -52,7 +54,7 @@ def tmpdir(name):
 
 def test_nci_raises():
     # check file name
-    assert_raises(ValueError, NCI.from_file, "gibberish")
+    assert_raises(FileFormatError, NCI.from_file, "gibberish")
     # with path('chemtools.data', 'h2o_dimer_pbe_sto3g.wf') as file1:
     #     assert_raises(OSError, NCI.from_file, file1)
 

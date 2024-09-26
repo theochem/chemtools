@@ -41,7 +41,7 @@ def test_densbased_from_file_h2o():
     with path('chemtools.data', 'data_multiwfn36_fchk_h2o_q+0_ub3lyp_ccpvtz.npz') as fname:
         data = np.load(str(fname))
     with path('chemtools.data', 'h2o_q+0_ub3lyp_ccpvtz.fchk') as fname:
-        tool = DensityLocalTool.from_file(fname, data['coords'], spin='ab', index=None)
+        tool = DensityLocalTool.from_file(fname, data['coords'], spin='ab')
     assert_allclose(tool.density, data['nuc_dens'], rtol=1.e-7, atol=0.)
     assert_allclose(tool.gradient, data['nuc_grad'], rtol=1.e-7, atol=0.)
     assert_allclose(tool.gradient_norm, data['nuc_grad_norm'], rtol=1.e-7, atol=0.)

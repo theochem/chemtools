@@ -2,7 +2,7 @@
 # ChemTools is a collection of interpretive chemical tools for
 # analyzing outputs of the quantum chemistry calculations.
 #
-# Copyright (C) 2016-2023 The ChemTools Development Team
+# Copyright (C) 2016-2024 The ChemTools Development Team
 #
 # This file is part of ChemTools.
 #
@@ -28,7 +28,9 @@ import numpy as np
 from numpy.testing import assert_raises, assert_almost_equal
 from numpy.testing import assert_equal, assert_almost_equal, assert_approx_equal, assert_allclose
 
-from horton import ProAtomDB, AtomicGrid
+from grid.onedgrid import UniformInteger, GaussChebyshev
+from grid.rtransform import ExpRTransform, PowerRTransform, BeckeRTransform
+from grid.atomgrid import AtomGrid
 from iodata import load_one
 from gbasis.wrappers import from_iodata
 from chemtools.wrappers.grid import MolecularGrid
@@ -51,7 +53,10 @@ def test_iqa_raises():
             mol_2 = Molecule.from_file(str(fname2))
             basis_gbasis = from_iodata(mol_1._iodata)
             one_rdm_gbasis = mol_1._iodata.one_rdms.get("post_scf", mol_1._iodata.one_rdms.get("scf"))
-            wrong_grid = AtomicGrid(6, 6, np.array([0., 0., 0]))
+            # wrong_grid = AtomicGrid(6, 6, np.array([0., 0., 0]))
+            onedg = UniformInteger(100)
+            rgrid = ExpRTransform(1e-5, 2e1).transform_1d_grid(onedg)
+            wrong_grid = AtomGrid(rgrid, center=mol_1.coordinates[0])
             wrong_grid2 = MolecularGrid.from_file(fname2)
             grid = MolecularGrid.from_molecule(mol_1, specs="insane", k=3,
                                                    rotate=False)
@@ -77,7 +82,7 @@ def test_iqa_raises():
 def test_h2o_rhf_sto3g():
     # check total values of decomposition against in h2o_rhf_sto3g.log
     with path('chemtools.data', 'h2o_rhf_sto3g.fchk') as fname:
-        mol_iqa = IQA.from_file(fname, grid_type='becke', scheme='H')
+        mol_iqa = IQA.from_file(fname, scheme='H')
         results_iqa = mol_iqa.iqa()
         assert_allclose(results_iqa['nn_total'],  9.1559536481, rtol=1.e-4, atol=0.)
         assert_allclose(results_iqa['en_total'],  -1.968747462907e+02, rtol=1.e-4, atol=0.)
@@ -94,7 +99,7 @@ def test_h2o_rhf_sto3g():
 def test_h2o_rpbepbe_ccpvtz():
     # check total values of decomposition against in h2o_rpbepbe_sto3g.log
     with path('chemtools.data', 'h2o_rpbepbe_sto3g.fchk') as fname:
-        mol_iqa = IQA.from_file(fname, grid_type='becke', scheme='H')
+        mol_iqa = IQA.from_file(fname, scheme='H')
         results_iqa = mol_iqa.iqa(dft_exch="gga_x_pbe", dft_corr="gga_c_pbe")
         assert_allclose(results_iqa['nn_total'], 9.1559536481, rtol=1.e-4, atol=0.)
         assert_allclose(results_iqa['en_total'], -1.968736981462e+02    , rtol=1.e-4, atol=0.)

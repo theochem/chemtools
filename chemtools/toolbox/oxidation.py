@@ -102,15 +102,14 @@ class EOS(object):
         elif spin == 'b':
             ne = int(self.molecule.mo.nelectrons[1])
         else:
-            raise NotImplementedError('Not clear what to do here!')
+            raise NotImplementedError()
 
         # defining fragments/atoms
         if fragments is None:
             self._frags = [[index] for index in range(len(self.molecule.numbers))]
         else:
             self._frags = fragments
-
-        orbitals = self.molecule.compute_molecular_orbital(self.part.grid.points, spin=spin).T
+        orbitals = self.molecule.compute_molecular_orbital(self.part.grid.points, spin=spin)
 
         # generating qij array for each atom/fragment
         arr = np.zeros((len(self._frags), ne, ne))

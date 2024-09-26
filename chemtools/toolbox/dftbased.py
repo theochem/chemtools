@@ -121,8 +121,8 @@ class DFTBasedTool(object):
         energy_a, energy_b = self._molecule.mo.energy
         # compute density of each alpha and beta orbital on grid points
         index = np.arange(1, self._molecule.ao.nbasis + 1)
-        ip_a = self._compute_orbital_expression(index, spin='a') ** 2
-        ip_b = self._compute_orbital_expression(index, spin='b') ** 2
+        ip_a = np.power(self._compute_orbital_expression(index, spin='a').T, 2)
+        ip_b = np.power(self._compute_orbital_expression(index, spin='b').T, 2)
         # compute local ionization potential of alpha and beta orbitals
         ip_a = np.dot(occ_a * energy_a, ip_a.T) / self._density
         ip_b = np.dot(occ_b * energy_b, ip_b.T) / self._density
@@ -213,8 +213,8 @@ class DFTBasedTool(object):
         energy_a, energy_b = self._molecule.mo.energy
         # compute density of each alpha and beta orbital on grid points
         index = np.arange(1, self._molecule.ao.nbasis + 1)
-        dens_a = self._compute_orbital_expression(index, spin='a') ** 2
-        dens_b = self._compute_orbital_expression(index, spin='b') ** 2
+        dens_a = np.power(self._compute_orbital_expression(index, spin='a').T, 2)
+        dens_b = np.power(self._compute_orbital_expression(index, spin='b').T, 2)
         # compute temperature-dependent density of alpha and beta orbitals
         dens_a /= (1. + np.exp(bt * (energy_a - spin_mu_a)))
         dens_b /= (1. + np.exp(bt * (energy_b - spin_mu_b)))
@@ -258,8 +258,8 @@ class DFTBasedTool(object):
         energy_a, energy_b = self._molecule.mo.energy
         # compute density of each alpha and beta orbital on grid points
         index = np.arange(1, self._molecule.ao.nbasis + 1)
-        dens_a = self._compute_orbital_expression(index, spin='a') ** 2
-        dens_b = self._compute_orbital_expression(index, spin='b') ** 2
+        dens_a = np.power(self._compute_orbital_expression(index, spin='a').T, 2)
+        dens_b = np.power(self._compute_orbital_expression(index, spin='b').T, 2)
         # compute temperature-dependent density of alpha and beta orbitals
         factor_a = np.exp(bt * (energy_a - spin_mu_a))
         factor_b = np.exp(bt * (energy_b - spin_mu_b))

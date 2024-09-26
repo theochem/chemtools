@@ -236,7 +236,7 @@ class GeneralGlobalTool(BaseGlobalTool):
         result = root(n_max_eqn, guess)
         print(result)
         if result.success:
-            n_max = np.asscalar(result.x)
+            n_max = result.x.item()
             # n_ceil = math.ceil(n_max)
             # n_floor = math.floor(n_max)
             # e_ceil = self._expr.subs(self._n_symb, math.ceil(n_max))

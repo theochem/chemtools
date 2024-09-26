@@ -2,7 +2,7 @@
 # ChemTools is a collection of interpretive chemical tools for
 # analyzing outputs of the quantum chemistry calculations.
 #
-# Copyright (C) 2016-2023 The ChemTools Development Team
+# Copyright (C) 2016-2024 The ChemTools Development Team
 #
 # This file is part of ChemTools.
 #
@@ -23,15 +23,17 @@
 """Module for Interacting quantum atoms(IQA)."""
 
 import logging
+from os.path import dirname, join
+from glob import glob
 
-import copy as copy
 import numpy as np
 from numpy.testing import assert_almost_equal
 
-from chemtools.toolbox.utils import check_arg_molecule, \
-                                    get_horton_analytical_components, \
-                                    get_molecular_grid, get_libxc_xc_density, \
-                                    compute_molecular_orbitals_from_ao
+import pylibxc as pylibxc
+
+from chemtools.toolbox.utils import check_arg_molecule, get_molecular_grid,compute_molecular_orbitals_from_ao
+
+import gbasis as gbasis
 from gbasis.wrappers import from_iodata
 from gbasis.evals.density import evaluate_density
 from gbasis.evals.density import evaluate_general_kinetic_energy_density
@@ -40,16 +42,20 @@ from gbasis.evals.density import evaluate_density_gradient
 from gbasis.evals.eval import evaluate_basis
 from gbasis.evals.eval_deriv import evaluate_deriv_basis
 from gbasis.integrals.point_charge import point_charge_integral
+from gbasis.integrals.kinetic_energy import kinetic_energy_integral
+from gbasis.integrals.nuclear_electron_attraction import nuclear_electron_attraction_integral
+from gbasis.integrals.electron_repulsion import electron_repulsion_integral
+from gbasis.integrals.libcint import CBasis
+
+from iodata.periodic import num2sym
+
+from grid.molgrid import MolGrid
+
 from chemtools.utils.cube import UniformGrid
 from chemtools.wrappers.grid import MolecularGrid
 from chemtools.wrappers.molecule import Molecule
 from chemtools.wrappers.part import DensPart
 
-from grid.ngrid import Ngrid
-from grid.molgrid import MolGrid
-
-from horton.meanfield import RLibXCLDA, RLibXCGGA, RLibXCHybridGGA, RLibXCMGGA, RLibXCHybridMGGA
-from horton.cache import Cache
 
 class IQA(object):
     """Interacting Quantum Atoms (IQA) Class."""
@@ -102,16 +108,18 @@ class IQA(object):
             raise TypeError(
                 f"Argument grid should be an instance of MolecularGrid or UniformGrid class. Got {grid.__class__.__name__}"
             )
-        # if not (molecule.coordinates == grid.centers).all():
-        #     raise ValueError("Molecule and Grid initialized from different molecules")
+        if not (molecule.coordinates == grid.atcoords).all():
+            raise ValueError("Molecule and Grid initialized from different molecules")
         # Check optional grid_2 and part_2
         if grid_2:
             if not isinstance(grid_2, UniformGrid) and not isinstance(grid_2, MolecularGrid):
                 raise TypeError(
                     "Argument part should be an instance of MolecularGrid or UniformGrid class."
                 )
+            if not (molecule.coordinates == grid_2.atcoords).all():
+                raise ValueError("Molecule and Grid-2 initialized from different molecules")
             if not (grid_2.numbers == molecule.atnums).all():
-                raise ValueError("Grid_2 molecule different from molecule")
+                raise ValueError("Grid-2 molecule different from molecule")
         if part_2 is not None:
             if not isinstance(part, DensPart) and part.__class__.__name__ not in ['VarHirshfeld', 'HirshfeldI','Hirshfeld']:
                 raise TypeError('Argument part should be an instance of DensPart class or VarHirshfeld from rhopart.')
@@ -161,7 +169,7 @@ class IQA(object):
             raise TypeError(
                 f"Argument grid should be an instance of MolecularGrid or UniformGrid class. Got {grid.__class__.__name__}"
             )
-        if not (molecule.coordinates == grid.centers).all():
+        if not (molecule.coordinates == grid.atcoords).all():
             raise ValueError("Molecule and Grid initialized from different molecules")
 
         # Check/Initialize DensPart object
@@ -194,7 +202,7 @@ class IQA(object):
         return cls(molecule, basis, one_rdm, grid, part)
 
     @classmethod
-    def from_file(cls, fname, grid_type=None, scheme=None):
+    def from_file(cls, fname, scheme=None):
         """Initialize Interacting Quantum Atoms (IQA) class from wave-function file.
 
         Parameters
@@ -211,7 +219,6 @@ class IQA(object):
         molecule = Molecule.from_file(fname)
 
         # Initialize grid
-        # TODO: Add grid type argument to get_molecular_grid
         grid = get_molecular_grid(molecule)
 
         return cls.from_molecule(molecule, grid, scheme=scheme)
@@ -235,32 +242,36 @@ class IQA(object):
         molecule = self.molecule
         basis = self.basis
         dm = self.dm
-        grid = self.grid
         part = self.part
         rho = self.dens
 
         # Initialize results dict
         iqa_results = {}
 
-        logging.info('INITIALIZING INTERACTING QUANTUM ATOMS(IQA) CALCULATION')
+        logging.info('INITIALIZING INTERACTING QUANTUM ATOMS(IQA) ATOMIC CALCULATION')
         iqa_results['nn_total'] = self.nn_iqa()
         iqa_results['en_total'], iqa_results['en_atomic'] = self.en_iqa()
         iqa_results['kin_total'], iqa_results['kin_atomic'], \
             iqa_results['kin_total_posdef'], iqa_results['kin_atomic_posdef']= self.kin_iqa()
-        analytical_comp = get_horton_analytical_components(molecule)
-        nn_horton = analytical_comp['nn']
-        ne_horton = np.trace(dm.dot(analytical_comp['na']))
-        kinetic_horton = np.trace(dm.dot(analytical_comp['kin']))
-        # todo: test gbasis
+        # NN
+        rab = np.triu(np.linalg.norm(molecule.atcoords[:, None]- molecule.atcoords, axis=-1))
+        at_charges = np.triu(molecule.atnums[:, None] * molecule.atnums)[np.where(rab > 0)]
+        nn_int= np.sum(at_charges / rab[rab > 0])
+        # NE
+        ne_int = nuclear_electron_attraction_integral(basis, molecule.atcoords, molecule.atnums)
+        ne_int = np.trace(dm.dot(ne_int))
+        #KINETIC
+        kin_int = kinetic_energy_integral(basis)
+        kin_int = np.trace(dm.dot(kin_int))
+
 
         dft_xc_edens = {}
         # assuming dft_corr and dft_exch specified together
         if dft_corr and dft_exch:
-            dft_xc_edens.update(get_libxc_xc_density(molecule, grid, analytical_comp, dft_exch, dft_corr))
             iqa_results['x_hf_total'], iqa_results['coul_total'], iqa_results['x_hf_atomic'], \
             iqa_results['coul_atomic'] = self.ee_iqa_hf()
-            iqa_results['c_total'], iqa_results['c_atomic'] = self.ee_iqa_dft(rho, dft_xc_edens["edens_c"])
-            iqa_results['x_total'], iqa_results['x_atomic'] = self.ee_iqa_dft(rho, dft_xc_edens["edens_x"])
+            iqa_results['c_total'], iqa_results['c_atomic'], coeff_mix = self.ee_iqa_dft(rho, dft_corr)
+            iqa_results['x_total'], iqa_results['x_atomic'], coeff_mix = self.ee_iqa_dft(rho, dft_exch)
             if 'coeff_mix' in dft_xc_edens.keys() and dft_xc_edens['coeff_mix']:
                 if dft_xc_edens['coeff_mix']:
                     # Scaling HF exchange
@@ -271,18 +282,13 @@ class IQA(object):
                 iqa_results.pop('x_hf_atomic')
 
         elif dft_exch:
-            dft_xc_edens.update(
-                get_libxc_xc_density(molecule, grid, analytical_comp, dft_exch))
             iqa_results['x_hf_total'], iqa_results['coul_total'], \
                 iqa_results['x_hf_atomic'], iqa_results['coul_atomic'] = self.ee_iqa_hf()
-            iqa_results['xc_total'], iqa_results['xc_atomic'] = self.ee_iqa_dft(rho, dft_xc_edens["edens_xc"])
-            if 'coeff_mix' in dft_xc_edens.keys():
-                if dft_xc_edens['coeff_mix']:
-                    # Scaling HF exchange
-                    iqa_results['x_hf_total'] = iqa_results['x_hf_total'] * dft_xc_edens[
-                        'coeff_mix']
-                    iqa_results['x_hf_atomic'] = iqa_results['x_hf_atomic'] * dft_xc_edens[
-                        'coeff_mix']
+            iqa_results['xc_total'], iqa_results['xc_atomic'], coeff_mix = self.ee_iqa_dft(rho, dft_exch)
+            if coeff_mix:
+                # Scaling HF exchange
+                iqa_results['x_hf_total'] = iqa_results['x_hf_total'] * coeff_mix
+                iqa_results['x_hf_atomic'] = iqa_results['x_hf_atomic'] * coeff_mix
             else:
                 iqa_results.pop('x_hf_total')
                 iqa_results.pop('x_hf_atomic')
@@ -293,14 +299,14 @@ class IQA(object):
             raise ValueError(f'Need to specify an exchange functional too. Got {dft_exch}')
         logging.info('Summary IQA')
         print('Nucleus-Nucleus repulsion energy: ', iqa_results['nn_total'])
-        print('Nucleus-Nucleus repulsion energy (HORTON): ', nn_horton)
-        diff = abs(iqa_results['nn_total'] - nn_horton)
+        print('Nucleus-Nucleus repulsion energy (GBASIS): ', nn_int)
+        diff = abs(iqa_results['nn_total'] - nn_int)
         print('DIFF (kcal/mol) ', diff / 0.0015936014376406278)
 
         print('------------------------------------')
         print('Electron-Nucleus attraction energy: ', iqa_results['en_total'])
-        print('Electron-Nucleus attraction energy (HORTON): ', ne_horton)
-        diff = abs(iqa_results['en_total'] - ne_horton)
+        print('Electron-Nucleus attraction energy (GBASIS): ', ne_int)
+        diff = abs(iqa_results['en_total'] - ne_int)
         print('DIFF (kcal/mol) ', diff / 0.0015936014376406278)
         print()
         if part:
@@ -309,8 +315,8 @@ class IQA(object):
                 print(f"{at}   {iqa_results['en_atomic'][idx]}")
         print('------------------------------------')
         print('Kinetic energy:  ', iqa_results['kin_total'])
-        print('Kinetic energy(HORTON):  ', kinetic_horton)
-        diff = abs(iqa_results['kin_total'] - kinetic_horton)
+        print('Kinetic energy(HORTON):  ', kin_int)
+        diff = abs(iqa_results['kin_total'] - kin_int)
         print('DIFF (kcal/mol) ', diff / 0.0015936014376406278)
         print()
         if part:
@@ -349,7 +355,7 @@ class IQA(object):
 
         if 'x_hf_total' in iqa_results.keys():
             print('HF Exchange: ', iqa_results['x_hf_total'])
-            print('COEFF MIX :', dft_xc_edens['coeff_mix'])
+            print('COEFF MIX :', coeff_mix)
             print()
             if part:
                 print('Atomic HF Exchange energy:')
@@ -368,22 +374,19 @@ class IQA(object):
 
         return iqa_results
 
-    def iqa_pairwise(self, dft_exch=None, dft_corr=None):
+    def iqa_pairwise(self, dft_exch=None, dft_corr=None, hf_int=False, ee_int=False):
         r"""Compute pairwise interaction for exchange-correlation energy density from DFT
         functionals using BOD partition method.
         """
 
         molecule = self.molecule
-        grid = self.grid
+        basis = self.basis
 
-        analytical_comp = get_horton_analytical_components(molecule)
-        dft_xc_edens = {}
+        logging.info('INITIALIZING INTERACTING QUANTUM ATOMS(IQA) PAIRWISE CALCULATION')
         # assuming dft_corr and dft_exch specified together
         if dft_corr and dft_exch:
-            data_meanfield = get_libxc_xc_density(molecule, grid, analytical_comp, dft_exch, dft_corr)
-            meanfield_obj_x, meanfield_obj_c  = data_meanfield[-2:]
-            dft_exch_ab = self.ee_iqa_dft_pairwise(meanfield_obj_x)
-            dft_coul_ab = self.ee_iqa_dft_pairwise(meanfield_obj_c)
+            dft_exch_ab, bod = self.ee_iqa_dft_pairwise(dft_exch)
+            dft_coul_ab, bod = self.ee_iqa_dft_pairwise(dft_corr)
             logging.info("CALCULATION: DFT EXCHANGE/CORRELATION PAIRWISE")
             print('dft_exch_ab')
             print(dft_exch_ab)
@@ -391,39 +394,148 @@ class IQA(object):
             print(dft_coul_ab)
             print('dft_total_ab')
             print(dft_exch_ab + dft_coul_ab)
-            logging.info("CALCULATION: HF COULOMB AND EXCHANGE PAIRWISE")
-            logging.warning("6n integrals can be long")
-            ab_hf_coul, ab_hf_exch = self.ee_iqa_hf_pairwise()
-            print('ab_hf_coul')
-            print(ab_hf_coul)
-            print('ab_hf_exch')
-            print(ab_hf_exch)
-            iqa_pairwise_results = {
-                # 'dft_exch_ab':dft_exch_ab, 'dft_coul_ab':dft_coul_ab,
-                 'ab_hf_exch':ab_hf_exch, 'ab_hf_coul':ab_hf_coul
-            }
+            if hf_int:
+                logging.info("CALCULATION: HF COULOMB AND EXCHANGE PAIRWISE")
+                logging.warning("6n integrals can be long")
+                ab_hf_coul, ab_hf_exch = self.ee_iqa_hf_pairwise()
+                print('ab_hf_coul')
+                print(ab_hf_coul)
+                print('ab_hf_exch')
+                print(ab_hf_exch)
+                iqa_pairwise_results = {
+                    'dft_exch_ab':dft_exch_ab, 'dft_coul_ab':dft_coul_ab,
+                     'ab_hf_exch':ab_hf_exch, 'ab_hf_coul':ab_hf_coul, 'bod':bod
+                }
+            else:
+                logging.info("SKIPPED: HF COULOMB AND EXCHANGE PAIRWISE")
+                logging.info("ONLY AB TERMS FOR DFT")
+                iqa_pairwise_results = {
+                    'dft_exch_ab': dft_exch_ab, 'dft_coul_ab': dft_coul_ab,'bod':bod
+                }
 
             return iqa_pairwise_results
 
 
         elif dft_exch:
-            data_meanfield = get_libxc_xc_density(molecule, grid, analytical_comp, dft_exch)
-            meanfield_obj_xc = data_meanfield[-1]
-            dft_xc_ab = self.ee_iqa_dft_pairwise(meanfield_obj_xc)
+            dft_xc_ab, bod = self.ee_iqa_dft_pairwise(dft_exch)
             print('dft_xc_ab')
             print(dft_xc_ab)
-            ab_hf_coul, ab_hf_exch = self.ee_iqa_hf_pairwise()
-            print('ab_hf_coul')
-            print(ab_hf_coul)
-            print('ab_hf_exch')
-            print(ab_hf_exch)
-            iqa_pairwise_results = {
-                # 'dft_xc_ab': dft_xc_ab,
-                'ab_hf_exch': ab_hf_exch, 'ab_hf_coul': ab_hf_coul
-            }
+            if hf_int:
+                logging.info("CALCULATION: HF COULOMB AND EXCHANGE PAIRWISE")
+                logging.warning("6n integrals can be long")
+                ab_hf_coul, ab_hf_exch = self.ee_iqa_hf_pairwise()
+                print('ab_hf_coul')
+                print(ab_hf_coul)
+                print('ab_hf_exch')
+                print(ab_hf_exch)
+                iqa_pairwise_results = {
+                    'dft_xc_ab': dft_xc_ab,
+                    'ab_hf_exch': ab_hf_exch, 'ab_hf_coul': ab_hf_coul, 'bod':bod
+                }
+            else:
+                logging.info("SKIPPED: HF COULOMB AND EXCHANGE NUM INTEGRATION AB TERMS")
+                logging.info("ONLY AB TERMS FOR DFT")
+                iqa_pairwise_results = {
+                    'dft_xc_ab': dft_xc_ab,'bod':bod
+                }
+        else:
+            raise ValueError("A libxc must be specified")
 
-            return iqa_pairwise_results
+        # Print results
+        if ee_int:
+            logging.info("CALCULATION: INTEGRAL EE COULOMB/EXCHANGE")
+            flag_libcint = len(glob(join(dirname(gbasis.__file__), "integrals", "lib", "libcint.so*")))
+            # DEBUG libcint
+            # print(flag_libcint)
+            if flag_libcint > 0:
+                logging.info("USING LIBCINT LIBRARY")
+                atoms = [num2sym[z] for z in molecule.numbers]
+                # check if any cartesian shell
+                cart_flag = [s.coord_type for s in basis]
+                # DEBUG cart/sph
+                # print(cart_flag)
+                # todo: double check below filter
+                if "cartesian" not in cart_flag:
+                    cbasis = CBasis(basis, atoms, molecule.coordinates, coord_type="cartesian")
+                else:
+                    cbasis = CBasis(basis, atoms, molecule.coordinates)
 
+                # Computing ee integrals
+                int2e_mo = cbasis.electron_repulsion_integral(transform=molecule._iodata.mo.coeffs.T,
+                                                                notation='chemist')
+            else:
+                logging.info("USING GBASIS PYTHON IMPLEMENTATION")
+                logging.warning("EXPECT LONG COMPUTATION")
+                int2e_mo = electron_repulsion_integral(basis, transform=molecule._iodata.mo.coeffs.T,
+                                                       notation='chemist')
+
+            j_coul = 0
+            k_ex = 0
+            # Mask only occupied Molecular orbitals
+            occ_mo = molecule._iodata.mo.occs[molecule._iodata.mo.occs > 0].shape[0]
+            for i in range(occ_mo):
+                for j in range(occ_mo):
+                    j_coul += 2 * int2e_mo[i, i, j, j]
+                    k_ex += int2e_mo[i, j, i, j]
+
+
+        print('SUMMARY IQA-AB TERMS')
+
+        print("DFT AA/AB TERMS")
+        print("DFT ex parition based on:")
+        print("Gimferrer M, Salvador P. Exact decompositions of the total KS-DFT exchange–correlation energy into one-and two-center terms. The Journal of Chemical Physics. 2023 Jun 21;158(23).")
+        print("Salvador P, Mayer I. One-and two-center physical space partitioning of the energy in the density functional theory. The Journal of chemical physics. 2007 Jun 21;126(23).")
+        if dft_exch and dft_corr:
+            print('DTF Exchange energy: ', np.sum(iqa_pairwise_results['dft_x_ab']))
+            print('DTF Correlation energy: ', np.sum(iqa_pairwise_results['dft_c_ab']))
+            print()
+            print('AA/AB terms DFT Exchange energy:')
+            for idx1, at1 in enumerate(molecule.atnums):
+                for idx2 in range(idx1+1):
+                    print(f"{at1}({idx1+1}){molecule.atnums[idx2]}({idx2+1}) {iqa_pairwise_results['dft_x_ab'][idx1][idx2]}")
+            print('AA/AB terms DFT Correlation energy:')
+            for idx1, at1 in enumerate(molecule.atnums):
+                for idx2 in range(idx1+1):
+                    print(
+                        f"{at1}({idx1+1}){molecule.atnums[idx2]}({idx2+1}) {iqa_pairwise_results['dft_c_ab'][idx1][idx2]}")
+
+        if dft_exch and not dft_corr:
+            print('DTF Exchange-Correlation energy: ', np.sum(iqa_pairwise_results['dft_xc_ab']))
+            print()
+            print('Atomic DFT Exchange-Correlation energy:')
+            print('AA/AB terms DFT Exchange energy:')
+            for idx1, at1 in enumerate(molecule.atnums):
+                for idx2 in range(idx1+1):
+                    print(
+                        f"{at1}({idx1+1}){molecule.atnums[idx2]}({idx2+1}) {iqa_pairwise_results['dft_xc_ab'][idx1][idx2]}")
+        print('------------------------------------')
+        if hf_int:
+            print('Coulomb energy(NUM): ', np.sum(iqa_pairwise_results['ab_hf_coul']))
+            if ee_int:
+                print('Coulomb energy(GBASIS): ', j_coul)
+                print('DIFF (AU) :', np.sum(iqa_pairwise_results['ab_hf_coul']) - j_coul)
+                print('DIFF (Kcal) :', (np.sum(iqa_pairwise_results['ab_hf_coul']) - j_coul) / 0.0015936014376406278)
+            print('Exchange energy(NUM): ', np.sum(iqa_pairwise_results['ab_hf_exch']))
+            if ee_int:
+                print('HF Exchange energy(GBASIS): ', k_ex)
+                print('DIFF (AU) :', np.sum(iqa_pairwise_results['ab_hf_exch']) - k_ex)
+                print('DIFF (Kcal) :',
+                      (np.sum(iqa_pairwise_results['ab_hf_exch']) - k_ex) / 0.0015936014376406278)
+
+            print()
+            print('AA/AB terms Coulomb energy:')
+            for idx1, at1 in enumerate(molecule.atnums):
+                for idx2 in range(idx1+1):
+                    print(
+                        f"{at1}({idx1+1}){molecule.atnums[idx2]}({idx2+1}) {iqa_pairwise_results['ab_hf_coul'][idx1][idx2]}")
+            print('AA/AB terms HF exchange energy:')
+            for idx1, at1 in enumerate(molecule.atnums):
+                for idx2 in range(idx1+1):
+                    print(
+                        f"{at1}({idx1+1}){molecule.atnums[idx2]}({idx2+1}) {iqa_pairwise_results['ab_hf_exch'][idx1][idx2]}")
+            print()
+
+        return iqa_pairwise_results
 
 
     def nn_iqa(self):
@@ -494,18 +606,19 @@ class IQA(object):
             if part.__class__.__name__ in ['VarHirshfeld', 'HirshfeldI','Hirshfeld']:
                 at_weights = part.weights
             else:
-                # Doing a for loop to get all at_weights. Using Part object from Horton does not allow
-                # to get all at the same time
-                at_weights = np.zeros((natoms, grid.points.shape[0]))
-                start = 0
-                stop = 0
-                for i in range(molecule.natom):
-                    if part.part.local:
-                        stop +=  part.part.cache.load("at_weights", i).shape[0]
-                        at_weights[i,start:stop] = part.part.cache.load("at_weights", i)
-                        start = stop
-                    else:
-                        at_weights[i] = part.part.cache.load("at_weights", i)
+                at_weights = part.at_weights
+            #     # Doing a for loop to get all at_weights. Using Part object from Horton does not allow
+            #     # to get all at the same time
+            #     at_weights = np.zeros((natoms, grid.points.shape[0]))
+            #     start = 0
+            #     stop = 0
+            #     for i in range(molecule.natom):
+            #         if part.part.local:
+            #             stop +=  part.part.cache.load("at_weights", i).shape[0]
+            #             at_weights[i,start:stop] = part.part.cache.load("at_weights", i)
+            #             start = stop
+            #         else:
+            #             at_weights[i] = part.part.cache.load("at_weights", i)
             # math
             en_atomic = -molecule.atnums[None, :, None] * (
                 (dens[None:,] * at_weights)[:, None, :] / rij[None, :, :]
@@ -513,15 +626,16 @@ class IQA(object):
             en_atomic_matrix = np.zeros((natoms, natoms))
             for i in range(natoms):
                 for j in range(natoms):
-                    if not part.__class__.__name__ in ['VarHirshfeld', 'HirshfeldI', 'Hirshfeld']:
-                        if part.part.local:
-                            at_grid = part.part.get_grid(i)
-                            local_prop = part.part.to_atomic_grid(i, en_atomic[i][j])
-                            en_atomic_matrix[i][j] = at_grid.integrate(local_prop)
-                        else:
-                            en_atomic_matrix[i][j] = grid.integrate(en_atomic[i][j])
-                    else:
-                        en_atomic_matrix[i][j] = grid.integrate(en_atomic[i][j])
+                    en_atomic_matrix[i][j] = grid.integrate(en_atomic[i][j])
+                    # if not part.__class__.__name__ in ['VarHirshfeld', 'HirshfeldI', 'Hirshfeld']:
+                    #     if part.part.local:
+                    #         at_grid = part.part.get_grid(i)
+                    #         local_prop = part.part.to_atomic_grid(i, en_atomic[i][j])
+                    #         en_atomic_matrix[i][j] = at_grid.integrate(local_prop)
+                    #     else:
+                    #         en_atomic_matrix[i][j] = grid.integrate(en_atomic[i][j])
+                    # else:
+                    #     en_atomic_matrix[i][j] = grid.integrate(en_atomic[i][j])
 
             logging.info("Decomposing Electron-Nuclei energy into atomic contributions")
             print(en_atomic_matrix)
@@ -585,22 +699,16 @@ class IQA(object):
         at_kin = None
         if part:
             if part.__class__.__name__ in ['VarHirshfeld', 'HirshfeldI', 'Hirshfeld']:
-                at_weights = part.weights
+                at_weights = part.part.weights
                 at_kin_raw = at_weights * output[None, :]
                 at_kin_raw_posdef = at_weights * output_posdef[None, :]
                 at_kin = np.array([grid.integrate(at_kin_raw[i]) for i in range(natoms)])
                 at_kin_posdef = np.array([grid.integrate(at_kin_raw_posdef[i]) for i in range(natoms)])
-                # at_weights = part.weights
-                # at_kin = np.array(natoms)
-                # for i, at_w in enumerate(part.weights):
-                #     at_kin_raw_at = at_w * output
-                #     at_kin[i] = grid.integrate(at_kin_raw_at)
             else:
                 at_kin = part.condense_to_atoms(output)
                 at_kin_posdef = part.condense_to_atoms(output_posdef)
             logging.info("Decomposing Kinetic energy into atomic contributions.")
             print(at_kin)
-            # assert 5 == 6
 
         print()
         return total_kin, at_kin, total_kin_posdef, at_kin_posdef
@@ -747,10 +855,6 @@ class IQA(object):
         Note: Sum of AA and AB terms should get back ee_iqa_hf
         """
 
-        # if not isinstance(self.grid._grid, MolGrid) or not isinstance(self.grid_2._grid, MolGrid):
-        #     raise TypeError(
-        #         f"Both grids should be an instance of MolGrid from qc-devs."
-        #     )
 
         # Draft 6N integration
         molecule = self.molecule
@@ -759,6 +863,13 @@ class IQA(object):
         part2 = self.part_2
         grid1 = self.grid
         grid2 = self.grid_2
+
+        if not grid2:
+            raise ValueError(f"Two grids are needed to perform 6N ee integration. Got {grid2}")
+        if not part2:
+            raise ValueError(f"Two partition objects are needed to perform 6N ee integration. Got {part2}")
+
+
         points1 = self.grid._grid.points
         points2 = self.grid_2._grid.points
         # Grid1
@@ -782,51 +893,40 @@ class IQA(object):
                 raise ValueError("6N integration uses local grids and 2 partition objects")
 
         for a in range(natoms):
-            if isinstance(self.grid._grid, MolGrid):
-                p_start_a = grid1.indices[a]
-                p_end_a = grid1.indices[a + 1]
-                atgrid_a = self.grid._grid._atgrids[a]
-            elif self.grid._grid.__class__.__name__ == 'BeckeMolGrid':
-                atgrid_a = grid1.subgrids[a]
-                p_start_a = atgrid_a.begin
-                p_end_a = atgrid_a.end
+            print(a)
+            atgrid_a = self.grid._grid.get_localgrid(molecule.coordinates[a], 300)
             for b in range(a + 1):
-                if isinstance(self.grid_2._grid, MolGrid):
-                    p_start_b = grid2.indices[b]
-                    p_end_b = grid2.indices[b + 1]
-                    atgrid_b = grid2._atgrids[b]
-                elif self.grid_2._grid.__class__.__name__ == 'BeckeMolGrid':
-                    atgrid_b = grid2.subgrids[b]
-                    p_start_b = atgrid_b.begin
-                    p_end_b = atgrid_b.end
+                print(b)
+                atgrid_b = grid2.get_localgrid(molecule.coordinates[b], 300)
+
                 integral_coul_ab = 0
                 integral_ex_ab = 0
-                for i_d1 in range(atgrid_a.points.shape[0]):
-                    progress = i_d1 / atgrid_a.points.shape[0]
-                    if progress * 100 in [15.0, 25.0, 50.0, 75.0, 90.0]:
-                        # print('asdfasdf')
-                        print('Progress: ', progress * 100)
+                # for p1 in range(atgrid_a.points.shape[0]):
+                for id1, p1 in enumerate(atgrid_a.indices):
+                    progress = p1 / atgrid_a.points.shape[0]
+                    if progress * 100 in [15.0, 25.0, 50.0, 75.0, 90.0, 100.0]:
+                        logging.info(f"PROGRESS 6N INTEGRATION: {progress * 100}%")
                     d_coul = 0
                     d_ex = 0
                     for i in range(occupied_mo):
                         for j in range(occupied_mo):
-                            d_coul += 2 * eval_mo_g1[i, i_d1 + p_start_a] * eval_mo_g1[i, i_d1 + p_start_a] * eval_mo_g2[j] * eval_mo_g2[j]
-                            d_ex += eval_mo_g1[i, i_d1 + p_start_a] * eval_mo_g1[j, i_d1 + p_start_a] * eval_mo_g2[j] * eval_mo_g2[i]
+                            d_coul += 2 * eval_mo_g1[i, p1] * eval_mo_g1[i, p1] * eval_mo_g2[j] * eval_mo_g2[j]
+                            d_ex += eval_mo_g1[i, p1] * eval_mo_g1[j, p1] * eval_mo_g2[j] * eval_mo_g2[i]
 
-                    rij = np.linalg.norm(atgrid_a.points[i_d1, :] - points2, axis=-1)
+                    rij = np.linalg.norm(grid1.points[p1, :] - points2, axis=-1)
                     rij[rij == 0] = 1.0e-9
                     d_ex = d_ex / rij
                     d_coul = d_coul / rij
                     # Subset part weights b
-                    w_subset_b = part2.weights[b][p_start_b: p_end_b]
+                    w_subset_b = part2.weights[b][atgrid_b.indices]
                     # Subset d_coul and d_ex
-                    d_coul_b = d_coul[p_start_b: p_end_b]
-                    d_ex_b = d_ex[p_start_b: p_end_b]
+                    d_coul_b = d_coul[atgrid_b.indices]
+                    d_ex_b = d_ex[atgrid_b.indices]
                     # Atomic integration for r2 using part weights
                     part_coul_b = atgrid_b.integrate(d_coul_b * w_subset_b)
                     part_ex_b = atgrid_b.integrate(d_ex_b * w_subset_b)
-                    integral_coul_ab += part_coul_b * (atgrid_a.weights[i_d1] * part.weights[a, p_start_a : p_end_a][i_d1])
-                    integral_ex_ab += part_ex_b * (atgrid_a.weights[i_d1] * part.weights[a, p_start_a : p_end_a][i_d1])
+                    integral_coul_ab += part_coul_b * (atgrid_a.weights[id1] * part.weights[a][p1])
+                    integral_ex_ab += part_ex_b * (atgrid_a.weights[id1] * part.weights[a][p1])
 
                 ab_hf_coul[a, b] = integral_coul_ab
                 ab_hf_exch[a, b] = integral_ex_ab
@@ -837,24 +937,58 @@ class IQA(object):
 
         return ab_hf_coul, ab_hf_exch
 
-    def ee_iqa_dft(self, dft_dens, dft_xc_dens):
+    def ee_iqa_dft(self, dft_dens, libxc_label):
 
+        molecule = self.molecule
         grid = self.grid
         part = self.part
-        molecule = self.molecule
+        basis = self.basis
+        dens = self.dens
 
         natoms = molecule.atnums.shape[0]
 
-        dft_xc_total = grid.integrate(dft_xc_dens, dft_dens)
+        # Test pylibxc
+        print(libxc_label)
+        func = pylibxc.LibXCFunctional(libxc_label, "unpolarized")
+
+        input_libxc = {}
+        # From pylibxc flags.py
+        # XC_FAMILY_LDA = 1
+        # XC_FAMILY_HYB_LDA = 128
+        if func.get_family() in [1, 128]:
+            input_libxc["rho"] = dens
+        # From pylibxc flags.py
+        # XC_FAMILY_GGA = 2
+        # XC_FAMILY_HYB_GGA = 32
+        elif func.get_family() in [2, 32]:
+            # Getting the norm-squared of the gradient of the spin-summed electron density(sigma_full)
+            grad = evaluate_density_gradient(self.dm, basis, grid.points)
+            sigma_full = 4*((grad/2)**2).sum(axis=1)
+            input_libxc["rho"] = dens
+            input_libxc["sigma"] = sigma_full
+
+        results_func = func.compute(input_libxc)
+        dft_xc_dens = results_func['zk'].reshape(-1)
+
+        # From pylibxc flags.py
+        # XC_FAMILY_HYB_GGA = 32
+        # XC_FAMILY_HYB_MGGA = 64
+        # XC_FAMILY_HYB_LDA = 128
+        if func.get_family() in [32, 128]:
+            coeff_mix = func.get_hyb_exx_coef()
+        else:
+            coeff_mix = None
+
+        dft_xc_total = grid.integrate(dens, dft_xc_dens)
 
         at_dft_xc = None
         if part:
             if part.__class__.__name__ in ['VarHirshfeld', 'HirshfeldI','Hirshfeld']:
-                at_weights = part.weights
+                at_weights = part.part.weights
                 at_dft_xc_raw = at_weights * dft_xc_dens[None, :]
-                at_dft_xc = np.array([grid.integrate(at_dft_xc_raw[i], dft_dens) for i in range(natoms)])
+                at_dft_xc = np.array([grid.integrate(at_dft_xc_raw[i], dens) for i in range(natoms)])
             else:
-                at_dft_xc = part.condense_to_atoms((dft_xc_dens * dft_dens))
+                at_dft_xc = part.condense_to_atoms((dft_xc_dens * dens))
             logging.info("Decomposing XC into atomic contributions.")
             print('XC component')
             print(at_dft_xc)
@@ -862,9 +996,9 @@ class IQA(object):
             assert_almost_equal(np.sum(at_dft_xc), dft_xc_total, decimal=2)
 
         print()
-        return dft_xc_total, at_dft_xc
-    # def ee_iqa_dft_pairwise(self, dft_dens, dft_xc_dens):
-    def ee_iqa_dft_pairwise(self, meanfield_dft):
+        return dft_xc_total, at_dft_xc, coeff_mix
+
+    def ee_iqa_dft_pairwise(self, libxc_label):
 
         grid = self.grid
         part = self.part
@@ -875,6 +1009,8 @@ class IQA(object):
         at_weights = part.weights
         natoms = molecule.atnums.shape[0]
 
+        # Get functional form pylibxc
+        func = pylibxc.LibXCFunctional(libxc_label, "unpolarized")
 
         # BOD for LDA
         # Evaluate Atomic orbitals basis
@@ -897,10 +1033,13 @@ class IQA(object):
                                             at_weights[b] * grid.integrate(sij_at_1[a][j][i])) * \
                                             eval_mo[i] * eval_mo[j]
         # Compute Grad BOD for GGA and Hyb
-        if meanfield_dft.__class__.__name__ in ["RLibXCGGA", "RLibXCHybridGGA"]:
+        # From pylibxc flags.py
+        # XC_FAMILY_GGA = 2
+        # XC_FAMILY_HYB_GGA = 32
+        if func.get_family() in [2, 32]:
             # BOD for GGA and Hybrid GGA
             # Evaluate molecular orbitals gradient
-            # todo: this could potentially go to utils but then Gbasis needs to be imported there
+            # todo: this could potentially go to utils
             orders_d = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
             eval_mo_grad = []
             eval_mo_grad_condensed = []
@@ -911,12 +1050,6 @@ class IQA(object):
                 eval_mo_grad.append(eval_mo_grad_order[:, :, None])
                 eval_mo_grad_condensed.append(eval_mo_grad_order)
             eval_mo_grad = np.concatenate(eval_mo_grad, axis=2)
-
-            # Getting the norm-squared of the gradient of the spin-summed electron density(sigma_full)
-            # grad = evaluate_density_gradient(self.dm, basis, grid.points)
-            # sigma_full = 4*((grad/2)**2).sum(axis=1)
-
-            # print(sigma_full)
 
             # Computing BOD for GGA functionals for each pair of atoms
             print(natoms, natoms, grid.points.shape[0])
@@ -941,83 +1074,40 @@ class IQA(object):
         # Combine atomic partition weights
         combine_atweights = np.zeros((at_weights[0].shape[0]))
         # Below code for grid is for Horton grid.
-        # todo: add code for qc-devs grid
         for at in range(natoms):
-            start = grid._grid.subgrids[at].begin
-            end =  grid._grid.subgrids[at].end
+            start = grid._grid.indices[at]
+            end = grid._grid.indices[at + 1]
             combine_atweights[start:end] = at_weights[at][start:end]
 
         # LDA
-        if meanfield_dft.__class__.__name__ == "RLibXCLDA":
+        input_libxc = {}
+        # From pylibxc flags.py
+        # XC_FAMILY_LDA = 1
+        # XC_FAMILY_HYB_LDA = 128
+        if func.get_family() in [1, 128]:
             dft_pairwise = np.zeros((natoms, natoms))
             for a in range(natoms):
                 for b in range(natoms):
-                    cache = Cache()
-                    cache['rho_full'] = bod[a,b]
-                    cache['combine_weights'] = combine_atweights
-                    dft_pairwise[a,b] = meanfield_dft.compute_energy(cache, grid._grid)
+                    input_libxc["rho"] = bod[a, b]
+                    results_func = func.compute(input_libxc)
+                    dft_xc_dens = results_func['zk'].reshape(-1)
+                    dft_pairwise[a, b] = grid.integrate(
+                        (dft_xc_dens * bod[a, b] * combine_atweights))
 
         #GGA and Hyb
         # print(meanfield_dft.__class__.__name__)
-        if meanfield_dft.__class__.__name__ in ["RLibXCGGA", "RLibXCHybridGGA"]:
+        # From pylibxc flags.py
+        # XC_FAMILY_GGA = 2
+        # XC_FAMILY_HYB_GGA = 32
+        elif func.get_family() in [2, 32]:
             dft_pairwise = np.zeros((natoms, natoms))
             for a in range(natoms):
                 for b in range(natoms):
-                    cache = Cache()
-                    cache['rho_full'] = bod[a,b]
-                    cache['sigma_full'] = grad_bod[a,b]
-                    cache['combine_weights'] = combine_atweights
-                    dft_pairwise[a, b] = meanfield_dft.compute_energy(cache, grid._grid)
+                    input_libxc["rho"] = bod[a,b]
+                    input_libxc["sigma"] = grad_bod[a,b]
+                    results_func = func.compute(input_libxc)
+                    dft_xc_dens = results_func['zk'].reshape(-1)
+                    dft_pairwise[a, b] = grid.integrate((dft_xc_dens *bod[a,b] * combine_atweights))
 
 
-        return dft_pairwise
-
-
-
-    # def _coul_pairwise(self, grid1, grid2):
-    #     grid1 = grid1.reshape(1, -1)
-    #     rij = np.linalg.norm(grid1 - grid2, axis=-1)
-    #     density_1 = evaluate_density(self.dm, self.basis, grid1)
-    #     density_2 = evaluate_density(self.dm, self.basis, grid2)
-    #     rij[rij == 0] = 1.0e-9
-    #     output = density_1 * (density_2 / rij)
-    #     return output
-    #
-    # def _exch_pairwise(self, grid1, grid2):
-    #
-    #     molecule = self.molecule
-    #     basis = self.basis
-    #     part = self.part
-    #     # self.part.weights[0], self.part_2.weights[1]
-    #     grid1 = grid1.reshape(1, -1)
-    #     # Evaluate basis set orbitals
-    #     # grid1 == 1 point
-    #     eval_ao_g1 = evaluate_basis(basis, grid1)
-    #     # grid2 == Npoints
-    #     eval_ao_g2 = evaluate_basis(basis, grid2)
-    #     # Convert to Molecular orbitals
-    #     eval_mo_g1 = np.zeros((molecule._iodata.mo.coeffs.T.shape[0], eval_ao_g1.shape[1]))
-    #     eval_mo_g2 = np.zeros((molecule._iodata.mo.coeffs.T.shape[0], eval_ao_g2.shape[1]))
-    #     for i in range(molecule._iodata.mo.coeffs.T.shape[0]):
-    #         mo_g1 = np.zeros((eval_ao_g1.shape[1]))
-    #         mo_g2 = np.zeros((eval_ao_g2.shape[1]))
-    #         for mu in range(eval_ao_g1.shape[0]):
-    #             mo_g1 += molecule._iodata.mo.coeffs.T[i, mu] * eval_ao_g1[mu, :]
-    #             mo_g2 += molecule._iodata.mo.coeffs.T[i, mu] * eval_ao_g2[mu, :]
-    #         eval_mo_g1[i] = mo_g1
-    #         eval_mo_g2[i] = mo_g2
-    #
-    #     # Compute exchange density from Molecular orbitals
-    #     # Because only restricted _occs_a.shape[0] == _occs_b.shape[0]
-    #     occupied_mo = molecule._iodata.mo.occs[molecule._iodata.mo.occs > 0].shape[0]
-    #     d_ex = 0
-    #     for i in range(occupied_mo):
-    #         for j in range(occupied_mo):
-    #             d_ex += eval_mo_g1[i] * eval_mo_g1[j] * eval_mo_g2[j] * eval_mo_g2[i]
-    #             print('d_ex', d_ex)
-    #
-    #     rij = np.linalg.norm(grid1 - grid2, axis=-1)
-    #     rij[rij == 0] = 1.0e-9
-    #     output = d_ex / rij
-    #
-    #     return -output
+        return dft_pairwise, bod

@@ -60,7 +60,7 @@ class TopologicalTool(Topology):
         self.find_critical_points()
 
     @classmethod
-    def from_molecule(cls, molecule, spin="ab", index=None, points=None):
+    def from_molecule(cls, molecule, spin="ab", points=None):
         """Initialize class from `Molecule` object for topological analysis of electron density.
 
         Parameters
@@ -79,13 +79,13 @@ class TopologicalTool(Topology):
         """
         if points is None:
             points = UniformGrid.from_molecule(molecule, spacing=0.1, extension=0.1).points
-        func_dens = cls._wrapper_compute_density(molecule, spin=spin, index=index)
-        func_grad = cls._wrapper_compute_gradient(molecule, spin=spin, index=index)
-        func_hess = cls._wrapper_compute_hessian(molecule, spin=spin, index=index)
+        func_dens = cls._wrapper_compute_density(molecule, spin=spin)
+        func_grad = cls._wrapper_compute_gradient(molecule, spin=spin)
+        func_hess = cls._wrapper_compute_hessian(molecule, spin=spin)
         return cls(func_dens, func_grad, func_hess, points, molecule.coordinates)
 
     @classmethod
-    def from_file(cls, fname, spin="ab", index=None, points=None):
+    def from_file(cls, fname, spin="ab", points=None):
         """Initialize class from wave-function file for topological analysis of electron density.
 
         Parameters
@@ -103,7 +103,7 @@ class TopologicalTool(Topology):
 
         """
         molecule = Molecule.from_file(fname)
-        return cls.from_molecule(molecule, spin=spin, index=index, points=points)
+        return cls.from_molecule(molecule, spin=spin, points=points)
 
     def generate_scripts(self, fname, radius=0.2):
         """Generate VMD script to visualize critical points & gradient path.
@@ -123,32 +123,32 @@ class TopologicalTool(Topology):
         print_vmd_script_topology(fname, cps, radius=radius)
 
     @staticmethod
-    def _wrapper_compute_density(molecule, spin, index):
+    def _wrapper_compute_density(molecule, spin):
         def compute_density(point):
             if point.ndim == 1:
                 point = point[np.newaxis, :]
-            dens = molecule.compute_density(point, spin, index)
+            dens = molecule.compute_density(point, spin)
             return dens
         return compute_density
 
     @staticmethod
-    def _wrapper_compute_gradient(molecule, spin, index):
+    def _wrapper_compute_gradient(molecule, spin):
         def compute_gradient(point):
             revert = False
             if point.ndim == 1:
                 point = point[np.newaxis, :]
                 revert = True
-            grad = molecule.compute_gradient(point, spin, index)
+            grad = molecule.compute_gradient(point, spin)
             if revert:
                 grad = grad.flatten()
             return grad
         return compute_gradient
 
     @staticmethod
-    def _wrapper_compute_hessian(molecule, spin, index):
+    def _wrapper_compute_hessian(molecule, spin):
         def compute_hessian(point):
             if point.ndim == 1:
                 point = point[np.newaxis, :]
-            hess = molecule.compute_hessian(point, spin, index)[0]
+            hess = molecule.compute_hessian(point, spin)[0]
             return hess
         return compute_hessian

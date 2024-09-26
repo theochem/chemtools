@@ -2,7 +2,7 @@
 # ChemTools is a collection of interpretive chemical tools for
 # analyzing outputs of the quantum chemistry calculations.
 #
-# Copyright (C) 2016-2019 The ChemTools Development Team
+# Copyright (C) 2016-2024 The ChemTools Development Team
 #
 # This file is part of ChemTools.
 #
@@ -25,10 +25,18 @@
 import logging
 import numpy as np
 
-from horton.gbasis.cext import GOBasis
-from horton.meanfield.orbitals import Orbitals
+# from horton.gbasis.cext import GOBasis
+# from horton.meanfield.orbitals import Orbitals
 from iodata import load_one
-from iodata.basis import HORTON2_CONVENTIONS, convert_conventions
+# from iodata.basis import HORTON2_CONVENTIONS, convert_conventions
+
+from gbasis.wrappers import from_iodata
+from gbasis.evals.eval import evaluate_basis
+from gbasis.evals.density import evaluate_density, evaluate_density_gradient, \
+    evaluate_density_laplacian, evaluate_density_hessian, evaluate_posdef_kinetic_energy_density
+from gbasis.evals.electrostatic_potential import electrostatic_potential
+from gbasis.integrals.overlap import overlap_integral
+
 
 try:
     from importlib_resources import path
@@ -54,71 +62,16 @@ class Molecule(object):
         self._numbers = self._iodata.atnums
         self._pseudo_numbers = self._iodata.atcorenums
 
-        # make an instance of AtomicOrbitals (which wraps HORTON-obasis)
-        self._ao = None
+        #
         if hasattr(self._iodata, "obasis") and hasattr(self._iodata.obasis, "shells"):
-            # Create a Horton-obasis object
-            shell_map = []
-            shell_types = []
-            nprims = []
-            alphas = []
-            con_coeffs = []
-            for shell in self._iodata.obasis.shells:
-                for index, angmom in enumerate(shell.angmoms):
-                    if angmom > 1 and shell.kinds[index] == "p":
-                        shell_types.append(angmom * -1)
-                    else:
-                        shell_types.append(angmom)
-                    shell_map.append(shell.icenter)
-                    nprims.append(shell.exponents.shape[0])
-                    alphas.append(shell.exponents[:])
-                    con_coeffs.append(shell.coeffs[:, index])
+            # self._ao = iodata.obasis
+            self._ao = AtomicOrbitals(iodata.obasis)
+        else:
+            self._ao = None
 
-            shell_map = np.array(shell_map)
-            shell_types = np.array(shell_types)
-            nprims = np.array(nprims)
-            alphas = np.concatenate(alphas)
-            con_coeffs = np.concatenate(con_coeffs).reshape(-1)
-            obasis = GOBasis(self._coordinates, shell_map, nprims, shell_types, alphas, con_coeffs)
-            self._ao = AtomicOrbitals(obasis)
-
-        self._mo = None
         if hasattr(self._iodata, "mo") and hasattr(self._iodata.mo, "kind"):
             self._mo = MolecularOrbitals.from_molecule(self)
 
-        # FIXME: following code is pretty hacky. it will be used for the orbital partitioning code
-        # GOBasis object stores basis set to atom and angular momentum mapping
-        # by shell and not by contraction. So it needs to be converted
-        try:
-            ind_shell_atom = np.array(iodata.obasis.shell_map)
-            ind_shell_orbtype = np.array(iodata.obasis.shell_types)
-
-            def num_contr(orbtype):
-                """Return the number of contractions for the given orbital type.
-
-                Parameters
-                ----------
-                orbtype : int
-                    Horton's orbital type scheme.
-                    Positive number corresponds to cartesian type and negative number corresponds to
-                    spherical types.
-
-                Returns
-                -------
-                num_contr : int
-                    Number of contractions for the given orbital type.
-
-                """
-                if orbtype < 0:
-                    return 1 + 2 * abs(orbtype)
-                return 1 + orbtype + sum(i * (i + 1) // 2 for i in range(1, orbtype + 1))
-
-            numcontr_per_shell = np.array([num_contr(i) for i in ind_shell_orbtype])
-            # Duplicate each shell information by the number of contractions in shell
-            self._ind_basis_center = np.repeat(ind_shell_atom, numcontr_per_shell)
-            self._ind_basis_orbtype = np.repeat(ind_shell_orbtype, numcontr_per_shell)
-        except AttributeError:
-            pass
 
     @classmethod
     def from_file(cls, fname):
@@ -180,7 +133,7 @@ class Molecule(object):
         """Molecular orbital instance."""
         return self._mo
 
-    def compute_density_matrix(self, spin="ab", index=None):
+    def compute_dm(self, spin="ab"):
         """Compute the density matrix array for the specified spin orbitals.
 
         Parameters
@@ -193,7 +146,13 @@ class Molecule(object):
            from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
 
         """
-        return self.mo.compute_dm(spin, index=index)
+        if spin not in ["a", "b", "ab"]:
+            raise ValueError(f"Specify spin a, b or ab. Got {spin}")
+        else:
+            if self.mo:
+                return self.mo.dm(spin)
+            else:
+                raise ValueError(f"Molecular Orbitals is {self.mo} Dm is not available without Molecular Orbitals information")
 
     def compute_molecular_orbital(self, points, spin="ab", index=None):
         """Return molecular orbitals.
@@ -210,38 +169,51 @@ class Molecule(object):
            from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
 
         """
+        #
         self._check_argument(points)
-        # assign orbital index (HORTON index the orbitals from 0)
-        if index is None:
-            # include all occupied orbitals of specified spin
-            spin_index = {"a": 0, "b": 1}
-            index = np.arange(self.mo.homo_index[spin_index[spin]])
-        else:
-            # include specified set of orbitals
-            index = np.copy(np.asarray(index)) - 1
-            if index.ndim == 0:
-                index = np.array([index])
-            if np.any(index < 0):
-                raise ValueError("Argument index={0} cannot be less than one!".format(index + 1))
+        # from IOData MolecularOrbital class
+        # In case of restricted: shape = (nbasis, norba) = (nbasis, norbb).
+        # In case of unrestricted: shape = (nbasis, norba + norbb).
+        # In case of generalized: shape = (2 * nbasis, norb), where norb is the
+        # total number of orbitals. (optional)
 
-        dic_orbs = {"a": self._mo._orb_alpha, "b": self._mo._orb_alpha}
-        # get orbital expression of specified spin
-        if spin == "b" and not hasattr(self._iodata, "orb_beta"):
-            exp = self._mo._orb_alpha
-            return self._ao.compute_orbitals(exp, points, index)
-        elif spin == "a" or spin == "b":
-            exp = dic_orbs[spin]
-            return self._ao.compute_orbitals(exp, points, index)
+        # Load basis to Gbasis
+        basis = from_iodata(self._iodata)
+        # NOTE1: Gbasis shape == Horton.shape.T
+        # NOTE2: molecular orbitals are return in order
+        if spin == "a":
+            basis_mo = evaluate_basis(basis, points, transform= self._iodata.mo.coeffsa.T)
+        elif spin == "b":
+            basis_mo = evaluate_basis(basis, points, transform=self._iodata.mo.coeffsb.T)
+        # todo: check: this used to return the sum of a and b but I am not sure for, at least for
+        #  restricted, if it makes sense. I think for the option ab what makes sense is to return
+        #  both "a" and "b" spin orbitals matrices but not summed
         elif spin == "ab":
-            exp_a = self._mo._orb_alpha
-            exp_b = self._mo._orb_beta
-            return self._ao.compute_orbitals(exp_a, points, index) + self._ao.compute_orbitals(
-                exp_b, points, index
-            )
+            basis_mo = evaluate_basis(basis, points, transform=self._iodata.mo.coeffsa.T)
         else:
-            raise ValueError(f"Specify spin a, b or ab. Got {spin}")
+            raise ValueError(f"Spin should be a,b or ab.Got{spin}")
 
-    def compute_density(self, points, spin="ab", index=None):
+        # Filter by index
+        if isinstance(index, int):
+            return basis_mo[index-1]
+        elif isinstance(index, np.ndarray) and index.ndim == 0:
+            basis_mo_index = basis_mo[index-1]
+            return basis_mo_index
+        elif isinstance(index, np.ndarray) and index.ndim == 1:
+            basis_mo_index = [mo for i, mo in enumerate(basis_mo) if i + 1 in index]
+            basis_mo_index = np.array(basis_mo_index)
+            return basis_mo_index
+        elif isinstance(index, list):
+            basis_mo_index = [mo for i, mo in enumerate(basis_mo) if i + 1 in index]
+            basis_mo_index = np.array(basis_mo_index)
+            return basis_mo_index
+        elif not index:
+            return basis_mo
+        else:
+            raise ValueError(f"index should be integer, list, or numpy array")
+
+
+    def compute_density(self, points, spin="ab"):
         r"""Return electron density.
 
         Parameters
@@ -258,32 +230,18 @@ class Molecule(object):
         """
         self._check_argument(points)
 
-        # allocate output array
-        output = np.zeros((points.shape[0],), float)
+        # Load basis to Gbasis
+        basis = from_iodata(self._iodata)
 
-        # compute density
-        if index is None:
-            # get density matrix corresponding to the specified spin
-            dm = self.mo.compute_dm(spin)
-            # include all orbitals
-            output = self._ao.compute_density(dm, points)
+        if spin not in ["a", "b", "ab"]:
+            raise ValueError(f"Specify spin a, b or ab. Got {spin}")
         else:
-            # include subset of molecular orbitals
-            if spin == "ab":
-                # compute mo expression of alpha & beta orbitals
-                mo_a = self.compute_molecular_orbital(points, "a", index)
-                mo_b = self.compute_molecular_orbital(points, "b", index)
-                # add density of alpha & beta molecular orbitals
-                np.sum(mo_a**2, axis=1, out=output)
-                output += np.sum(mo_b**2, axis=1)
-            else:
-                # compute mo expression of specified molecular orbitals
-                mo = self.compute_molecular_orbital(points, spin, index)
-                # add density of specified molecular orbitals
-                np.sum(mo**2, axis=1, out=output)
-        return output
+            dm = self.compute_dm(spin=spin)
+            density = evaluate_density(dm, basis, points)
+            return density
 
-    def compute_gradient(self, points, spin="ab", index=None):
+
+    def compute_gradient(self, points, spin="ab"):
         r"""Return gradient of the electron density.
 
         Parameters
@@ -299,9 +257,18 @@ class Molecule(object):
 
         """
         self._check_argument(points)
-        return self._ao.compute_gradient(self.mo.compute_dm(spin, index=index), points)
 
-    def compute_hessian(self, points, spin="ab", index=None):
+        # Load basis to Gbasis
+        basis = from_iodata(self._iodata)
+
+        if spin not in ["a", "b", "ab"]:
+            raise ValueError(f"Specify spin a, b or ab. Got {spin}")
+        else:
+            dm = self.compute_dm(spin=spin)
+            gradient = evaluate_density_gradient(dm, basis, points, deriv_type="direct")
+            return gradient
+
+    def compute_hessian(self, points, spin="ab"):
         r"""Return hessian of the electron density.
 
         Parameters
@@ -317,9 +284,18 @@ class Molecule(object):
 
         """
         self._check_argument(points)
-        return self._ao.compute_hessian(self.mo.compute_dm(spin, index=index), points)
 
-    def compute_laplacian(self, points, spin="ab", index=None):
+        # Load basis to Gbasis
+        basis = from_iodata(self._iodata)
+
+        if spin not in ["a", "b", "ab"]:
+            raise ValueError(f"Specify spin a, b or ab. Got {spin}")
+        else:
+            dm = self.compute_dm(spin=spin)
+            hessian = evaluate_density_hessian(dm, basis, points, deriv_type="direct")
+            return hessian
+
+    def compute_laplacian(self, points, spin="ab"):
         r"""Return Laplacian of the electron density.
 
         Parameters
@@ -334,10 +310,18 @@ class Molecule(object):
            from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
 
         """
-        hess = self.compute_hessian(points, spin, index)
-        return np.trace(hess, axis1=1, axis2=2)
+        # Load basis to Gbasis
+        basis = from_iodata(self._iodata)
 
-    def compute_esp(self, points, spin="ab", index=None, charges=None):
+        if spin not in ["a", "b", "ab"]:
+            raise ValueError(f"Specify spin a, b or ab. Got {spin}")
+        else:
+            dm = self.compute_dm(spin=spin)
+            laplacian = evaluate_density_laplacian(dm, basis, points, deriv_type="direct")
+            return laplacian
+
+    # Todo: Include gbasis API options to compute_esp
+    def compute_esp(self, points, spin="ab", charges=None, charges_coords=None):
         r"""Return molecular electrostatic potential.
 
         The molecular electrostatic potential at point :math:`\mathbf{r}` is caused by the
@@ -368,14 +352,25 @@ class Molecule(object):
         # assign point charges
         if charges is None:
             charges = self.pseudo_numbers
+            charges_coords = self.coordinates
         elif not isinstance(charges, np.ndarray) or charges.shape != self.numbers.shape:
             raise ValueError(
-                "Argument charges should be a 1d-array with {0} shape.".format(self.numbers.shape)
-            )
-        dm = self.mo.compute_dm(spin, index=index)
-        return self._ao.compute_esp(dm, points, self.coordinates, charges)
+                f"Argument charges should be a 1d-array with {self.numbers.shape} shape.")
+        elif not isinstance(charges_coords, np.ndarray) or charges_coords.shape != self.coordinates.shape:
+            raise ValueError(
+                f"Argument charges should be a 2d-array with {self.coordinates.shape} shape.")
 
-    def compute_ked(self, points, spin="ab", index=None):
+        # Load basis to Gbasis
+        basis = from_iodata(self._iodata)
+
+        if spin not in ["a", "b", "ab"]:
+            raise ValueError(f"Specify spin a, b or ab. Got {spin}")
+        else:
+            dm = self.compute_dm(spin)
+            esp = electrostatic_potential(basis, dm, points, charges_coords, charges)
+            return esp
+
+    def compute_ked(self, points, spin="ab"):
         r"""Return positive definite or Lagrangian kinetic energy density.
 
         .. math::
@@ -395,7 +390,45 @@ class Molecule(object):
 
         """
         self._check_argument(points)
-        return self._ao.compute_ked(self.mo.compute_dm(spin, index=index), points)
+        # Load basis to Gbasis
+        basis = from_iodata(self._iodata)
+
+        if spin not in ["a", "b", "ab"]:
+            raise ValueError(f"Specify spin a, b or ab. Got {spin}")
+        else:
+            dm = self.compute_dm(spin)
+            ked = evaluate_posdef_kinetic_energy_density(dm, basis, points)
+            return ked
+
+    def compute_overlap(self, type_ovlp="atomic", spin="ab"):
+        r"""Return overlap matrix :math:`\mathbf{S}` of molecular or atomic orbitals.
+
+                .. math:: [\mathbf{S}]_{ij} = \int \phi_i(\mathbf{r}) \phi_j(\mathbf{r}) d\mathbf{r}
+                """
+        #
+        # Load basis to Gbasis
+        basis = from_iodata(self._iodata)
+
+        if type_ovlp == "atomic":
+            transform = None
+        elif type_ovlp == "molecular":
+            if spin == "a":
+                transform = self.coeffs_a.T
+            elif spin == "b":
+                transform = self.coeffs_b.T
+            elif spin == "ab":
+                transform = self.coeffs_a.T
+            else:
+                raise ValueError(f"Specify spin a, b or ab. Got {spin}")
+        else:
+            raise ValueError(f"Type of overlap must be either atomic or molecular. Got {type_ovlp}")
+
+
+        # todo: same situation as compute_molecular_orbital. For now it returns overlap using
+        #  coeffs a as transformation matrix because for restricted coffsa == coeffsb
+        ovlp = overlap_integral(basis, transform=transform)
+
+        return ovlp
 
     def _check_argument(self, points):
         """Check given arguments.
@@ -406,7 +439,9 @@ class Molecule(object):
            Cartesian coordinates of N points given as a 2D-array with (N, 3) shape.
 
         """
-        if not isinstance(points, np.ndarray) or points.ndim != 2 or points.shape[1] != 3:
+        if not isinstance(points, np.ndarray):
+            raise ValueError(f"Argument points should be of type array. Got {type(points)}")
+        if points.ndim != 2 or points.shape[1] != 3:
             raise ValueError("Argument points should be a 2D-array with 3 columns.")
         if not np.issubdtype(points.dtype, np.float64):
             raise ValueError("Argument points should be a 2D-array of floats!")
@@ -419,12 +454,10 @@ class Molecule(object):
 class MolecularOrbitals(object):
     """Molecular orbital class."""
 
-    def __init__(self, occs_a, occs_b, energy_a, energy_b, coeffs_a, coeffs_b, orb_alpha, orb_beta):
+    def __init__(self, occs_a, occs_b, energy_a, energy_b, coeffs_a, coeffs_b):
         self._occs_a, self._occs_b = occs_a, occs_b
         self._energy_a, self._energy_b = energy_a, energy_b
         self._coeffs_a, self._coeffs_b = coeffs_a, coeffs_b
-        self._orb_alpha = orb_alpha
-        self._orb_beta = orb_beta
 
     @classmethod
     def from_molecule(cls, mol):
@@ -437,9 +470,10 @@ class MolecularOrbitals(object):
 
         """
         # from IOData MolecularOrbital class
-        # restricted: shape = (nbasis, norba) = (nbasis, norbb)
-        # unrestricted: shape = (nbasis, norba) = (nbasis, norbb)
-        # generalized: shape = (2 * nbasis, norb), where norb is the total number of orbitals
+        # In case of restricted: shape = (nbasis, norba) = (nbasis, norbb).
+        # In case of unrestricted: shape = (nbasis, norba + norbb).
+        # In case of generalized: shape = (2 * nbasis, norb), where norb is the
+        # total number of orbitals. (optional)
         if mol._iodata.mo.kind == "generalized":
             raise NotImplementedError(
                 f"The generalized MOs are not supported, got {mol._iodata.mo.kind}"
@@ -451,23 +485,8 @@ class MolecularOrbitals(object):
         energy_b = mol._iodata.mo.energiesb
         coeffs_a = mol._iodata.mo.coeffsa
         coeffs_b = mol._iodata.mo.coeffsb
-        # Using loaded file format and HORTON conventions to convert coefficients
-        permutation, signs = convert_conventions(mol._iodata.obasis, HORTON2_CONVENTIONS)
-        coeffs_a = coeffs_a[permutation] * signs.reshape(-1, 1)
-        coeffs_b = coeffs_b[permutation] * signs.reshape(-1, 1)
 
-        # compute_molecular_orbitals() needs Horton Orbital objects `orbital_a` and `orbital_b`
-        orb_alpha = Orbitals(mol._iodata.obasis.nbasis, occs_a.shape[0])
-        orb_alpha.coeffs[:] = coeffs_a
-        orb_alpha.energies[:] = energy_a
-        orb_alpha.occupations[:] = occs_a
-
-        orb_beta = Orbitals(mol._iodata.obasis.nbasis, occs_b.shape[0])
-        orb_beta.coeffs[:] = coeffs_b
-        orb_beta.energies[:] = energy_b
-        orb_beta.occupations[:] = occs_b
-
-        return cls(occs_a, occs_b, energy_a, energy_b, coeffs_a, coeffs_b, orb_alpha, orb_beta)
+        return cls(occs_a, occs_b, energy_a, energy_b, coeffs_a, coeffs_b)
 
     @classmethod
     def from_file(cls, fname):
@@ -532,22 +551,19 @@ class MolecularOrbitals(object):
     def compute_overlap(self):
         return NotImplementedError
 
-    def compute_dm(self, spin="ab", index=None):
-        """Return HORTON density matrix object corresponding to the specified spin orbitals.
+    def dm(self, spin="ab"):
+        """Returns density matrix object corresponding to the specified spin orbitals.
 
         Parameters
         ----------
         spin : str, optional
            Type of occupied spin orbitals which can be either "a" (for alpha), "b" (for
            beta), and "ab" (for alpha + beta).
-        index : sequence of int, optional
-           Sequence of integers representing the occupied spin orbitals which are indexed
-           from 1 to :attr:`nbasis`. If ``None``, all orbitals of the given spin(s) are included.
 
         """
 
         if spin == "ab":
-            return self.compute_dm("a", index) + self.compute_dm("b", index)
+            return self.dm("a") + self.dm("b")
         elif spin == "a":
             arr = np.dot(self._coeffs_a * self._occs_a, self._coeffs_a.T)
         elif spin == "b":
@@ -555,18 +571,6 @@ class MolecularOrbitals(object):
         else:
             raise ValueError("Argument spin={0} is not recognized!".format(spin))
 
-        if index is not None:
-            # convert to numpy array
-            index = np.asarray(index)
-            # check
-            if index.ndim == 0:
-                index = index.reshape(1)
-            if index.ndim >= 2:
-                raise ValueError("Indices should be given as a one-dimensional numpy array.")
-            index -= 1
-            if np.any(index < 0):
-                raise ValueError("Indices cannot be less than 1. Note that indices start from 1.")
-            arr = arr[index[:, np.newaxis], index[np.newaxis, :]]
         return arr
 
 
@@ -586,7 +590,6 @@ class AtomicOrbitals(object):
             An instance of `Molecule` class.
 
         """
-        #Todo: Forgot to change this. This assumes old IOData
         basis = mol._iodata.obasis
         return cls(basis)
 
@@ -609,45 +612,17 @@ class AtomicOrbitals(object):
 
     @property
     def center_index(self):
-        # FIXME: following code is pretty hacky. it will be used for the orbital partitioning code
-        # GOBasis object stores basis set to atom and angular momentum mapping
-        # by shell and not by contraction. So it needs to be converted
-        try:
-            ind_shell_atom = np.array(self._basis.shell_map)
-            ind_shell_orbtype = np.array(self._basis.shell_types)
-
-            def num_contr(orbtype):
-                """Return the number of contractions for the given orbital type.
-
-                Parameters
-                ----------
-                orbtype : int
-                    Horton's orbital type scheme.
-                    Positive number corresponds to cartesian type and negative number corresponds to
-                    spherical types.
-
-                Returns
-                -------
-                num_contr : int
-                    Number of contractions for the given orbital type.
-
-                """
-                if orbtype < 0:
-                    return 1 + 2 * abs(orbtype)
-                return 1 + orbtype + sum(i * (i + 1) / 2 for i in range(1, orbtype + 1))
-
-            numcontr_per_shell = np.array([num_contr(i) for i in ind_shell_orbtype], dtype=int)
-            # Duplicate each shell information by the number of contractions in shell
-            ind_basis_center = np.repeat(ind_shell_atom, numcontr_per_shell)
-            # self._ind_basis_orbtype = np.repeat(ind_shell_orbtype, numcontr_per_shell)
-        except AttributeError:
-            pass
-        return ind_basis_center
+        # print('puta bidaaaa')
+        numcontr_per_shell = [int(shell.nbasis) for shell in self._basis.shells]
+        ind_shell_atom = [int(shell.icenter) for shell in self._basis.shells]
+        # Duplicate each shell information by the number of contractions in shell
+        ind_basis_center = np.repeat(ind_shell_atom, numcontr_per_shell)
+        return np.array(ind_basis_center)
 
     def compute_overlap(self):
         r"""Return overlap matrix :math:`\mathbf{S}` of atomic orbitals.
 
-        .. math:: [\mathbf{S}]_ij = int \phi_i(\mathbf{r}) \phi_j(\mathbf{r}) d\mathbf{r}
+        .. math:: [\mathbf{S}]_{ij} = \int \phi_i(\mathbf{r}) \phi_j(\mathbf{r}) d\mathbf{r}
 
         """
         # make linear algebra factory
@@ -685,7 +660,9 @@ class AtomicOrbitals(object):
         return self._basis.compute_grid_density_dm(dm, points)
 
     def compute_gradient(self, dm, points):
-        """Return gradient of the electron density evaluated on the a set of points.
+        # todo: this functionality is already coded in the compute_gradient in Molecule class
+        #  _basis == ao
+        """Return gradient of the electron density evaluated on a set of points.
 
         Parameters
         ----------

@@ -34,7 +34,7 @@ from chemtools.wrappers.molecule import Molecule, MolecularOrbitals
 class OrbPart(object):
     """Orbital Partitioning or Population Analysis Class."""
 
-    def __init__(self, mo, ao, numbers, scheme='mulliken'):
+    def __init__(self, molecule, scheme='mulliken'):
         r"""Initialize class from Molecule instance.
 
         Parameters
@@ -49,9 +49,10 @@ class OrbPart(object):
             Type of population analysis scheme.
 
         """
-        self._mo = mo
-        self._ao = ao
-        self._numbers = numbers
+        self._molecule = molecule
+        self._mo = molecule.mo
+        self._ao = molecule.ao
+        self._numbers = molecule.numbers
         self._scheme = scheme
         # compute weights
         if scheme == 'mulliken':
@@ -61,8 +62,8 @@ class OrbPart(object):
         else:
             raise ValueError("`scheme` must be one of 'mulliken' or 'lowdin'.")
         # compute atomic populations
-        dm = self._mo.compute_dm()
-        olp = self._ao.compute_overlap()
+        dm = self._mo.dm()
+        olp = self._molecule.compute_overlap(type_ovlp="atomic")
         self._pops = np.zeros(len(self._numbers))
         for i in range(len(self._numbers)):
             self._pops[i] = np.sum(olp * weight[i] * dm)
@@ -80,7 +81,7 @@ class OrbPart(object):
             Type of population analysis scheme.
 
         """
-        return cls(molecule.mo, molecule.ao, molecule.numbers, scheme=scheme)
+        return cls(molecule, scheme=scheme)
 
     @classmethod
     def from_file(cls, fname, scheme='mulliken'):
@@ -152,7 +153,7 @@ class OrbPart(object):
         """
         coeff_ab_mo_alpha, coeff_ab_mo_beta = self._mo.coefficient
         occupations_alpha, occupations_beta = self._mo.occupation
-        olp_ab_ab = self._ao.compute_overlap()
+        olp_ab_ab = self._molecule.compute_overlap(type_ovlp="atomic")
         num_atoms = len(self._numbers)
         ab_atom_indices = self._ao.center_index
 

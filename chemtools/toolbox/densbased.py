@@ -52,7 +52,7 @@ class DensityLocalTool(DensGradLapKedTool):
         super(DensityLocalTool, self).__init__(dens, grad, lap, ked)
 
     @classmethod
-    def from_molecule(cls, molecule, points, spin='ab', index=None):
+    def from_molecule(cls, molecule, points, spin='ab'):
         r"""Initialize class using instance of `Molecule` and points.
 
         Parameters
@@ -67,14 +67,14 @@ class DensityLocalTool(DensGradLapKedTool):
             Sequence of integers representing the index of spin orbitals.
 
         """
-        dens = molecule.compute_density(points, spin, index)
-        grad = molecule.compute_gradient(points, spin, index)
-        lap = molecule.compute_laplacian(points, spin, index)
-        ked = molecule.compute_ked(points, spin, index)
+        dens = molecule.compute_density(points, spin)
+        grad = molecule.compute_gradient(points, spin)
+        lap = molecule.compute_laplacian(points, spin)
+        ked = molecule.compute_ked(points, spin)
         return cls(dens, grad, lap, ked)
 
     @classmethod
-    def from_file(cls, fname, points, spin='ab', index=None):
+    def from_file(cls, fname, points, spin='ab'):
         r"""Initialize class from file.
 
         Parameters
@@ -90,4 +90,4 @@ class DensityLocalTool(DensGradLapKedTool):
 
         """
         molecule = Molecule.from_file(fname)
-        return cls.from_molecule(molecule, points, spin, index)
+        return cls.from_molecule(molecule, points, spin)

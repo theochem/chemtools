@@ -155,9 +155,9 @@ class NCI(BaseInteraction):
         # generate or check cubic grid
         grid = BaseInteraction._check_grid(molecule, grid)
         # compute density, gradient & hessian on cubic grid
-        dens = molecule.compute_density(grid.points, spin=spin, index=index)
-        grad = molecule.compute_gradient(grid.points, spin=spin, index=index)
-        hess = molecule.compute_hessian(grid.points, spin=spin, index=index)
+        dens = molecule.compute_density(grid.points, spin=spin)
+        grad = molecule.compute_gradient(grid.points, spin=spin)
+        hess = molecule.compute_hessian(grid.points, spin=spin)
         # compute reduced gradient
         rdgrad = DensGradTool(dens, grad).reduced_density_gradient
         return cls(dens, rdgrad, grid, hessian=hess)
@@ -359,9 +359,9 @@ class ELF(BaseInteraction):
         # generate cubic grid or check grid
         grid = BaseInteraction._check_grid(molecule, grid)
         # compute density, gradient & kinetic energy density on grid
-        dens = molecule.compute_density(grid.points, spin=spin, index=index)
-        grad = molecule.compute_gradient(grid.points, spin=spin, index=index)
-        kin = molecule.compute_ked(grid.points, spin=spin, index=index)
+        dens = molecule.compute_density(grid.points, spin=spin)
+        grad = molecule.compute_gradient(grid.points, spin=spin)
+        kin = molecule.compute_ked(grid.points, spin=spin)
         return cls(dens, grad, kin, grid, trans, trans_k, trans_a, denscut)
 
     @classmethod
@@ -531,9 +531,9 @@ class LOL(BaseInteraction):
         # generate cubic grid or check grid
         grid = BaseInteraction._check_grid(molecule, grid)
         # compute density, gradient & kinetic energy density on grid
-        dens = molecule.compute_density(grid.points, spin=spin, index=index)
-        grad = molecule.compute_gradient(grid.points, spin=spin, index=index)
-        ked = molecule.compute_ked(grid.points, spin=spin, index=index)
+        dens = molecule.compute_density(grid.points, spin=spin)
+        grad = molecule.compute_gradient(grid.points, spin=spin)
+        ked = molecule.compute_ked(grid.points, spin=spin)
         return cls(dens, grad, ked, grid, trans, trans_k, trans_a, denscut)
 
     @classmethod

@@ -25,7 +25,7 @@
 
 import numpy as np
 
-from horton import BeckeMolGrid
+# from horton import BeckeMolGrid
 from grid.molgrid import MolGrid
 from grid.atomgrid import AtomGrid
 from grid.basegrid import OneDGrid
@@ -40,7 +40,7 @@ class MolecularGrid(object):
     """Becke-Lebedev molecular grid for numerical integrations."""
 
     # def __init__(self, coordinates, numbers, pseudo_numbers, specs='medium', k=4, rotate=False, grid_type='qc-devs'):
-    def __init__(self, coordinates, numbers, pseudo_numbers, specs='medium', k=4, rotate=False, grid_type='horton'):
+    def __init__(self, coordinates, numbers, pseudo_numbers, specs='medium', k=4, rotate=False):
         """Initialize class.
 
         Parameters
@@ -72,27 +72,22 @@ class MolecularGrid(object):
         self._pseudo_numbers = pseudo_numbers
         self._rotate = rotate
         self.specs = specs
-        if grid_type == 'horton':
-            self._grid = BeckeMolGrid(self.coordinates, self.numbers, self.pseudo_numbers,
-                                  agspec=self.specs, k=k, random_rotate=rotate, mode='keep')
-        elif grid_type == 'qc-devs':
-            if k:
-                aim_weights = BeckeWeights(order=3)
-            else:
-                aim_weights = None
-
-            if isinstance(self.specs, str):
-                self._grid = MolGrid.from_preset(self.numbers, self.coordinates, preset=self.specs, aim_weights=aim_weights, rotate=rotate, store=True)
-            # elif isinstance(self.specs, list) and all([isinstance(a, OneDGrid) for a in self.specs]):
-            elif isinstance(self.specs, list) and isinstance(self.specs[0], OneDGrid) and isinstance(self.specs[1], int):
-                self._grid = MolGrid.from_size(self.numbers, self.coordinates, size=self.specs[1], rgrid=self.specs[0], aim_weights=aim_weights, store=True)
-            else:
-                raise ValueError('Expecting a string or list with [OneDGrid, int]')
+        if k:
+            aim_weights = BeckeWeights(order=k)
         else:
-            raise ValueError(f'Type must be either `horton` or `qc-devs`. Got {type}')
+            aim_weights = None
+
+        if isinstance(self.specs, str):
+            self._grid = MolGrid.from_preset(self.numbers, self.coordinates, preset=self.specs, aim_weights=aim_weights, rotate=rotate, store=True)
+        elif isinstance(self.specs, list) and isinstance(self.specs[0], OneDGrid) and isinstance(self.specs[1], int):
+            self._grid = MolGrid.from_size(self.numbers, self.coordinates, size=self.specs[1], rgrid=self.specs[0], aim_weights=aim_weights, store=True)
+        elif isinstance(self.specs, list) and all([isinstance(a, AtomGrid) for a in self.specs]):
+            self._grid = MolGrid(self.numbers, specs, aim_weights=aim_weights, store=True)
+        else:
+            raise ValueError('Expecting a string or list with [OneDGrid, int]')
 
     @classmethod
-    def from_molecule(cls, molecule, specs='medium', k=3, rotate=False, grid_type='horton'):
+    def from_molecule(cls, molecule, specs='medium', k=3, rotate=False):
         """Initialize the class given an instance of Molecule.
 
         Parameters
@@ -117,7 +112,7 @@ class MolecularGrid(object):
         if not isinstance(molecule, Molecule):
             raise TypeError('Argument molecule should be an instance of Molecule class.')
         coords, nums, pnums = molecule.coordinates, molecule.numbers, molecule.pseudo_numbers
-        return cls(coords, nums, pnums, specs, k, rotate, grid_type=grid_type)
+        return cls(coords, nums, pnums, specs, k, rotate)
 
     @classmethod
     def from_file(cls, fname, specs='medium', k=3, rotate=False):

@@ -25,13 +25,22 @@ import glob
 
 import numpy as np
 
-from horton import ProAtomDB
-from horton.scripts.wpart import wpart_schemes
+# from horton import ProAtomDB
+# from horton.scripts.wpart import wpart_schemes
 
 from chemtools.wrappers.molecule import Molecule
 from chemtools.wrappers.grid import MolecularGrid
 
-# from rhopart import
+from rhopart import ProAtomDB, ProAtomRecord
+from rhopart import VarHirshfeld, DirectedAlphaDivergence, Hirshfeld, HirshfeldI
+
+from grid.onedgrid import GaussChebyshev
+from grid.rtransform import BeckeRTransform
+
+from denspart.mbis import MBISProModel
+from denspart.vh import optimize_reduce_pro_model
+from denspart.properties import compute_radial_moments, compute_multipole_moments, safe_ratio
+
 
 
 __all__ = ['DensPart']
@@ -40,7 +49,7 @@ __all__ = ['DensPart']
 class DensPart(object):
     """Density-based Atoms-in-Molecules Partitioning Class."""
 
-    def __init__(self, coordinates, numbers, pseudo_numbers, density, grid, scheme, **kwargs):
+    def __init__(self, coordinates, numbers, pseudo_numbers, density, grid, scheme, proatomdb=None, **kwargs):
         """Initialize class.
 
         Parameters
@@ -59,36 +68,83 @@ class DensPart(object):
             Type of atoms-in-molecule partitioning scheme.
 
         """
+        if scheme == "h":
+            if not proatomdb:
+                proatomdb = ProAtomDB.from_refatoms(numbers)
+            part = Hirshfeld(coordinates,
+                                  numbers,
+                                  pseudo_numbers,
+                                  grid,
+                                  density,
+                                  proatomdb,
+                                  lmax=3)
+            part.run()
+            self.part = part
+            self.charges = self.part.charges
+            self.at_weights = part.weights
+            self.populations = part.populations
 
-        if isinstance(scheme, str):
-            wpart = wpart_schemes[scheme]
-            # make proatom database
-            if scheme.lower() not in ["mbis", "b"]:
-                if "proatomdb" not in list(kwargs.keys()) or kwargs['proatomdb'] is None:
-                    if np.any(numbers > 18):
-                        absent = list(numbers[numbers > 18])
-                        raise ValueError("Pro-atom for atomic number {} does not exist!".format(absent))
-                    # Hack because Horton can't load h5 files anymore
-                    # atoms = glob.glob('/home/leila/polpart/atom_ubp86_ccpvtz/*')
-                    proatomdb = ProAtomDB.from_files(atoms)
-                    kwargs["proatomdb"] = proatomdb
-                if "local" not in kwargs:
-                    kwargs["local"] = False
-            # partition
-            self.part = wpart(coordinates, numbers, pseudo_numbers, grid, density, **kwargs)
-            self.part.do_charges()
-            self.charges = self.part['charges']
+        elif scheme == "hi":
+            if not proatomdb:
+                proatomdb = ProAtomDB.from_refatoms(numbers)
+            part = HirshfeldI(coordinates,
+                                  numbers,
+                                  pseudo_numbers,
+                                  grid,
+                                  density,
+                                  proatomdb,
+                                  lmax=3)
+            part.run()
+            self.part = part
+            self.charges = part.charges
+            self.at_weights = part.weights
+            self.populations = part.populations
 
-        elif scheme.__class__.__bases__[0].__bases__[0].__name__ == 'Part':
-            self.part = wpart_schemes
-            self.part.run()
-            self.charges == self.part.charges
+
+        elif scheme == "mbis":
+            pro_model_init = MBISProModel.from_geometry(numbers, coordinates)
+            pro_model, localgrids = optimize_reduce_pro_model(
+                pro_model_init,
+                grid,
+                density)
+            print("Promodel")
+            pro_model.pprint()
+
+            print("Computing additional properties")
+            results = pro_model.to_dict()
+            # Compute atomic weights
+            at_weights = np.zeros((numbers.shape[0], grid.points.shape[0]))
+            # pro = pro_model.compute_density(grid, localgrids)
+            pro = pro_model.compute_density(grid)
+            for iatom, atcoord in enumerate(pro_model.atcoords):
+                print("Atom index = ", iatom)
+                pro_atom = pro_model.compute_proatom(iatom, grid.points)
+                # ratio (copied from denspart properties module) is the ratio of molecular and promolecular density
+                # ratio = safe_ratio(density[localgrid.indices], pro[localgrid.indices])
+                # atomic weight
+                atweight = safe_ratio(pro_atom, pro)
+                # check: compute atomic population to make sure it matches expected values (from Denspart)
+                print(" Computed Charge = ", numbers[iatom] - grid.integrate(
+                    atweight * density))
+                print(" Expected Charge = ", pro_model.charges[iatom])
+                print("")
+                print(atweight)
+                at_weights[iatom] = atweight
+
+            self.part = None
+            self.charges = pro_model.charges
+            self.at_weights = at_weights
+            self.populations = numbers - pro_model.charges
+
+
+
 
         self.grid = grid
         self.density = density
         self.coordinates = coordinates
         self.numbers = numbers
         self.pseudo_numbers = pseudo_numbers
+
 
 
     @classmethod
@@ -109,8 +165,10 @@ class DensPart(object):
 
         """
         if grid is None:
+            oned = GaussChebyshev(60)
+            rgrid = BeckeRTransform(1e-5, 1).transform_1d_grid(oned)
             grid = MolecularGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers,
-                                 specs="fine", rotate=False, k=3)
+                                 specs=[rgrid, 590], rotate=False)
         else:
             check_molecule_grid(mol, grid)
         # compute molecular electron density
@@ -141,19 +199,25 @@ class DensPart(object):
         mol = Molecule.from_file(fname)
         return cls.from_molecule(mol, scheme=scheme, grid=grid, spin=spin, **kwargs)
 
-    def condense_to_atoms(self, value, w_power=1):
-        condensed = np.zeros(self.part.natom)
-        for index in range(self.part.natom):
-            at_grid = self.part.get_grid(index)
-            at_weight = self.part.cache.load("at_weights", index)
-            # wcor = self.part.get_wcor(index)
-            local_prop = self.part.to_atomic_grid(index, value)
-            condensed[index] = at_grid.integrate(at_weight**w_power * local_prop)
+    def condense_to_atoms(self, value, w_power=1, local=False, coords=None, r=5):
+        if not local:
+            at_weights = self.at_weights
+            prop = (at_weights**w_power) * value[None, :]
+            condensed = np.array([self.grid.integrate(prop[i]) for i in range(len(self.numbers))])
+        else:
+            at_weights_all = self.at_weights
+            condensed = []
+            for a in range(self.numbser):
+                atgrid = self.grid._grid.get_localgrid(coords[a], r)
+                at_weights = at_weights_all[a, atgrid.indices]
+                prop = (at_weights**w_power) * value[atgrid.indices]
+                condensed.append(atgrid.integrate(prop))
+            condensed = np.array(condensed)
         return condensed
 
     def condense_to_fragments(self, value, fragments=None, w_power=1):
         if fragments is None:
-            fragments = [[index] for index in range(self.part.natom)]
+            fragments = [[index] for index in range(len(self.numbers))]
         else:
             # check fragments
             segments = sorted([item for frag in fragments for item in frag])
@@ -164,7 +228,7 @@ class DensPart(object):
         for index, frag in enumerate(fragments):
             weight = np.zeros(self.grid.points.shape[0])
             for item in frag:
-                weight += self.part.cache.load("at_weights", item)
+                weight += self.at_weights[item]
             share = self.grid.integrate(weight ** w_power, value)
             condensed[index] = share
         return condensed
@@ -181,8 +245,8 @@ def check_molecule_grid(mol, grid):
         Instance of MolecularGrid numerical integration grid.
 
     """
-    # if not np.max(abs(grid.centers - mol.coordinates)) < 1.e-6:
-    #     raise ValueError("Argument molecule & grid should have the same coordinates/centers.")
+    if not np.max(abs(grid.atcoords - mol.coordinates)) < 1.e-6:
+        raise ValueError("Argument molecule & grid should have the same coordinates/centers.")
     # if not np.max(abs(grid.numbers - mol.numbers)) < 1.e-6:
     #     raise ValueError("Arguments molecule & grid should have the same numbers.")
     # if not np.max(abs(grid.pseudo_numbers - mol.pseudo_numbers)) < 1.e-6:
