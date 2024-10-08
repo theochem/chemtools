@@ -65,11 +65,11 @@ def _integral_point_charge_electron(i, istart, iend, eval_mo, grid, dens, molecu
     from gbasis.wrappers import from_iodata
     basis = from_iodata(molecule)
 
-    # logging.info(
-    #     "Computing for Gridpoint Chunk [ CHUNK START ... END / TOTAL GRIDPOINTS ]: {} ... {} / {}".format(
-    #         istart, iend, grid.points.shape[0]
-    #     )
-    # )
+    logging.info(
+        "Computing for Gridpoint Chunk [ CHUNK START ... END / TOTAL GRIDPOINTS ]: {} ... {} / {}".format(
+            istart, iend, grid.points.shape[0]
+        )
+    )
     chunk_grid = grid.points[istart:iend, :]
     chunk_dens = dens[istart:iend]
     vab = point_charge_integral(basis, chunk_grid, np.ones(chunk_dens.shape[0]))
