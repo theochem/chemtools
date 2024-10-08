@@ -25,6 +25,8 @@
 import logging
 from os.path import dirname, join
 from glob import glob
+import multiprocessing as mp
+from multiprocessing import set_start_method
 
 import numpy as np
 from numpy.testing import assert_almost_equal
@@ -50,12 +52,52 @@ from gbasis.integrals.libcint import CBasis
 from iodata.periodic import num2sym
 
 from grid.molgrid import MolGrid
+from grid.basegrid import Grid
 
 from chemtools.utils.cube import UniformGrid
 from chemtools.wrappers.grid import MolecularGrid
 from chemtools.wrappers.molecule import Molecule
 from chemtools.wrappers.part import DensPart
 
+def _integral_point_charge_electron(i, istart, iend, eval_mo, grid, dens, molecule,dm):
+    """Auxiliary function for parallelization of coulomb and exchange terms for atomic IQA."""
+
+    from gbasis.wrappers import from_iodata
+    basis = from_iodata(molecule)
+
+    # logging.info(
+    #     "Computing for Gridpoint Chunk [ CHUNK START ... END / TOTAL GRIDPOINTS ]: {} ... {} / {}".format(
+    #         istart, iend, grid.points.shape[0]
+    #     )
+    # )
+    chunk_grid = grid.points[istart:iend, :]
+    chunk_dens = dens[istart:iend]
+    vab = point_charge_integral(basis, chunk_grid, np.ones(chunk_dens.shape[0]))
+    # Coulomb
+    vab_rho = np.trace(np.tensordot(dm, (vab * chunk_dens), axes=(1, 0)))
+    total_coul_chunk = -0.5 * vab_rho
+    # Exchange
+    # Because only restricted _occs_a.shape[0] == _occs_b.shape[0]
+    # occupied_mo = np.zeros(molecule._occs_a.shape[0])
+    occupied_mo = np.zeros(molecule.mo.occsa.shape[0])
+    # print('aaaa')
+    # return 2
+    occupied_mo[molecule.mo.occsa > 0] = 1
+    t1 = np.einsum("abn,ai->ibn", vab, molecule.mo.coeffs)
+    t1 = np.einsum("ibn,bj->ijn", t1, molecule.mo.coeffs)
+    t1 = t1 * occupied_mo[:, None, None]
+    total_exch_chunk = np.einsum(
+        "ijn,in,jn->n",
+        t1,
+        (eval_mo[:, istart:iend] * occupied_mo[:, None]),
+        (eval_mo[:, istart:iend] * occupied_mo[:, None]),
+    )
+    del t1
+
+    # logging.info(f'total_coul_chunk {total_coul_chunk}')
+    # logging.info(f'total_exch_chunk {total_exch_chunk}')
+
+    return tuple([i, total_coul_chunk, total_exch_chunk])
 
 class IQA(object):
     """Interacting Quantum Atoms (IQA) Class."""
@@ -92,38 +134,33 @@ class IQA(object):
         if not np.allclose(dm, dm.T):
             raise ValueError("One-electron density matrix must be symmetric.")
 
-        # check grid and part
+        # check part
         if part is not None:
             if not isinstance(part, DensPart) and part.__class__.__name__ not in ['VarHirshfeld', 'HirshfeldI','Hirshfeld']:
                 raise TypeError('Argument part should be an instance of DensPart class or VarHirshfeld from rhopart.')
-        if part is not None and not (part.numbers == molecule.atnums).all():
+        if part is not None and not (part.numbers == molecule.numbers).all():
             raise ValueError("DensPart molecule different from molecule")
-        if not isinstance(grid, UniformGrid) and not isinstance(grid, MolecularGrid):
-            raise TypeError(
-                "Argument part should be an instance of MolecularGrid or UniformGrid class."
-            )
-
         # Check Grid
-        if not isinstance(grid, UniformGrid) and not isinstance(grid, MolecularGrid):
+        if not isinstance(grid, UniformGrid) and not isinstance(grid, MolecularGrid) and not isinstance(grid, Grid):
             raise TypeError(
                 f"Argument grid should be an instance of MolecularGrid or UniformGrid class. Got {grid.__class__.__name__}"
             )
-        if not (molecule.coordinates == grid.atcoords).all():
-            raise ValueError("Molecule and Grid initialized from different molecules")
+        # if not (molecule.coordinates == grid.coordinates).all():
+        #     raise ValueError("Molecule and Grid initialized from different molecules")
         # Check optional grid_2 and part_2
         if grid_2:
             if not isinstance(grid_2, UniformGrid) and not isinstance(grid_2, MolecularGrid):
                 raise TypeError(
                     "Argument part should be an instance of MolecularGrid or UniformGrid class."
                 )
-            if not (molecule.coordinates == grid_2.atcoords).all():
+            if not (molecule.coordinates == grid_2.coordinates).all():
                 raise ValueError("Molecule and Grid-2 initialized from different molecules")
-            if not (grid_2.numbers == molecule.atnums).all():
+            if not (grid_2.numbers == molecule.numbers).all():
                 raise ValueError("Grid-2 molecule different from molecule")
         if part_2 is not None:
             if not isinstance(part, DensPart) and part.__class__.__name__ not in ['VarHirshfeld', 'HirshfeldI','Hirshfeld']:
                 raise TypeError('Argument part should be an instance of DensPart class or VarHirshfeld from rhopart.')
-        if part_2 is not None and not (part.numbers == molecule.atnums).all():
+        if part_2 is not None and not (part.numbers == molecule.numbers).all():
             raise ValueError("DensPart molecule different from molecule")
 
         self.molecule = molecule
@@ -169,7 +206,7 @@ class IQA(object):
             raise TypeError(
                 f"Argument grid should be an instance of MolecularGrid or UniformGrid class. Got {grid.__class__.__name__}"
             )
-        if not (molecule.coordinates == grid.atcoords).all():
+        if not (molecule.coordinates == grid.coordinates).all():
             raise ValueError("Molecule and Grid initialized from different molecules")
 
         # Check/Initialize DensPart object
@@ -254,11 +291,11 @@ class IQA(object):
         iqa_results['kin_total'], iqa_results['kin_atomic'], \
             iqa_results['kin_total_posdef'], iqa_results['kin_atomic_posdef']= self.kin_iqa()
         # NN
-        rab = np.triu(np.linalg.norm(molecule.atcoords[:, None]- molecule.atcoords, axis=-1))
-        at_charges = np.triu(molecule.atnums[:, None] * molecule.atnums)[np.where(rab > 0)]
+        rab = np.triu(np.linalg.norm(molecule.coordinates[:, None]- molecule.coordinates, axis=-1))
+        at_charges = np.triu(molecule.numbers[:, None] * molecule.numbers)[np.where(rab > 0)]
         nn_int= np.sum(at_charges / rab[rab > 0])
         # NE
-        ne_int = nuclear_electron_attraction_integral(basis, molecule.atcoords, molecule.atnums)
+        ne_int = nuclear_electron_attraction_integral(basis, molecule.coordinates, molecule.numbers)
         ne_int = np.trace(dm.dot(ne_int))
         #KINETIC
         kin_int = kinetic_energy_integral(basis)
@@ -311,7 +348,7 @@ class IQA(object):
         print()
         if part:
             print('Atomic Electron-Nucleus attraction energy:')
-            for idx, at in enumerate(molecule.atnums):
+            for idx, at in enumerate(molecule.numbers):
                 print(f"{at}   {iqa_results['en_atomic'][idx]}")
         print('------------------------------------')
         print('Kinetic energy:  ', iqa_results['kin_total'])
@@ -321,7 +358,7 @@ class IQA(object):
         print()
         if part:
             print('Atomic Kinetic energy:')
-            for idx, at in enumerate(molecule.atnums):
+            for idx, at in enumerate(molecule.numbers):
                 print(f"{at}   {iqa_results['kin_atomic'][idx]}")
         print('------------------------------------')
         print('Electron-Electron interaction energy')
@@ -330,7 +367,7 @@ class IQA(object):
         print()
         if part:
             print('Atomic Coulomb energy:')
-            for idx, at in enumerate(molecule.atnums):
+            for idx, at in enumerate(molecule.numbers):
                 print(f"{at}   {iqa_results['coul_atomic'][idx]}")
         print()
         if dft_exch and dft_corr:
@@ -339,10 +376,10 @@ class IQA(object):
             print()
             if part:
                 print('Atomic DFT Exchange energy:')
-                for idx, at in enumerate(molecule.atnums):
+                for idx, at in enumerate(molecule.numbers):
                     print(f"{at}   {iqa_results['x_atomic'][idx]}")
                 print('Atomic DFT Correlation energy:')
-                for idx, at in enumerate(molecule.atnums):
+                for idx, at in enumerate(molecule.numbers):
                     print(f"{at}   {iqa_results['c_atomic'][idx]}")
 
         if dft_exch and not dft_corr:
@@ -350,7 +387,7 @@ class IQA(object):
             print()
             if part:
                 print('Atomic DFT Exchange-Correlation energy:')
-                for idx, at in enumerate(molecule.atnums):
+                for idx, at in enumerate(molecule.numbers):
                     print(f"{at}   {iqa_results['xc_atomic'][idx]}")
 
         if 'x_hf_total' in iqa_results.keys():
@@ -359,7 +396,7 @@ class IQA(object):
             print()
             if part:
                 print('Atomic HF Exchange energy:')
-                for idx, at in enumerate(molecule.atnums):
+                for idx, at in enumerate(molecule.numbers):
                     print(f"{at}   {iqa_results['x_hf_atomic'][idx]}")
 
         total_sum_energy = 0
@@ -368,9 +405,9 @@ class IQA(object):
                 total_sum_energy += iqa_results[k]
 
         print('TOTAL ENERGY (SUM OF COMPONENTS):', total_sum_energy)
-        print('TOTAL ENERGY (FCHK):', molecule.energy)
-        print('DIFF (AU) :', total_sum_energy - molecule.energy)
-        print('DIFF (Kcal) :', (total_sum_energy - molecule.energy) / 0.0015936014376406278)
+        print('TOTAL ENERGY (FCHK):', molecule._iodata.energy)
+        print('DIFF (AU) :', total_sum_energy - molecule._iodata.energy)
+        print('DIFF (Kcal) :', (total_sum_energy - molecule._iodata.energy) / 0.0015936014376406278)
 
         return iqa_results
 
@@ -490,24 +527,24 @@ class IQA(object):
             print('DTF Correlation energy: ', np.sum(iqa_pairwise_results['dft_c_ab']))
             print()
             print('AA/AB terms DFT Exchange energy:')
-            for idx1, at1 in enumerate(molecule.atnums):
+            for idx1, at1 in enumerate(molecule.numbers):
                 for idx2 in range(idx1+1):
-                    print(f"{at1}({idx1+1}){molecule.atnums[idx2]}({idx2+1}) {iqa_pairwise_results['dft_x_ab'][idx1][idx2]}")
+                    print(f"{at1}({idx1+1}){molecule.numbers[idx2]}({idx2+1}) {iqa_pairwise_results['dft_x_ab'][idx1][idx2]}")
             print('AA/AB terms DFT Correlation energy:')
-            for idx1, at1 in enumerate(molecule.atnums):
+            for idx1, at1 in enumerate(molecule.numbers):
                 for idx2 in range(idx1+1):
                     print(
-                        f"{at1}({idx1+1}){molecule.atnums[idx2]}({idx2+1}) {iqa_pairwise_results['dft_c_ab'][idx1][idx2]}")
+                        f"{at1}({idx1+1}){molecule.numbers[idx2]}({idx2+1}) {iqa_pairwise_results['dft_c_ab'][idx1][idx2]}")
 
         if dft_exch and not dft_corr:
             print('DTF Exchange-Correlation energy: ', np.sum(iqa_pairwise_results['dft_xc_ab']))
             print()
             print('Atomic DFT Exchange-Correlation energy:')
             print('AA/AB terms DFT Exchange energy:')
-            for idx1, at1 in enumerate(molecule.atnums):
+            for idx1, at1 in enumerate(molecule.numbers):
                 for idx2 in range(idx1+1):
                     print(
-                        f"{at1}({idx1+1}){molecule.atnums[idx2]}({idx2+1}) {iqa_pairwise_results['dft_xc_ab'][idx1][idx2]}")
+                        f"{at1}({idx1+1}){molecule.numbers[idx2]}({idx2+1}) {iqa_pairwise_results['dft_xc_ab'][idx1][idx2]}")
         print('------------------------------------')
         if hf_int:
             print('Coulomb energy(NUM): ', np.sum(iqa_pairwise_results['ab_hf_coul']))
@@ -524,15 +561,15 @@ class IQA(object):
 
             print()
             print('AA/AB terms Coulomb energy:')
-            for idx1, at1 in enumerate(molecule.atnums):
+            for idx1, at1 in enumerate(molecule.numbers):
                 for idx2 in range(idx1+1):
                     print(
-                        f"{at1}({idx1+1}){molecule.atnums[idx2]}({idx2+1}) {iqa_pairwise_results['ab_hf_coul'][idx1][idx2]}")
+                        f"{at1}({idx1+1}){molecule.numbers[idx2]}({idx2+1}) {iqa_pairwise_results['ab_hf_coul'][idx1][idx2]}")
             print('AA/AB terms HF exchange energy:')
-            for idx1, at1 in enumerate(molecule.atnums):
+            for idx1, at1 in enumerate(molecule.numbers):
                 for idx2 in range(idx1+1):
                     print(
-                        f"{at1}({idx1+1}){molecule.atnums[idx2]}({idx2+1}) {iqa_pairwise_results['ab_hf_exch'][idx1][idx2]}")
+                        f"{at1}({idx1+1}){molecule.numbers[idx2]}({idx2+1}) {iqa_pairwise_results['ab_hf_exch'][idx1][idx2]}")
             print()
 
         return iqa_pairwise_results
@@ -556,8 +593,8 @@ class IQA(object):
 
         # Compute Nucleus-Nucleus repulsion
         logging.info("CALCULATING NUCLEUS-NUCLEUS REPULSION ENERGY")
-        rab = np.triu(np.linalg.norm(molecule.atcoords[:, None] - molecule.atcoords, axis=-1))
-        atomic_charges = np.triu(molecule.atnums[:, None] * molecule.atnums)[np.where(rab > 0)]
+        rab = np.triu(np.linalg.norm(molecule.coordinates[:, None] - molecule.coordinates, axis=-1))
+        atomic_charges = np.triu(molecule.numbers[:, None] * molecule.numbers)[np.where(rab > 0)]
         rab = rab[rab > 0]
         total_nn = np.sum(atomic_charges / rab)
         print("TOTAL NN ENERGY: ", total_nn)
@@ -595,10 +632,10 @@ class IQA(object):
 
         # Compute Electron-Nucleus attraction
         logging.info("CALCULATING ELECTRON-NUCLEI ATTRACTION ENERGY")
-        natoms = molecule.atnums.shape[0]
+        natoms = molecule.numbers.shape[0]
 
-        rij = np.linalg.norm(molecule.atcoords[:, None, :] - grid.points, axis=-1)
-        total_en = grid.integrate(np.sum((-molecule.atnums[:, None] * (dens / rij)), axis=0))
+        rij = np.linalg.norm(molecule.coordinates[:, None, :] - grid.points, axis=-1)
+        total_en = grid.integrate(np.sum((-molecule.numbers[:, None] * (dens / rij)), axis=0))
         print("TOTAL EN ENERGY: ", total_en)
 
         en_cond_en = None
@@ -620,7 +657,7 @@ class IQA(object):
             #         else:
             #             at_weights[i] = part.part.cache.load("at_weights", i)
             # math
-            en_atomic = -molecule.atnums[None, :, None] * (
+            en_atomic = -molecule.numbers[None, :, None] * (
                 (dens[None:,] * at_weights)[:, None, :] / rij[None, :, :]
             )
             en_atomic_matrix = np.zeros((natoms, natoms))
@@ -689,7 +726,7 @@ class IQA(object):
 
         logging.info("CALCULATING KINETIC ENERGY")
 
-        natoms = molecule.atnums.shape[0]
+        natoms = molecule.numbers.shape[0]
         output = evaluate_general_kinetic_energy_density(dm, basis, grid.points, -0.25)
         output_posdef = evaluate_posdef_kinetic_energy_density(dm, basis, grid.points)
         total_kin = grid.integrate(output)
@@ -699,7 +736,7 @@ class IQA(object):
         at_kin = None
         if part:
             if part.__class__.__name__ in ['VarHirshfeld', 'HirshfeldI', 'Hirshfeld']:
-                at_weights = part.part.weights
+                at_weights = part.weights
                 at_kin_raw = at_weights * output[None, :]
                 at_kin_raw_posdef = at_weights * output_posdef[None, :]
                 at_kin = np.array([grid.integrate(at_kin_raw[i]) for i in range(natoms)])
@@ -759,7 +796,7 @@ class IQA(object):
 
         logging.info("CALCULATING COULOMB AND HF EXCHANGE ENERGY")
 
-        natoms = molecule.atnums.shape[0]
+        natoms = molecule.numbers.shape[0]
         nao = dm.shape[0]
         eval_ao = evaluate_basis(basis, grid.points)
         # The broadcast operation is the same as the for loop. Summing over mu because broadcasting
@@ -771,43 +808,43 @@ class IQA(object):
                 mo += molecule._iodata.mo.coeffs.T[i, mu] * eval_ao[mu, :]
             eval_mo[i] = mo
         logging.warning("Calculating Coulomb and Exchange: expect long integrals")
-        # math
-        total_coul_raw = np.zeros(grid.npoints)
-        total_exch_raw = np.zeros(grid.npoints)
         istart = 0
-        chunk_size = 250000000 // (nao**2)
-        while istart < grid.npoints:
-            iend = min(istart + chunk_size, grid.npoints)
-            # Getting corresponding sliced electron density
-            logging.info(
-                "Computing for Gridpoint Chunk [ CHUNK START ... END / TOTAL GRIDPOINTS ]: {} ... {} / {}".format(
-                    istart, iend, grid.npoints
-                )
-            )
-            chunk_grid = grid.points[istart:iend, :]
-            chunk_dens = dens[istart:iend]
-            vab = point_charge_integral(basis, chunk_grid, np.ones(chunk_dens.shape[0]))
-            # Coulomb
-            vab_rho = np.trace(np.tensordot(dm, (vab * chunk_dens), axes=(1, 0)))
-            total_coul_chunk = -0.5 * vab_rho
-            # Exchange
-            # Because only restricted _occs_a.shape[0] == _occs_b.shape[0]
-            occupied_mo = np.zeros(molecule._mo._occs_a.shape[0])
-            occupied_mo[molecule._mo._occs_a> 0] = 1
-            t1 = np.einsum("abn,ai->ibn", vab, molecule._iodata.mo.coeffs)
-            t1 = np.einsum("ibn,bj->ijn", t1, molecule._iodata.mo.coeffs)
-            t1 = t1 * occupied_mo[:, None, None]
-            total_exch_chunk = np.einsum(
-                "ijn,in,jn->n",
-                t1,
-                (eval_mo[:, istart:iend] * occupied_mo[:, None]),
-                (eval_mo[:, istart:iend] * occupied_mo[:, None]),
-            )
-            del t1
-
-            total_coul_raw[istart:iend] = total_coul_chunk
-            total_exch_raw[istart:iend] = total_exch_chunk
+        chunk_size = 250000000 // (nao ** 2)
+        # Establish all ranges for istart/iend
+        segments = []
+        istart = 0
+        i = 0
+        while istart < grid.points.shape[0]:
+            iend = min(istart + chunk_size, grid.points.shape[0])
+            # segments.append((istart, iend))
+            segments.append((i, istart, iend, eval_mo, grid, dens, molecule._iodata, dm))
             istart = iend
+            i += 1
+        print(len(segments))
+        print(f"USED SEGMENTS FOR 1e INTEGRATION COULOMB/EXCHANGE = {len(segments)}")
+        # Checking processors
+        # ncpus = os.cpu_count()
+        ncpus = 3
+        set_start_method('fork')
+        logging.info(f"USING {ncpus} CPUS")
+        pool = mp.Pool(processes=ncpus)
+        # Parallel execution of _integral_point_charge_electron
+        results = pool.starmap_async(_integral_point_charge_electron, segments).get()
+
+        pool.close()
+        print(results)
+
+        total_coul_raw = np.zeros(grid.points.shape[0])
+        total_exch_raw = np.zeros(grid.points.shape[0])
+        # print(segments[0][1])
+        # print(segments[0][2])
+        # assert 5 == 6
+        # distribute chunk grid point charges integral outputs
+        for i, out in enumerate(results):
+            print(out[1])
+            print(out[1].shape)
+            total_coul_raw[segments[i][1]:segments[i][2]] = out[1]
+            total_exch_raw[segments[i][1]:segments[i][2]] = out[2]
 
         total_coul = grid.integrate(total_coul_raw)
         total_exch = grid.integrate(total_exch_raw)
@@ -945,7 +982,7 @@ class IQA(object):
         basis = self.basis
         dens = self.dens
 
-        natoms = molecule.atnums.shape[0]
+        natoms = molecule.numbers.shape[0]
 
         # Test pylibxc
         print(libxc_label)
@@ -984,7 +1021,7 @@ class IQA(object):
         at_dft_xc = None
         if part:
             if part.__class__.__name__ in ['VarHirshfeld', 'HirshfeldI','Hirshfeld']:
-                at_weights = part.part.weights
+                at_weights = part.weights
                 at_dft_xc_raw = at_weights * dft_xc_dens[None, :]
                 at_dft_xc = np.array([grid.integrate(at_dft_xc_raw[i], dens) for i in range(natoms)])
             else:
@@ -1007,7 +1044,7 @@ class IQA(object):
 
         # Get different data
         at_weights = part.weights
-        natoms = molecule.atnums.shape[0]
+        natoms = molecule.numbers.shape[0]
 
         # Get functional form pylibxc
         func = pylibxc.LibXCFunctional(libxc_label, "unpolarized")

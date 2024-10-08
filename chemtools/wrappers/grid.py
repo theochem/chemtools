@@ -140,8 +140,8 @@ class MolecularGrid(object):
         mol = Molecule.from_file(fname)
         return cls.from_molecule(mol, specs, k, rotate)
 
-    def __getattr__(self, item):
-        return getattr(self._grid, item)
+    # def __getattr__(self, item):
+    #     return getattr(self._grid, item)
 
     @property
     def center(self):

@@ -96,17 +96,17 @@ class Molecule(object):
                 logging.info(error)
         return cls(iodata)
 
-    def __getattr__(self, attr):
-        """Return attribute.
-
-        Parameters
-        ----------
-        attr : str
-            The name of attribute to retrieve.
-
-        """
-        value = getattr(self._iodata, attr, None)
-        return value
+    # def __getattr__(self, attr):
+    #     """Return attribute.
+    #
+    #     Parameters
+    #     ----------
+    #     attr : str
+    #         The name of attribute to retrieve.
+    #
+    #     """
+    #     value = getattr(self._iodata, attr, None)
+    #     return value
 
     @property
     def coordinates(self):
