@@ -97,7 +97,7 @@ def _integral_point_charge_electron(i, istart, iend, eval_mo, grid, dens, molecu
     # logging.info(f'total_coul_chunk {total_coul_chunk}')
     # logging.info(f'total_exch_chunk {total_exch_chunk}')
 
-    return tuple([i, total_coul_chunk, total_exch_chunk])
+    return tuple([istart, iend, total_coul_chunk, total_exch_chunk])
 
 class IQA(object):
     """Interacting Quantum Atoms (IQA) Class."""
@@ -832,6 +832,7 @@ class IQA(object):
         results = pool.starmap_async(_integral_point_charge_electron, segments).get()
 
         pool.close()
+        pool.join()
         print(results)
 
         total_coul_raw = np.zeros(grid.points.shape[0])
@@ -840,11 +841,13 @@ class IQA(object):
         # print(segments[0][2])
         # assert 5 == 6
         # distribute chunk grid point charges integral outputs
-        for i, out in enumerate(results):
-            print(out[1])
-            print(out[1].shape)
-            total_coul_raw[segments[i][1]:segments[i][2]] = out[1]
-            total_exch_raw[segments[i][1]:segments[i][2]] = out[2]
+        for out in results:
+            # print(out)
+            # print(out[1].shape)
+            # total_coul_raw[segments[i][1]:segments[i][2]] = out[1]
+            # total_exch_raw[segments[i][1]:segments[i][2]] = out[2]
+            total_coul_raw[out[0]:out[1]] = out[2]
+            total_exch_raw[out[0]:out[1]]= out[3]
 
         total_coul = grid.integrate(total_coul_raw)
         total_exch = grid.integrate(total_exch_raw)
