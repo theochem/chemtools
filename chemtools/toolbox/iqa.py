@@ -24,6 +24,7 @@
 
 import logging
 from os.path import dirname, join
+import os as os
 from glob import glob
 import multiprocessing as mp
 from multiprocessing import set_start_method
@@ -73,6 +74,7 @@ def _integral_point_charge_electron(i, istart, iend, eval_mo, grid, dens, molecu
     chunk_grid = grid.points[istart:iend, :]
     chunk_dens = dens[istart:iend]
     vab = point_charge_integral(basis, chunk_grid, np.ones(chunk_dens.shape[0]))
+    logging.info("SAFETY CHECK: POINT CHARGE INTEGRAL FINISHED")
     # Coulomb
     vab_rho = np.trace(np.tensordot(dm, (vab * chunk_dens), axes=(1, 0)))
     total_coul_chunk = -0.5 * vab_rho
@@ -824,16 +826,23 @@ class IQA(object):
         print(f"USED SEGMENTS FOR 1e INTEGRATION COULOMB/EXCHANGE = {len(segments)}")
         # Checking processors
         # ncpus = os.cpu_count()
-        ncpus = 3
+        #ncpus = 4
+        ncpus = int(os.environ.get('SLURM_CPUS_PER_TASK',default=1))
         set_start_method('fork')
         logging.info(f"USING {ncpus} CPUS")
         pool = mp.Pool(processes=ncpus)
+        results = []
         # Parallel execution of _integral_point_charge_electron
-        results = pool.starmap_async(_integral_point_charge_electron, segments).get()
+        #results = pool.starmap_async(_integral_point_charge_electron, segments).get()
+        #for sub in range(0, len(segments)-ncpus-1, ncpus-1):
+        for sub in range(0, len(segments), ncpus-1):
+            results_sub_raw = [pool.apply_async(_integral_point_charge_electron, args=s) for s in segments[sub:sub+(ncpus-1)]]
+            results_sub = [r.get() for r in results_sub_raw]
+            results.extend(results_sub)
+
 
         pool.close()
         pool.join()
-        print(results)
 
         total_coul_raw = np.zeros(grid.points.shape[0])
         total_exch_raw = np.zeros(grid.points.shape[0])
