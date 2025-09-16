@@ -48,7 +48,6 @@ from gbasis.integrals.point_charge import point_charge_integral
 from gbasis.integrals.kinetic_energy import kinetic_energy_integral
 from gbasis.integrals.nuclear_electron_attraction import nuclear_electron_attraction_integral
 from gbasis.integrals.electron_repulsion import electron_repulsion_integral
-from gbasis.integrals.libcint import CBasis
 
 from iodata.periodic import num2sym
 
@@ -482,6 +481,7 @@ class IQA(object):
 
         # Print results
         if ee_int:
+            from gbasis.integrals.libcint import CBasis
             logging.info("CALCULATION: INTEGRAL EE COULOMB/EXCHANGE")
             flag_libcint = len(glob(join(dirname(gbasis.__file__), "integrals", "lib", "libcint.so*")))
             # DEBUG libcint
