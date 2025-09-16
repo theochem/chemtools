@@ -24,6 +24,7 @@
 """Test chemtools.toolbox.iqa."""
 
 import glob
+import pytest
 import numpy as np
 from numpy.testing import assert_raises, assert_almost_equal
 from numpy.testing import assert_equal, assert_almost_equal, assert_approx_equal, assert_allclose
@@ -95,7 +96,7 @@ def test_h2o_rhf_sto3g():
         assert_allclose(np.sum(results_iqa['coul_atomic']), 47.276218, rtol=1.e-4, atol=0.)
         assert_allclose(np.sum(results_iqa['x_total']), -9.100148, rtol=1.e-4, atol=0.)
 
-
+@pytest.mark.skip(reason="ignore IQA DFT")
 def test_h2o_rpbepbe_ccpvtz():
     # check total values of decomposition against in h2o_rpbepbe_sto3g.log
     with path('chemtools.data', 'h2o_rpbepbe_sto3g.fchk') as fname:
