@@ -173,11 +173,11 @@ class DensPart(object):
             check_molecule_grid(mol, grid)
         # compute molecular electron density
         dens = mol.compute_density(grid.points, spin=spin)
-        if mol.pesudo_numbers is None:
-            pesudo_numbers = mol.numbers
+        if mol.pseudo_numbers is None:
+            pseudo_numbers = mol.numbers
         else:
-            pesudo_numbers = mol.pesudo_numbers
-        return cls(mol.coordinates, mol.numbers, pesudo_numbers, dens, grid, scheme, **kwargs)
+            pseudo_numbers = mol.pseudo_numbers
+        return cls(mol.coordinates, mol.numbers, pseudo_numbers, dens, grid, scheme, **kwargs)
 
     @classmethod
     def from_file(cls, fname, scheme=None, grid=None, spin="ab", **kwargs):

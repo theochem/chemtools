@@ -143,6 +143,9 @@ class MolecularGrid(object):
     # def __getattr__(self, item):
     #     return getattr(self._grid, item)
 
+    def get_localgrid(self, *args):
+        return self._grid.get_localgrid(*args)
+
     @property
     def center(self):
         """Cartesian coordinates of atomic centers."""
@@ -150,6 +153,11 @@ class MolecularGrid(object):
 
     @property
     def coordinates(self):
+        """Cartesian coordinates of atomic centers."""
+        return self._coordinates
+
+    @property
+    def atcoords(self):
         """Cartesian coordinates of atomic centers."""
         return self._coordinates
 

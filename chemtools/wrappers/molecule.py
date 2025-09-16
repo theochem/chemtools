@@ -124,6 +124,21 @@ class Molecule(object):
         return self._pseudo_numbers
 
     @property
+    def natom(self):
+        """Number of atoms."""
+        return len(self._numbers)
+
+    @property
+    def atcharges(self):
+        """Atomic charges."""
+        return self._iodata.atcharges
+
+    @property
+    def lot(self):
+        """Total electronic energy."""
+        return self._iodata.lot
+
+    @property
     def ao(self):
         """Atomic orbital instance."""
         return self._ao
@@ -132,6 +147,11 @@ class Molecule(object):
     def mo(self):
         """Molecular orbital instance."""
         return self._mo
+
+    @property
+    def energy(self):
+        """Total electronic energy."""
+        return self._iodata.energy
 
     def compute_dm(self, spin="ab"):
         """Compute the density matrix array for the specified spin orbitals.
