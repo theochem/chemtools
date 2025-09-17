@@ -55,7 +55,6 @@ from gbasis.integrals.electron_repulsion import electron_repulsion_integral
 
 from iodata.periodic import num2sym
 
-from grid.molgrid import MolGrid
 from grid.basegrid import Grid
 
 from chemtools.utils.cube import UniformGrid
@@ -85,10 +84,7 @@ def _integral_point_charge_electron(i, istart, iend, eval_mo, grid, dens, molecu
     total_coul_chunk = -0.5 * vab_rho
     # Exchange
     # Because only restricted _occs_a.shape[0] == _occs_b.shape[0]
-    # occupied_mo = np.zeros(molecule._occs_a.shape[0])
     occupied_mo = np.zeros(molecule.mo.occsa.shape[0])
-    # print('aaaa')
-    # return 2
     occupied_mo[molecule.mo.occsa > 0] = 1
     t1 = np.einsum("abn,ai->ibn", vab, molecule.mo.coeffs)
     t1 = np.einsum("ibn,bj->ijn", t1, molecule.mo.coeffs)
@@ -101,16 +97,12 @@ def _integral_point_charge_electron(i, istart, iend, eval_mo, grid, dens, molecu
     )
     del t1
 
-    # logging.info(f'total_coul_chunk {total_coul_chunk}')
-    # logging.info(f'total_exch_chunk {total_exch_chunk}')
-
     return tuple([istart, iend, total_coul_chunk, total_exch_chunk])
 
 
 class IQA(object):
     """Interacting Quantum Atoms (IQA) Class."""
 
-    # def __init__(self, molecule, basis, dm, grid, part=None, molecule_chemtools=None):
     def __init__(self, molecule, basis, dm, grid, part=None, grid_2=None, part_2=None):
         """Initialize class.
 
@@ -163,8 +155,6 @@ class IQA(object):
             raise TypeError(
                 f"Argument grid should be an instance of MolecularGrid or UniformGrid class. Got {grid.__class__.__name__}"
             )
-        # if not (molecule.coordinates == grid.coordinates).all():
-        #     raise ValueError("Molecule and Grid initialized from different molecules")
         # Check optional grid_2 and part_2
         if grid_2:
             if not isinstance(grid_2, UniformGrid) and not isinstance(grid_2, MolecularGrid):
@@ -298,11 +288,6 @@ class IQA(object):
             Dictionary with IQA components.
 
         """
-      #  molecule = self.molecule
-      #  basis = self.basis
-      #  dm = self.dm
-      #  part = self.part
-      #  rho = self.dens
 
         # Initialize results dict
         iqa_results = {}
@@ -459,9 +444,6 @@ class IQA(object):
         r"""Compute pairwise interaction for exchange-correlation energy density from DFT
         functionals using BOD partition method.
         """
-
-      #  molecule = self.molecule
-      #  basis = self.basis
 
         logging.info("INITIALIZING INTERACTING QUANTUM ATOMS(IQA) PAIRWISE CALCULATION")
         # assuming dft_corr and dft_exch specified together
@@ -656,8 +638,6 @@ class IQA(object):
             Total value for nuclear-nuclear repulsion energy
         """
 
-    #    molecule = self.molecule
-
         # Compute Nucleus-Nucleus repulsion
         logging.info("CALCULATING NUCLEUS-NUCLEUS REPULSION ENERGY")
         rab = np.triu(np.linalg.norm(self.molecule.coordinates[:, None] - self.molecule.coordinates, axis=-1))
@@ -692,11 +672,6 @@ class IQA(object):
 
         """
 
-     #   molecule = self.molecule
-     #   grid = self.grid
-     #   part = self.part
-     #   dens = self.dens
-
         # Compute Electron-Nucleus attraction
         logging.info("CALCULATING ELECTRON-NUCLEI ATTRACTION ENERGY")
         natoms = self.molecule.numbers.shape[0]
@@ -711,18 +686,6 @@ class IQA(object):
                 at_weights = self.part.weights
             else:
                 at_weights = self.part.at_weights
-            #     # Doing a for loop to get all at_weights. Using Part object from Horton does not allow
-            #     # to get all at the same time
-            #     at_weights = np.zeros((natoms, grid.points.shape[0]))
-            #     start = 0
-            #     stop = 0
-            #     for i in range(molecule.natom):
-            #         if part.part.local:
-            #             stop +=  part.part.cache.load("at_weights", i).shape[0]
-            #             at_weights[i,start:stop] = part.part.cache.load("at_weights", i)
-            #             start = stop
-            #         else:
-            #             at_weights[i] = part.part.cache.load("at_weights", i)
             # math
             en_atomic = -self.molecule.numbers[None, :, None] * (
                 (self.dens[None:,] * at_weights)[:, None, :] / rij[None, :, :]
@@ -731,15 +694,6 @@ class IQA(object):
             for i in range(natoms):
                 for j in range(natoms):
                     en_atomic_matrix[i][j] = self.grid.integrate(en_atomic[i][j])
-                    # if not part.__class__.__name__ in ['VarHirshfeld', 'HirshfeldI', 'Hirshfeld']:
-                    #     if part.part.local:
-                    #         at_grid = part.part.get_grid(i)
-                    #         local_prop = part.part.to_atomic_grid(i, en_atomic[i][j])
-                    #         en_atomic_matrix[i][j] = at_grid.integrate(local_prop)
-                    #     else:
-                    #         en_atomic_matrix[i][j] = grid.integrate(en_atomic[i][j])
-                    # else:
-                    #     en_atomic_matrix[i][j] = grid.integrate(en_atomic[i][j])
 
             logging.info("Decomposing Electron-Nuclei energy into atomic contributions")
             print(en_atomic_matrix)
@@ -758,9 +712,6 @@ class IQA(object):
             en_cond_en = np.sum(en_atomic_matrix[None, :, :] * share_matrix, axis=(1, 2))
             print(en_cond_en)
             print(np.sum(en_cond_en), total_en)
-            # assert 5 == 6
-
-            # assert_almost_equal(np.sum(en_cond_en), total_en, decimal=2)
 
         print()
         return total_en, en_cond_en
@@ -784,13 +735,6 @@ class IQA(object):
             Atomic kinetic energies.
 
         """
-
-    #    molecule = self.molecule
-    #    grid = self.grid
-    #    part = self.part
-     #   basis = self.basis
-    #    dm = self.dm
-
         logging.info("CALCULATING KINETIC ENERGY")
 
         natoms = self.molecule.numbers.shape[0]
@@ -856,13 +800,6 @@ class IQA(object):
             Atomic exchange energies.
         """
 
-    #    molecule = self.molecule
-    #    grid = self.grid
-    #    part = self.part
-    #    basis = self.basis
-    #    dm = self.dm
-    #    dens = self.dens
-
         logging.info("CALCULATING COULOMB AND HF EXCHANGE ENERGY")
 
         natoms = self.molecule.numbers.shape[0]
@@ -892,16 +829,12 @@ class IQA(object):
         print(len(segments))
         print(f"USED SEGMENTS FOR 1e INTEGRATION COULOMB/EXCHANGE = {len(segments)}")
         # Checking processors
-        # ncpus = os.cpu_count()
-        # ncpus = 4
         ncpus = int(os.environ.get("SLURM_CPUS_PER_TASK", default=2))
         set_start_method("fork")
         logging.info(f"USING {ncpus} CPUS")
         pool = mp.Pool(processes=ncpus)
         results = []
         # Parallel execution of _integral_point_charge_electron
-        # results = pool.starmap_async(_integral_point_charge_electron, segments).get()
-        # for sub in range(0, len(segments)-ncpus-1, ncpus-1):
         for sub in range(0, len(segments), ncpus - 1):
             results_sub_raw = [
                 pool.apply_async(_integral_point_charge_electron, args=s)
@@ -915,15 +848,8 @@ class IQA(object):
 
         total_coul_raw = np.zeros(self.grid.points.shape[0])
         total_exch_raw = np.zeros(self.grid.points.shape[0])
-        # print(segments[0][1])
-        # print(segments[0][2])
-        # assert 5 == 6
         # distribute chunk grid point charges integral outputs
         for out in results:
-            # print(out)
-            # print(out[1].shape)
-            # total_coul_raw[segments[i][1]:segments[i][2]] = out[1]
-            # total_exch_raw[segments[i][1]:segments[i][2]] = out[2]
             total_coul_raw[out[0] : out[1]] = out[2]
             total_exch_raw[out[0] : out[1]] = out[3]
 
@@ -957,7 +883,6 @@ class IQA(object):
     def ee_iqa_hf_pairwise(self):
         r"""Compute Hartree Fock electron-electron interaction energy pairwise interactions.
 
-
         Returns
         -------
         total_exch_aa: np.array()
@@ -969,18 +894,10 @@ class IQA(object):
         total_col_aa: np.array()
             AB value for Coulomb energy
 
-
         Note: Sum of AA and AB terms should get back ee_iqa_hf
         """
 
         # Draft 6N integration
-    #    molecule = self.molecule
-    #    basis = self.basis
-    #    part = self.part
-    #    part2 = self.part_2
-    #    grid1 = self.grid
-    #    grid2 = self.grid_2
-
         if not self.grid_2:
             raise ValueError(f"Two grids are needed to perform 6N ee integration. Got {self.grid_2}")
         if not self.part_2:
@@ -1019,7 +936,6 @@ class IQA(object):
 
                 integral_coul_ab = 0
                 integral_ex_ab = 0
-                # for p1 in range(atgrid_a.points.shape[0]):
                 for id1, p1 in enumerate(atgrid_a.indices):
                     progress = p1 / atgrid_a.points.shape[0]
                     if progress * 100 in [15.0, 25.0, 50.0, 75.0, 90.0, 100.0]:
@@ -1066,12 +982,6 @@ class IQA(object):
         return ab_hf_coul, ab_hf_exch
 
     def ee_iqa_dft(self, dft_dens, libxc_label):
-
-    #    molecule = self.molecule
-    #    grid = self.grid
-    #    part = self.part
-    #    basis = self.basis
-    #    dens = self.dens
 
         natoms = self.molecule.numbers.shape[0]
 
@@ -1130,11 +1040,6 @@ class IQA(object):
 
     def ee_iqa_dft_pairwise(self, libxc_label):
 
-    #    grid = self.grid
-    #    part = self.part
-    #    molecule = self.molecule
-    #    basis = self.basis
-
         # Get different data
         at_weights = self.part.weights
         natoms = self.molecule.numbers.shape[0]
@@ -1153,7 +1058,6 @@ class IQA(object):
         sij_at_1 = at_weights[:, None, None, :] * sij[None, :, :, :]
 
         # Computing BOD for each pair of atoms
-        # print(natoms, natoms, grid.points.shape[0])
         bod = np.zeros((natoms, natoms, self.grid.points.shape[0]))
         for a in range(natoms):
             for b in range(natoms):
@@ -1183,7 +1087,6 @@ class IQA(object):
                 eval_mo_grad_order = evaluate_deriv_basis(
                     self.basis, self.grid.points, np.array(orders), transform=self.molecule._iodata.mo.coeffs.T
                 )
-                # print(eval_mo_grad_order.shape)
                 eval_mo_grad.append(eval_mo_grad_order[:, :, None])
                 eval_mo_grad_condensed.append(eval_mo_grad_order)
             eval_mo_grad = np.concatenate(eval_mo_grad, axis=2)
@@ -1241,7 +1144,6 @@ class IQA(object):
                     )
 
         # GGA and Hyb
-        # print(meanfield_dft.__class__.__name__)
         # From pylibxc flags.py
         # XC_FAMILY_GGA = 2
         # XC_FAMILY_HYB_GGA = 32
