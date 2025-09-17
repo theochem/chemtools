@@ -298,11 +298,11 @@ class IQA(object):
             Dictionary with IQA components.
 
         """
-        molecule = self.molecule
-        basis = self.basis
-        dm = self.dm
-        part = self.part
-        rho = self.dens
+      #  molecule = self.molecule
+      #  basis = self.basis
+      #  dm = self.dm
+      #  part = self.part
+      #  rho = self.dens
 
         # Initialize results dict
         iqa_results = {}
@@ -317,15 +317,15 @@ class IQA(object):
             iqa_results["kin_atomic_posdef"],
         ) = self.kin_iqa()
         # NN
-        rab = np.triu(np.linalg.norm(molecule.coordinates[:, None] - molecule.coordinates, axis=-1))
-        at_charges = np.triu(molecule.numbers[:, None] * molecule.numbers)[np.where(rab > 0)]
+        rab = np.triu(np.linalg.norm(self.molecule.coordinates[:, None] - self.molecule.coordinates, axis=-1))
+        at_charges = np.triu(self.molecule.numbers[:, None] * self.molecule.numbers)[np.where(rab > 0)]
         nn_int = np.sum(at_charges / rab[rab > 0])
         # NE
-        ne_int = nuclear_electron_attraction_integral(basis, molecule.coordinates, molecule.numbers)
-        ne_int = np.trace(dm.dot(ne_int))
+        ne_int = nuclear_electron_attraction_integral(self.basis, self.molecule.coordinates, self.molecule.numbers)
+        ne_int = np.trace(self.dm.dot(ne_int))
         # KINETIC
-        kin_int = kinetic_energy_integral(basis)
-        kin_int = np.trace(dm.dot(kin_int))
+        kin_int = kinetic_energy_integral(self.basis)
+        kin_int = np.trace(self.dm.dot(kin_int))
 
         dft_xc_edens = {}
         # assuming dft_corr and dft_exch specified together
@@ -337,10 +337,10 @@ class IQA(object):
                 iqa_results["coul_atomic"],
             ) = self.ee_iqa_hf()
             iqa_results["c_total"], iqa_results["c_atomic"], coeff_mix = self.ee_iqa_dft(
-                rho, dft_corr
+                self.dens, dft_corr
             )
             iqa_results["x_total"], iqa_results["x_atomic"], coeff_mix = self.ee_iqa_dft(
-                rho, dft_exch
+                self.dens, dft_exch
             )
             if "coeff_mix" in dft_xc_edens.keys() and dft_xc_edens["coeff_mix"]:
                 if dft_xc_edens["coeff_mix"]:
@@ -360,7 +360,7 @@ class IQA(object):
                 iqa_results["coul_atomic"],
             ) = self.ee_iqa_hf()
             iqa_results["xc_total"], iqa_results["xc_atomic"], coeff_mix = self.ee_iqa_dft(
-                rho, dft_exch
+                self.dens, dft_exch
             )
             if coeff_mix:
                 # Scaling HF exchange
@@ -369,7 +369,7 @@ class IQA(object):
             else:
                 iqa_results.pop("x_hf_total")
                 iqa_results.pop("x_hf_atomic")
-        elif molecule.lot == "rhf":
+        elif self.molecule.lot == "rhf":
             (
                 iqa_results["x_total"],
                 iqa_results["coul_total"],
@@ -390,9 +390,9 @@ class IQA(object):
         diff = abs(iqa_results["en_total"] - ne_int)
         print("DIFF (kcal/mol) ", diff / 0.0015936014376406278)
         print()
-        if part:
+        if self.part:
             print("Atomic Electron-Nucleus attraction energy:")
-            for idx, at in enumerate(molecule.numbers):
+            for idx, at in enumerate(self.molecule.numbers):
                 print(f"{at}   {iqa_results['en_atomic'][idx]}")
         print("------------------------------------")
         print("Kinetic energy:  ", iqa_results["kin_total"])
@@ -400,47 +400,47 @@ class IQA(object):
         diff = abs(iqa_results["kin_total"] - kin_int)
         print("DIFF (kcal/mol) ", diff / 0.0015936014376406278)
         print()
-        if part:
+        if self.part:
             print("Atomic Kinetic energy:")
-            for idx, at in enumerate(molecule.numbers):
+            for idx, at in enumerate(self.molecule.numbers):
                 print(f"{at}   {iqa_results['kin_atomic'][idx]}")
         print("------------------------------------")
         print("Electron-Electron interaction energy")
         print()
         print("Coulomb energy: ", iqa_results["coul_total"])
         print()
-        if part:
+        if self.part:
             print("Atomic Coulomb energy:")
-            for idx, at in enumerate(molecule.numbers):
+            for idx, at in enumerate(self.molecule.numbers):
                 print(f"{at}   {iqa_results['coul_atomic'][idx]}")
         print()
         if dft_exch and dft_corr:
             print("DTF Exchange energy: ", iqa_results["x_total"])
             print("DTF Correlation energy: ", iqa_results["c_total"])
             print()
-            if part:
+            if self.part:
                 print("Atomic DFT Exchange energy:")
-                for idx, at in enumerate(molecule.numbers):
+                for idx, at in enumerate(self.molecule.numbers):
                     print(f"{at}   {iqa_results['x_atomic'][idx]}")
                 print("Atomic DFT Correlation energy:")
-                for idx, at in enumerate(molecule.numbers):
+                for idx, at in enumerate(self.molecule.numbers):
                     print(f"{at}   {iqa_results['c_atomic'][idx]}")
 
         if dft_exch and not dft_corr:
             print("DTF Exchange-Correlation energy: ", iqa_results["xc_total"])
             print()
-            if part:
+            if self.part:
                 print("Atomic DFT Exchange-Correlation energy:")
-                for idx, at in enumerate(molecule.numbers):
+                for idx, at in enumerate(self.molecule.numbers):
                     print(f"{at}   {iqa_results['xc_atomic'][idx]}")
 
         if "x_hf_total" in iqa_results.keys():
             print("HF Exchange: ", iqa_results["x_hf_total"])
             print("COEFF MIX :", coeff_mix)
             print()
-            if part:
+            if self.part:
                 print("Atomic HF Exchange energy:")
-                for idx, at in enumerate(molecule.numbers):
+                for idx, at in enumerate(self.molecule.numbers):
                     print(f"{at}   {iqa_results['x_hf_atomic'][idx]}")
 
         total_sum_energy = 0
@@ -449,9 +449,9 @@ class IQA(object):
                 total_sum_energy += iqa_results[k]
 
         print("TOTAL ENERGY (SUM OF COMPONENTS):", total_sum_energy)
-        print("TOTAL ENERGY (FCHK):", molecule._iodata.energy)
-        print("DIFF (AU) :", total_sum_energy - molecule._iodata.energy)
-        print("DIFF (Kcal) :", (total_sum_energy - molecule._iodata.energy) / 0.0015936014376406278)
+        print("TOTAL ENERGY (FCHK):", self.molecule._iodata.energy)
+        print("DIFF (AU) :", total_sum_energy - self.molecule._iodata.energy)
+        print("DIFF (Kcal) :", (total_sum_energy - self.molecule._iodata.energy) / 0.0015936014376406278)
 
         return iqa_results
 
@@ -460,8 +460,8 @@ class IQA(object):
         functionals using BOD partition method.
         """
 
-        molecule = self.molecule
-        basis = self.basis
+      #  molecule = self.molecule
+      #  basis = self.basis
 
         logging.info("INITIALIZING INTERACTING QUANTUM ATOMS(IQA) PAIRWISE CALCULATION")
         # assuming dft_corr and dft_exch specified together
@@ -538,32 +538,32 @@ class IQA(object):
             # print(flag_libcint)
             if flag_libcint > 0:
                 logging.info("USING LIBCINT LIBRARY")
-                atoms = [num2sym[z] for z in molecule.numbers]
+                atoms = [num2sym[z] for z in self.molecule.numbers]
                 # check if any cartesian shell
-                cart_flag = [s.coord_type for s in basis]
+                cart_flag = [s.coord_type for s in self.basis]
                 # DEBUG cart/sph
                 # print(cart_flag)
                 # todo: double check below filter
                 if "cartesian" not in cart_flag:
-                    cbasis = CBasis(basis, atoms, molecule.coordinates, coord_type="cartesian")
+                    cbasis = CBasis(self.basis, atoms, self.molecule.coordinates, coord_type="cartesian")
                 else:
-                    cbasis = CBasis(basis, atoms, molecule.coordinates)
+                    cbasis = CBasis(self.basis, atoms, self.molecule.coordinates)
 
                 # Computing ee integrals
                 int2e_mo = cbasis.electron_repulsion_integral(
-                    transform=molecule._iodata.mo.coeffs.T, notation="chemist"
+                    transform=self.molecule._iodata.mo.coeffs.T, notation="chemist"
                 )
             else:
                 logging.info("USING GBASIS PYTHON IMPLEMENTATION")
                 logging.warning("EXPECT LONG COMPUTATION")
                 int2e_mo = electron_repulsion_integral(
-                    basis, transform=molecule._iodata.mo.coeffs.T, notation="chemist"
+                    self.basis, transform=self.molecule._iodata.mo.coeffs.T, notation="chemist"
                 )
 
             j_coul = 0
             k_ex = 0
             # Mask only occupied Molecular orbitals
-            occ_mo = molecule._iodata.mo.occs[molecule._iodata.mo.occs > 0].shape[0]
+            occ_mo = self.molecule._iodata.mo.occs[self.molecule._iodata.mo.occs > 0].shape[0]
             for i in range(occ_mo):
                 for j in range(occ_mo):
                     j_coul += 2 * int2e_mo[i, i, j, j]
@@ -584,16 +584,16 @@ class IQA(object):
             print("DTF Correlation energy: ", np.sum(iqa_pairwise_results["dft_c_ab"]))
             print()
             print("AA/AB terms DFT Exchange energy:")
-            for idx1, at1 in enumerate(molecule.numbers):
+            for idx1, at1 in enumerate(self.molecule.numbers):
                 for idx2 in range(idx1 + 1):
                     print(
-                        f"{at1}({idx1+1}){molecule.numbers[idx2]}({idx2+1}) {iqa_pairwise_results['dft_x_ab'][idx1][idx2]}"
+                        f"{at1}({idx1+1}){self.molecule.numbers[idx2]}({idx2+1}) {iqa_pairwise_results['dft_x_ab'][idx1][idx2]}"
                     )
             print("AA/AB terms DFT Correlation energy:")
-            for idx1, at1 in enumerate(molecule.numbers):
+            for idx1, at1 in enumerate(self.molecule.numbers):
                 for idx2 in range(idx1 + 1):
                     print(
-                        f"{at1}({idx1+1}){molecule.numbers[idx2]}({idx2+1}) {iqa_pairwise_results['dft_c_ab'][idx1][idx2]}"
+                        f"{at1}({idx1+1}){self.molecule.numbers[idx2]}({idx2+1}) {iqa_pairwise_results['dft_c_ab'][idx1][idx2]}"
                     )
 
         if dft_exch and not dft_corr:
@@ -601,10 +601,10 @@ class IQA(object):
             print()
             print("Atomic DFT Exchange-Correlation energy:")
             print("AA/AB terms DFT Exchange energy:")
-            for idx1, at1 in enumerate(molecule.numbers):
+            for idx1, at1 in enumerate(self.molecule.numbers):
                 for idx2 in range(idx1 + 1):
                     print(
-                        f"{at1}({idx1+1}){molecule.numbers[idx2]}({idx2+1}) {iqa_pairwise_results['dft_xc_ab'][idx1][idx2]}"
+                        f"{at1}({idx1+1}){self.molecule.numbers[idx2]}({idx2+1}) {iqa_pairwise_results['dft_xc_ab'][idx1][idx2]}"
                     )
         print("------------------------------------")
         if hf_int:
@@ -627,16 +627,16 @@ class IQA(object):
 
             print()
             print("AA/AB terms Coulomb energy:")
-            for idx1, at1 in enumerate(molecule.numbers):
+            for idx1, at1 in enumerate(self.molecule.numbers):
                 for idx2 in range(idx1 + 1):
                     print(
-                        f"{at1}({idx1+1}){molecule.numbers[idx2]}({idx2+1}) {iqa_pairwise_results['ab_hf_coul'][idx1][idx2]}"
+                        f"{at1}({idx1+1}){self.molecule.numbers[idx2]}({idx2+1}) {iqa_pairwise_results['ab_hf_coul'][idx1][idx2]}"
                     )
             print("AA/AB terms HF exchange energy:")
-            for idx1, at1 in enumerate(molecule.numbers):
+            for idx1, at1 in enumerate(self.molecule.numbers):
                 for idx2 in range(idx1 + 1):
                     print(
-                        f"{at1}({idx1+1}){molecule.numbers[idx2]}({idx2+1}) {iqa_pairwise_results['ab_hf_exch'][idx1][idx2]}"
+                        f"{at1}({idx1+1}){self.molecule.numbers[idx2]}({idx2+1}) {iqa_pairwise_results['ab_hf_exch'][idx1][idx2]}"
                     )
             print()
 
@@ -656,12 +656,12 @@ class IQA(object):
             Total value for nuclear-nuclear repulsion energy
         """
 
-        molecule = self.molecule
+    #    molecule = self.molecule
 
         # Compute Nucleus-Nucleus repulsion
         logging.info("CALCULATING NUCLEUS-NUCLEUS REPULSION ENERGY")
-        rab = np.triu(np.linalg.norm(molecule.coordinates[:, None] - molecule.coordinates, axis=-1))
-        atomic_charges = np.triu(molecule.numbers[:, None] * molecule.numbers)[np.where(rab > 0)]
+        rab = np.triu(np.linalg.norm(self.molecule.coordinates[:, None] - self.molecule.coordinates, axis=-1))
+        atomic_charges = np.triu(self.molecule.numbers[:, None] * self.molecule.numbers)[np.where(rab > 0)]
         rab = rab[rab > 0]
         total_nn = np.sum(atomic_charges / rab)
         print("TOTAL NN ENERGY: ", total_nn)
@@ -692,25 +692,25 @@ class IQA(object):
 
         """
 
-        molecule = self.molecule
-        grid = self.grid
-        part = self.part
-        dens = self.dens
+     #   molecule = self.molecule
+     #   grid = self.grid
+     #   part = self.part
+     #   dens = self.dens
 
         # Compute Electron-Nucleus attraction
         logging.info("CALCULATING ELECTRON-NUCLEI ATTRACTION ENERGY")
-        natoms = molecule.numbers.shape[0]
+        natoms = self.molecule.numbers.shape[0]
 
-        rij = np.linalg.norm(molecule.coordinates[:, None, :] - grid.points, axis=-1)
-        total_en = grid.integrate(np.sum((-molecule.numbers[:, None] * (dens / rij)), axis=0))
+        rij = np.linalg.norm(self.molecule.coordinates[:, None, :] - self.grid.points, axis=-1)
+        total_en = self.grid.integrate(np.sum((-self.molecule.numbers[:, None] * (self.dens / rij)), axis=0))
         print("TOTAL EN ENERGY: ", total_en)
 
         en_cond_en = None
-        if part:
-            if part.__class__.__name__ in ["VarHirshfeld", "HirshfeldI", "Hirshfeld"]:
-                at_weights = part.weights
+        if self.part:
+            if self.part.__class__.__name__ in ["VarHirshfeld", "HirshfeldI", "Hirshfeld"]:
+                at_weights = self.part.weights
             else:
-                at_weights = part.at_weights
+                at_weights = self.part.at_weights
             #     # Doing a for loop to get all at_weights. Using Part object from Horton does not allow
             #     # to get all at the same time
             #     at_weights = np.zeros((natoms, grid.points.shape[0]))
@@ -724,13 +724,13 @@ class IQA(object):
             #         else:
             #             at_weights[i] = part.part.cache.load("at_weights", i)
             # math
-            en_atomic = -molecule.numbers[None, :, None] * (
-                (dens[None:,] * at_weights)[:, None, :] / rij[None, :, :]
+            en_atomic = -self.molecule.numbers[None, :, None] * (
+                (self.dens[None:,] * at_weights)[:, None, :] / rij[None, :, :]
             )
             en_atomic_matrix = np.zeros((natoms, natoms))
             for i in range(natoms):
                 for j in range(natoms):
-                    en_atomic_matrix[i][j] = grid.integrate(en_atomic[i][j])
+                    en_atomic_matrix[i][j] = self.grid.integrate(en_atomic[i][j])
                     # if not part.__class__.__name__ in ['VarHirshfeld', 'HirshfeldI', 'Hirshfeld']:
                     #     if part.part.local:
                     #         at_grid = part.part.get_grid(i)
@@ -785,34 +785,34 @@ class IQA(object):
 
         """
 
-        molecule = self.molecule
-        grid = self.grid
-        part = self.part
-        basis = self.basis
-        dm = self.dm
+    #    molecule = self.molecule
+    #    grid = self.grid
+    #    part = self.part
+     #   basis = self.basis
+    #    dm = self.dm
 
         logging.info("CALCULATING KINETIC ENERGY")
 
-        natoms = molecule.numbers.shape[0]
-        output = evaluate_general_kinetic_energy_density(dm, basis, grid.points, -0.25)
-        output_posdef = evaluate_posdef_kinetic_energy_density(dm, basis, grid.points)
-        total_kin = grid.integrate(output)
-        total_kin_posdef = grid.integrate(output_posdef)
+        natoms = self.molecule.numbers.shape[0]
+        output = evaluate_general_kinetic_energy_density(self.dm, self.basis, self.grid.points, -0.25)
+        output_posdef = evaluate_posdef_kinetic_energy_density(self.dm, self.basis, self.grid.points)
+        total_kin = self.grid.integrate(output)
+        total_kin_posdef = self.grid.integrate(output_posdef)
         print("TOTAL KINETIC ENERGY: ", total_kin)
 
         at_kin = None
-        if part:
-            if part.__class__.__name__ in ["VarHirshfeld", "HirshfeldI", "Hirshfeld"]:
-                at_weights = part.weights
+        if self.part:
+            if self.part.__class__.__name__ in ["VarHirshfeld", "HirshfeldI", "Hirshfeld"]:
+                at_weights = self.part.weights
                 at_kin_raw = at_weights * output[None, :]
                 at_kin_raw_posdef = at_weights * output_posdef[None, :]
-                at_kin = np.array([grid.integrate(at_kin_raw[i]) for i in range(natoms)])
+                at_kin = np.array([self.grid.integrate(at_kin_raw[i]) for i in range(natoms)])
                 at_kin_posdef = np.array(
-                    [grid.integrate(at_kin_raw_posdef[i]) for i in range(natoms)]
+                    [self.grid.integrate(at_kin_raw_posdef[i]) for i in range(natoms)]
                 )
             else:
-                at_kin = part.condense_to_atoms(output)
-                at_kin_posdef = part.condense_to_atoms(output_posdef)
+                at_kin = self.part.condense_to_atoms(output)
+                at_kin_posdef = self.part.condense_to_atoms(output_posdef)
             logging.info("Decomposing Kinetic energy into atomic contributions.")
             print(at_kin)
 
@@ -856,25 +856,25 @@ class IQA(object):
             Atomic exchange energies.
         """
 
-        molecule = self.molecule
-        grid = self.grid
-        part = self.part
-        basis = self.basis
-        dm = self.dm
-        dens = self.dens
+    #    molecule = self.molecule
+    #    grid = self.grid
+    #    part = self.part
+    #    basis = self.basis
+    #    dm = self.dm
+    #    dens = self.dens
 
         logging.info("CALCULATING COULOMB AND HF EXCHANGE ENERGY")
 
-        natoms = molecule.numbers.shape[0]
-        nao = dm.shape[0]
-        eval_ao = evaluate_basis(basis, grid.points)
+        natoms = self.molecule.numbers.shape[0]
+        nao = self.dm.shape[0]
+        eval_ao = evaluate_basis(self.basis, self.grid.points)
         # The broadcast operation is the same as the for loop. Summing over mu because broadcasting
         # allocates too much memory
-        eval_mo = np.zeros((molecule._iodata.mo.coeffs.T.shape[0], eval_ao.shape[1]))
-        for i in range(molecule._iodata.mo.coeffs.T.shape[0]):
+        eval_mo = np.zeros((self.molecule._iodata.mo.coeffs.T.shape[0], eval_ao.shape[1]))
+        for i in range(self.molecule._iodata.mo.coeffs.T.shape[0]):
             mo = np.zeros((eval_ao.shape[1]))
             for mu in range(eval_ao.shape[0]):
-                mo += molecule._iodata.mo.coeffs.T[i, mu] * eval_ao[mu, :]
+                mo += self.molecule._iodata.mo.coeffs.T[i, mu] * eval_ao[mu, :]
             eval_mo[i] = mo
         logging.warning("Calculating Coulomb and Exchange: expect long integrals")
         istart = 0
@@ -883,10 +883,10 @@ class IQA(object):
         segments = []
         istart = 0
         i = 0
-        while istart < grid.points.shape[0]:
-            iend = min(istart + chunk_size, grid.points.shape[0])
+        while istart < self.grid.points.shape[0]:
+            iend = min(istart + chunk_size, self.grid.points.shape[0])
             # segments.append((istart, iend))
-            segments.append((i, istart, iend, eval_mo, grid, dens, molecule._iodata, dm))
+            segments.append((i, istart, iend, eval_mo, self.grid, self.dens, self.molecule._iodata, self.dm))
             istart = iend
             i += 1
         print(len(segments))
@@ -913,8 +913,8 @@ class IQA(object):
         pool.close()
         pool.join()
 
-        total_coul_raw = np.zeros(grid.points.shape[0])
-        total_exch_raw = np.zeros(grid.points.shape[0])
+        total_coul_raw = np.zeros(self.grid.points.shape[0])
+        total_exch_raw = np.zeros(self.grid.points.shape[0])
         # print(segments[0][1])
         # print(segments[0][2])
         # assert 5 == 6
@@ -927,24 +927,24 @@ class IQA(object):
             total_coul_raw[out[0] : out[1]] = out[2]
             total_exch_raw[out[0] : out[1]] = out[3]
 
-        total_coul = grid.integrate(total_coul_raw)
-        total_exch = grid.integrate(total_exch_raw)
+        total_coul = self.grid.integrate(total_coul_raw)
+        total_exch = self.grid.integrate(total_exch_raw)
 
         print("TOTAL COULOMB: ", total_coul)
         print("TOTAL EXCHANGE: ", total_exch)
 
         at_exch = None
         at_coulomb = None
-        if part:
-            if part.__class__.__name__ in ["VarHirshfeld", "HirshfeldI", "Hirshfeld"]:
-                at_weights = part.weights
+        if self.part:
+            if self.part.__class__.__name__ in ["VarHirshfeld", "HirshfeldI", "Hirshfeld"]:
+                at_weights = self.part.weights
                 at_coulomb_raw = at_weights * total_coul_raw[None, :]
                 at_exch_raw = at_weights * total_exch_raw[None, :]
-                at_coulomb = np.array([grid.integrate(at_coulomb_raw[i]) for i in range(natoms)])
-                at_exch = np.array([grid.integrate(at_exch_raw[i]) for i in range(natoms)])
+                at_coulomb = np.array([self.grid.integrate(at_coulomb_raw[i]) for i in range(natoms)])
+                at_exch = np.array([self.grid.integrate(at_exch_raw[i]) for i in range(natoms)])
             else:
-                at_coulomb = part.condense_to_atoms(total_coul_raw)
-                at_exch = part.condense_to_atoms(total_exch_raw)
+                at_coulomb = self.part.condense_to_atoms(total_coul_raw)
+                at_exch = self.part.condense_to_atoms(total_exch_raw)
             logging.info("Decomposing Coulomb and Exchange into atomic contributions.")
             print("Coulomb")
             print(at_coulomb, np.sum(at_coulomb))
@@ -974,35 +974,35 @@ class IQA(object):
         """
 
         # Draft 6N integration
-        molecule = self.molecule
-        basis = self.basis
-        part = self.part
-        part2 = self.part_2
-        grid1 = self.grid
-        grid2 = self.grid_2
+    #    molecule = self.molecule
+    #    basis = self.basis
+    #    part = self.part
+    #    part2 = self.part_2
+    #    grid1 = self.grid
+    #    grid2 = self.grid_2
 
-        if not grid2:
-            raise ValueError(f"Two grids are needed to perform 6N ee integration. Got {grid2}")
-        if not part2:
+        if not self.grid_2:
+            raise ValueError(f"Two grids are needed to perform 6N ee integration. Got {self.grid_2}")
+        if not self.part_2:
             raise ValueError(
-                f"Two partition objects are needed to perform 6N ee integration. Got {part2}"
+                f"Two partition objects are needed to perform 6N ee integration. Got {self.part_2}"
             )
 
         points1 = self.grid._grid.points
         points2 = self.grid_2._grid.points
         # Grid1
-        eval_ao_g1 = evaluate_basis(basis, points1)
-        eval_mo_g1 = compute_molecular_orbitals_from_ao(molecule, eval_ao_g1)
+        eval_ao_g1 = evaluate_basis(self.basis, points1)
+        eval_mo_g1 = compute_molecular_orbitals_from_ao(self.molecule, eval_ao_g1)
         # Grid2
-        eval_ao_g2 = evaluate_basis(basis, points2)
-        eval_mo_g2 = compute_molecular_orbitals_from_ao(molecule, eval_ao_g2)
+        eval_ao_g2 = evaluate_basis(self.basis, points2)
+        eval_mo_g2 = compute_molecular_orbitals_from_ao(self.molecule, eval_ao_g2)
 
         # Compute density/exchange density from Molecular orbitals
         # Because only restricted _occs_a.shape[0] == _occs_b.shape[0]
-        occupied_mo = molecule._iodata.mo.occs[molecule._iodata.mo.occs > 0].shape[0]
+        occupied_mo = self.molecule._iodata.mo.occs[self.molecule._iodata.mo.occs > 0].shape[0]
 
-        if part:
-            if part2:
+        if self.part:
+            if self.part_2:
                 logging.warning("Molecular 6N integration using local grids")
                 ab_hf_coul = np.zeros((len(self.molecule.numbers), len(self.molecule.numbers)))
                 ab_hf_exch = np.zeros((len(self.molecule.numbers), len(self.molecule.numbers)))
@@ -1012,10 +1012,10 @@ class IQA(object):
 
         for a in range(natoms):
             print(a)
-            atgrid_a = self.grid._grid.get_localgrid(molecule.coordinates[a], 300)
+            atgrid_a = self.grid._grid.get_localgrid(self.molecule.coordinates[a], 300)
             for b in range(a + 1):
                 print(b)
-                atgrid_b = grid2.get_localgrid(molecule.coordinates[b], 300)
+                atgrid_b = self.grid_2.get_localgrid(self.molecule.coordinates[b], 300)
 
                 integral_coul_ab = 0
                 integral_ex_ab = 0
@@ -1042,20 +1042,20 @@ class IQA(object):
                                 * eval_mo_g2[i]
                             )
 
-                    rij = np.linalg.norm(grid1.points[p1, :] - points2, axis=-1)
+                    rij = np.linalg.norm(self.grid.points[p1, :] - points2, axis=-1)
                     rij[rij == 0] = 1.0e-9
                     d_ex = d_ex / rij
                     d_coul = d_coul / rij
                     # Subset part weights b
-                    w_subset_b = part2.weights[b][atgrid_b.indices]
+                    w_subset_b = self.part_2.weights[b][atgrid_b.indices]
                     # Subset d_coul and d_ex
                     d_coul_b = d_coul[atgrid_b.indices]
                     d_ex_b = d_ex[atgrid_b.indices]
                     # Atomic integration for r2 using part weights
                     part_coul_b = atgrid_b.integrate(d_coul_b * w_subset_b)
                     part_ex_b = atgrid_b.integrate(d_ex_b * w_subset_b)
-                    integral_coul_ab += part_coul_b * (atgrid_a.weights[id1] * part.weights[a][p1])
-                    integral_ex_ab += part_ex_b * (atgrid_a.weights[id1] * part.weights[a][p1])
+                    integral_coul_ab += part_coul_b * (atgrid_a.weights[id1] * self.part.weights[a][p1])
+                    integral_ex_ab += part_ex_b * (atgrid_a.weights[id1] * self.part.weights[a][p1])
 
                 ab_hf_coul[a, b] = integral_coul_ab
                 ab_hf_exch[a, b] = integral_ex_ab
@@ -1067,13 +1067,13 @@ class IQA(object):
 
     def ee_iqa_dft(self, dft_dens, libxc_label):
 
-        molecule = self.molecule
-        grid = self.grid
-        part = self.part
-        basis = self.basis
-        dens = self.dens
+    #    molecule = self.molecule
+    #    grid = self.grid
+    #    part = self.part
+    #    basis = self.basis
+    #    dens = self.dens
 
-        natoms = molecule.numbers.shape[0]
+        natoms = self.molecule.numbers.shape[0]
 
         # Test pylibxc
         print(libxc_label)
@@ -1084,15 +1084,15 @@ class IQA(object):
         # XC_FAMILY_LDA = 1
         # XC_FAMILY_HYB_LDA = 128
         if func.get_family() in [1, 128]:
-            input_libxc["rho"] = dens
+            input_libxc["rho"] = self.dens
         # From pylibxc flags.py
         # XC_FAMILY_GGA = 2
         # XC_FAMILY_HYB_GGA = 32
         elif func.get_family() in [2, 32]:
             # Getting the norm-squared of the gradient of the spin-summed electron density(sigma_full)
-            grad = evaluate_density_gradient(self.dm, basis, grid.points)
+            grad = evaluate_density_gradient(self.dm, self.basis, self.grid.points)
             sigma_full = 4 * ((grad / 2) ** 2).sum(axis=1)
-            input_libxc["rho"] = dens
+            input_libxc["rho"] = self.dens
             input_libxc["sigma"] = sigma_full
 
         results_func = func.compute(input_libxc)
@@ -1107,18 +1107,18 @@ class IQA(object):
         else:
             coeff_mix = None
 
-        dft_xc_total = grid.integrate(dens, dft_xc_dens)
+        dft_xc_total = self.grid.integrate(self.dens, dft_xc_dens)
 
         at_dft_xc = None
-        if part:
-            if part.__class__.__name__ in ["VarHirshfeld", "HirshfeldI", "Hirshfeld"]:
-                at_weights = part.weights
+        if self.part:
+            if self.part.__class__.__name__ in ["VarHirshfeld", "HirshfeldI", "Hirshfeld"]:
+                at_weights = self.part.weights
                 at_dft_xc_raw = at_weights * dft_xc_dens[None, :]
                 at_dft_xc = np.array(
-                    [grid.integrate(at_dft_xc_raw[i], dens) for i in range(natoms)]
+                    [self.grid.integrate(at_dft_xc_raw[i], self.dens) for i in range(natoms)]
                 )
             else:
-                at_dft_xc = part.condense_to_atoms((dft_xc_dens * dens))
+                at_dft_xc = self.part.condense_to_atoms((dft_xc_dens * self.dens))
             logging.info("Decomposing XC into atomic contributions.")
             print("XC component")
             print(at_dft_xc)
@@ -1130,23 +1130,23 @@ class IQA(object):
 
     def ee_iqa_dft_pairwise(self, libxc_label):
 
-        grid = self.grid
-        part = self.part
-        molecule = self.molecule
-        basis = self.basis
+    #    grid = self.grid
+    #    part = self.part
+    #    molecule = self.molecule
+    #    basis = self.basis
 
         # Get different data
-        at_weights = part.weights
-        natoms = molecule.numbers.shape[0]
+        at_weights = self.part.weights
+        natoms = self.molecule.numbers.shape[0]
 
         # Get functional form pylibxc
         func = pylibxc.LibXCFunctional(libxc_label, "unpolarized")
 
         # BOD for LDA
         # Evaluate Atomic orbitals basis
-        eval_ao = evaluate_basis(basis, grid.points)
+        eval_ao = evaluate_basis(self.basis, self.grid.points)
         # Get Molecular orbitals from AO
-        eval_mo = compute_molecular_orbitals_from_ao(molecule, eval_ao)
+        eval_mo = compute_molecular_orbitals_from_ao(self.molecule, eval_ao)
         # Computing Molecular overlap from eval_mo
         sij = eval_mo[None, :, :] * eval_mo[:, None, :]
         # Getting atomic overlap matrices
@@ -1154,16 +1154,16 @@ class IQA(object):
 
         # Computing BOD for each pair of atoms
         # print(natoms, natoms, grid.points.shape[0])
-        bod = np.zeros((natoms, natoms, grid.points.shape[0]))
+        bod = np.zeros((natoms, natoms, self.grid.points.shape[0]))
         for a in range(natoms):
             for b in range(natoms):
-                for i in range(molecule._iodata.mo.occs[molecule._iodata.mo.occs > 0].shape[0]):
-                    for j in range(molecule._iodata.mo.occs[molecule._iodata.mo.occs > 0].shape[0]):
+                for i in range(self.molecule._iodata.mo.occs[self.molecule._iodata.mo.occs > 0].shape[0]):
+                    for j in range(self.molecule._iodata.mo.occs[self.molecule._iodata.mo.occs > 0].shape[0]):
                         bod[a, b] += (
                             2
                             * (
-                                at_weights[a] * grid.integrate(sij_at_1[b][i][j])
-                                + at_weights[b] * grid.integrate(sij_at_1[a][j][i])
+                                at_weights[a] * self.grid.integrate(sij_at_1[b][i][j])
+                                + at_weights[b] * self.grid.integrate(sij_at_1[a][j][i])
                             )
                             * eval_mo[i]
                             * eval_mo[j]
@@ -1181,7 +1181,7 @@ class IQA(object):
             eval_mo_grad_condensed = []
             for ind, orders in enumerate(orders_d):
                 eval_mo_grad_order = evaluate_deriv_basis(
-                    basis, grid.points, np.array(orders), transform=molecule._iodata.mo.coeffs.T
+                    self.basis, self.grid.points, np.array(orders), transform=self.molecule._iodata.mo.coeffs.T
                 )
                 # print(eval_mo_grad_order.shape)
                 eval_mo_grad.append(eval_mo_grad_order[:, :, None])
@@ -1189,18 +1189,18 @@ class IQA(object):
             eval_mo_grad = np.concatenate(eval_mo_grad, axis=2)
 
             # Computing BOD for GGA functionals for each pair of atoms
-            print(natoms, natoms, grid.points.shape[0])
-            grad_bod = np.zeros((natoms, natoms, grid.points.shape[0]))
+            print(natoms, natoms, self.grid.points.shape[0])
+            grad_bod = np.zeros((natoms, natoms, self.grid.points.shape[0]))
             for a in range(natoms):
                 for b in range(natoms):
-                    for i in range(molecule._iodata.mo.occs[molecule._iodata.mo.occs > 0].shape[0]):
+                    for i in range(self.molecule._iodata.mo.occs[self.molecule._iodata.mo.occs > 0].shape[0]):
                         for j in range(
-                            molecule._iodata.mo.occs[molecule._iodata.mo.occs > 0].shape[0]
+                            self.molecule._iodata.mo.occs[self.molecule._iodata.mo.occs > 0].shape[0]
                         ):
                             grad_bod[a, b] += np.sum(
                                 (
-                                    at_weights[a, :, None] * grid.integrate(sij_at_1[b][i][j])
-                                    + at_weights[b, :, None] * grid.integrate(sij_at_1[a][i][j])
+                                    at_weights[a, :, None] * self.grid.integrate(sij_at_1[b][i][j])
+                                    + at_weights[b, :, None] * self.grid.integrate(sij_at_1[a][i][j])
                                 )
                                 * eval_mo_grad[i, :, :]
                                 * eval_mo[j, :, None],
@@ -1213,15 +1213,15 @@ class IQA(object):
         int_bod = 0
         for a in range(natoms):
             for b in range(a):
-                int_bod += grid.integrate(bod[a, b])
+                int_bod += self.grid.integrate(bod[a, b])
         print("Integration BOD (TOTAL)", int_bod)
 
         # Combine atomic partition weights
         combine_atweights = np.zeros((at_weights[0].shape[0]))
         # Below code for grid is for Horton grid.
         for at in range(natoms):
-            start = grid._grid.indices[at]
-            end = grid._grid.indices[at + 1]
+            start = self.grid._grid.indices[at]
+            end = self.grid._grid.indices[at + 1]
             combine_atweights[start:end] = at_weights[at][start:end]
 
         # LDA
@@ -1236,7 +1236,7 @@ class IQA(object):
                     input_libxc["rho"] = bod[a, b]
                     results_func = func.compute(input_libxc)
                     dft_xc_dens = results_func["zk"].reshape(-1)
-                    dft_pairwise[a, b] = grid.integrate(
+                    dft_pairwise[a, b] = self.grid.integrate(
                         (dft_xc_dens * bod[a, b] * combine_atweights)
                     )
 
@@ -1253,7 +1253,7 @@ class IQA(object):
                     input_libxc["sigma"] = grad_bod[a, b]
                     results_func = func.compute(input_libxc)
                     dft_xc_dens = results_func["zk"].reshape(-1)
-                    dft_pairwise[a, b] = grid.integrate(
+                    dft_pairwise[a, b] = self.grid.integrate(
                         (dft_xc_dens * bod[a, b] * combine_atweights)
                     )
 
