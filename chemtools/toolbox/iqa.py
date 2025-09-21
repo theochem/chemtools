@@ -271,6 +271,75 @@ class IQA(object):
         grid = get_molecular_grid(molecule)
 
         return cls.from_molecule(molecule, grid, scheme=scheme)
+    
+    def compare_numerical_analytical(self, threshold=1e-2):
+        """
+        for the total values of each energy term, calculate analytical and numerical values and check their agreement.
+        """
+
+        ### extract total numerical values
+        numerical_results = self.iqa()
+        nn_total_numerical = numerical_results['nn_total']
+        en_total_numerical = numerical_results['en_total']
+        kin_total_numerical = numerical_results['kin_total']
+        ex_total_numerical = numerical_results['x_total']
+        coul_total_numerical = numerical_results['coul_total']
+        
+        ### calculate analytical values
+        ## NN (this is going to be useless)
+        rab = np.triu(np.linalg.norm(self.molecule.coordinates[:, None] - self.molecule.coordinates, axis=-1))
+        at_charges = np.triu(self.molecule.numbers[:, None] * self.molecule.numbers)[np.where(rab > 0)]
+        nn_total_analytical = np.sum(at_charges / rab[rab > 0])
+
+        ## EN
+        en_int = nuclear_electron_attraction_integral(self.basis, self.molecule.coordinates, self.molecule.numbers)
+        en_total_analytical = np.trace(self.dm.dot(en_int))
+
+        ## Kinetic 
+        kin_int = kinetic_energy_integral(self.basis)
+        kin_total_analytical = np.trace(self.dm.dot(kin_int))
+
+        ## Exchange
+        ee_int = electron_repulsion_integral(self.basis)
+        exch = np.einsum('rs,mnrs->mn', self.dm, ee_int)
+        ex_total_analytical = -0.25 * np.trace(self.dm.dot(exch))
+
+        ## Coulomb
+        coul = np.einsum('rs,mrns->mn', self.dm, ee_int)
+        coul_total_analytical = 0.5 * np.trace(self.dm.dot(coul))
+
+        ## differences in kcal/mol
+        nn_diff = np.abs(nn_total_analytical - nn_total_numerical) / 0.0015936014376406278
+        en_diff = np.abs(en_total_analytical - en_total_numerical) / 0.0015936014376406278
+        kin_diff = np.abs(kin_total_analytical - kin_total_numerical) / 0.0015936014376406278
+        ex_diff = np.abs(ex_total_analytical - ex_total_numerical) / 0.0015936014376406278
+        coul_diff = np.abs(coul_total_analytical - coul_total_numerical) / 0.0015936014376406278
+
+        ## extract the maximum error, if it's higher than threshold rise error
+        max_diff = np.max([nn_diff, en_diff, kin_diff, ex_diff, coul_diff])
+    
+        if max_diff > threshold:
+            raise ValueError(f"The difference between analytical and numerical energies exceed the threshold. Maximum allowed: {threshold}, got {max_diff}.")
+
+        # print("Numerical Nucleus-Nucleus repulsion energy: ", nn_total_numerical)
+        # print("Analytical Nucleus-Nucleus repulsion energy (GBASIS): ", nn_total_analytical)
+        # print("DIFF (kcal/mol) ", nn_diff)
+        # print()
+        # print("Numerical Electron-Nucleus attraction energy: ", en_total_numerical)
+        # print("Analytical Electron-Nucleus attraction energy (GBASIS): ", en_total_analytical)
+        # print("DIFF (kcal/mol) ", en_diff)
+        # print()
+        # print("Numerical Kinetic energy: ", kin_total_numerical)
+        # print("Analytical Kinetic energy (GBASIS): ", kin_total_analytical)
+        # print("DIFF (kcal/mol) ", kin_diff)
+        # print()
+        # print("Numerical Exchange energy: ", ex_total_numerical)
+        # print("Analytical Exchange energy (GBASIS): ", ex_total_analytical)
+        # print("DIFF (kcal/mol) ", ex_diff)
+        # print()
+        # print("Numerical Coulomb energy: ", coul_total_numerical)
+        # print("Analytical Coulomb energy (GBASIS): ", coul_total_analytical)
+        # print("DIFF (kcal/mol) ", coul_diff)
 
     def iqa(self, dft_exch=None, dft_corr=None):
         """Return the Interacting Quantum Atoms (IQA) components integrated at the evaluated given points
@@ -302,15 +371,15 @@ class IQA(object):
             iqa_results["kin_atomic_posdef"],
         ) = self.kin_iqa()
         # NN
-        rab = np.triu(np.linalg.norm(self.molecule.coordinates[:, None] - self.molecule.coordinates, axis=-1))
-        at_charges = np.triu(self.molecule.numbers[:, None] * self.molecule.numbers)[np.where(rab > 0)]
-        nn_int = np.sum(at_charges / rab[rab > 0])
-        # NE
-        ne_int = nuclear_electron_attraction_integral(self.basis, self.molecule.coordinates, self.molecule.numbers)
-        ne_int = np.trace(self.dm.dot(ne_int))
-        # KINETIC
-        kin_int = kinetic_energy_integral(self.basis)
-        kin_int = np.trace(self.dm.dot(kin_int))
+        # rab = np.triu(np.linalg.norm(self.molecule.coordinates[:, None] - self.molecule.coordinates, axis=-1))
+        # at_charges = np.triu(self.molecule.numbers[:, None] * self.molecule.numbers)[np.where(rab > 0)]
+        # nn_int = np.sum(at_charges / rab[rab > 0])
+        # # NE
+        # ne_int = nuclear_electron_attraction_integral(self.basis, self.molecule.coordinates, self.molecule.numbers)
+        # ne_int = np.trace(self.dm.dot(ne_int))
+        # # KINETIC
+        # kin_int = kinetic_energy_integral(self.basis)
+        # kin_int = np.trace(self.dm.dot(kin_int))
 
         dft_xc_edens = {}
         # assuming dft_corr and dft_exch specified together
@@ -363,80 +432,80 @@ class IQA(object):
             ) = self.ee_iqa_hf()
         else:
             raise ValueError(f"Need to specify an exchange functional too. Got {dft_exch}")
-        logging.info("Summary IQA")
-        print("Nucleus-Nucleus repulsion energy: ", iqa_results["nn_total"])
-        print("Nucleus-Nucleus repulsion energy (GBASIS): ", nn_int)
-        diff = abs(iqa_results["nn_total"] - nn_int)
-        print("DIFF (kcal/mol) ", diff / 0.0015936014376406278)
+        # logging.info("Summary IQA")
+        # print("Nucleus-Nucleus repulsion energy: ", iqa_results["nn_total"])
+        # print("Nucleus-Nucleus repulsion energy (GBASIS): ", nn_int)
+        # diff = abs(iqa_results["nn_total"] - nn_int)
+        # print("DIFF (kcal/mol) ", diff / 0.0015936014376406278)
 
-        print("------------------------------------")
-        print("Electron-Nucleus attraction energy: ", iqa_results["en_total"])
-        print("Electron-Nucleus attraction energy (GBASIS): ", ne_int)
-        diff = abs(iqa_results["en_total"] - ne_int)
-        print("DIFF (kcal/mol) ", diff / 0.0015936014376406278)
-        print()
-        if self.part:
-            print("Atomic Electron-Nucleus attraction energy:")
-            for idx, at in enumerate(self.molecule.numbers):
-                print(f"{at}   {iqa_results['en_atomic'][idx]}")
-        print("------------------------------------")
-        print("Kinetic energy:  ", iqa_results["kin_total"])
-        print("Kinetic energy(HORTON):  ", kin_int)
-        diff = abs(iqa_results["kin_total"] - kin_int)
-        print("DIFF (kcal/mol) ", diff / 0.0015936014376406278)
-        print()
-        if self.part:
-            print("Atomic Kinetic energy:")
-            for idx, at in enumerate(self.molecule.numbers):
-                print(f"{at}   {iqa_results['kin_atomic'][idx]}")
-        print("------------------------------------")
-        print("Electron-Electron interaction energy")
-        print()
-        print("Coulomb energy: ", iqa_results["coul_total"])
-        print()
-        if self.part:
-            print("Atomic Coulomb energy:")
-            for idx, at in enumerate(self.molecule.numbers):
-                print(f"{at}   {iqa_results['coul_atomic'][idx]}")
-        print()
-        if dft_exch and dft_corr:
-            print("DTF Exchange energy: ", iqa_results["x_total"])
-            print("DTF Correlation energy: ", iqa_results["c_total"])
-            print()
-            if self.part:
-                print("Atomic DFT Exchange energy:")
-                for idx, at in enumerate(self.molecule.numbers):
-                    print(f"{at}   {iqa_results['x_atomic'][idx]}")
-                print("Atomic DFT Correlation energy:")
-                for idx, at in enumerate(self.molecule.numbers):
-                    print(f"{at}   {iqa_results['c_atomic'][idx]}")
+        # print("------------------------------------")
+        # print("Electron-Nucleus attraction energy: ", iqa_results["en_total"])
+        # print("Electron-Nucleus attraction energy (GBASIS): ", ne_int)
+        # diff = abs(iqa_results["en_total"] - ne_int)
+        # print("DIFF (kcal/mol) ", diff / 0.0015936014376406278)
+        # print()
+        # if self.part:
+        #     print("Atomic Electron-Nucleus attraction energy:")
+        #     for idx, at in enumerate(self.molecule.numbers):
+        #         print(f"{at}   {iqa_results['en_atomic'][idx]}")
+        # print("------------------------------------")
+        # print("Kinetic energy:  ", iqa_results["kin_total"])
+        # print("Kinetic energy(HORTON):  ", kin_int)
+        # diff = abs(iqa_results["kin_total"] - kin_int)
+        # print("DIFF (kcal/mol) ", diff / 0.0015936014376406278)
+        # print()
+        # if self.part:
+        #     print("Atomic Kinetic energy:")
+        #     for idx, at in enumerate(self.molecule.numbers):
+        #         print(f"{at}   {iqa_results['kin_atomic'][idx]}")
+        # print("------------------------------------")
+        # print("Electron-Electron interaction energy")
+        # print()
+        # print("Coulomb energy: ", iqa_results["coul_total"])
+        # print()
+        # if self.part:
+        #     print("Atomic Coulomb energy:")
+        #     for idx, at in enumerate(self.molecule.numbers):
+        #         print(f"{at}   {iqa_results['coul_atomic'][idx]}")
+        # print()
+        # if dft_exch and dft_corr:
+        #     print("DTF Exchange energy: ", iqa_results["x_total"])
+        #     print("DTF Correlation energy: ", iqa_results["c_total"])
+        #     print()
+        #     if self.part:
+        #         print("Atomic DFT Exchange energy:")
+        #         for idx, at in enumerate(self.molecule.numbers):
+        #             print(f"{at}   {iqa_results['x_atomic'][idx]}")
+        #         print("Atomic DFT Correlation energy:")
+        #         for idx, at in enumerate(self.molecule.numbers):
+        #             print(f"{at}   {iqa_results['c_atomic'][idx]}")
 
-        if dft_exch and not dft_corr:
-            print("DTF Exchange-Correlation energy: ", iqa_results["xc_total"])
-            print()
-            if self.part:
-                print("Atomic DFT Exchange-Correlation energy:")
-                for idx, at in enumerate(self.molecule.numbers):
-                    print(f"{at}   {iqa_results['xc_atomic'][idx]}")
+        # if dft_exch and not dft_corr:
+        #     print("DTF Exchange-Correlation energy: ", iqa_results["xc_total"])
+        #     print()
+        #     if self.part:
+        #         print("Atomic DFT Exchange-Correlation energy:")
+        #         for idx, at in enumerate(self.molecule.numbers):
+        #             print(f"{at}   {iqa_results['xc_atomic'][idx]}")
 
-        if "x_hf_total" in iqa_results.keys():
-            print("HF Exchange: ", iqa_results["x_hf_total"])
-            print("COEFF MIX :", coeff_mix)
-            print()
-            if self.part:
-                print("Atomic HF Exchange energy:")
-                for idx, at in enumerate(self.molecule.numbers):
-                    print(f"{at}   {iqa_results['x_hf_atomic'][idx]}")
+        # if "x_hf_total" in iqa_results.keys():
+        #     print("HF Exchange: ", iqa_results["x_hf_total"])
+        #     print("COEFF MIX :", coeff_mix)
+        #     print()
+        #     if self.part:
+        #         print("Atomic HF Exchange energy:")
+        #         for idx, at in enumerate(self.molecule.numbers):
+        #             print(f"{at}   {iqa_results['x_hf_atomic'][idx]}")
 
-        total_sum_energy = 0
-        for k in iqa_results.keys():
-            if k.endswith("total"):
-                total_sum_energy += iqa_results[k]
+        # total_sum_energy = 0
+        # for k in iqa_results.keys():
+        #     if k.endswith("total"):
+        #         total_sum_energy += iqa_results[k]
 
-        print("TOTAL ENERGY (SUM OF COMPONENTS):", total_sum_energy)
-        print("TOTAL ENERGY (FCHK):", self.molecule._iodata.energy)
-        print("DIFF (AU) :", total_sum_energy - self.molecule._iodata.energy)
-        print("DIFF (Kcal) :", (total_sum_energy - self.molecule._iodata.energy) / 0.0015936014376406278)
+        # print("TOTAL ENERGY (SUM OF COMPONENTS):", total_sum_energy)
+        # print("TOTAL ENERGY (FCHK):", self.molecule._iodata.energy)
+        # print("DIFF (AU) :", total_sum_energy - self.molecule._iodata.energy)
+        # print("DIFF (Kcal) :", (total_sum_energy - self.molecule._iodata.energy) / 0.0015936014376406278)
 
         return iqa_results
 
