@@ -84,7 +84,7 @@ def test_h2o_rhf_sto3g():
     # check total values of decomposition against in h2o_rhf_sto3g.log
     with path('chemtools.data', 'h2o_rhf_sto3g.fchk') as fname:
         mol_iqa = IQA.from_file(fname, scheme='H')
-        results_iqa = mol_iqa.iqa()
+        results_iqa = mol_iqa.run_atomic()
         assert_allclose(results_iqa['nn_total'],  9.1559536481, rtol=1.e-4, atol=0.)
         assert_allclose(results_iqa['en_total'],  -1.968747462907e+02, rtol=1.e-4, atol=0.)
         assert_allclose(results_iqa['kin_total'],  7.457892107183e+01, rtol=1.e-4, atol=0.)
