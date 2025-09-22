@@ -342,18 +342,6 @@ class IQA(object):
         coul_total_numerical = self.grid.integrate(total_coul_raw)
         ex_total_numerical = self.grid.integrate(total_exch_raw)
 
-        ### return the total numerical values to pass for decomposition
-        total_numerical = {
-                   "nn_total": nn_total_numerical, 
-                   "en_total": en_total_numerical,
-                   "kin_raw": output,
-                   "kin_total": kin_total_numerical,
-                   "ex_raw": total_exch_raw,
-                   "ex_total": ex_total_numerical,
-                   "coul_raw": total_coul_raw,
-                   "coul_total": coul_total_numerical
-                   }
-
         ### calculate analytical values
         ## NN (this is going to be useless)
         rab = np.triu(np.linalg.norm(self.molecule.coordinates[:, None] - self.molecule.coordinates, axis=-1))
@@ -389,6 +377,18 @@ class IQA(object):
     
         if max_diff > threshold:
             raise ValueError(f"The difference between analytical and numerical energies exceed the threshold. Maximum allowed: {threshold}, got {max_diff}.")
+        
+        ### return the total numerical values to pass for decomposition
+        total_numerical = {
+                   "nn_total": nn_total_numerical, 
+                   "en_total": en_total_numerical,
+                   "kin_raw": output,
+                   "kin_total": kin_total_numerical,
+                   "ex_raw": total_exch_raw,
+                   "ex_total": ex_total_numerical,
+                   "coul_raw": total_coul_raw,
+                   "coul_total": coul_total_numerical
+                   }
         return total_numerical
 
     def run_atomic(self, dft_exch=None, dft_corr=None):
