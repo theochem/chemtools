@@ -389,25 +389,6 @@ class IQA(object):
     
         if max_diff > threshold:
             raise ValueError(f"The difference between analytical and numerical energies exceed the threshold. Maximum allowed: {threshold}, got {max_diff}.")
-        print("Numerical Nucleus-Nucleus repulsion energy: ", nn_total_numerical)
-        print("Analytical Nucleus-Nucleus repulsion energy (GBASIS): ", nn_total_analytical)
-        print("DIFF (kcal/mol) ", nn_diff)
-        print()
-        print("Numerical Electron-Nucleus attraction energy: ", en_total_numerical)
-        print("Analytical Electron-Nucleus attraction energy (GBASIS): ", en_total_analytical)
-        print("DIFF (kcal/mol) ", en_diff)
-        print()
-        print("Numerical Kinetic energy: ", kin_total_numerical)
-        print("Analytical Kinetic energy (GBASIS): ", kin_total_analytical)
-        print("DIFF (kcal/mol) ", kin_diff)
-        print()
-        print("Numerical Exchange energy: ", ex_total_numerical)
-        print("Analytical Exchange energy (GBASIS): ", ex_total_analytical)
-        print("DIFF (kcal/mol) ", ex_diff)
-        print()
-        print("Numerical Coulomb energy: ", coul_total_numerical)
-        print("Analytical Coulomb energy (GBASIS): ", coul_total_analytical)
-        print("DIFF (kcal/mol) ", coul_diff)
         return total_numerical
 
     def iqa(self, dft_exch=None, dft_corr=None):
