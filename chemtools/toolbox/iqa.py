@@ -924,15 +924,15 @@ class IQA(object):
                     d_ex = d_ex / rij
                     d_coul = d_coul / rij
                     # Subset part weights b
-                    w_subset_b = self.part_2.weights[b][atgrid_b.indices]
+                    w_subset_b = self.part_2.at_weights[b][atgrid_b.indices]
                     # Subset d_coul and d_ex
                     d_coul_b = d_coul[atgrid_b.indices]
                     d_ex_b = d_ex[atgrid_b.indices]
                     # Atomic integration for r2 using part weights
                     part_coul_b = atgrid_b.integrate(d_coul_b * w_subset_b)
                     part_ex_b = atgrid_b.integrate(d_ex_b * w_subset_b)
-                    integral_coul_ab += part_coul_b * (atgrid_a.weights[id1] * self.part.weights[a][p1])
-                    integral_ex_ab += part_ex_b * (atgrid_a.weights[id1] * self.part.weights[a][p1])
+                    integral_coul_ab += part_coul_b * (atgrid_a.weights[id1] * self.part.at_weights[a][p1])
+                    integral_ex_ab += part_ex_b * (atgrid_a.weights[id1] * self.part.at_weights[a][p1])
 
                 ab_hf_coul[a, b] = integral_coul_ab
                 ab_hf_exch[a, b] = integral_ex_ab
