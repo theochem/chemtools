@@ -753,28 +753,9 @@ class IQA(object):
 
         """
 
-        # Compute Electron-Nucleus attraction
-        logging.info("CALCULATING ELECTRON-NUCLEI ATTRACTION ENERGY")
-        natoms = self.molecule.numbers.shape[0]
-        rij = np.linalg.norm(self.molecule.coordinates[:, None, :] - self.grid.points, axis=-1)
-        total_en = self.total_numerical['en_total']
-
-        en_cond_en = None
         if self.part:
-            if self.part.__class__.__name__ in ["VarHirshfeld", "HirshfeldI", "Hirshfeld"]:
-                at_weights = self.part.weights
-            else:
-                at_weights = self.part.at_weights
-            # math
-            en_atomic = -self.molecule.numbers[None, :, None] * (
-                (self.dens[None:,] * at_weights)[:, None, :] / rij[None, :, :]
-            )
-            en_atomic_matrix = np.zeros((natoms, natoms))
-            for i in range(natoms):
-                for j in range(natoms):
-                    en_atomic_matrix[i][j] = self.grid.integrate(en_atomic[i][j])
-
-            logging.info("Decomposing Electron-Nuclei energy into atomic contributions")
+            en_atomic_matrix = self.en_iqa_pairwise()
+            natoms = self.molecule.numbers.shape[0]
             # share_matrix
             share_factor = share_factor
             logging.info(
