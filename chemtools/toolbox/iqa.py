@@ -104,7 +104,7 @@ def _integral_point_charge_electron(i, istart, iend, eval_mo, grid, dens, molecu
 class IQA(object):
     """Interacting Quantum Atoms (IQA) Class."""
 
-    def __init__(self, molecule, basis, dm, grid, part=None, grid_2=None, part_2=None):
+    def __init__(self, molecule, basis, dm, grid, part=None, grid_2=None, part_2=None, threshold=1e-1):
         """Initialize class.
 
         Parameters
@@ -187,10 +187,10 @@ class IQA(object):
         self.part_2 = part_2
         dens = evaluate_density(dm, basis, grid.points)
         self.dens = dens
-        self.total_numerical = self.compare_numerical_analytical()
+        self.total_numerical = self.compare_numerical_analytical(threshold=threshold)
 
     @classmethod
-    def from_molecule(cls, molecule, grid, part=None, scheme=None):
+    def from_molecule(cls, molecule, grid, part=None, scheme=None, grid_2=None, part_2=None):
         """Initialize Interacting Quantum Atoms (IQA) class from `Molecules` object.
 
         Parameters
@@ -250,7 +250,7 @@ class IQA(object):
                 print("Couldn't read Density matrix. Calculating from its components.")
                 one_rdm = molecule._mo.compute_dm()
 
-        return cls(molecule, basis, one_rdm, grid, part)
+        return cls(molecule, basis, one_rdm, grid, part, grid_2=grid_2, part_2=part_2)
 
     @classmethod
     def from_file(cls, fname, scheme=None):
