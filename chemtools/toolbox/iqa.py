@@ -269,11 +269,12 @@ class IQA(object):
         molecule = Molecule.from_file(fname)
 
         # Initialize grid
-        grid = get_molecular_grid(molecule)
+        grid = get_molecular_grid(molecule, R=1)
+        grid_2 = get_molecular_grid(molecule, R=2)
 
-        return cls.from_molecule(molecule, grid, scheme=scheme)
+        return cls.from_molecule(molecule, grid, scheme=scheme, grid_2=grid_2)
     
-    def compare_numerical_analytical(self, threshold=1e-1):
+    def compare_numerical_analytical(self, threshold):
         """
         for the total values of each energy term, calculate analytical and numerical values and check their agreement.
         """

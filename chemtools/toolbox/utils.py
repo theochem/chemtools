@@ -112,13 +112,15 @@ def get_matching_attr(molecule, attr, accuracy=1.e-6):
     return ref
 
 
-def get_molecular_grid(molecule, grid=None):
+def get_molecular_grid(molecule, R=1, grid=None):
     r"""Return molecular grid or check that given grid is consistent with molecule.
 
     Parameters
     ----------
     molecule : Molecule or Sequence of Molecule
         Instance of Molecule class, or sequence of Molecule class instances.
+    R: float
+        The scale factor used in the transformation. use different values to make default grids without overlaping
     grid : MolecularGrid, optional
         Instance or MolecularGrid. If `None`, a default `MolecularGrid` is returned.
     """
@@ -153,7 +155,7 @@ def get_molecular_grid(molecule, grid=None):
         pseudo = get_matching_attr(molecule, "pseudo_numbers", 1.e-8)
         coords = get_matching_attr(molecule, "coordinates", 1.e-4)
         oned = GaussChebyshev(60)
-        rgrid = BeckeRTransform(1e-5, 1).transform_1d_grid(oned)
+        rgrid = BeckeRTransform(1e-5, R).transform_1d_grid(oned)
         grid = MolecularGrid(coords, number, pseudo, specs=[rgrid, 250], rotate=False)
     return grid
 
