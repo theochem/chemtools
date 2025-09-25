@@ -290,8 +290,8 @@ class IQA(object):
         en_total_numerical = self.grid.integrate(np.sum((-self.molecule.numbers[:, None] * (self.dens / rij)), axis=0))
         
         ## Kinietic
-        output = evaluate_general_kinetic_energy_density(self.dm, self.basis, self.grid.points, -0.25)
-        kin_total_numerical = self.grid.integrate(output)
+        kin_density = evaluate_general_kinetic_energy_density(self.dm, self.basis, self.grid.points, -0.25)
+        kin_total_numerical = self.grid.integrate(kin_density)
 
         ## Coulobm and Exchange
         nao = self.dm.shape[0]
@@ -368,30 +368,40 @@ class IQA(object):
         coul_total_analytical = 0.5 * np.trace(self.dm.dot(coul))
 
         ## differences in kcal/mol
-        nn_diff = np.abs(nn_total_analytical - nn_total_numerical) / 0.0015936014376406278
-        en_diff = np.abs(en_total_analytical - en_total_numerical) / 0.0015936014376406278
-        kin_diff = np.abs(kin_total_analytical - kin_total_numerical) / 0.0015936014376406278
-        ex_diff = np.abs(ex_total_analytical - ex_total_numerical) / 0.0015936014376406278
-        coul_diff = np.abs(coul_total_analytical - coul_total_numerical) / 0.0015936014376406278
+        nn_diff = np.abs(nn_total_analytical - nn_total_numerical) / kcalmol
+        en_diff = np.abs(en_total_analytical - en_total_numerical) / kcalmol
+        kin_diff = np.abs(kin_total_analytical - kin_total_numerical) / kcalmol
+        ex_diff = np.abs(ex_total_analytical - ex_total_numerical) / kcalmol
+        coul_diff = np.abs(coul_total_analytical - coul_total_numerical) / kcalmol
+
+        total_analytical = nn_total_analytical + en_total_analytical + kin_total_analytical + ex_total_analytical + coul_total_analytical
+        total_num = nn_total_numerical + en_total_numerical + kin_total_numerical + ex_total_numerical + coul_total_numerical
+
+        total_error = np.abs(total_analytical - total_num) / kcalmol
 
         ## extract the maximum error, if it's higher than threshold rise error
         max_diff = np.max([nn_diff, en_diff, kin_diff, ex_diff, coul_diff])
     
         if max_diff > threshold:
+            print(f"Error between analytical and numertical total nucleus-nucleus repulsion: {nn_diff}")
+            print(f"Error between analytical and numertical total electron-nucleus attraction: {en_diff}")
+            print(f"Error between analytical and numertical total kinetic energy: {kin_diff}")
+            print(f"Error between analytical and numertical total exchange energy: {ex_diff}")
+            print(f"Error between analytical and numertical total coulumb energe: {coul_diff}")
             raise ValueError(f"The difference between analytical and numerical energies exceed the threshold. Maximum allowed: {threshold}, got {max_diff}.")
         
         ### return the total numerical values to pass for decomposition
         total_numerical = {
                    "nn_total": nn_total_numerical, 
-                   "en_total": en_total_numerical,
-                   "kin_raw": output,
-                   "kin_total": kin_total_numerical,
+                   #"en_total": en_total_numerical,
+                   "kin_density": kin_density,
+                   #"kin_total": kin_total_numerical,
                    "ex_raw": total_exch_raw,
-                   "ex_total": ex_total_numerical,
+                   #"ex_total": ex_total_numerical,
                    "coul_raw": total_coul_raw,
-                   "coul_total": coul_total_numerical
+                   #"coul_total": coul_total_numerical
                    }
-        return total_numerical
+        return total_numerical, total_error
 
     def run_atomic(self, dft_exch=None, dft_corr=None):
         """Return the Interacting Quantum Atoms (IQA) components integrated at the evaluated given points
