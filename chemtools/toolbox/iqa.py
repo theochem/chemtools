@@ -425,14 +425,13 @@ class IQA(object):
 
         logging.info("INITIALIZING INTERACTING QUANTUM ATOMS(IQA) ATOMIC CALCULATION")
         iqa_results["nn_total"] = self.nn_iqa()
-        iqa_results["en_total"], iqa_results["en_atomic"] = self.en_iqa()
-        (
-            iqa_results["kin_total"],
-            iqa_results["kin_atomic"],
-            #iqa_results["kin_total_posdef"],
-            #iqa_results["kin_atomic_posdef"],
-        ) = self.kin_iqa()
-
+        iqa_results["en_atomic"] = self.en_iqa()
+        # (
+        #     iqa_results["kin_atomic"],
+        #     iqa_results["kin_total_posdef"],
+        #     iqa_results["kin_atomic_posdef"],
+        # ) = self.kin_iqa()
+        iqa_results['kin_atomic'] = self.kin_iqa()
         dft_xc_edens = {}
         # assuming dft_corr and dft_exch specified together
         if dft_corr and dft_exch:
@@ -477,8 +476,6 @@ class IQA(object):
                 iqa_results.pop("x_hf_atomic")
         elif self.molecule.lot == "rhf":
             (
-                iqa_results["x_total"],
-                iqa_results["coul_total"],
                 iqa_results["x_atomic"],
                 iqa_results["coul_atomic"],
             ) = self.ee_iqa_hf()
@@ -834,9 +831,7 @@ class IQA(object):
 
         natoms = self.molecule.numbers.shape[0]
         total_coul_raw = self.total_numerical['coul_raw']
-        total_coul = self.total_numerical['coul_total']
         total_exch_raw = self.total_numerical['ex_raw']
-        total_exch = self.total_numerical['ex_total']
 
         at_exch = None
         at_coulomb = None
@@ -851,7 +846,7 @@ class IQA(object):
                 at_coulomb = self.part.condense_to_atoms(total_coul_raw)
                 at_exch = self.part.condense_to_atoms(total_exch_raw)
             logging.info("Decomposing Coulomb and Exchange into atomic contributions.")
-        return total_exch, total_coul, at_exch, at_coulomb
+        return at_exch, at_coulomb
 
     def ee_iqa_hf_pairwise(self):
         r"""Compute Hartree Fock electron-electron interaction energy pairwise interactions.
