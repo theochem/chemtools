@@ -54,6 +54,7 @@ from gbasis.integrals.nuclear_electron_attraction import nuclear_electron_attrac
 from gbasis.integrals.electron_repulsion import electron_repulsion_integral
 
 from iodata.periodic import num2sym
+from iodata.utils import kcalmol
 
 from grid.basegrid import Grid
 
