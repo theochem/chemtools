@@ -788,50 +788,33 @@ class IQA(object):
                 share_matrix[i, i, i] = 1
 
             en_cond_en = np.sum(en_atomic_matrix[None, :, :] * share_matrix, axis=(1, 2))
-        return total_en, en_cond_en
+        return en_cond_en
 
-    def kin_iqa(self):
-        r"""Compute IQA's kinetic energy.
-
-        math::
-            T_+ (\mathbf{r}_n) = \frac{1}{2} \left. \nabla_{\mathbf{r}}^{2} \gamma(\mathbf{r}, \mathbf{r}')
-                                 \right|_{\mathbf{r} = \mathbf{r}' = \mathbf{r}_n}
-            Kinetic= T_{\alpha} (\mathbf{r}_n) = T_+(\mathbf{r}_n) + \alpha \nabla^2 \rho(\mathbf{r}_n)
-
-        Where $T_+$ is the positive definite kinetic energy density, with $\gamma$ being the one-electron
-        density matrix, and Kinetic is the expression use to return `total_en`.
-
-        Returns
-        -------
-        total_kin: np.array()
-            Total value for kinetic energy
-        at_kin: np.array(natoms)
-            Atomic kinetic energies.
-
+    def en_iqa_pairwise(self):
         """
-        logging.info("CALCULATING KINETIC ENERGY")
-
-        natoms = self.molecule.numbers.shape[0]
-        output = self.total_numerical['kin_raw']
-        #output_posdef = evaluate_posdef_kinetic_energy_density(self.dm, self.basis, self.grid.points)
-        total_kin = self.total_numerical['kin_total']
-        #total_kin_posdef = self.grid.integrate(output_posdef)
-
-        at_kin = None
+        doc
+        """
         if self.part:
-            if self.part.__class__.__name__ in ["VarHirshfeld", "HirshfeldI", "Hirshfeld"]:
-                at_weights = self.part.weights
-                at_kin_raw = at_weights * output[None, :]
-                #at_kin_raw_posdef = at_weights * output_posdef[None, :]
-                at_kin = np.array([self.grid.integrate(at_kin_raw[i]) for i in range(natoms)])
-                #at_kin_posdef = np.array(
-                #    [self.grid.integrate(at_kin_raw_posdef[i]) for i in range(natoms)]
-                #)
-            else:
-                at_kin = self.part.condense_to_atoms(output)
-                #at_kin_posdef = self.part.condense_to_atoms(output_posdef)
-            logging.info("Decomposing Kinetic energy into atomic contributions.")
-        return total_kin, at_kin
+            # Compute Electron-Nucleus attraction
+            logging.info("Decomposing Electron-Nuclei energy into atomic contributions")
+            natoms = self.molecule.numbers.shape[0]
+            rij = np.linalg.norm(self.molecule.coordinates[:, None, :] - self.grid.points, axis=-1)
+
+            if self.part:
+                if self.part.__class__.__name__ in ["VarHirshfeld", "HirshfeldI", "Hirshfeld"]:
+                    at_weights = self.part.weights
+                else:
+                    at_weights = self.part.at_weights
+                # math
+                en_atomic = -self.molecule.numbers[None, :, None] * (
+                    (self.dens[None:,] * at_weights)[:, None, :] / rij[None, :, :]
+                )
+                en_atomic_matrix = np.zeros((natoms, natoms))
+                for i in range(natoms):
+                    for j in range(natoms):
+                        en_atomic_matrix[i][j] = self.grid.integrate(en_atomic[i][j])
+
+        return en_atomic_matrix
 
     def ee_iqa_hf(self):
         r"""Compute Hartree Fock electron-electron interaction energy.
