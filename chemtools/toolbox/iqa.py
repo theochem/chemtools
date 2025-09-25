@@ -687,6 +687,49 @@ class IQA(object):
         nn_total = self.total_numerical['nn_total']
         return nn_total
 
+    def kin_iqa(self):
+        r"""Compute IQA's kinetic energy.
+
+        math::
+            T_+ (\mathbf{r}_n) = \frac{1}{2} \left. \nabla_{\mathbf{r}}^{2} \gamma(\mathbf{r}, \mathbf{r}')
+                                 \right|_{\mathbf{r} = \mathbf{r}' = \mathbf{r}_n}
+            Kinetic= T_{\alpha} (\mathbf{r}_n) = T_+(\mathbf{r}_n) + \alpha \nabla^2 \rho(\mathbf{r}_n)
+
+        Where $T_+$ is the positive definite kinetic energy density, with $\gamma$ being the one-electron
+        density matrix, and Kinetic is the expression use to return `total_en`.
+
+        Returns
+        -------
+        total_kin: np.array()
+            Total value for kinetic energy
+        at_kin: np.array(natoms)
+            Atomic kinetic energies.
+
+        """
+        logging.info("CALCULATING KINETIC ENERGY")
+
+        natoms = self.molecule.numbers.shape[0]
+        kin_density = self.total_numerical['kin_density']
+        #output_posdef = evaluate_posdef_kinetic_energy_density(self.dm, self.basis, self.grid.points)
+        #total_kin = self.total_numerical['kin_total']
+        #total_kin_posdef = self.grid.integrate(output_posdef)
+
+        at_kin = None
+        if self.part:
+            if self.part.__class__.__name__ in ["VarHirshfeld", "HirshfeldI", "Hirshfeld"]:
+                at_weights = self.part.weights
+                at_kin_raw = at_weights * kin_density[None, :]
+                #at_kin_raw_posdef = at_weights * output_posdef[None, :]
+                at_kin = np.array([self.grid.integrate(at_kin_raw[i]) for i in range(natoms)])
+                #at_kin_posdef = np.array(
+                #    [self.grid.integrate(at_kin_raw_posdef[i]) for i in range(natoms)]
+                #)
+            else:
+                at_kin = self.part.condense_to_atoms(kin_density)
+                #at_kin_posdef = self.part.condense_to_atoms(output_posdef)
+            logging.info("Decomposing Kinetic energy into atomic contributions.")
+        return at_kin
+
     def en_iqa(self, share_factor=0.5):
         r"""Compute IQA's electron-nuclear attraction energy.
 
