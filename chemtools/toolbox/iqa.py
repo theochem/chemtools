@@ -104,7 +104,9 @@ def _integral_point_charge_electron(i, istart, iend, eval_mo, grid, dens, molecu
 class IQA(object):
     """Interacting Quantum Atoms (IQA) Class."""
 
-    def __init__(self, molecule, basis, dm, grid, part=None, grid_2=None, part_2=None, threshold=1e-1):
+    def __init__(
+        self, molecule, basis, dm, grid, part=None, grid_2=None, part_2=None, threshold=10
+    ):
         """Initialize class.
 
         Parameters
@@ -187,7 +189,7 @@ class IQA(object):
         self.part_2 = part_2
         dens = evaluate_density(dm, basis, grid.points)
         self.dens = dens
-        self.total_numerical = self.compare_numerical_analytical(threshold=threshold)
+        self.integrands, self.totals = self.compare_numerical_analytical(threshold=threshold)
 
     @classmethod
     def from_molecule(cls, molecule, grid, part=None, scheme=None, grid_2=None, part_2=None):
@@ -274,23 +276,98 @@ class IQA(object):
         grid_2 = get_molecular_grid(molecule, R=2)
 
         return cls.from_molecule(molecule, grid, scheme=scheme, grid_2=grid_2)
-    
+
     def compare_numerical_analytical(self, threshold):
         """
         for the total values of each energy term, calculate analytical and numerical values and check their agreement.
         """
-        ### calculate numerical values
+
+        ### extract analytical terms
+        analytical = self.total_analytical()
+        nn_total_analytical = analytical["nn_analytical"]
+        en_total_analytical = analytical["en_analytical"]
+        kin_total_analytical = analytical["kin_analytical"]
+        ex_total_analytical = analytical["ex_analytical"]
+        coul_total_analytical = analytical["coul_analytical"]
+
+        ### extract numerical terms
+        numerical = self.total_numerical()
+        nn_total_numerical = numerical["nn_numerical"]
+        en_total_numerical = numerical["en_numerical"]
+        kin_total_numerical = numerical["kin_numerical"]
+        ex_total_numerical = numerical["ex_numerical"]
+        coul_total_numerical = numerical["coul_numerical"]
+        kin_density = numerical["kin_density"]
+        ex_raw = numerical["ex_raw"]
+        coul_raw = numerical["coul_raw"]
+
+        ## differences in kcal/mol
+        nn_diff = np.abs(nn_total_analytical - nn_total_numerical) / kcalmol
+        en_diff = np.abs(en_total_analytical - en_total_numerical) / kcalmol
+        kin_diff = np.abs(kin_total_analytical - kin_total_numerical) / kcalmol
+        ex_diff = np.abs(ex_total_analytical - ex_total_numerical) / kcalmol
+        coul_diff = np.abs(coul_total_analytical - coul_total_numerical) / kcalmol
+
+        ## extract the maximum error, if it's higher than threshold rise error
+        max_diff = np.max([nn_diff, en_diff, kin_diff, ex_diff, coul_diff])
+
+        if max_diff > threshold:
+            print(
+                f"Error between analytical and numertical total nucleus-nucleus repulsion: {nn_diff}"
+            )
+            print(
+                f"Error between analytical and numertical total electron-nucleus attraction: {en_diff}"
+            )
+            print(f"Error between analytical and numertical total kinetic energy: {kin_diff}")
+            print(f"Error between analytical and numertical total exchange energy: {ex_diff}")
+            print(f"Error between analytical and numertical total coulumb energe: {coul_diff}")
+            raise ValueError(
+                f"The difference between analytical and numerical energies exceed the threshold. Maximum allowed: {threshold}, got {max_diff}."
+            )
+
+        ### return the integrands to pass for decomposition
+        integrands = {
+            "kin_density": kin_density,
+            "ex_raw": ex_raw,
+            "coul_raw": coul_raw,
+        }
+        totals = {
+            "nn_total_analytical": nn_total_analytical,
+            "nn_total_numerical": nn_total_numerical,
+            "en_total_analytical": en_total_analytical,
+            "en_total_numerical": en_total_numerical,
+            "kin_total_analytical": kin_total_analytical,
+            "kin_total_numerical": kin_total_numerical,
+            "ex_total_analytical": ex_total_analytical,
+            "ex_total_numerical": ex_total_numerical,
+            "coul_total_analytical": coul_total_analytical,
+            "coul_total_numerical": coul_total_numerical,
+        }
+        return integrands, totals
+
+    def total_numerical(self):
+        """
+        calculate the total numerical value for each term, NN, EN, EE, Kinetic
+        """
         ## NN
-        rab = np.triu(np.linalg.norm(self.molecule.coordinates[:, None] - self.molecule.coordinates, axis=-1))
-        atomic_charges = np.triu(self.molecule.numbers[:, None] * self.molecule.numbers)[np.where(rab > 0)]
+        rab = np.triu(
+            np.linalg.norm(self.molecule.coordinates[:, None] - self.molecule.coordinates, axis=-1)
+        )
+        atomic_charges = np.triu(self.molecule.numbers[:, None] * self.molecule.numbers)[
+            np.where(rab > 0)
+        ]
         nn_total_numerical = np.sum(atomic_charges / rab[rab > 0])
 
         ## EN
         rij = np.linalg.norm(self.molecule.coordinates[:, None, :] - self.grid.points, axis=-1)
-        en_total_numerical = self.grid.integrate(np.sum((-self.molecule.numbers[:, None] * (self.dens / rij)), axis=0))
-        
+        en_total_numerical = self.grid.integrate(
+            np.sum((-self.molecule.numbers[:, None] * (self.dens / rij)), axis=0)
+        )
+
         ## Kinietic
-        kin_density = evaluate_general_kinetic_energy_density(self.dm, self.basis, self.grid.points, -0.25)
+        kin_density = evaluate_general_kinetic_energy_density(
+            self.dm, self.basis, self.grid.points, -0.25
+        )
         kin_total_numerical = self.grid.integrate(kin_density)
 
         ## Coulobm and Exchange
@@ -313,13 +390,15 @@ class IQA(object):
         while istart < self.grid.points.shape[0]:
             iend = min(istart + chunk_size, self.grid.points.shape[0])
             # segments.append((istart, iend))
-            segments.append((i, istart, iend, eval_mo, self.grid, self.dens, self.molecule._iodata, self.dm))
+            segments.append(
+                (i, istart, iend, eval_mo, self.grid, self.dens, self.molecule._iodata, self.dm)
+            )
             istart = iend
             i += 1
         # Checking processors
         ncpus = int(os.environ.get("SLURM_CPUS_PER_TASK", default=2))
-        #set_start_method("fork")
-        ctx = mp.get_context("fork") 
+        # set_start_method("fork")
+        ctx = mp.get_context("fork")
         pool = ctx.Pool(processes=ncpus)
         results = []
         # Parallel execution of _integral_point_charge_electron
@@ -344,64 +423,55 @@ class IQA(object):
         coul_total_numerical = self.grid.integrate(total_coul_raw)
         ex_total_numerical = self.grid.integrate(total_exch_raw)
 
-        ### calculate analytical values
+        total_numerical = {
+            "nn_numerical": nn_total_numerical,
+            "en_numerical": en_total_numerical,
+            "kin_density": kin_density,
+            "kin_numerical": kin_total_numerical,
+            "ex_raw": total_exch_raw,
+            "ex_numerical": ex_total_numerical,
+            "coul_raw": total_coul_raw,
+            "coul_numerical": coul_total_numerical,
+        }
+        return total_numerical
+
+    def total_analytical(self):
         ## NN (this is going to be useless)
-        rab = np.triu(np.linalg.norm(self.molecule.coordinates[:, None] - self.molecule.coordinates, axis=-1))
-        at_charges = np.triu(self.molecule.numbers[:, None] * self.molecule.numbers)[np.where(rab > 0)]
+        rab = np.triu(
+            np.linalg.norm(self.molecule.coordinates[:, None] - self.molecule.coordinates, axis=-1)
+        )
+        at_charges = np.triu(self.molecule.numbers[:, None] * self.molecule.numbers)[
+            np.where(rab > 0)
+        ]
         nn_total_analytical = np.sum(at_charges / rab[rab > 0])
 
         ## EN
-        en_int = nuclear_electron_attraction_integral(self.basis, self.molecule.coordinates, self.molecule.numbers)
+        en_int = nuclear_electron_attraction_integral(
+            self.basis, self.molecule.coordinates, self.molecule.numbers
+        )
         en_total_analytical = np.trace(self.dm.dot(en_int))
 
-        ## Kinetic 
+        ## Kinetic
         kin_int = kinetic_energy_integral(self.basis)
         kin_total_analytical = np.trace(self.dm.dot(kin_int))
 
         ## Exchange
         ee_int = electron_repulsion_integral(self.basis)
-        exch = np.einsum('rs,mnrs->mn', self.dm, ee_int)
+        exch = np.einsum("rs,mnrs->mn", self.dm, ee_int)
         ex_total_analytical = -0.25 * np.trace(self.dm.dot(exch))
 
         ## Coulomb
-        coul = np.einsum('rs,mrns->mn', self.dm, ee_int)
+        coul = np.einsum("rs,mrns->mn", self.dm, ee_int)
         coul_total_analytical = 0.5 * np.trace(self.dm.dot(coul))
 
-        ## differences in kcal/mol
-        nn_diff = np.abs(nn_total_analytical - nn_total_numerical) / kcalmol
-        en_diff = np.abs(en_total_analytical - en_total_numerical) / kcalmol
-        kin_diff = np.abs(kin_total_analytical - kin_total_numerical) / kcalmol
-        ex_diff = np.abs(ex_total_analytical - ex_total_numerical) / kcalmol
-        coul_diff = np.abs(coul_total_analytical - coul_total_numerical) / kcalmol
-
-        total_analytical = nn_total_analytical + en_total_analytical + kin_total_analytical + ex_total_analytical + coul_total_analytical
-        total_num = nn_total_numerical + en_total_numerical + kin_total_numerical + ex_total_numerical + coul_total_numerical
-
-        total_error = np.abs(total_analytical - total_num) / kcalmol
-
-        ## extract the maximum error, if it's higher than threshold rise error
-        max_diff = np.max([nn_diff, en_diff, kin_diff, ex_diff, coul_diff])
-    
-        if max_diff > threshold:
-            print(f"Error between analytical and numertical total nucleus-nucleus repulsion: {nn_diff}")
-            print(f"Error between analytical and numertical total electron-nucleus attraction: {en_diff}")
-            print(f"Error between analytical and numertical total kinetic energy: {kin_diff}")
-            print(f"Error between analytical and numertical total exchange energy: {ex_diff}")
-            print(f"Error between analytical and numertical total coulumb energe: {coul_diff}")
-            raise ValueError(f"The difference between analytical and numerical energies exceed the threshold. Maximum allowed: {threshold}, got {max_diff}.")
-        
-        ### return the total numerical values to pass for decomposition
-        total_numerical = {
-                   "nn_total": nn_total_numerical, 
-                   #"en_total": en_total_numerical,
-                   "kin_density": kin_density,
-                   #"kin_total": kin_total_numerical,
-                   "ex_raw": total_exch_raw,
-                   #"ex_total": ex_total_numerical,
-                   "coul_raw": total_coul_raw,
-                   #"coul_total": coul_total_numerical
-                   }
-        return total_numerical, total_error
+        total_analytical = {
+            "nn_analytical": nn_total_analytical,
+            "en_analytical": en_total_analytical,
+            "kin_analytical": kin_total_analytical,
+            "ex_analytical": ex_total_analytical,
+            "coul_analytical": coul_total_analytical,
+        }
+        return total_analytical
 
     def run_atomic(self, dft_exch=None, dft_corr=None):
         """Return the Interacting Quantum Atoms (IQA) components integrated at the evaluated given points
@@ -431,7 +501,7 @@ class IQA(object):
         #     iqa_results["kin_total_posdef"],
         #     iqa_results["kin_atomic_posdef"],
         # ) = self.kin_iqa()
-        iqa_results['kin_atomic'] = self.kin_iqa()
+        iqa_results["kin_atomic"] = self.kin_iqa()
         dft_xc_edens = {}
         # assuming dft_corr and dft_exch specified together
         if dft_corr and dft_exch:
@@ -481,7 +551,7 @@ class IQA(object):
             ) = self.ee_iqa_hf()
         else:
             raise ValueError(f"Need to specify an exchange functional too. Got {dft_exch}")
-        
+
         return iqa_results
 
     def iqa_pairwise(self, dft_exch=None, dft_corr=None, hf_int=False, ee_int=False):
@@ -571,7 +641,9 @@ class IQA(object):
                 # print(cart_flag)
                 # todo: double check below filter
                 if "cartesian" not in cart_flag:
-                    cbasis = CBasis(self.basis, atoms, self.molecule.coordinates, coord_type="cartesian")
+                    cbasis = CBasis(
+                        self.basis, atoms, self.molecule.coordinates, coord_type="cartesian"
+                    )
                 else:
                     cbasis = CBasis(self.basis, atoms, self.molecule.coordinates)
 
@@ -684,7 +756,7 @@ class IQA(object):
 
         # Compute Nucleus-Nucleus repulsion
         logging.info("CALCULATING NUCLEUS-NUCLEUS REPULSION ENERGY")
-        nn_total = self.total_numerical['nn_total']
+        nn_total = self.totals["nn_total_numerical"]
         return nn_total
 
     def kin_iqa(self):
@@ -709,24 +781,24 @@ class IQA(object):
         logging.info("CALCULATING KINETIC ENERGY")
 
         natoms = self.molecule.numbers.shape[0]
-        kin_density = self.total_numerical['kin_density']
-        #output_posdef = evaluate_posdef_kinetic_energy_density(self.dm, self.basis, self.grid.points)
-        #total_kin = self.total_numerical['kin_total']
-        #total_kin_posdef = self.grid.integrate(output_posdef)
+        kin_density = self.integrands["kin_density"]
+        # output_posdef = evaluate_posdef_kinetic_energy_density(self.dm, self.basis, self.grid.points)
+        # total_kin = self.total_numerical['kin_total']
+        # total_kin_posdef = self.grid.integrate(output_posdef)
 
         at_kin = None
         if self.part:
             if self.part.__class__.__name__ in ["VarHirshfeld", "HirshfeldI", "Hirshfeld"]:
                 at_weights = self.part.weights
                 at_kin_raw = at_weights * kin_density[None, :]
-                #at_kin_raw_posdef = at_weights * output_posdef[None, :]
+                # at_kin_raw_posdef = at_weights * output_posdef[None, :]
                 at_kin = np.array([self.grid.integrate(at_kin_raw[i]) for i in range(natoms)])
-                #at_kin_posdef = np.array(
+                # at_kin_posdef = np.array(
                 #    [self.grid.integrate(at_kin_raw_posdef[i]) for i in range(natoms)]
-                #)
+                # )
             else:
                 at_kin = self.part.condense_to_atoms(kin_density)
-                #at_kin_posdef = self.part.condense_to_atoms(output_posdef)
+                # at_kin_posdef = self.part.condense_to_atoms(output_posdef)
             logging.info("Decomposing Kinetic energy into atomic contributions.")
         return at_kin
 
@@ -837,8 +909,8 @@ class IQA(object):
         logging.info("CALCULATING COULOMB AND HF EXCHANGE ENERGY")
 
         natoms = self.molecule.numbers.shape[0]
-        total_coul_raw = self.total_numerical['coul_raw']
-        total_exch_raw = self.total_numerical['ex_raw']
+        total_coul_raw = self.integrands["coul_raw"]
+        total_exch_raw = self.integrands["ex_raw"]
 
         at_exch = None
         at_coulomb = None
@@ -847,7 +919,9 @@ class IQA(object):
                 at_weights = self.part.weights
                 at_coulomb_raw = at_weights * total_coul_raw[None, :]
                 at_exch_raw = at_weights * total_exch_raw[None, :]
-                at_coulomb = np.array([self.grid.integrate(at_coulomb_raw[i]) for i in range(natoms)])
+                at_coulomb = np.array(
+                    [self.grid.integrate(at_coulomb_raw[i]) for i in range(natoms)]
+                )
                 at_exch = np.array([self.grid.integrate(at_exch_raw[i]) for i in range(natoms)])
             else:
                 at_coulomb = self.part.condense_to_atoms(total_coul_raw)
@@ -874,7 +948,9 @@ class IQA(object):
 
         # Draft 6N integration
         if not self.grid_2:
-            raise ValueError(f"Two grids are needed to perform 6N ee integration. Got {self.grid_2}")
+            raise ValueError(
+                f"Two grids are needed to perform 6N ee integration. Got {self.grid_2}"
+            )
         if not self.part_2:
             raise ValueError(
                 f"Two partition objects are needed to perform 6N ee integration. Got {self.part_2}"
@@ -945,8 +1021,12 @@ class IQA(object):
                     # Atomic integration for r2 using part weights
                     part_coul_b = atgrid_b.integrate(d_coul_b * w_subset_b)
                     part_ex_b = atgrid_b.integrate(d_ex_b * w_subset_b)
-                    integral_coul_ab += part_coul_b * (atgrid_a.weights[id1] * self.part.at_weights[a][p1])
-                    integral_ex_ab += part_ex_b * (atgrid_a.weights[id1] * self.part.at_weights[a][p1])
+                    integral_coul_ab += part_coul_b * (
+                        atgrid_a.weights[id1] * self.part.at_weights[a][p1]
+                    )
+                    integral_ex_ab += part_ex_b * (
+                        atgrid_a.weights[id1] * self.part.at_weights[a][p1]
+                    )
 
                 ab_hf_coul[a, b] = integral_coul_ab
                 ab_hf_exch[a, b] = integral_ex_ab
@@ -1036,8 +1116,12 @@ class IQA(object):
         bod = np.zeros((natoms, natoms, self.grid.points.shape[0]))
         for a in range(natoms):
             for b in range(natoms):
-                for i in range(self.molecule._iodata.mo.occs[self.molecule._iodata.mo.occs > 0].shape[0]):
-                    for j in range(self.molecule._iodata.mo.occs[self.molecule._iodata.mo.occs > 0].shape[0]):
+                for i in range(
+                    self.molecule._iodata.mo.occs[self.molecule._iodata.mo.occs > 0].shape[0]
+                ):
+                    for j in range(
+                        self.molecule._iodata.mo.occs[self.molecule._iodata.mo.occs > 0].shape[0]
+                    ):
                         bod[a, b] += (
                             2
                             * (
@@ -1060,7 +1144,10 @@ class IQA(object):
             eval_mo_grad_condensed = []
             for ind, orders in enumerate(orders_d):
                 eval_mo_grad_order = evaluate_deriv_basis(
-                    self.basis, self.grid.points, np.array(orders), transform=self.molecule._iodata.mo.coeffs.T
+                    self.basis,
+                    self.grid.points,
+                    np.array(orders),
+                    transform=self.molecule._iodata.mo.coeffs.T,
                 )
                 eval_mo_grad.append(eval_mo_grad_order[:, :, None])
                 eval_mo_grad_condensed.append(eval_mo_grad_order)
@@ -1071,14 +1158,19 @@ class IQA(object):
             grad_bod = np.zeros((natoms, natoms, self.grid.points.shape[0]))
             for a in range(natoms):
                 for b in range(natoms):
-                    for i in range(self.molecule._iodata.mo.occs[self.molecule._iodata.mo.occs > 0].shape[0]):
+                    for i in range(
+                        self.molecule._iodata.mo.occs[self.molecule._iodata.mo.occs > 0].shape[0]
+                    ):
                         for j in range(
-                            self.molecule._iodata.mo.occs[self.molecule._iodata.mo.occs > 0].shape[0]
+                            self.molecule._iodata.mo.occs[self.molecule._iodata.mo.occs > 0].shape[
+                                0
+                            ]
                         ):
                             grad_bod[a, b] += np.sum(
                                 (
                                     at_weights[a, :, None] * self.grid.integrate(sij_at_1[b][i][j])
-                                    + at_weights[b, :, None] * self.grid.integrate(sij_at_1[a][i][j])
+                                    + at_weights[b, :, None]
+                                    * self.grid.integrate(sij_at_1[a][i][j])
                                 )
                                 * eval_mo_grad[i, :, :]
                                 * eval_mo[j, :, None],
