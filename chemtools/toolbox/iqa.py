@@ -349,15 +349,6 @@ class IQA(object):
         """
         calculate the total numerical value for each term, NN, EN, EE, Kinetic
         """
-        ## NN
-        rab = np.triu(
-            np.linalg.norm(self.molecule.coordinates[:, None] - self.molecule.coordinates, axis=-1)
-        )
-        atomic_charges = np.triu(self.molecule.numbers[:, None] * self.molecule.numbers)[
-            np.where(rab > 0)
-        ]
-        nn_total_numerical = np.sum(atomic_charges / rab[rab > 0])
-
         ## EN
         rij = np.linalg.norm(self.molecule.coordinates[:, None, :] - self.grid.points, axis=-1)
         en_total_numerical = self.grid.integrate(
@@ -424,7 +415,7 @@ class IQA(object):
         ex_total_numerical = self.grid.integrate(total_exch_raw)
 
         total_numerical = {
-            "nn_numerical": nn_total_numerical,
+            "nn_numerical": np.sum(self.compute_nn_pairwise_array()),
             "en_numerical": en_total_numerical,
             "kin_density": kin_density,
             "kin_numerical": kin_total_numerical,
@@ -436,14 +427,8 @@ class IQA(object):
         return total_numerical
 
     def total_analytical(self):
-        ## NN (this is going to be useless)
-        rab = np.triu(
-            np.linalg.norm(self.molecule.coordinates[:, None] - self.molecule.coordinates, axis=-1)
-        )
-        at_charges = np.triu(self.molecule.numbers[:, None] * self.molecule.numbers)[
-            np.where(rab > 0)
-        ]
-        nn_total_analytical = np.sum(at_charges / rab[rab > 0])
+        ## NN (this is going to be useless); I agree, we should remove it later
+        energy_nn = np.sum(self.compute_nn_pairwise_array())
 
         ## EN
         en_int = nuclear_electron_attraction_integral(
@@ -465,7 +450,7 @@ class IQA(object):
         coul_total_analytical = 0.5 * np.trace(self.dm.dot(coul))
 
         total_analytical = {
-            "nn_analytical": nn_total_analytical,
+            "nn_analytical": energy_nn,
             "en_analytical": en_total_analytical,
             "kin_analytical": kin_total_analytical,
             "ex_analytical": ex_total_analytical,
@@ -494,7 +479,7 @@ class IQA(object):
         iqa_results = {}
 
         logging.info("INITIALIZING INTERACTING QUANTUM ATOMS(IQA) ATOMIC CALCULATION")
-        iqa_results["nn_total"] = self.nn_iqa()
+        iqa_results["nn_total"] = np.sum(self.compute_nn_pairwise_array())
         iqa_results["en_atomic"] = self.en_iqa()
         # (
         #     iqa_results["kin_atomic"],
@@ -740,24 +725,27 @@ class IQA(object):
 
         return iqa_pairwise_results
 
-    def nn_iqa(self):
-        r"""Compute nuclear-nuclear repulsion energy.
+    def compute_nn_pairwise_array(self):
+        r"""Compute pairwise nuclear-nuclear repulsion energy terms.
 
         math::
             \sum_{A>B} \frac{Z_{A}Z_{B}}{R_{A}-R_{B}}
 
-        Where Z_{A} and Z_{B} are nuclear charges.
-
         Returns
         -------
-        total_nn: np.array()
-            Total value for nuclear-nuclear repulsion energy
+        nn_array: np.array(npairs,)
+            1D array with nuclear-nuclear repulsion energies for unique pairs of atoms.
+            For example, for a molecule with m atoms, the length of the 1D array is m*(m-1)/2.
         """
-
-        # Compute Nucleus-Nucleus repulsion
-        logging.info("CALCULATING NUCLEUS-NUCLEUS REPULSION ENERGY")
-        nn_total = self.totals["nn_total_numerical"]
-        return nn_total
+        logging.info("CALCULATING NUCLEAR-NUCLEAR REPULSION ENERGY TERMS")
+        rab = np.triu(
+            np.linalg.norm(self.molecule.coordinates[:, None] - self.molecule.coordinates, axis=-1)
+        )
+        nn_array = np.triu(self.molecule.numbers[:, None] * self.molecule.numbers)[
+            np.where(rab > 0)
+        ]
+        nn_array = nn_array / rab[rab > 0]
+        return nn_array
 
     def kin_iqa(self):
         r"""Compute IQA's kinetic energy.
