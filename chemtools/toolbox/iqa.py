@@ -480,7 +480,7 @@ class IQA(object):
 
         logging.info("INITIALIZING INTERACTING QUANTUM ATOMS(IQA) ATOMIC CALCULATION")
         iqa_results["nn_total"] = np.sum(self.compute_nn_pairwise_array())
-        iqa_results["en_atomic"] = self.en_iqa()
+        iqa_results["en_atomic"] = self.compute_en_atomic()
         # (
         #     iqa_results["kin_atomic"],
         #     iqa_results["kin_total_posdef"],
@@ -772,8 +772,8 @@ class IQA(object):
         kin_atomic = self.part.condense_to_atoms(self.integrands["kin_density"])
         return kin_atomic
 
-    def en_iqa(self, share_factor=0.5):
-        r"""Compute IQA's electron-nuclear attraction energy.
+    def compute_en_atomic(self, share_factor=0.5):
+        r"""Decompose electron-nuclear attraction energy into atomic contributions.
 
          math::
             \sum_{A, B}\int_{A} \rho(r_{1}) \frac{Z_{B}}{r_{1}-R_{B}} dr_{1}
@@ -788,56 +788,49 @@ class IQA(object):
 
         Returns
         -------
-        total_en: np.array()
-            Total value for electron-nuclear attraction energy
-        en_cond_en: np.array(natoms)
-            Atomic condensed electron-nuclear attraction energies
-
+        en_atomic: np.array(m, )
+            Atomic condensed electron-nuclear attraction energies for `m` atoms in the molecule.
         """
+        en_pairwise_matrix = self.compute_en_pairwise_matrix()
+        logging.info(f"CALCULATE ELECTRON-NUCLEAR ATOMIC ENERGY TERMS (share={share_factor})")
+        # calculate the share matrix for each atom
+        share_matrix = np.zeros((self.molecule.natom, self.molecule.natom, self.molecule.natom))
+        for i in range(self.molecule.natom):
+            share_matrix[i, i, :] = share_factor
+            share_matrix[i, :, i] = 1 - share_factor
+            share_matrix[i, i, i] = 1
+        # compute the share of each pairwise term for each atom
+        en_atomic = np.sum(en_pairwise_matrix[None, :, :] * share_matrix, axis=(1, 2))
+        return en_atomic
 
-        if self.part:
-            en_atomic_matrix = self.en_iqa_pairwise()
-            natoms = self.molecule.numbers.shape[0]
-            # share_matrix
-            share_factor = share_factor
-            logging.info(
-                "Condensed into purely Atomic Contributions with "
-                f"Sharing Factor x = {share_factor} "
-            )
-            share_matrix = np.zeros((natoms, natoms, natoms))
-            for i in range(natoms):
-                share_matrix[i, i, :] = share_factor
-                share_matrix[i, :, i] = 1 - share_factor
-                share_matrix[i, i, i] = 1
+    def compute_en_pairwise_matrix(self):
+        """Compute pairwise electron-nuclear attraction energy matrix.
 
-            en_cond_en = np.sum(en_atomic_matrix[None, :, :] * share_matrix, axis=(1, 2))
-        return en_cond_en
-
-    def en_iqa_pairwise(self):
+        Returns
+        -------
+        en_pairwise_matrix: np.array(m, m)
+            2D array with pairwise electron-nuclear energies for m atoms in the molecule.
+            Diagonal elements correspond to intra-atomic terms (electron density of atom i
+            interacting with its own nucleus), while off-diagonal elements correspond to
+            inter-atomic terms (electron density of atom i interacting with nucleus of atom j).
         """
-        doc
-        """
-        if self.part:
-            # Compute Electron-Nucleus attraction
-            logging.info("Decomposing Electron-Nuclei energy into atomic contributions")
-            natoms = self.molecule.numbers.shape[0]
-            rij = np.linalg.norm(self.molecule.coordinates[:, None, :] - self.grid.points, axis=-1)
+        if self.part is None:
+            raise ValueError("Argument scheme=None, so electron-nuclear energy cannot be decomposed.")
 
-            if self.part:
-                if self.part.__class__.__name__ in ["VarHirshfeld", "HirshfeldI", "Hirshfeld"]:
-                    at_weights = self.part.weights
-                else:
-                    at_weights = self.part.at_weights
-                # math
-                en_atomic = -self.molecule.numbers[None, :, None] * (
-                    (self.dens[None:,] * at_weights)[:, None, :] / rij[None, :, :]
-                )
-                en_atomic_matrix = np.zeros((natoms, natoms))
-                for i in range(natoms):
-                    for j in range(natoms):
-                        en_atomic_matrix[i][j] = self.grid.integrate(en_atomic[i][j])
+        logging.info("DECOMPOSE ELECTRON-NUCLEUS ENERGY INTO INTRA- and INTER-ATOMIC TERMS")
+        # calculate distance from each atom to each grid point
+        rij = np.linalg.norm(self.molecule.coordinates[:, None, :] - self.grid.points, axis=-1)
+        # calculate atomic electron-nuclear attraction energy density matrix
+        en_pairwise_density = -self.molecule.numbers[None, :, None] * (
+            (self.dens[None:,] * self.part.at_weights)[:, None, :] / rij[None, :, :]
+        )
+        # integrate energy density to get pairwise electron-nuclear energy matrix
+        en_pairwise_matrix = np.zeros((self.molecule.natom, self.molecule.natom))
+        for i in range(self.molecule.natom):
+            for j in range(self.molecule.natom):
+                en_pairwise_matrix[i][j] = self.grid.integrate(en_pairwise_density[i][j])
 
-        return en_atomic_matrix
+        return en_pairwise_matrix
 
     def ee_iqa_hf(self):
         r"""Compute Hartree Fock electron-electron interaction energy.
