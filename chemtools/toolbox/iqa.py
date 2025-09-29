@@ -486,7 +486,7 @@ class IQA(object):
         #     iqa_results["kin_total_posdef"],
         #     iqa_results["kin_atomic_posdef"],
         # ) = self.kin_iqa()
-        iqa_results["kin_atomic"] = self.kin_iqa()
+        iqa_results["kin_atomic"] = self.compute_kin_atomic()
         dft_xc_edens = {}
         # assuming dft_corr and dft_exch specified together
         if dft_corr and dft_exch:
@@ -747,8 +747,8 @@ class IQA(object):
         nn_array = nn_array / rab[rab > 0]
         return nn_array
 
-    def kin_iqa(self):
-        r"""Compute IQA's kinetic energy.
+    def compute_kin_atomic(self):
+        r"""Decompose kinetic energy into atomic contributions.
 
         math::
             T_+ (\mathbf{r}_n) = \frac{1}{2} \left. \nabla_{\mathbf{r}}^{2} \gamma(\mathbf{r}, \mathbf{r}')
@@ -760,35 +760,17 @@ class IQA(object):
 
         Returns
         -------
-        total_kin: np.array()
-            Total value for kinetic energy
-        at_kin: np.array(natoms)
-            Atomic kinetic energies.
-
+        kin_atomic: np.array(m, )
+            Atomic condensed kinetic energies for `m` atoms in the molecule.
         """
-        logging.info("CALCULATING KINETIC ENERGY")
-
-        natoms = self.molecule.numbers.shape[0]
-        kin_density = self.integrands["kin_density"]
+        logging.info("DECOMPOSE KINETIC ENERGY INTO ATOMIC CONTRIBUTIONS")
         # output_posdef = evaluate_posdef_kinetic_energy_density(self.dm, self.basis, self.grid.points)
         # total_kin = self.total_numerical['kin_total']
         # total_kin_posdef = self.grid.integrate(output_posdef)
-
-        at_kin = None
-        if self.part:
-            if self.part.__class__.__name__ in ["VarHirshfeld", "HirshfeldI", "Hirshfeld"]:
-                at_weights = self.part.weights
-                at_kin_raw = at_weights * kin_density[None, :]
-                # at_kin_raw_posdef = at_weights * output_posdef[None, :]
-                at_kin = np.array([self.grid.integrate(at_kin_raw[i]) for i in range(natoms)])
-                # at_kin_posdef = np.array(
-                #    [self.grid.integrate(at_kin_raw_posdef[i]) for i in range(natoms)]
-                # )
-            else:
-                at_kin = self.part.condense_to_atoms(kin_density)
-                # at_kin_posdef = self.part.condense_to_atoms(output_posdef)
-            logging.info("Decomposing Kinetic energy into atomic contributions.")
-        return at_kin
+        if self.part is None:
+            raise ValueError("Argument scheme=None, so kinetic energy cannot be composed.")
+        kin_atomic = self.part.condense_to_atoms(self.integrands["kin_density"])
+        return kin_atomic
 
     def en_iqa(self, share_factor=0.5):
         r"""Compute IQA's electron-nuclear attraction energy.
