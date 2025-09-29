@@ -495,7 +495,7 @@ class IQA(object):
                 iqa_results["coul_total"],
                 iqa_results["x_hf_atomic"],
                 iqa_results["coul_atomic"],
-            ) = self.ee_iqa_hf()
+            ) = self.compute_ee_atomic()
             iqa_results["c_total"], iqa_results["c_atomic"], coeff_mix = self.ee_iqa_dft(
                 self.dens, dft_corr
             )
@@ -518,7 +518,7 @@ class IQA(object):
                 iqa_results["coul_total"],
                 iqa_results["x_hf_atomic"],
                 iqa_results["coul_atomic"],
-            ) = self.ee_iqa_hf()
+            ) = self.compute_ee_atomic()
             iqa_results["xc_total"], iqa_results["xc_atomic"], coeff_mix = self.ee_iqa_dft(
                 self.dens, dft_exch
             )
@@ -533,7 +533,7 @@ class IQA(object):
             (
                 iqa_results["x_atomic"],
                 iqa_results["coul_atomic"],
-            ) = self.ee_iqa_hf()
+            ) = self.compute_ee_atomic()
         else:
             raise ValueError(f"Need to specify an exchange functional too. Got {dft_exch}")
 
@@ -559,7 +559,7 @@ class IQA(object):
             if hf_int:
                 logging.info("CALCULATION: HF COULOMB AND EXCHANGE PAIRWISE")
                 logging.warning("6n integrals can be long")
-                ab_hf_coul, ab_hf_exch = self.ee_iqa_hf_pairwise()
+                ab_hf_coul, ab_hf_exch = self.compute_ee_pairwise_matrix()
                 print("ab_hf_coul")
                 print(ab_hf_coul)
                 print("ab_hf_exch")
@@ -589,7 +589,7 @@ class IQA(object):
             if hf_int:
                 logging.info("CALCULATION: HF COULOMB AND EXCHANGE PAIRWISE")
                 logging.warning("6n integrals can be long")
-                ab_hf_coul, ab_hf_exch = self.ee_iqa_hf_pairwise()
+                ab_hf_coul, ab_hf_exch = self.compute_ee_pairwise_matrix()
                 print("ab_hf_coul")
                 print(ab_hf_coul)
                 print("ab_hf_exch")
@@ -832,7 +832,7 @@ class IQA(object):
 
         return en_pairwise_matrix
 
-    def ee_iqa_hf(self):
+    def compute_ee_atomic(self):
         r"""Compute Hartree Fock electron-electron interaction energy.
 
         .. math::
@@ -852,62 +852,39 @@ class IQA(object):
             Vab_{\mu\nu,r_{2}}: Point charge integrals in the basis of Atomic orbitals with 1 point charge values
                                 in the grid points.
 
-        Parameters
-        ----------
-        dens: np.array(npoints)
-            Electron density evaluated at the grid points.
+        Returns
+        -------
+        ee_x_atomic: np.array(m, )
+            Atomic condensed Hartree Fock exchange energies for `m` atoms in the molecule.
+        ee_c_atomic: np.array(m, )
+            Atomic condensed Coulomb energies for `m` atoms in the molecule.
+        """
+        if self.part is None:
+            raise ValueError("Argument scheme=None, so electron-electron energy cannot be decomposed.")
+
+        logging.info("CALCULATE ELECTRON-ELECTRON ATOMIC ENERGY TERMS")
+        ee_c_atomic = self.part.condense_to_atoms(self.integrands["coul_raw"])
+        ee_x_atomic = self.part.condense_to_atoms(self.integrands["ex_raw"])
+        return ee_x_atomic, ee_c_atomic
+
+    def compute_ee_pairwise_matrix(self):
+        r"""Compute pairwise Coulomb and Exchange electron-electron interaction energy matrix.
 
         Returns
         -------
-        total_exch: np.array()
-            Total value for hartree fock exchange energy
-        total_col: np.array()
-            Total value for Coulomb energy
-        at_exch: np.array(natoms)
-            Atomic exchange energies.
-        at_colomb: np.array(atoms)
-            Atomic exchange energies.
+        ee_c_pairwise: np.array(m, m)
+            2D array with pairwise Coulomb energies for m atoms in the molecule.
+            Diagonal elements correspond to intra-atomic terms (electron density of atom i
+            interacting with its own electron density), while off-diagonal elements correspond to
+            inter-atomic terms (electron density of atom i interacting with electron density of atom j).
+        ee_x_pairwise: np.array(m, m)
+            2D array with pairwise Exchange energies for m atoms in the molecule.
+            Diagonal elements correspond to intra-atomic terms (electron density of atom i
+            interacting with its own electron density), while off-diagonal elements correspond to
+            inter-atomic terms (electron density of atom i interacting with electron density of atom j).
         """
-
-        logging.info("CALCULATING COULOMB AND HF EXCHANGE ENERGY")
-
-        natoms = self.molecule.numbers.shape[0]
-        total_coul_raw = self.integrands["coul_raw"]
-        total_exch_raw = self.integrands["ex_raw"]
-
-        at_exch = None
-        at_coulomb = None
-        if self.part:
-            if self.part.__class__.__name__ in ["VarHirshfeld", "HirshfeldI", "Hirshfeld"]:
-                at_weights = self.part.weights
-                at_coulomb_raw = at_weights * total_coul_raw[None, :]
-                at_exch_raw = at_weights * total_exch_raw[None, :]
-                at_coulomb = np.array(
-                    [self.grid.integrate(at_coulomb_raw[i]) for i in range(natoms)]
-                )
-                at_exch = np.array([self.grid.integrate(at_exch_raw[i]) for i in range(natoms)])
-            else:
-                at_coulomb = self.part.condense_to_atoms(total_coul_raw)
-                at_exch = self.part.condense_to_atoms(total_exch_raw)
-            logging.info("Decomposing Coulomb and Exchange into atomic contributions.")
-        return at_exch, at_coulomb
-
-    def ee_iqa_hf_pairwise(self):
-        r"""Compute Hartree Fock electron-electron interaction energy pairwise interactions.
-
-        Returns
-        -------
-        total_exch_aa: np.array()
-            AA value for hartree fock exchange energy
-        total_exch_ab: np.array()
-            AB value for hartree fock exchange energy
-        total_col_aa: np.array()
-            AA value for Coulomb energy
-        total_col_aa: np.array()
-            AB value for Coulomb energy
-
-        Note: Sum of AA and AB terms should get back ee_iqa_hf
-        """
+        logging.info("CALCULATE COULOMB AND EXCHANGE ELECTRON-ELECTRON PAIRWISE ENERGY TERMS")
+        logging.warning("WARNING: THIS INVOLVES 6D INTEGRATION, SO IT CAN TAKE A WHILE...")
 
         # Draft 6N integration
         if not self.grid_2:
@@ -935,8 +912,8 @@ class IQA(object):
         if self.part:
             if self.part_2:
                 logging.warning("Molecular 6N integration using local grids")
-                ab_hf_coul = np.zeros((len(self.molecule.numbers), len(self.molecule.numbers)))
-                ab_hf_exch = np.zeros((len(self.molecule.numbers), len(self.molecule.numbers)))
+                ee_c_pairwise = np.zeros((len(self.molecule.numbers), len(self.molecule.numbers)))
+                ee_x_pairwise = np.zeros((len(self.molecule.numbers), len(self.molecule.numbers)))
                 natoms = len(self.molecule.numbers)
             else:
                 raise ValueError("6N integration uses local grids and 2 partition objects")
@@ -991,13 +968,13 @@ class IQA(object):
                         atgrid_a.weights[id1] * self.part.at_weights[a][p1]
                     )
 
-                ab_hf_coul[a, b] = integral_coul_ab
-                ab_hf_exch[a, b] = integral_ex_ab
+                ee_c_pairwise[a, b] = integral_coul_ab
+                ee_x_pairwise[a, b] = integral_ex_ab
                 if a != b:
-                    ab_hf_coul[b, a] = integral_coul_ab
-                    ab_hf_exch[b, a] = integral_ex_ab
+                    ee_c_pairwise[b, a] = integral_coul_ab
+                    ee_x_pairwise[b, a] = integral_ex_ab
 
-        return ab_hf_coul, ab_hf_exch
+        return ee_c_pairwise, ee_x_pairwise
 
     def ee_iqa_dft(self, dft_dens, libxc_label):
 
