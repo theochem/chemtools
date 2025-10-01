@@ -29,6 +29,7 @@ from glob import glob
 import multiprocessing as mp
 from multiprocessing import set_start_method
 
+from itertools import product
 import numpy as np
 from numpy.testing import assert_almost_equal
 
@@ -975,6 +976,42 @@ class IQA(object):
                     ee_x_pairwise[b, a] = integral_ex_ab
 
         return ee_c_pairwise, ee_x_pairwise
+
+    def compute_ee_total_6d_grid(self):
+
+        """
+        fully numerical total exchange and coulomb terms
+        """
+
+        dens2 = evaluate_density(self.dm, self.basis, self.grid_2.points)
+        e_cc = np.zeros_like(self.dens)
+        ### coulomb
+        for p, point in enumerate(self.grid.points):
+            r12 = np.linalg.norm(point - self.grid_2.points, axis=-1)
+            r12[r12 == 0] = 1e-9
+            e_cc[p] = self.grid_2.integrate(dens2 / r12)
+        e_cc_total = 0.5 * self.grid.integrate(self.dens * e_cc)
+        
+        ### exchange
+        n_occs = self.molecule._iodata.mo.occs[self.molecule._iodata.mo.occs > 0].shape[0]
+        e_ex = np.zeros_like(self.dens)
+        # Grid1
+        ao_g1 = evaluate_basis(self.basis, self.grid.points)
+        mo_g1 = compute_molecular_orbitals_from_ao(self.molecule, ao_g1)
+        # Grid2
+        ao_g2 = evaluate_basis(self.basis, self.grid_2.points)
+        mo_g2 = compute_molecular_orbitals_from_ao(self.molecule, ao_g2)
+        for p, point in enumerate(self.grid.points):
+            r12 = np.linalg.norm(point - self.grid_2.points, axis=-1)
+            r12[r12 == 0] = 1e-9
+            for (i, j) in product(range(n_occs), repeat=2):
+                tmp = self.grid_2.integrate(mo_g2[i] * mo_g2[j] / r12)
+                e_ex[p] += mo_g1[i, p] * mo_g1[j, p] * tmp
+        e_ex_total = - self.grid.integrate(e_ex)
+
+        return e_cc_total, e_ex_total
+
+
 
     def ee_iqa_dft(self, dft_dens, libxc_label):
 
