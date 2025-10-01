@@ -29,7 +29,7 @@ from glob import glob
 import multiprocessing as mp
 from multiprocessing import set_start_method
 
-from itertools import product
+from itertools import product, combinations_with_replacement
 import numpy as np
 from numpy.testing import assert_almost_equal
 
@@ -816,7 +816,9 @@ class IQA(object):
             inter-atomic terms (electron density of atom i interacting with nucleus of atom j).
         """
         if self.part is None:
-            raise ValueError("Argument scheme=None, so electron-nuclear energy cannot be decomposed.")
+            raise ValueError(
+                "Argument scheme=None, so electron-nuclear energy cannot be decomposed."
+            )
 
         logging.info("DECOMPOSE ELECTRON-NUCLEUS ENERGY INTO INTRA- and INTER-ATOMIC TERMS")
         # calculate distance from each atom to each grid point
@@ -861,7 +863,9 @@ class IQA(object):
             Atomic condensed Coulomb energies for `m` atoms in the molecule.
         """
         if self.part is None:
-            raise ValueError("Argument scheme=None, so electron-electron energy cannot be decomposed.")
+            raise ValueError(
+                "Argument scheme=None, so electron-electron energy cannot be decomposed."
+            )
 
         logging.info("CALCULATE ELECTRON-ELECTRON ATOMIC ENERGY TERMS")
         ee_c_atomic = self.part.condense_to_atoms(self.integrands["coul_raw"])
@@ -978,7 +982,6 @@ class IQA(object):
         return ee_c_pairwise, ee_x_pairwise
 
     def compute_ee_total_6d_grid(self):
-
         """
         fully numerical total exchange and coulomb terms
         """
@@ -991,7 +994,7 @@ class IQA(object):
             r12[r12 == 0] = 1e-9
             e_cc[p] = self.grid_2.integrate(dens2 / r12)
         e_cc_total = 0.5 * self.grid.integrate(self.dens * e_cc)
-        
+
         ### exchange
         n_occs = self.molecule._iodata.mo.occs[self.molecule._iodata.mo.occs > 0].shape[0]
         e_ex = np.zeros_like(self.dens)
@@ -1004,14 +1007,55 @@ class IQA(object):
         for p, point in enumerate(self.grid.points):
             r12 = np.linalg.norm(point - self.grid_2.points, axis=-1)
             r12[r12 == 0] = 1e-9
-            for (i, j) in product(range(n_occs), repeat=2):
-                tmp = self.grid_2.integrate(mo_g2[i] * mo_g2[j] / r12)
+            for i, j in product(range(n_occs), repeat=2):
+                tmp = self.grid_2.integrate(mo_g2[j] * mo_g2[i] / r12)
                 e_ex[p] += mo_g1[i, p] * mo_g1[j, p] * tmp
-        e_ex_total = - self.grid.integrate(e_ex)
+        e_ex_total = -self.grid.integrate(e_ex)
 
         return e_cc_total, e_ex_total
 
+    def compute_ee_pairwise_matrix_6d_grid(self):
+        """
+        doc
+        """
+        natoms = len(self.molecule.numbers)
+        dens2 = evaluate_density(self.dm, self.basis, self.grid_2.points)
+        ### coulomb
+        ee_coul_pairwise = np.zeros((natoms, natoms))
+        for atom_a, atom_b in product(range(natoms), repeat=2):
+            weights_a = self.part.at_weights[atom_a]
+            weights_b = self.part_2.at_weights[atom_b]
+            e_cc = np.zeros_like(self.dens)
+            for p, point in enumerate(self.grid.points):
+                r12 = np.linalg.norm(point - self.grid_2.points, axis=-1)
+                r12[r12 == 0] = 1e-9
+                e_cc[p] = self.grid_2.integrate(weights_b * dens2 / r12)
+            ee_coul_pairwise[atom_a][atom_b] = 0.5 * self.grid.integrate(
+                weights_a * self.dens * e_cc
+            )
 
+        ### exchange
+        ee_ex_pairwise = np.zeros((natoms, natoms))
+        n_occs = self.molecule._iodata.mo.occs[self.molecule._iodata.mo.occs > 0].shape[0]
+        # Grid1
+        ao_g1 = evaluate_basis(self.basis, self.grid.points)
+        mo_g1 = compute_molecular_orbitals_from_ao(self.molecule, ao_g1)
+        # Grid2
+        ao_g2 = evaluate_basis(self.basis, self.grid_2.points)
+        mo_g2 = compute_molecular_orbitals_from_ao(self.molecule, ao_g2)
+        for atom_a, atom_b in product(range(natoms), repeat=2):
+            weights_a = self.part.at_weights[atom_a]
+            weights_b = self.part_2.at_weights[atom_b]
+            e_ex = np.zeros_like(self.dens)
+            for p, point in enumerate(self.grid.points):
+                r12 = np.linalg.norm(point - self.grid_2.points, axis=-1)
+                r12[r12 == 0] = 1e-9
+                for i, j in product(range(n_occs), repeat=2):
+                    tmp = self.grid_2.integrate(weights_b * mo_g2[j] * mo_g2[i] / r12)
+                    e_ex[p] += mo_g1[i, p] * mo_g1[j, p] * tmp
+            ee_ex_pairwise[atom_a][atom_b] = -self.grid.integrate(weights_a * e_ex)
+
+        return ee_coul_pairwise, ee_ex_pairwise
 
     def ee_iqa_dft(self, dft_dens, libxc_label):
 
