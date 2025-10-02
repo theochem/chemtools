@@ -985,17 +985,6 @@ class IQA(object):
         """
         fully numerical total exchange and coulomb terms
         """
-
-        dens2 = evaluate_density(self.dm, self.basis, self.grid_2.points)
-        e_cc = np.zeros_like(self.dens)
-        ### coulomb
-        for p, point in enumerate(self.grid.points):
-            r12 = np.linalg.norm(point - self.grid_2.points, axis=-1)
-            r12[r12 == 0] = 1e-9
-            e_cc[p] = self.grid_2.integrate(dens2 / r12)
-        e_cc_total = 0.5 * self.grid.integrate(self.dens * e_cc)
-
-        ### exchange
         n_occs = self.molecule._iodata.mo.occs[self.molecule._iodata.mo.occs > 0].shape[0]
         e_ex = np.zeros_like(self.dens)
         # Grid1
@@ -1004,12 +993,18 @@ class IQA(object):
         # Grid2
         ao_g2 = evaluate_basis(self.basis, self.grid_2.points)
         mo_g2 = compute_molecular_orbitals_from_ao(self.molecule, ao_g2)
+
+        dens2 = evaluate_density(self.dm, self.basis, self.grid_2.points)
+        e_cc = np.zeros_like(self.dens)
+
         for p, point in enumerate(self.grid.points):
             r12 = np.linalg.norm(point - self.grid_2.points, axis=-1)
             r12[r12 == 0] = 1e-9
+            e_cc[p] = self.grid_2.integrate(dens2 / r12)
             for i, j in product(range(n_occs), repeat=2):
                 tmp = self.grid_2.integrate(mo_g2[j] * mo_g2[i] / r12)
                 e_ex[p] += mo_g1[i, p] * mo_g1[j, p] * tmp
+        e_cc_total = 0.5 * self.grid.integrate(self.dens * e_cc)
         e_ex_total = -self.grid.integrate(e_ex)
 
         return e_cc_total, e_ex_total
@@ -1020,23 +1015,6 @@ class IQA(object):
         """
         natoms = len(self.molecule.numbers)
         dens2 = evaluate_density(self.dm, self.basis, self.grid_2.points)
-        ### coulomb
-        ee_coul_pairwise = np.zeros((natoms, natoms))
-        for atom_a, atom_b in combinations_with_replacement(range(natoms), 2):
-            weights_a = self.part.at_weights[atom_a]
-            weights_b = self.part_2.at_weights[atom_b]
-            e_cc = np.zeros_like(self.dens)
-            for p, point in enumerate(self.grid.points):
-                r12 = np.linalg.norm(point - self.grid_2.points, axis=-1)
-                r12[r12 == 0] = 1e-9
-                e_cc[p] = self.grid_2.integrate(weights_b * dens2 / r12)
-            result = 0.5 * self.grid.integrate(weights_a * self.dens * e_cc)
-            ee_coul_pairwise[atom_a][atom_b] = result
-            if atom_a != atom_b:
-                ee_coul_pairwise[atom_b][atom_a] = result
-
-        ### exchange
-        ee_ex_pairwise = np.zeros((natoms, natoms))
         n_occs = self.molecule._iodata.mo.occs[self.molecule._iodata.mo.occs > 0].shape[0]
         # Grid1
         ao_g1 = evaluate_basis(self.basis, self.grid.points)
@@ -1044,20 +1022,28 @@ class IQA(object):
         # Grid2
         ao_g2 = evaluate_basis(self.basis, self.grid_2.points)
         mo_g2 = compute_molecular_orbitals_from_ao(self.molecule, ao_g2)
+        ee_coul_pairwise = np.zeros((natoms, natoms))
+        ee_ex_pairwise = np.zeros((natoms, natoms))
+
         for atom_a, atom_b in combinations_with_replacement(range(natoms), 2):
             weights_a = self.part.at_weights[atom_a]
             weights_b = self.part_2.at_weights[atom_b]
+            e_cc = np.zeros_like(self.dens)
             e_ex = np.zeros_like(self.dens)
             for p, point in enumerate(self.grid.points):
                 r12 = np.linalg.norm(point - self.grid_2.points, axis=-1)
                 r12[r12 == 0] = 1e-9
+                e_cc[p] = self.grid_2.integrate(weights_b * dens2 / r12)
                 for i, j in product(range(n_occs), repeat=2):
                     tmp = self.grid_2.integrate(weights_b * mo_g2[j] * mo_g2[i] / r12)
                     e_ex[p] += mo_g1[i, p] * mo_g1[j, p] * tmp
-            result = -self.grid.integrate(weights_a * e_ex)
-            ee_ex_pairwise[atom_a][atom_b] = result
+            coulomb = 0.5 * self.grid.integrate(weights_a * self.dens * e_cc)
+            exchange = -self.grid.integrate(weights_a * e_ex)
+            ee_coul_pairwise[atom_a][atom_b] = coulomb
+            ee_ex_pairwise[atom_a][atom_b] = exchange
             if atom_a != atom_b:
-                ee_ex_pairwise[atom_b][atom_a] = result
+                ee_coul_pairwise[atom_b][atom_a] = coulomb
+                ee_ex_pairwise[atom_b][atom_a] = exchange
 
         return ee_coul_pairwise, ee_ex_pairwise
 
