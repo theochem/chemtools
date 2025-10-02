@@ -1022,7 +1022,7 @@ class IQA(object):
         dens2 = evaluate_density(self.dm, self.basis, self.grid_2.points)
         ### coulomb
         ee_coul_pairwise = np.zeros((natoms, natoms))
-        for atom_a, atom_b in product(range(natoms), repeat=2):
+        for atom_a, atom_b in combinations_with_replacement(range(natoms), 2):
             weights_a = self.part.at_weights[atom_a]
             weights_b = self.part_2.at_weights[atom_b]
             e_cc = np.zeros_like(self.dens)
@@ -1030,9 +1030,10 @@ class IQA(object):
                 r12 = np.linalg.norm(point - self.grid_2.points, axis=-1)
                 r12[r12 == 0] = 1e-9
                 e_cc[p] = self.grid_2.integrate(weights_b * dens2 / r12)
-            ee_coul_pairwise[atom_a][atom_b] = 0.5 * self.grid.integrate(
-                weights_a * self.dens * e_cc
-            )
+            result = 0.5 * self.grid.integrate(weights_a * self.dens * e_cc)
+            ee_coul_pairwise[atom_a][atom_b] = result
+            if atom_a != atom_b:
+                ee_coul_pairwise[atom_b][atom_a] = result
 
         ### exchange
         ee_ex_pairwise = np.zeros((natoms, natoms))
@@ -1043,7 +1044,7 @@ class IQA(object):
         # Grid2
         ao_g2 = evaluate_basis(self.basis, self.grid_2.points)
         mo_g2 = compute_molecular_orbitals_from_ao(self.molecule, ao_g2)
-        for atom_a, atom_b in product(range(natoms), repeat=2):
+        for atom_a, atom_b in combinations_with_replacement(range(natoms), 2):
             weights_a = self.part.at_weights[atom_a]
             weights_b = self.part_2.at_weights[atom_b]
             e_ex = np.zeros_like(self.dens)
@@ -1053,7 +1054,10 @@ class IQA(object):
                 for i, j in product(range(n_occs), repeat=2):
                     tmp = self.grid_2.integrate(weights_b * mo_g2[j] * mo_g2[i] / r12)
                     e_ex[p] += mo_g1[i, p] * mo_g1[j, p] * tmp
-            ee_ex_pairwise[atom_a][atom_b] = -self.grid.integrate(weights_a * e_ex)
+            result = -self.grid.integrate(weights_a * e_ex)
+            ee_ex_pairwise[atom_a][atom_b] = result
+            if atom_a != atom_b:
+                ee_ex_pairwise[atom_b][atom_a] = result
 
         return ee_coul_pairwise, ee_ex_pairwise
 
