@@ -106,7 +106,7 @@ class IQA(object):
     """Interacting Quantum Atoms (IQA) Class."""
 
     def __init__(
-        self, molecule, basis, dm, grid, part=None, grid_2=None, part_2=None, threshold=10
+        self, molecule, basis, dm, grid, part=None, grid_2=None, part_2=None, threshold=10, integral_6d=True
     ):
         """Initialize class.
 
@@ -190,10 +190,10 @@ class IQA(object):
         self.part_2 = part_2
         dens = evaluate_density(dm, basis, grid.points)
         self.dens = dens
-        self.integrands, self.totals = self.compare_numerical_analytical(threshold=threshold)
+        self.integrands, self.totals = self.compare_numerical_analytical(threshold=threshold, integral_6d=integral_6d)
 
     @classmethod
-    def from_molecule(cls, molecule, grid, part=None, scheme=None, grid_2=None, part_2=None):
+    def from_molecule(cls, molecule, grid, part=None, scheme=None, grid_2=None, part_2=None, integral_6d=True):
         """Initialize Interacting Quantum Atoms (IQA) class from `Molecules` object.
 
         Parameters
@@ -253,10 +253,10 @@ class IQA(object):
                 print("Couldn't read Density matrix. Calculating from its components.")
                 one_rdm = molecule._mo.compute_dm()
 
-        return cls(molecule, basis, one_rdm, grid, part, grid_2=grid_2, part_2=part_2)
+        return cls(molecule, basis, one_rdm, grid, part, grid_2=grid_2, part_2=part_2, integral_6d=integral_6d)
 
     @classmethod
-    def from_file(cls, fname, scheme=None):
+    def from_file(cls, fname, scheme=None, integral_6d=True):
         """Initialize Interacting Quantum Atoms (IQA) class from wave-function file.
 
         Parameters
@@ -274,11 +274,15 @@ class IQA(object):
 
         # Initialize grid
         grid = get_molecular_grid(molecule, R=1)
-        grid_2 = get_molecular_grid(molecule, R=2)
 
-        return cls.from_molecule(molecule, grid, scheme=scheme, grid_2=grid_2)
+        if integral_6d:
+            grid_2 = get_molecular_grid(molecule, R=1.2)
+        else:
+            grid_2 = None
 
-    def compare_numerical_analytical(self, threshold):
+        return cls.from_molecule(molecule, grid, scheme=scheme, grid_2=grid_2, integral_6d=integral_6d)
+
+    def compare_numerical_analytical(self, threshold, integral_6d=True):
         """
         for the total values of each energy term, calculate analytical and numerical values and check their agreement.
         """
@@ -292,15 +296,19 @@ class IQA(object):
         coul_total_analytical = analytical["coul_analytical"]
 
         ### extract numerical terms
-        numerical = self.total_numerical()
+        numerical = self.total_numerical(integral_6d=integral_6d)
         nn_total_numerical = numerical["nn_numerical"]
         en_total_numerical = numerical["en_numerical"]
         kin_total_numerical = numerical["kin_numerical"]
         ex_total_numerical = numerical["ex_numerical"]
         coul_total_numerical = numerical["coul_numerical"]
         kin_density = numerical["kin_density"]
-        ex_raw = numerical["ex_raw"]
-        coul_raw = numerical["coul_raw"]
+
+        ### return the integrands to pass for decomposition
+        integrands = {"kin_density": kin_density}
+        if integral_6d is False:
+            integrands["coul_raw"] = numerical["coul_raw"]
+            integrands["ex_raw"] = numerical["ex_raw"]
 
         ## differences in kcal/mol
         nn_diff = np.abs(nn_total_analytical - nn_total_numerical) / kcalmol
@@ -326,12 +334,6 @@ class IQA(object):
                 f"The difference between analytical and numerical energies exceed the threshold. Maximum allowed: {threshold}, got {max_diff}."
             )
 
-        ### return the integrands to pass for decomposition
-        integrands = {
-            "kin_density": kin_density,
-            "ex_raw": ex_raw,
-            "coul_raw": coul_raw,
-        }
         totals = {
             "nn_total_analytical": nn_total_analytical,
             "nn_total_numerical": nn_total_numerical,
@@ -344,9 +346,10 @@ class IQA(object):
             "coul_total_analytical": coul_total_analytical,
             "coul_total_numerical": coul_total_numerical,
         }
+        
         return integrands, totals
 
-    def total_numerical(self):
+    def total_numerical(self, integral_6d=True):
         """
         calculate the total numerical value for each term, NN, EN, EE, Kinetic
         """
@@ -362,69 +365,25 @@ class IQA(object):
         )
         kin_total_numerical = self.grid.integrate(kin_density)
 
-        ## Coulobm and Exchange
-        nao = self.dm.shape[0]
-        eval_ao = evaluate_basis(self.basis, self.grid.points)
-        # The broadcast operation is the same as the for loop. Summing over mu because broadcasting
-        # allocates too much memory
-        eval_mo = np.zeros((self.molecule._iodata.mo.coeffs.T.shape[0], eval_ao.shape[1]))
-        for i in range(self.molecule._iodata.mo.coeffs.T.shape[0]):
-            mo = np.zeros((eval_ao.shape[1]))
-            for mu in range(eval_ao.shape[0]):
-                mo += self.molecule._iodata.mo.coeffs.T[i, mu] * eval_ao[mu, :]
-            eval_mo[i] = mo
-        istart = 0
-        chunk_size = 250000000 // (nao**2)
-        # Establish all ranges for istart/iend
-        segments = []
-        istart = 0
-        i = 0
-        while istart < self.grid.points.shape[0]:
-            iend = min(istart + chunk_size, self.grid.points.shape[0])
-            # segments.append((istart, iend))
-            segments.append(
-                (i, istart, iend, eval_mo, self.grid, self.dens, self.molecule._iodata, self.dm)
-            )
-            istart = iend
-            i += 1
-        # Checking processors
-        ncpus = int(os.environ.get("SLURM_CPUS_PER_TASK", default=2))
-        # set_start_method("fork")
-        ctx = mp.get_context("fork")
-        pool = ctx.Pool(processes=ncpus)
-        results = []
-        # Parallel execution of _integral_point_charge_electron
-        for sub in range(0, len(segments), ncpus - 1):
-            results_sub_raw = [
-                pool.apply_async(_integral_point_charge_electron, args=s)
-                for s in segments[sub : sub + (ncpus - 1)]
-            ]
-            results_sub = [r.get() for r in results_sub_raw]
-            results.extend(results_sub)
-
-        pool.close()
-        pool.join()
-
-        total_coul_raw = np.zeros(self.grid.points.shape[0])
-        total_exch_raw = np.zeros(self.grid.points.shape[0])
-        # distribute chunk grid point charges integral outputs
-        for out in results:
-            total_coul_raw[out[0] : out[1]] = out[2]
-            total_exch_raw[out[0] : out[1]] = out[3]
-
-        coul_total_numerical = self.grid.integrate(total_coul_raw)
-        ex_total_numerical = self.grid.integrate(total_exch_raw)
-
         total_numerical = {
             "nn_numerical": np.sum(self.compute_nn_pairwise_array()),
             "en_numerical": en_total_numerical,
             "kin_density": kin_density,
             "kin_numerical": kin_total_numerical,
-            "ex_raw": total_exch_raw,
-            "ex_numerical": ex_total_numerical,
-            "coul_raw": total_coul_raw,
-            "coul_numerical": coul_total_numerical,
         }
+
+        ## Coulobm and Exchange
+        if integral_6d:
+            ee_data = self.compute_ee_total_6d_grid()
+            total_numerical["coul_numerical"] = ee_data[0]
+            total_numerical["ex_numerical"] = ee_data[1]
+        else:
+            ee_data = self.compute_ee_total()
+            total_numerical["coul_numerical"] = ee_data[0]
+            total_numerical["ex_numerical"] = ee_data[1]
+            total_numerical["coul_raw"] = ee_data[2]
+            total_numerical["ex_raw"] =  ee_data[3]
+
         return total_numerical
 
     def total_analytical(self):
@@ -834,6 +793,63 @@ class IQA(object):
                 en_pairwise_matrix[i][j] = self.grid.integrate(en_pairwise_density[i][j])
 
         return en_pairwise_matrix
+
+    def compute_ee_total(self):
+        """
+        calculate total EE energy with hybrid methodf
+        """
+        nao = self.dm.shape[0]
+        eval_ao = evaluate_basis(self.basis, self.grid.points)
+        # The broadcast operation is the same as the for loop. Summing over mu because broadcasting
+        # allocates too much memory
+        eval_mo = np.zeros((self.molecule._iodata.mo.coeffs.T.shape[0], eval_ao.shape[1]))
+        for i in range(self.molecule._iodata.mo.coeffs.T.shape[0]):
+            mo = np.zeros((eval_ao.shape[1]))
+            for mu in range(eval_ao.shape[0]):
+                mo += self.molecule._iodata.mo.coeffs.T[i, mu] * eval_ao[mu, :]
+            eval_mo[i] = mo
+        istart = 0
+        chunk_size = 250000000 // (nao**2)
+        # Establish all ranges for istart/iend
+        segments = []
+        istart = 0
+        i = 0
+        while istart < self.grid.points.shape[0]:
+            iend = min(istart + chunk_size, self.grid.points.shape[0])
+            # segments.append((istart, iend))
+            segments.append(
+                (i, istart, iend, eval_mo, self.grid, self.dens, self.molecule._iodata, self.dm)
+            )
+            istart = iend
+            i += 1
+        # Checking processors
+        ncpus = int(os.environ.get("SLURM_CPUS_PER_TASK", default=2))
+        # set_start_method("fork")
+        ctx = mp.get_context("fork")
+        pool = ctx.Pool(processes=ncpus)
+        results = []
+        # Parallel execution of _integral_point_charge_electron
+        for sub in range(0, len(segments), ncpus - 1):
+            results_sub_raw = [
+                pool.apply_async(_integral_point_charge_electron, args=s)
+                for s in segments[sub : sub + (ncpus - 1)]
+            ]
+            results_sub = [r.get() for r in results_sub_raw]
+            results.extend(results_sub)
+        pool.close()
+        pool.join()
+        total_coul_raw = np.zeros(self.grid.points.shape[0])
+        total_exch_raw = np.zeros(self.grid.points.shape[0])
+
+        # distribute chunk grid point charges integral outputs
+        for out in results:
+            total_coul_raw[out[0] : out[1]] = out[2]
+            total_exch_raw[out[0] : out[1]] = out[3]
+
+        coul_total_numerical = self.grid.integrate(total_coul_raw)
+        ex_total_numerical = self.grid.integrate(total_exch_raw)
+
+        return coul_total_numerical, ex_total_numerical, total_coul_raw, total_exch_raw
 
     def compute_ee_atomic(self):
         r"""Compute Hartree Fock electron-electron interaction energy.
