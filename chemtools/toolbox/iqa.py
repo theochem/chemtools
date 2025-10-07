@@ -234,10 +234,10 @@ class IQA(object):
         elif part is not None:
             if not isinstance(part, DensPart):
                 raise TypeError("Argument part should be an instance of DensPart class.")
-        elif scheme == "H":
-            part = DensPart.from_molecule(molecule, grid=grid, scheme="h", local=False)
-        elif scheme == "HI":
-            part = DensPart.from_molecule(molecule, grid=grid, scheme="hi", local=False)
+        elif scheme.lower() in ["h", "hi"]:
+            part = DensPart.from_molecule(molecule, grid=grid, scheme=scheme.lower(), local=False)
+            if integral_6d:
+                part_2 = DensPart.from_molecule(molecule, grid=grid_2, scheme=scheme.lower(), local=False)
         elif scheme is not None and scheme not in ["H", "HI"]:
             raise NotImplementedError(f"Atomic partition {scheme} not yet available")
 
