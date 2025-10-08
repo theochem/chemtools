@@ -22,6 +22,7 @@
 # --
 """Module for Interacting quantum atoms(IQA)."""
 
+import time
 import logging
 from os.path import dirname, join
 import os as os
@@ -45,7 +46,7 @@ import gbasis as gbasis
 from gbasis.wrappers import from_iodata
 from gbasis.evals.density import evaluate_density
 from gbasis.evals.density import evaluate_general_kinetic_energy_density
-from gbasis.evals.density import evaluate_posdef_kinetic_energy_density
+# from gbasis.evals.density import evaluate_posdef_kinetic_energy_density
 from gbasis.evals.density import evaluate_density_gradient
 from gbasis.evals.eval import evaluate_basis
 from gbasis.evals.eval_deriv import evaluate_deriv_basis
@@ -323,15 +324,16 @@ class IQA(object):
 
         ## extract the maximum error, if it's higher than threshold rise error
         max_diff = np.max([en_diff, kin_diff, ee_x_diff, ee_c_diff])
-        logging.info(
-            f"Error between analytical and numertical total electron-nucleus attraction: {en_diff}"
-        )
-        logging.info(f"Error between analytical and numertical total kinetic energy: {kin_diff}")
-        logging.info(f"Error between analytical and numertical total exchange energy: {ee_x_diff}")
-        logging.info(f"Error between analytical and numertical total coulumb energe: {ee_c_diff}")
+
+        logging.info("SUMMARY TOTAL ENERGY TERMS: ANALYTICAL, NUMERICAL, AND THEIR DIFFERENCE (in Hartree)")
+        logging.info(f"E_en   {en_a:.4f} {en_n:.4f} {en_diff:.4f}")
+        logging.info(f"T_e    {kin_a:.4f} {kin_n:.4f} {kin_diff:.4f}")
+        logging.info(f"E_ee_x {ee_x_a:.4f} {ee_x_n:.4f} {ee_x_diff:.4f}")
+        logging.info(f"E_ee_c {ee_c_a:.4f} {ee_c_n:.4f} {ee_c_diff:.4f}")
+
         if max_diff > threshold:
             raise ValueError(
-                f"The difference between analytical and numerical energies exceed the threshold. Maximum allowed: {threshold}, got {max_diff}."
+                f"Analytical–numerical energy difference above threshold (max {threshold}, got {max_diff})."
             )
 
         totals_a = {
@@ -353,54 +355,85 @@ class IQA(object):
         """
         calculate the total numerical value for each term, NN, EN, EE, Kinetic
         """
-        ## EN
+        logging.info("\nCALCULATING TOTAL ENERGY TERM NUMERICALLY")
+
+        t0 = time.perf_counter()
         rij = np.linalg.norm(self.molecule.coordinates[:, None, :] - self.grid.points, axis=-1)
         en = self.grid.integrate(
             np.sum((-self.molecule.numbers[:, None] * (self.dens / rij)), axis=0)
         )
+        t1 = time.perf_counter()
+        logging.info(f"E_en : {t1 - t0:.3f} seconds")
 
-        ## Kinietic
+        t0 = time.perf_counter()
         kin_density = evaluate_general_kinetic_energy_density(
             self.dm, self.basis, self.grid.points, -0.25
         )
         kin = self.grid.integrate(kin_density)
+        t1 = time.perf_counter()
+        logging.info(f"T_e  : {t1 - t0:.3f} seconds")
 
         total_n = {
             "en_n": en,
             "kin_density": kin_density,
             "kin_n": kin,
         }
+
+        t0 = time.perf_counter()
         ee_data = self.compute_ee_total()
+        t1 = time.perf_counter()
+        logging.info(f"E_ee : {t1 - t0:.3f} seconds (using point-charge integrals)")
         total_n["ee_c_n"] = ee_data[0]
         total_n["ee_x_n"] = ee_data[1]
         total_n["coul_raw"] = ee_data[2]
         total_n["ex_raw"] = ee_data[3]
         if self.grid_2:
+            t0 = time.perf_counter()
             ee_data_6d = self.compute_ee_total_6d_grid()
+            t1 = time.perf_counter()
+            logging.info(f"E_ee : {t1 - t0:.3f} seconds (using 6D grid)")
             total_n["ee_c_n"] = ee_data_6d[0]
             total_n["ee_x_n"] = ee_data_6d[1]
 
         return total_n
 
     def compute_energy_terms_analytically(self):
+
+        logging.info("\nCALCULATING TOTAL ENERGY TERM ANALYTICALLY")
         ## EN
+        t0 = time.perf_counter()
         en_int = nuclear_electron_attraction_integral(
             self.basis, self.molecule.coordinates, self.molecule.numbers
         )
         en = np.trace(self.dm.dot(en_int))
+        t1 = time.perf_counter()
+        logging.info(f"E_en : {t1 - t0:.3f} seconds")
 
         ## Kinetic
+        t0 = time.perf_counter()
         kin_int = kinetic_energy_integral(self.basis)
         kin = np.trace(self.dm.dot(kin_int))
+        t1 = time.perf_counter()
+        logging.info(f"T_e  : {t1 - t0:.3f} seconds")
 
         ## Exchange
+        t0 = time.perf_counter()
         ee_int = electron_repulsion_integral(self.basis)
+        t1 = time.perf_counter()
+        logging.info(f"E_ee : {t1 - t0:.3f} seconds (integrals)")
+
+        t0 = time.perf_counter()
         exch = np.einsum("rs,mnrs->mn", self.dm, ee_int)
         ee_x = -0.25 * np.trace(self.dm.dot(exch))
+        t1 = time.perf_counter()
+        logging.info(f"E_ee_x : {t1 - t0:.3f} seconds (contraction)")
 
         ## Coulomb
+        t0 = time.perf_counter()
         coul = np.einsum("rs,mrns->mn", self.dm, ee_int)
         ee_c = 0.5 * np.trace(self.dm.dot(coul))
+        t1 = time.perf_counter()
+        logging.info(f"E_ee_c : {t1 - t0:.3f} seconds (contraction)")
 
         total_a = {
             "en_a": en,
