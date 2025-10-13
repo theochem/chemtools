@@ -189,7 +189,7 @@ class IQA(object):
         self.part_2 = part_2
         dens = evaluate_density(dm, basis, grid.points)
         self.dens = dens
-        self.integrands, self.totals = self.compare_numerical_analytical(threshold=threshold, integral_6d=integral_6d)
+        self.integrands, self.totals_a, self.totals_n = self.compare_numerical_analytical(threshold=threshold, integral_6d=integral_6d)
 
     @classmethod
     def from_molecule(cls, molecule, grid, part=None, scheme=None, grid_2=None, part_2=None, integral_6d=True):
@@ -288,19 +288,19 @@ class IQA(object):
 
         ### extract analytical terms
         analytical = self.total_analytical()
-        nn_total_analytical = analytical["nn_analytical"]
-        en_total_analytical = analytical["en_analytical"]
-        kin_total_analytical = analytical["kin_analytical"]
-        ex_total_analytical = analytical["ex_analytical"]
-        coul_total_analytical = analytical["coul_analytical"]
+        nn_a = analytical["nn_a"]
+        en_a = analytical["en_a"]
+        kin_a = analytical["kin_a"]
+        ee_x_a = analytical["ee_x_a"]
+        ee_c_a = analytical["ee_c_a"]
 
         ### extract numerical terms
         numerical = self.total_numerical(integral_6d=integral_6d)
-        nn_total_numerical = numerical["nn_numerical"]
-        en_total_numerical = numerical["en_numerical"]
-        kin_total_numerical = numerical["kin_numerical"]
-        ex_total_numerical = numerical["ex_numerical"]
-        coul_total_numerical = numerical["coul_numerical"]
+        nn_n = numerical["nn_n"]
+        en_n = numerical["en_n"]
+        kin_n = numerical["kin_n"]
+        ee_x_n = numerical["ee_x_n"]
+        ee_c_n = numerical["ee_c_n"]
         kin_density = numerical["kin_density"]
 
         ### return the integrands to pass for decomposition
@@ -310,14 +310,14 @@ class IQA(object):
             integrands["ex_raw"] = numerical["ex_raw"]
 
         ## differences in Hartree
-        nn_diff = np.abs(nn_total_analytical - nn_total_numerical)
-        en_diff = np.abs(en_total_analytical - en_total_numerical)
-        kin_diff = np.abs(kin_total_analytical - kin_total_numerical)
-        ex_diff = np.abs(ex_total_analytical - ex_total_numerical)
-        coul_diff = np.abs(coul_total_analytical - coul_total_numerical)
+        nn_diff = np.abs(nn_a - nn_n)
+        en_diff = np.abs(en_a - en_n)
+        kin_diff = np.abs(kin_a - kin_n)
+        ee_x_diff = np.abs(ee_x_a - ee_x_n)
+        ee_c_diff = np.abs(ee_c_a - ee_c_n)
 
         ## extract the maximum error, if it's higher than threshold rise error
-        max_diff = np.max([nn_diff, en_diff, kin_diff, ex_diff, coul_diff])
+        max_diff = np.max([nn_diff, en_diff, kin_diff, ee_x_diff, ee_c_diff])
 
         if max_diff > threshold:
             print(
@@ -327,26 +327,28 @@ class IQA(object):
                 f"Error between analytical and numertical total electron-nucleus attraction: {en_diff}"
             )
             print(f"Error between analytical and numertical total kinetic energy: {kin_diff}")
-            print(f"Error between analytical and numertical total exchange energy: {ex_diff}")
-            print(f"Error between analytical and numertical total coulumb energe: {coul_diff}")
+            print(f"Error between analytical and numertical total exchange energy: {ee_x_diff}")
+            print(f"Error between analytical and numertical total coulumb energe: {ee_c_diff}")
             raise ValueError(
                 f"The difference between analytical and numerical energies exceed the threshold. Maximum allowed: {threshold}, got {max_diff}."
             )
 
-        totals = {
-            "nn_total_analytical": nn_total_analytical,
-            "nn_total_numerical": nn_total_numerical,
-            "en_total_analytical": en_total_analytical,
-            "en_total_numerical": en_total_numerical,
-            "kin_total_analytical": kin_total_analytical,
-            "kin_total_numerical": kin_total_numerical,
-            "ex_total_analytical": ex_total_analytical,
-            "ex_total_numerical": ex_total_numerical,
-            "coul_total_analytical": coul_total_analytical,
-            "coul_total_numerical": coul_total_numerical,
+        totals_a = {
+            "nn_a": nn_a,
+            "en_a": en_a,
+            "kin_a": kin_a,
+            "ee_x_a": ee_x_a,
+            "ee_c_a": ee_c_a,
+        }
+        totals_n = {
+            "nn_n": nn_n,
+            "en_n": en_n,
+            "kin_n": kin_n,
+            "ee_x_n": ee_x_n,
+            "ee_c_n": ee_c_n,
         }
 
-        return integrands, totals
+        return integrands, totals_a, totals_n
 
     def total_numerical(self, integral_6d=True):
         """
@@ -354,7 +356,7 @@ class IQA(object):
         """
         ## EN
         rij = np.linalg.norm(self.molecule.coordinates[:, None, :] - self.grid.points, axis=-1)
-        en_total_numerical = self.grid.integrate(
+        en = self.grid.integrate(
             np.sum((-self.molecule.numbers[:, None] * (self.dens / rij)), axis=0)
         )
 
@@ -362,60 +364,60 @@ class IQA(object):
         kin_density = evaluate_general_kinetic_energy_density(
             self.dm, self.basis, self.grid.points, -0.25
         )
-        kin_total_numerical = self.grid.integrate(kin_density)
+        kin = self.grid.integrate(kin_density)
 
-        total_numerical = {
-            "nn_numerical": np.sum(self.compute_nn_pairwise_array()),
-            "en_numerical": en_total_numerical,
+        total_n = {
+            "nn_n": np.sum(self.compute_nn_pairwise_array()),
+            "en_n": en,
             "kin_density": kin_density,
-            "kin_numerical": kin_total_numerical,
+            "kin_n": kin,
         }
 
         ## Coulobm and Exchange
         if integral_6d:
             ee_data = self.compute_ee_total_6d_grid()
-            total_numerical["coul_numerical"] = ee_data[0]
-            total_numerical["ex_numerical"] = ee_data[1]
+            total_n["ee_c_n"] = ee_data[0]
+            total_n["ee_x_n"] = ee_data[1]
         else:
             ee_data = self.compute_ee_total()
-            total_numerical["coul_numerical"] = ee_data[0]
-            total_numerical["ex_numerical"] = ee_data[1]
-            total_numerical["coul_raw"] = ee_data[2]
-            total_numerical["ex_raw"] =  ee_data[3]
+            total_n["ee_c_n"] = ee_data[0]
+            total_n["ee_x_n"] = ee_data[1]
+            total_n["coul_raw"] = ee_data[2]
+            total_n["ex_raw"] =  ee_data[3]
 
-        return total_numerical
+        return total_n
 
     def total_analytical(self):
         ## NN (this is going to be useless); I agree, we should remove it later
-        energy_nn = np.sum(self.compute_nn_pairwise_array())
+        nn = np.sum(self.compute_nn_pairwise_array())
 
         ## EN
         en_int = nuclear_electron_attraction_integral(
             self.basis, self.molecule.coordinates, self.molecule.numbers
         )
-        en_total_analytical = np.trace(self.dm.dot(en_int))
+        en = np.trace(self.dm.dot(en_int))
 
         ## Kinetic
         kin_int = kinetic_energy_integral(self.basis)
-        kin_total_analytical = np.trace(self.dm.dot(kin_int))
+        kin = np.trace(self.dm.dot(kin_int))
 
         ## Exchange
         ee_int = electron_repulsion_integral(self.basis)
         exch = np.einsum("rs,mnrs->mn", self.dm, ee_int)
-        ex_total_analytical = -0.25 * np.trace(self.dm.dot(exch))
+        ee_x = -0.25 * np.trace(self.dm.dot(exch))
 
         ## Coulomb
         coul = np.einsum("rs,mrns->mn", self.dm, ee_int)
-        coul_total_analytical = 0.5 * np.trace(self.dm.dot(coul))
+        ee_c = 0.5 * np.trace(self.dm.dot(coul))
 
-        total_analytical = {
-            "nn_analytical": energy_nn,
-            "en_analytical": en_total_analytical,
-            "kin_analytical": kin_total_analytical,
-            "ex_analytical": ex_total_analytical,
-            "coul_analytical": coul_total_analytical,
+        total_a = {
+            "nn_a": nn,
+            "en_a": en,
+            "kin_a": kin,
+            "ee_x_a": ee_x,
+            "ee_c_a": ee_c,
         }
-        return total_analytical
+        return total_a
 
     def run_atomic(self, dft_exch=None, dft_corr=None):
         """Return the Interacting Quantum Atoms (IQA) components integrated at the evaluated given points
