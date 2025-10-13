@@ -491,6 +491,21 @@ class IQA(object):
 
         return iqa_results
 
+    def run_pairwise(self):
+        """
+        return the pairwise matrices for NN, EE, and EN energy terms which contains all of the intraatomic (diagonals)
+        and interatomic (off-diagonals) terms
+        """
+        iqa_results = {}
+        iqa_results["nn_pairwise"] = self.compute_nn_pairwise_array()
+        iqa_results["en_pairwise"] = self.compute_en_pairwise_matrix()
+        if self.molecule.lot == "rhf":
+            iqa_results["x_pairwise"], iqa_results["coul_pairwise"] = (
+                self.compute_ee_pairwise_matrix_6d_grid()
+            )
+
+        return iqa_results
+
     def iqa_pairwise(self, dft_exch=None, dft_corr=None, hf_int=False, ee_int=False):
         r"""Compute pairwise interaction for exchange-correlation energy density from DFT
         functionals using BOD partition method.
