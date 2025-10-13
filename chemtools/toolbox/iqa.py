@@ -263,7 +263,7 @@ class IQA(object):
         )
 
     @classmethod
-    def from_file(cls, fname, scheme=None, integral_6d=True):
+    def from_file(cls, fname, scheme=None, integral_6d=True, threshold=1e-5):
         """Initialize Interacting Quantum Atoms (IQA) class from wave-function file.
 
         Parameters
@@ -287,7 +287,7 @@ class IQA(object):
         else:
             grid_2 = None
 
-        return cls.from_molecule(molecule, grid, scheme=scheme, grid_2=grid_2)
+        return cls.from_molecule(molecule, grid, scheme=scheme, grid_2=grid_2, threshold=threshold)
 
     def compare_numerical_analytical(self, threshold=1e-5):
         """
