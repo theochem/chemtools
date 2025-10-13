@@ -351,7 +351,7 @@ class IQA(object):
 
         return integrands, totals_a, totals_n
 
-    def total_numerical(self, integral_6d=True):
+    def compute_total_numerical(self):
         """
         calculate the total numerical value for each term, NN, EN, EE, Kinetic
         """
@@ -384,7 +384,7 @@ class IQA(object):
 
         return total_n
 
-    def total_analytical(self):
+    def compute_total_analytical(self):
         ## EN
         en_int = nuclear_electron_attraction_integral(
             self.basis, self.molecule.coordinates, self.molecule.numbers
