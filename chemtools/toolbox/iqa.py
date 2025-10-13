@@ -55,7 +55,6 @@ from gbasis.integrals.nuclear_electron_attraction import nuclear_electron_attrac
 from gbasis.integrals.electron_repulsion import electron_repulsion_integral
 
 from iodata.periodic import num2sym
-from iodata.utils import kcalmol
 
 from grid.basegrid import Grid
 
@@ -310,12 +309,12 @@ class IQA(object):
             integrands["coul_raw"] = numerical["coul_raw"]
             integrands["ex_raw"] = numerical["ex_raw"]
 
-        ## differences in kcal/mol
-        nn_diff = np.abs(nn_total_analytical - nn_total_numerical) / kcalmol
-        en_diff = np.abs(en_total_analytical - en_total_numerical) / kcalmol
-        kin_diff = np.abs(kin_total_analytical - kin_total_numerical) / kcalmol
-        ex_diff = np.abs(ex_total_analytical - ex_total_numerical) / kcalmol
-        coul_diff = np.abs(coul_total_analytical - coul_total_numerical) / kcalmol
+        ## differences in Hartree
+        nn_diff = np.abs(nn_total_analytical - nn_total_numerical)
+        en_diff = np.abs(en_total_analytical - en_total_numerical)
+        kin_diff = np.abs(kin_total_analytical - kin_total_numerical)
+        ex_diff = np.abs(ex_total_analytical - ex_total_numerical)
+        coul_diff = np.abs(coul_total_analytical - coul_total_numerical)
 
         ## extract the maximum error, if it's higher than threshold rise error
         max_diff = np.max([nn_diff, en_diff, kin_diff, ex_diff, coul_diff])
@@ -346,7 +345,7 @@ class IQA(object):
             "coul_total_analytical": coul_total_analytical,
             "coul_total_numerical": coul_total_numerical,
         }
-        
+
         return integrands, totals
 
     def total_numerical(self, integral_6d=True):
