@@ -291,11 +291,11 @@ class IQA(object):
 
     def compare_numerical_analytical(self, threshold=1e-5):
         """
-        for the total values of each energy term, calculate analytical and numerical values and check their agreement.
+        for the total values of each energy term, compare analytical and numerical values
         """
 
         ### extract analytical terms
-        analytical = self.total_analytical()
+        analytical = self.compute_total_analytical()
         en_a = analytical["en_a"]
         kin_a = analytical["kin_a"]
         ee_x_a = analytical["ee_x_a"]
@@ -307,7 +307,6 @@ class IQA(object):
         kin_n = numerical["kin_n"]
         ee_x_n = numerical["ee_x_n"]
         ee_c_n = numerical["ee_c_n"]
-        kin_density = numerical["kin_density"]
 
         ### return the integrands to pass for decomposition
         integrands = {
@@ -324,14 +323,13 @@ class IQA(object):
 
         ## extract the maximum error, if it's higher than threshold rise error
         max_diff = np.max([en_diff, kin_diff, ee_x_diff, ee_c_diff])
-
+        logging.info(
+            f"Error between analytical and numertical total electron-nucleus attraction: {en_diff}"
+        )
+        logging.info(f"Error between analytical and numertical total kinetic energy: {kin_diff}")
+        logging.info(f"Error between analytical and numertical total exchange energy: {ee_x_diff}")
+        logging.info(f"Error between analytical and numertical total coulumb energe: {ee_c_diff}")
         if max_diff > threshold:
-            print(
-                f"Error between analytical and numertical total electron-nucleus attraction: {en_diff}"
-            )
-            print(f"Error between analytical and numertical total kinetic energy: {kin_diff}")
-            print(f"Error between analytical and numertical total exchange energy: {ee_x_diff}")
-            print(f"Error between analytical and numertical total coulumb energe: {ee_c_diff}")
             raise ValueError(
                 f"The difference between analytical and numerical energies exceed the threshold. Maximum allowed: {threshold}, got {max_diff}."
             )
