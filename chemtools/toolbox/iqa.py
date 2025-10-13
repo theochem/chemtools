@@ -105,7 +105,7 @@ class IQA(object):
     """Interacting Quantum Atoms (IQA) Class."""
 
     def __init__(
-        self, molecule, basis, dm, grid, part=None, grid_2=None, part_2=None, threshold=10, integral_6d=True
+        self, molecule, basis, dm, grid, part=None, grid_2=None, part_2=None, threshold=1e-5
     ):
         """Initialize class.
 
@@ -189,10 +189,14 @@ class IQA(object):
         self.part_2 = part_2
         dens = evaluate_density(dm, basis, grid.points)
         self.dens = dens
-        self.integrands, self.totals_a, self.totals_n = self.compare_numerical_analytical(threshold=threshold, integral_6d=integral_6d)
+        self.integrands, self.totals_a, self.totals_n = self.compare_numerical_analytical(
+            threshold=threshold
+        )
 
     @classmethod
-    def from_molecule(cls, molecule, grid, part=None, scheme=None, grid_2=None, part_2=None, integral_6d=True):
+    def from_molecule(
+        cls, molecule, grid, part=None, scheme=None, grid_2=None, part_2=None, threshold=1e-5
+    ):
         """Initialize Interacting Quantum Atoms (IQA) class from `Molecules` object.
 
         Parameters
@@ -235,8 +239,10 @@ class IQA(object):
                 raise TypeError("Argument part should be an instance of DensPart class.")
         elif scheme.lower() in ["h", "hi"]:
             part = DensPart.from_molecule(molecule, grid=grid, scheme=scheme.lower(), local=False)
-            if integral_6d:
-                part_2 = DensPart.from_molecule(molecule, grid=grid_2, scheme=scheme.lower(), local=False)
+            if grid_2 is not None:
+                part_2 = DensPart.from_molecule(
+                    molecule, grid=grid_2, scheme=scheme.lower(), local=False
+                )
         elif scheme is not None and scheme not in ["H", "HI"]:
             raise NotImplementedError(f"Atomic partition {scheme} not yet available")
 
@@ -252,7 +258,9 @@ class IQA(object):
                 print("Couldn't read Density matrix. Calculating from its components.")
                 one_rdm = molecule._mo.compute_dm()
 
-        return cls(molecule, basis, one_rdm, grid, part, grid_2=grid_2, part_2=part_2, integral_6d=integral_6d)
+        return cls(
+            molecule, basis, one_rdm, grid, part, grid_2=grid_2, part_2=part_2, threshold=threshold
+        )
 
     @classmethod
     def from_file(cls, fname, scheme=None, integral_6d=True):
@@ -279,9 +287,9 @@ class IQA(object):
         else:
             grid_2 = None
 
-        return cls.from_molecule(molecule, grid, scheme=scheme, grid_2=grid_2, integral_6d=integral_6d)
+        return cls.from_molecule(molecule, grid, scheme=scheme, grid_2=grid_2)
 
-    def compare_numerical_analytical(self, threshold, integral_6d=True):
+    def compare_numerical_analytical(self, threshold=1e-5):
         """
         for the total values of each energy term, calculate analytical and numerical values and check their agreement.
         """
@@ -294,7 +302,7 @@ class IQA(object):
         ee_c_a = analytical["ee_c_a"]
 
         ### extract numerical terms
-        numerical = self.total_numerical(integral_6d=integral_6d)
+        numerical = self.compute_total_numerical()
         en_n = numerical["en_n"]
         kin_n = numerical["kin_n"]
         ee_x_n = numerical["ee_x_n"]
@@ -302,10 +310,11 @@ class IQA(object):
         kin_density = numerical["kin_density"]
 
         ### return the integrands to pass for decomposition
-        integrands = {"kin_density": kin_density}
-        if integral_6d is False:
-            integrands["coul_raw"] = numerical["coul_raw"]
-            integrands["ex_raw"] = numerical["ex_raw"]
+        integrands = {
+            "kin_density": numerical["kin_density"],
+            "coul_raw": numerical["coul_raw"],
+            "ex_raw": numerical["ex_raw"],
+        }
 
         ## differences in Hartree
         en_diff = np.abs(en_a - en_n)
@@ -363,18 +372,15 @@ class IQA(object):
             "kin_density": kin_density,
             "kin_n": kin,
         }
-
-        ## Coulobm and Exchange
-        if integral_6d:
-            ee_data = self.compute_ee_total_6d_grid()
-            total_n["ee_c_n"] = ee_data[0]
-            total_n["ee_x_n"] = ee_data[1]
-        else:
-            ee_data = self.compute_ee_total()
-            total_n["ee_c_n"] = ee_data[0]
-            total_n["ee_x_n"] = ee_data[1]
-            total_n["coul_raw"] = ee_data[2]
-            total_n["ex_raw"] =  ee_data[3]
+        ee_data = self.compute_ee_total()
+        total_n["ee_c_n"] = ee_data[0]
+        total_n["ee_x_n"] = ee_data[1]
+        total_n["coul_raw"] = ee_data[2]
+        total_n["ex_raw"] = ee_data[3]
+        if self.grid_2:
+            ee_data_6d = self.compute_ee_total_6d_grid()
+            total_n["ee_c_n"] = ee_data_6d[0]
+            total_n["ee_x_n"] = ee_data_6d[1]
 
         return total_n
 
