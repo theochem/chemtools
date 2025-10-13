@@ -288,7 +288,6 @@ class IQA(object):
 
         ### extract analytical terms
         analytical = self.total_analytical()
-        nn_a = analytical["nn_a"]
         en_a = analytical["en_a"]
         kin_a = analytical["kin_a"]
         ee_x_a = analytical["ee_x_a"]
@@ -296,7 +295,6 @@ class IQA(object):
 
         ### extract numerical terms
         numerical = self.total_numerical(integral_6d=integral_6d)
-        nn_n = numerical["nn_n"]
         en_n = numerical["en_n"]
         kin_n = numerical["kin_n"]
         ee_x_n = numerical["ee_x_n"]
@@ -310,19 +308,15 @@ class IQA(object):
             integrands["ex_raw"] = numerical["ex_raw"]
 
         ## differences in Hartree
-        nn_diff = np.abs(nn_a - nn_n)
         en_diff = np.abs(en_a - en_n)
         kin_diff = np.abs(kin_a - kin_n)
         ee_x_diff = np.abs(ee_x_a - ee_x_n)
         ee_c_diff = np.abs(ee_c_a - ee_c_n)
 
         ## extract the maximum error, if it's higher than threshold rise error
-        max_diff = np.max([nn_diff, en_diff, kin_diff, ee_x_diff, ee_c_diff])
+        max_diff = np.max([en_diff, kin_diff, ee_x_diff, ee_c_diff])
 
         if max_diff > threshold:
-            print(
-                f"Error between analytical and numertical total nucleus-nucleus repulsion: {nn_diff}"
-            )
             print(
                 f"Error between analytical and numertical total electron-nucleus attraction: {en_diff}"
             )
@@ -334,14 +328,12 @@ class IQA(object):
             )
 
         totals_a = {
-            "nn_a": nn_a,
             "en_a": en_a,
             "kin_a": kin_a,
             "ee_x_a": ee_x_a,
             "ee_c_a": ee_c_a,
         }
         totals_n = {
-            "nn_n": nn_n,
             "en_n": en_n,
             "kin_n": kin_n,
             "ee_x_n": ee_x_n,
@@ -367,7 +359,6 @@ class IQA(object):
         kin = self.grid.integrate(kin_density)
 
         total_n = {
-            "nn_n": np.sum(self.compute_nn_pairwise_array()),
             "en_n": en,
             "kin_density": kin_density,
             "kin_n": kin,
@@ -388,9 +379,6 @@ class IQA(object):
         return total_n
 
     def total_analytical(self):
-        ## NN (this is going to be useless); I agree, we should remove it later
-        nn = np.sum(self.compute_nn_pairwise_array())
-
         ## EN
         en_int = nuclear_electron_attraction_integral(
             self.basis, self.molecule.coordinates, self.molecule.numbers
@@ -411,7 +399,6 @@ class IQA(object):
         ee_c = 0.5 * np.trace(self.dm.dot(coul))
 
         total_a = {
-            "nn_a": nn,
             "en_a": en,
             "kin_a": kin,
             "ee_x_a": ee_x,
