@@ -295,14 +295,14 @@ class IQA(object):
         """
 
         ### extract analytical terms
-        analytical = self.compute_total_analytical()
+        analytical = self.compute_energy_terms_analytically()
         en_a = analytical["en_a"]
         kin_a = analytical["kin_a"]
         ee_x_a = analytical["ee_x_a"]
         ee_c_a = analytical["ee_c_a"]
 
         ### extract numerical terms
-        numerical = self.compute_total_numerical()
+        numerical = self.compute_energy_terms_numerically()
         en_n = numerical["en_n"]
         kin_n = numerical["kin_n"]
         ee_x_n = numerical["ee_x_n"]
@@ -349,7 +349,7 @@ class IQA(object):
 
         return integrands, totals_a, totals_n
 
-    def compute_total_numerical(self):
+    def compute_energy_terms_numerically(self):
         """
         calculate the total numerical value for each term, NN, EN, EE, Kinetic
         """
@@ -382,7 +382,7 @@ class IQA(object):
 
         return total_n
 
-    def compute_total_analytical(self):
+    def compute_energy_terms_analytically(self):
         ## EN
         en_int = nuclear_electron_attraction_integral(
             self.basis, self.molecule.coordinates, self.molecule.numbers
