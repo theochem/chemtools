@@ -263,7 +263,7 @@ class IQA(object):
         )
 
     @classmethod
-    def from_file(cls, fname, scheme=None, integral_6d=True, threshold=1e-5):
+    def from_file(cls, fname, scheme=None, ee_interatomic=True, threshold=1e-5):
         """Initialize Interacting Quantum Atoms (IQA) class from wave-function file.
 
         Parameters
@@ -282,7 +282,7 @@ class IQA(object):
         # Initialize grid
         grid = get_molecular_grid(molecule, R=1)
 
-        if integral_6d:
+        if ee_interatomic:
             grid_2 = get_molecular_grid(molecule, R=1.2)
         else:
             grid_2 = None
