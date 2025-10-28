@@ -58,6 +58,7 @@ from gbasis.integrals.electron_repulsion import electron_repulsion_integral
 from iodata.periodic import num2sym
 
 from grid.basegrid import Grid
+from grid.molgrid import MolGrid
 
 from chemtools.utils.cube import UniformGrid
 from chemtools.wrappers.grid import MolecularGrid
@@ -144,6 +145,7 @@ class IQA(object):
                 "VarHirshfeld",
                 "HirshfeldI",
                 "Hirshfeld",
+                "LinearVarHirshfeld",
             ]:
                 raise TypeError(
                     "Argument part should be an instance of DensPart class or VarHirshfeld from rhopart."
@@ -161,19 +163,20 @@ class IQA(object):
             )
         # Check optional grid_2 and part_2
         if grid_2:
-            if not isinstance(grid_2, UniformGrid) and not isinstance(grid_2, MolecularGrid):
+            if not isinstance(grid_2, UniformGrid) and not isinstance(grid_2, MolecularGrid) and not isinstance(grid, MolGrid):
                 raise TypeError(
                     "Argument part should be an instance of MolecularGrid or UniformGrid class."
                 )
-            if not (molecule.coordinates == grid_2.coordinates).all():
+            if not (molecule.coordinates == grid_2.atcoords).all():
                 raise ValueError("Molecule and Grid-2 initialized from different molecules")
-            if not (grid_2.numbers == molecule.numbers).all():
-                raise ValueError("Grid-2 molecule different from molecule")
+            # if not (grid_2.atnums == molecule.numbers).all():
+            #     raise ValueError("Grid-2 molecule different from molecule")
         if part_2 is not None:
             if not isinstance(part, DensPart) and part.__class__.__name__ not in [
                 "VarHirshfeld",
                 "HirshfeldI",
                 "Hirshfeld",
+                "LinearVarHirshfeld",
             ]:
                 raise TypeError(
                     "Argument part should be an instance of DensPart class or VarHirshfeld from rhopart."
@@ -225,18 +228,23 @@ class IQA(object):
             raise ValueError("Code is not tested for open-shell wave-functions.")
 
         # Check Grid
-        if not isinstance(grid, UniformGrid) and not isinstance(grid, MolecularGrid):
+        if not isinstance(grid, UniformGrid) and not isinstance(grid, MolecularGrid) and not isinstance(grid, MolGrid):
             raise TypeError(
                 f"Argument grid should be an instance of MolecularGrid or UniformGrid class. Got {grid.__class__.__name__}"
             )
-        if not (molecule.coordinates == grid.coordinates).all():
+        if not (molecule.coordinates == grid.atcoords).all():
             raise ValueError("Molecule and Grid initialized from different molecules")
 
         # Check/Initialize DensPart object
         if part is None and scheme is None:
             print("No atomic partition scheme provided. No atomic decomposition will be performed.")
         elif part is not None:
-            if not isinstance(part, DensPart):
+            if not isinstance(part, DensPart) and part.__class__.__name__ not in [
+                "VarHirshfeld",
+                "HirshfeldI",
+                "Hirshfeld",
+                "LinearVarHirshfeld",
+                ]:
                 raise TypeError("Argument part should be an instance of DensPart class.")
         elif scheme.lower() in ["h", "hi"]:
             part = DensPart.from_molecule(molecule, grid=grid, scheme=scheme.lower(), local=False)
@@ -770,6 +778,10 @@ class IQA(object):
         if self.part is None:
             raise ValueError("Argument scheme=None, so kinetic energy cannot be composed.")
         kin_atomic = self.part.condense_to_atoms(self.integrands["kin_density"])
+
+        at_weights = self.part.weights
+        prop = at_weights * self.integrands["kin_density"][None, :]
+        kin_atomic = np.array([self.grid.integrate(prop[i]) for i in range(len(self.part.numbers))])
         return kin_atomic
 
     def compute_en_atomic(self, share_factor=0.5):
@@ -824,7 +836,7 @@ class IQA(object):
         rij = np.linalg.norm(self.molecule.coordinates[:, None, :] - self.grid.points, axis=-1)
         # calculate atomic electron-nuclear attraction energy density matrix
         en_pairwise_density = -self.molecule.numbers[None, :, None] * (
-            (self.dens[None:,] * self.part.at_weights)[:, None, :] / rij[None, :, :]
+            (self.dens[None:,] * self.part.weights)[:, None, :] / rij[None, :, :]
         )
         # integrate energy density to get pairwise electron-nuclear energy matrix
         en_pairwise_matrix = np.zeros((self.molecule.natom, self.molecule.natom))
@@ -924,8 +936,14 @@ class IQA(object):
             )
 
         logging.info("CALCULATE ELECTRON-ELECTRON ATOMIC ENERGY TERMS")
-        ee_c_atomic = self.part.condense_to_atoms(self.integrands["coul_raw"])
-        ee_x_atomic = self.part.condense_to_atoms(self.integrands["ex_raw"])
+        # ee_c_atomic = self.part.condense_to_atoms(self.integrands["coul_raw"])
+        # ee_x_atomic = self.part.condense_to_atoms(self.integrands["ex_raw"])
+
+        at_weights = self.part.weights
+        coul = at_weights * self.integrands["coul_raw"][None, :]
+        exch = at_weights * self.integrands["ex_raw"][None, :]
+        ee_c_atomic = np.array([self.grid.integrate(coul[i]) for i in range(len(self.part.numbers))])
+        ee_x_atomic = np.array([self.grid.integrate(exch[i]) for i in range(len(self.part.numbers))])
         return ee_x_atomic, ee_c_atomic
 
     def compute_ee_pairwise_matrix(self):
@@ -1082,8 +1100,8 @@ class IQA(object):
         ee_ex_pairwise = np.zeros((natoms, natoms))
 
         for atom_a, atom_b in combinations_with_replacement(range(natoms), 2):
-            weights_a = self.part.at_weights[atom_a]
-            weights_b = self.part_2.at_weights[atom_b]
+            weights_a = self.part.weights[atom_a]
+            weights_b = self.part_2.weights[atom_b]
             e_cc = np.zeros_like(self.dens)
             e_ex = np.zeros_like(self.dens)
             for p, point in enumerate(self.grid.points):
