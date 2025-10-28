@@ -472,14 +472,14 @@ class IQA(object):
         iqa_results = {}
 
         logging.info("INITIALIZING INTERACTING QUANTUM ATOMS(IQA) ATOMIC CALCULATION")
-        iqa_results["nn_total"] = np.sum(self.compute_nn_pairwise_array())
-        iqa_results["en_atomic"] = self.compute_en_atomic()
+        iqa_results["nn_total"] = np.sum(self.compute_nn_pairwise_array()).tolist()
+        iqa_results["en_atomic"] = self.compute_en_atomic().tolist()
         # (
         #     iqa_results["kin_atomic"],
         #     iqa_results["kin_total_posdef"],
         #     iqa_results["kin_atomic_posdef"],
         # ) = self.kin_iqa()
-        iqa_results["kin_atomic"] = self.compute_kin_atomic()
+        iqa_results["kin_atomic"] = self.compute_kin_atomic().tolist()
         dft_xc_edens = {}
         # assuming dft_corr and dft_exch specified together
         if dft_corr and dft_exch:
@@ -523,10 +523,7 @@ class IQA(object):
                 iqa_results.pop("x_hf_total")
                 iqa_results.pop("x_hf_atomic")
         elif self.molecule.lot == "rhf":
-            (
-                iqa_results["x_atomic"],
-                iqa_results["coul_atomic"],
-            ) = self.compute_ee_atomic()
+                iqa_results["x_atomic"], iqa_results["coul_atomic"] = (arr.tolist() for arr in self.compute_ee_atomic())
         else:
             raise ValueError(f"Need to specify an exchange functional too. Got {dft_exch}")
 
@@ -538,11 +535,11 @@ class IQA(object):
         and interatomic (off-diagonals) terms
         """
         iqa_results = {}
-        iqa_results["nn_pairwise"] = self.compute_nn_pairwise_array()
-        iqa_results["en_pairwise"] = self.compute_en_pairwise_matrix()
+        iqa_results["nn_pairwise"] = self.compute_nn_pairwise_array().tolist()
+        iqa_results["en_pairwise"] = self.compute_en_pairwise_matrix().tolist()
         if self.molecule.lot == "rhf":
-            iqa_results["x_pairwise"], iqa_results["coul_pairwise"] = (
-                self.compute_ee_pairwise_matrix_6d_grid()
+            iqa_results["coul_pairwise"], iqa_results["x_pairwise"] = (
+                arr.tolist() for arr in self.compute_ee_pairwise_matrix_6d_grid()
             )
 
         return iqa_results
