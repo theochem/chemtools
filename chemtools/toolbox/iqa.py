@@ -163,7 +163,11 @@ class IQA(object):
             )
         # Check optional grid_2 and part_2
         if grid_2:
-            if not isinstance(grid_2, UniformGrid) and not isinstance(grid_2, MolecularGrid) and not isinstance(grid, MolGrid):
+            if (
+                not isinstance(grid_2, UniformGrid)
+                and not isinstance(grid_2, MolecularGrid)
+                and not isinstance(grid, MolGrid)
+            ):
                 raise TypeError(
                     "Argument part should be an instance of MolecularGrid or UniformGrid class."
                 )
@@ -228,7 +232,11 @@ class IQA(object):
             raise ValueError("Code is not tested for open-shell wave-functions.")
 
         # Check Grid
-        if not isinstance(grid, UniformGrid) and not isinstance(grid, MolecularGrid) and not isinstance(grid, MolGrid):
+        if (
+            not isinstance(grid, UniformGrid)
+            and not isinstance(grid, MolecularGrid)
+            and not isinstance(grid, MolGrid)
+        ):
             raise TypeError(
                 f"Argument grid should be an instance of MolecularGrid or UniformGrid class. Got {grid.__class__.__name__}"
             )
@@ -244,7 +252,7 @@ class IQA(object):
                 "HirshfeldI",
                 "Hirshfeld",
                 "LinearVarHirshfeld",
-                ]:
+            ]:
                 raise TypeError("Argument part should be an instance of DensPart class.")
         elif scheme.lower() in ["h", "hi"]:
             part = DensPart.from_molecule(molecule, grid=grid, scheme=scheme.lower(), local=False)
@@ -523,7 +531,9 @@ class IQA(object):
                 iqa_results.pop("x_hf_total")
                 iqa_results.pop("x_hf_atomic")
         elif self.molecule.lot == "rhf":
-                iqa_results["x_atomic"], iqa_results["coul_atomic"] = (arr.tolist() for arr in self.compute_ee_atomic())
+            iqa_results["x_atomic"], iqa_results["coul_atomic"] = (
+                arr.tolist() for arr in self.compute_ee_atomic()
+            )
         else:
             raise ValueError(f"Need to specify an exchange functional too. Got {dft_exch}")
 
@@ -939,8 +949,12 @@ class IQA(object):
         at_weights = self.part.weights
         coul = at_weights * self.integrands["coul_raw"][None, :]
         exch = at_weights * self.integrands["ex_raw"][None, :]
-        ee_c_atomic = np.array([self.grid.integrate(coul[i]) for i in range(len(self.part.numbers))])
-        ee_x_atomic = np.array([self.grid.integrate(exch[i]) for i in range(len(self.part.numbers))])
+        ee_c_atomic = np.array(
+            [self.grid.integrate(coul[i]) for i in range(len(self.part.numbers))]
+        )
+        ee_x_atomic = np.array(
+            [self.grid.integrate(exch[i]) for i in range(len(self.part.numbers))]
+        )
         return ee_x_atomic, ee_c_atomic
 
     def compute_ee_pairwise_matrix(self):
