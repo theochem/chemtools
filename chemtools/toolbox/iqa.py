@@ -784,7 +784,7 @@ class IQA(object):
         # total_kin_posdef = self.grid.integrate(output_posdef)
         if self.part is None:
             raise ValueError("Argument scheme=None, so kinetic energy cannot be composed.")
-        kin_atomic = self.part.condense_to_atoms(self.integrands["kin_density"])
+        # kin_atomic = self.part.condense_to_atoms(self.integrands["kin_density"])
 
         at_weights = self.part.weights
         prop = at_weights * self.integrands["kin_density"][None, :]
