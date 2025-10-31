@@ -146,10 +146,13 @@ class IQA(object):
                 "HirshfeldI",
                 "Hirshfeld",
                 "LinearVarHirshfeld",
+                "MBISProModel",
             ]:
                 raise TypeError(
                     "Argument part should be an instance of DensPart class or VarHirshfeld from rhopart."
                 )
+            if part.__class__.__name__ == "MBISProModel":
+                part.numbers = part.atnums
         if part is not None and not (part.numbers == molecule.numbers).all():
             raise ValueError("DensPart molecule different from molecule")
         # Check Grid
@@ -181,11 +184,14 @@ class IQA(object):
                 "HirshfeldI",
                 "Hirshfeld",
                 "LinearVarHirshfeld",
+                "MBISProModel",
             ]:
                 raise TypeError(
                     "Argument part should be an instance of DensPart class or VarHirshfeld from rhopart."
                 )
-        if part_2 is not None and not (part.numbers == molecule.numbers).all():
+            if part_2.__class__.__name__ == "MBISProModel":
+                part_2.numbers = part_2.atnums
+        if part_2 is not None and not (part_2.numbers == molecule.numbers).all():
             raise ValueError("DensPart molecule different from molecule")
 
         self.molecule = molecule
@@ -252,6 +258,7 @@ class IQA(object):
                 "HirshfeldI",
                 "Hirshfeld",
                 "LinearVarHirshfeld",
+                "MBISProModel",
             ]:
                 raise TypeError("Argument part should be an instance of DensPart class.")
         elif scheme.lower() in ["h", "hi"]:
