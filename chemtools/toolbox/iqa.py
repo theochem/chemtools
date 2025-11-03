@@ -487,7 +487,7 @@ class IQA(object):
         iqa_results = {}
 
         logging.info("INITIALIZING INTERACTING QUANTUM ATOMS(IQA) ATOMIC CALCULATION")
-        iqa_results["nn_total"] = np.sum(self.compute_nn_pairwise_array()).tolist()
+        iqa_results["nn_atomic"] = self.compute_nn_atomic().tolist()
         iqa_results["en_atomic"] = self.compute_en_atomic().tolist()
         # (
         #     iqa_results["kin_atomic"],
@@ -768,6 +768,19 @@ class IQA(object):
         ]
         nn_array = nn_array / rab[rab > 0]
         return nn_array
+
+    def compute_nn_atomic(self, share_factor=0.5):
+        r"""Compute nuclear-nuclear repulsion energy into atomic contributions.
+        doc
+        """
+        nn_pairwise_array = self.compute_nn_pairwise_array()
+        iu, ju = np.triu_indices(self.molecule.natom, k=1)
+
+        nn_atomic = np.zeros(self.molecule.natom)
+        np.add.at(nn_atomic, iu, share_factor * nn_pairwise_array)
+        np.add.at(nn_atomic, ju, (1 - share_factor) * nn_pairwise_array)
+
+        return nn_atomic
 
     def compute_kin_atomic(self):
         r"""Decompose kinetic energy into atomic contributions.
