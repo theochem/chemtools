@@ -46,7 +46,7 @@ import gbasis as gbasis
 from gbasis.wrappers import from_iodata
 from gbasis.evals.density import evaluate_density
 from gbasis.evals.density import evaluate_general_kinetic_energy_density
-# from gbasis.evals.density import evaluate_posdef_kinetic_energy_density
+from gbasis.evals.density import evaluate_posdef_kinetic_energy_density
 from gbasis.evals.density import evaluate_density_gradient
 from gbasis.evals.eval import evaluate_basis
 from gbasis.evals.eval_deriv import evaluate_deriv_basis
@@ -807,9 +807,53 @@ class IQA(object):
         # kin_atomic = self.part.condense_to_atoms(self.integrands["kin_density"])
 
         at_weights = self.part.weights
-        prop = at_weights * self.integrands["kin_density"][None, :]
-        kin_atomic = np.array([self.grid.integrate(prop[i]) for i in range(len(self.part.numbers))])
-        return kin_atomic
+        prop = at_weights * self.integrands["kin_density_g"][None, :]
+        kin_atomic_g = np.array([self.grid.integrate(prop[i]) for i in range(len(self.part.numbers))])
+        prop = at_weights * self.integrands["kin_density_p"][None, :]
+        kin_atomic_p = np.array([self.grid.integrate(prop[i]) for i in range(len(self.part.numbers))])
+        return kin_atomic_g, kin_atomic_p
+
+    def compute_kin_pairwise_matrix(self):
+        """Compute pairwise kinetic energy matrix.
+
+        Returns
+        -------
+        kin_pairwise_matrix: np.array(m, m)
+            2D array with pairwise kinetic energies for m atoms in the molecule.
+            Diagonal elements correspond to intra-atomic terms (kinetic energy density of atom i),
+            while off-diagonal elements correspond to inter-atomic terms (kinetic energy density
+            shared between atoms i and j).
+        """
+        if self.part is None:
+            raise ValueError("Argument scheme=None, so kinetic energy cannot be decomposed.")
+
+        logging.info("DECOMPOSE KINETIC ENERGY INTO INTRA- and INTER-ATOMIC TERMS")
+        # calculate atomic kinetic ene rgy density matrix
+        # kin_pairwise_density_g = (
+        #     self.integrands["kin_density_g"][None, :] * self.part.weights[:, None, :]
+        # ) * self.part.weights[None, :, :]
+        # kin_pairwise_density_p = (
+        #     self.integrands["kin_density_p"][None, :] * self.part.weights[:, None, :]
+        # ) * self.part.weights[None, :, :]
+        # # integrate energy density to get pairwise kinetic energy matrix
+        # kin_pairwise_matrix_g = np.zeros((self.molecule.natom, self.molecule.natom))
+        # kin_pairwise_matrix_p = np.zeros((self.molecule.natom, self.molecule.natom))
+        # for i in range(self.molecule.natom):
+        #     for j in range(self.molecule.natom):
+        #         kin_pairwise_matrix_g[i][j] = self.grid.integrate(kin_pairwise_density_g[i][j])
+        #         kin_pairwise_matrix_p[i][j] = self.grid.integrate(kin_pairwise_density_p[i][j])
+        kin_pairwise_matrix_g = np.zeros((self.molecule.natom, self.molecule.natom))
+        kin_pairwise_matrix_p = np.zeros((self.molecule.natom, self.molecule.natom))
+
+        for a in range(self.molecule.natom):
+            for b in range(self.molecule.natom):
+                kin_pairwise_matrix_g[a][b] = self.grid.integrate(
+                    self.integrands["kin_density_g"] * self.part.weights[a, :] * self.part.weights[b, :]
+                )
+                kin_pairwise_matrix_p[a][b] = self.grid.integrate(
+                    self.integrands["kin_density_p"] * self.part.weights[a, :] * self.part.weights[b, :]
+                )
+        return kin_pairwise_matrix_g, kin_pairwise_matrix_p
 
     def compute_en_atomic(self, share_factor=0.5):
         r"""Decompose electron-nuclear attraction energy into atomic contributions.
