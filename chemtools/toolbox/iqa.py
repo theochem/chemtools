@@ -337,7 +337,7 @@ class IQA(object):
 
         ### return the integrands to pass for decomposition
         integrands = {
-            "kin_density": numerical["kin_density"],
+            "kin_density": numerical["kin_density_g"],
             "coul_raw": numerical["coul_raw"],
             "ex_raw": numerical["ex_raw"],
         }
@@ -392,16 +392,20 @@ class IQA(object):
         logging.info(f"E_en : {t1 - t0:.3f} seconds")
 
         t0 = time.perf_counter()
-        kin_density = evaluate_general_kinetic_energy_density(
+        kin_density_g = evaluate_general_kinetic_energy_density(
             self.dm, self.basis, self.grid.points, -0.25
         )
-        kin = self.grid.integrate(kin_density)
+        kin_density_p = evaluate_posdef_kinetic_energy_density(
+            self.dm, self.basis, self.grid.points,
+        )
+        kin = self.grid.integrate(kin_density_g)
         t1 = time.perf_counter()
         logging.info(f"T_e  : {t1 - t0:.3f} seconds")
 
         total_n = {
             "en_n": en,
-            "kin_density": kin_density,
+            "kin_density_g": kin_density_g,
+            "kin_density_p": kin_density_p,
             "kin_n": kin,
         }
 
@@ -497,7 +501,7 @@ class IQA(object):
         #     iqa_results["kin_total_posdef"],
         #     iqa_results["kin_atomic_posdef"],
         # ) = self.kin_iqa()
-        iqa_results["kin_atomic"] = self.compute_kin_atomic().tolist()
+        iqa_results["kin_atomic"] = self.compute_kin_atomic()[0].tolist()
         dft_xc_edens = {}
         # assuming dft_corr and dft_exch specified together
         if dft_corr and dft_exch:
