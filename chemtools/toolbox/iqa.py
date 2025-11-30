@@ -1161,6 +1161,41 @@ class IQA(object):
 
         return e_cc_total, e_ex_total
 
+    def compute_ee_total_6d_grid_vectorized(self):
+        n_occs = self.molecule._iodata.mo.occs[self.molecule._iodata.mo.occs > 0].shape[0]
+        e_ex = np.zeros_like(self.dens)
+        # Grid1
+        ao_g1 = evaluate_basis(self.basis, self.grid.points)
+        mo_g1 = compute_molecular_orbitals_from_ao(self.molecule, ao_g1)
+        # Grid2
+        ao_g2 = evaluate_basis(self.basis, self.grid_2.points)
+        mo_g2 = compute_molecular_orbitals_from_ao(self.molecule, ao_g2)
+
+        dens2 = evaluate_density(self.dm, self.basis, self.grid_2.points)
+
+        # distances
+        r12 = np.linalg.norm(self.grid.points[:,None,:] - self.grid_2.points[None,:,:], axis=-1)
+        r12[r12 == 0] = 1e-9
+
+        ### columb
+        vals_J = dens2[None, :] / r12
+        e_cc = vals_J @ self.grid_2.weights
+        e_cc_total = 0.5 * np.sum(self.dens * e_cc * self.grid.weights)
+
+        ### exchange
+        pairs = np.array(list(product(range(n_occs), repeat=2)))
+        I, J = pairs[:,0], pairs[:,1]
+
+        pair2 = mo_g2[I] * mo_g2[J]
+        vals_K = pair2[:, None, :] / r12
+        tmp = vals_K @ self.grid_2.weights
+
+        pair1 = mo_g1[I] * mo_g1[J]
+        e_ex = np.sum(pair1 * tmp, axis=0)
+        e_ex_total = -np.sum(e_ex * self.grid.weights)
+
+        return e_cc_total, e_ex_total
+
     def compute_ee_pairwise_matrix_6d_grid(self):
         """
         doc
