@@ -147,6 +147,7 @@ class IQA(object):
                 "Hirshfeld",
                 "LinearVarHirshfeld",
                 "MBISProModel",
+                "ConstrainedHirshfeldI",
             ]:
                 raise TypeError(
                     "Argument part should be an instance of DensPart class or VarHirshfeld from rhopart."
@@ -185,6 +186,7 @@ class IQA(object):
                 "Hirshfeld",
                 "LinearVarHirshfeld",
                 "MBISProModel",
+                "ConstrainedHirshfeldI",
             ]:
                 raise TypeError(
                     "Argument part should be an instance of DensPart class or VarHirshfeld from rhopart."
@@ -259,6 +261,7 @@ class IQA(object):
                 "Hirshfeld",
                 "LinearVarHirshfeld",
                 "MBISProModel",
+                "ConstrainedHirshfeldI",
             ]:
                 raise TypeError("Argument part should be an instance of DensPart class.")
         elif scheme.lower() in ["h", "hi"]:
