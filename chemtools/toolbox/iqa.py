@@ -958,8 +958,8 @@ class IQA(object):
         # Checking processors
         ncpus = int(os.environ.get("SLURM_CPUS_PER_TASK", default=2))
         # set_start_method("fork")
-        ctx = mp.get_context("fork")
-        pool = ctx.Pool(processes=ncpus)
+        #ctx = mp.get_context("spawn")
+        pool = mp.Pool(processes=ncpus)
         results = []
         # Parallel execution of _integral_point_charge_electron
         for sub in range(0, len(segments), ncpus - 1):
