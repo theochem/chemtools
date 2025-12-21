@@ -312,7 +312,7 @@ class IQA(object):
         grid = get_molecular_grid(molecule, R=1)
 
         if ee_interatomic:
-            grid_2 = get_molecular_grid(molecule, R=1.2)
+            grid_2 = get_molecular_grid(molecule, R=1.1)
         else:
             grid_2 = None
 
@@ -339,7 +339,8 @@ class IQA(object):
 
         ### return the integrands to pass for decomposition
         integrands = {
-            "kin_density": numerical["kin_density_g"],
+            "kin_density_g": numerical["kin_density_g"],
+            "kin_density_p": numerical["kin_density_p"],
             "coul_raw": numerical["coul_raw"],
             "ex_raw": numerical["ex_raw"],
         }
