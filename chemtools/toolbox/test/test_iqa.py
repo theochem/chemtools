@@ -23,16 +23,14 @@
 
 """Test chemtools.toolbox.iqa."""
 
-import glob
 import pytest
 import numpy as np
-from numpy.testing import assert_raises, assert_almost_equal
-from numpy.testing import assert_equal, assert_almost_equal, assert_approx_equal, assert_allclose
+from numpy.testing import assert_raises
+from numpy.testing import assert_allclose
 
-from grid.onedgrid import UniformInteger, GaussChebyshev
-from grid.rtransform import ExpRTransform, PowerRTransform, BeckeRTransform
+from grid.onedgrid import UniformInteger
+from grid.rtransform import ExpRTransform
 from grid.atomgrid import AtomGrid
-from iodata import load_one
 from gbasis.wrappers import from_iodata
 from chemtools.wrappers.grid import MolecularGrid
 from chemtools.wrappers.molecule import Molecule
@@ -85,7 +83,7 @@ def test_h2o_rhf_sto3g():
     with path('chemtools.data', 'h2o_rhf_sto3g.fchk') as fname:
         mol_iqa = IQA.from_file(fname, scheme='H', ee_interatomic=False, threshold=1e-1)
         results_iqa = mol_iqa.run_atomic()
-        assert_allclose(results_iqa['nn_total'],  9.1559536481, rtol=1.e-4, atol=0.)
+        assert_allclose(np.sum(results_iqa['nn_atomic']),  9.1559536481, rtol=1.e-4, atol=0.)
         assert_allclose(np.sum(results_iqa['en_atomic']),  -1.968747462907e+02, rtol=1.e-4, atol=0.)
         assert_allclose(np.sum(results_iqa['kin_atomic']),  7.457892107183e+01, rtol=1.e-4, atol=0.)
         assert_allclose(np.sum(results_iqa['coul_atomic']),  47.276218, rtol=1.e-4, atol=0.)
@@ -112,3 +110,25 @@ def test_h2o_rpbepbe_ccpvtz():
         assert_allclose(np.sum(results_iqa['kin_atomic']), 7.459229919735e+01, rtol=1.e-4, atol=0.)
         assert_allclose(np.sum(results_iqa['c_atomic']), -0.343334, rtol=1.e-4, atol=0.)
         assert_allclose(np.sum(results_iqa['x_total']), -9.018861, rtol=1.e-4, atol=0.)
+
+def test_h2o_rhf_sto3g_leila_branch():
+    # check total values of decomposition against in results from leila's last branch of IQA code
+    coul_pairwise = np.array([[39.17478675, 1.8762351, 1.87681003],
+                            [ 1.8762351, 0.26811852, 0.13072517],
+                            [ 1.87681003, 0.13072517, 0.2682345 ]])
+    ex_pairwise = np.array([
+                            [8.0341491, 0.22200178, 0.22210391],
+                            [0.22200178, 0.10139832, 0.01162393],
+                            [0.22210391, 0.01162393, 0.1014515]])
+
+    with path('chemtools.data', 'h2o_rhf_sto3g.fchk') as fname:
+        mol_iqa = IQA.from_file(fname, scheme='H', ee_interatomic=True, threshold=1e-1)
+        atomic_iqa = mol_iqa.run_atomic()
+        # pairwise_iqa = mol_iqa.run_pairwise()
+        assert_allclose(np.sum(atomic_iqa['nn_atomic']),  9.25356718857153, rtol=1.e-4, atol=0.)
+        assert_allclose(atomic_iqa['en_atomic'],  np.array([-186.11326593, -5.50125503, -5.50191914]), rtol=1.e-4, atol=0.)
+        assert_allclose(atomic_iqa['kin_atomic'], np.array([73.46905046, 0.56928893, 0.56907969]), rtol=1.e-4, atol=0.)
+        assert_allclose(atomic_iqa['coul_atomic'],  np.array([42.86341947, 2.27357232,  2.27415942]), rtol=1.e-4, atol=0.)
+        assert_allclose(atomic_iqa['x_atomic'],  np.array([-8.44587956, -0.33427522, -0.33436824]), rtol=1.e-4, atol=0.)
+        # assert_allclose(pairwise_iqa['coul_pairwise'], coul_pairwise, rtol=1.e-4, atol=0.)
+        # assert_allclose(pairwise_iqa['x_pairwise'], ex_pairwise, rtol=1.e-4, atol=0.)
