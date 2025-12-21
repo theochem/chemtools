@@ -266,10 +266,12 @@ class IQA(object):
                 raise TypeError("Argument part should be an instance of DensPart class.")
         elif scheme.lower() in ["h", "hi"]:
             part = DensPart.from_molecule(molecule, grid=grid, scheme=scheme.lower(), local=False)
+            part.weights = part.at_weights
             if grid_2 is not None:
                 part_2 = DensPart.from_molecule(
                     molecule, grid=grid_2, scheme=scheme.lower(), local=False
                 )
+                part_2.weights = part_2.at_weights
         elif scheme is not None and scheme not in ["H", "HI"]:
             raise NotImplementedError(f"Atomic partition {scheme} not yet available")
 
