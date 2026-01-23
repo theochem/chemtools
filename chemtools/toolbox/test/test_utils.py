@@ -110,6 +110,15 @@ def test_get_dict_energy_raises():
     assert_raises(ValueError, get_dict_energy, molecule)
 
 
+def test_get_dict_energy_none_energy_raises():
+    """Test that get_dict_energy raises ValueError when energy is None."""
+    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fname:
+        molecule = Molecule.from_file(fname)
+        # Simulate a molecule without energy (like ORCA files)
+        molecule._iodata.energy = None
+        assert_raises(ValueError, get_dict_energy, molecule)
+
+
 def test_get_dict_density_raises():
     # check molecule
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as file1:
