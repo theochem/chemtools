@@ -1,0 +1,33 @@
+# ChemTools Docker Compose Configuration
+# Usage: docker-compose up --build
+# Or run commands: docker-compose run chemtools <command>
+
+version: '3.8'
+
+services:
+  chemtools:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: chemtools:latest
+    container_name: chemtools
+    volumes:
+      # Mount local data directory for input/output files
+      - ./data:/chemtools/data
+      # Mount examples for easy access
+      - ./examples:/chemtools/examples:ro
+    working_dir: /chemtools/data
+    # Override entrypoint for interactive shell access
+    stdin_open: true
+    tty: true
+
+  # Service for running tests
+  chemtools-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: chemtools:latest
+    container_name: chemtools-test
+    command: [ "nosetests", "-v", "chemtools" ]
+    volumes:
+      - ./chemtools:/chemtools/chemtools:ro
