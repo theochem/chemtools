@@ -208,8 +208,12 @@ def get_dict_energy(molecule):
             # validate that energy is available
             if mol.energy is None:
                 raise ValueError(
-                    "Molecule with {0} electrons does not contain total energy. "
-                    "This is common for ORCA output files (*.wfn, *.mkl).".format(nelec)
+                    (
+                        "Molecule with {0} electrons does not contain total energy. "
+                        "This is common for ORCA output files (*.wfn, *.mkl). "
+                        "Please use a file format that includes energy (e.g., *.fchk) "
+                        "or ensure each Molecule/IOData instance has its energy set."
+                    ).format(nelec)
                 )
             # store number of electrons and energy in a dictionary
             energies[nelec] = mol.energy
