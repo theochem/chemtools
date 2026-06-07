@@ -200,6 +200,14 @@ def get_dict_energy(molecule):
         # get homo/lumo energy
         homo_e, lumo_e, _, _ = get_homo_lumo_data(molecule)
         nelec = sum(molecule.mo.nelectrons)
+        # validate that energy is available
+        if molecule.energy is None:
+            raise ValueError(
+                "Molecule does not contain total energy information. "
+                "This is common for ORCA output files (*.wfn, *.mkl). "
+                "Please use a file format that includes energy (e.g., *.fchk) "
+                "or provide multiple molecule files with explicit energy values."
+            )
         # store number of electron and energy in a dictionary
         energies = {nelec: molecule.energy,
                     nelec + 1: molecule.energy + lumo_e,
@@ -212,6 +220,16 @@ def get_dict_energy(molecule):
             nelec = sum(mol.mo.nelectrons)
             if nelec in list(energies.keys()):
                 raise ValueError("Two molecules have {0} electrons!".format(nelec))
+            # validate that energy is available
+            if mol.energy is None:
+                raise ValueError(
+                    (
+                        "Molecule with {0} electrons does not contain total energy. "
+                        "This is common for ORCA output files (*.wfn, *.mkl). "
+                        "Please use a file format that includes energy (e.g., *.fchk) "
+                        "or ensure each Molecule/IOData instance has its energy set."
+                    ).format(nelec)
+                )
             # store number of electrons and energy in a dictionary
             energies[nelec] = mol.energy
     else:
