@@ -29,27 +29,25 @@ Installation
 ------------
 To install ChemTools and its dependencies using Anaconda,
 ```bash
-# make a conda environment and activate it
-conda create -n qcdevs python=3.7
-conda activate qcdevs
+# make a Python environment (with any tool you use, pyenv in this guide) and activate it
+pyenv virtualenv chemtools_py313
+pyenv activate chemtools_py313
 
-# install HORTON and Git-LFS
-conda install -c theochem horton
-conda install -c conda-forge git-lfs
-
-# run HORTON's tests
-nosetests -v horton
-
-# Option 1) install ChemTools without getting the source code
+# install HORTON 3 libraries
 pip install git+https://github.com/theochem/iodata.git
+pip install git+https://github.com/theochem/gbasis.git
+pip install git+https://github.com/theochem/grid.git
+pip install git+https://github.com/theochem/denspart.git
 
-# Option 2) install ChemTools from source code
-git clone https://github.com/theochem/iodata.git
+# install the correct version of dependencies
+pip install numpy scipy==1.16.2 matplotlib
+
+# clone the repository
+git clone https://github.com/theochem/chemtools.git
+
+# install Chemtools
 cd chemtools
 pip install -e .
-
-# run ChemTool's tests
-nosetests -v chemtools
 ```
 
 Check our website for more detailed [installation guide](https://chemtools.org/usr_doc_installation.html).
