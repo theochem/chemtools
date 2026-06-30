@@ -27,7 +27,7 @@ Please use the following citation when using ChemTools in your research:
 
 Installation
 ------------
-To install ChemTools and its dependencies using Anaconda,
+To install ChemTools and its dependencies using,
 ```bash
 # make a Python environment (with any tool you use, pyenv in this guide) and activate it
 pyenv virtualenv chemtools_py313
