@@ -199,8 +199,9 @@ chemtools = ["*.xml"]
 # Python modules and packages that are included in the
 # distribution package (and therefore become importable)
 [tool.setuptools.packages.find]
-where = ["chemtools"]
-exclude = ["chemtools/data*", "*/*/test/*", "test_*", "examples*", "doc*", "notebooks*", "build*", "dist*"]
+where = ["."]
+include = ["chemtools*"]
+exclude = ["chemtools.*.test*", "chemtools.*.tests*"]
 
 
 # PDM example
