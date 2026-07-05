@@ -5,7 +5,7 @@ Image
 sympy
 qc-grid
 qc-gbasis
+qc-iodata
 # to support the imports of pylibxc
 pylibxc2
 # pip install git+https://github.com/theochem/denspart.git
-

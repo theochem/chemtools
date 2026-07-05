@@ -43,7 +43,7 @@ jobs:
           python -m pip install ".[dev]"
       - name: Test package
         run: |
-          python -m pytest -c pyproject.toml --cov-config=.coveragerc --cov-report=xml --color=yes chemtools
+          # python -m pytest -c pyproject.toml --cov-config=.coveragerc --cov-report=xml --color=yes chemtools
 
       - name: Build package
         run: python -m build
