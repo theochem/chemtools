@@ -12,27 +12,27 @@
 #
 # chemtools is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, see <http://www.gnu.org/licenses/>
-#
-# --
+# along with this program; if not, see
 
-
-[project]
 # https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
+[project]
 name = "qc-chemtools"
 description = "A collection of interpretive chemical tools for analyzing outputs of the quantum chemistry calculations."
 readme = {file = 'README.md', content-type='text/markdown'}
 #requires-python = ">=3.10,<4.0"
 requires-python = ">=3.10"
+
 # "LICENSE" is name of the license file, which must be in root of project folder
 license = {file = "LICENSE"}
+
 authors = [
     {name = "QC-Devs Community", email = "qcdevs@gmail.com"},
 ]
+
 keywords = [
     "conceptual DFT",
     "population analysis",
@@ -70,26 +70,8 @@ dynamic = [
     "dependencies",
     "optional-dependencies",
     "version",
-    ]
+]
 
-# not using this section now but it's here for reference
-# # Required dependencies for install/usage of your package or application
-# # If you don't have any dependencies, leave this section empty
-# # Format for dependency strings: https://peps.python.org/pep-0508/
-# # dependencies from requirements.txt
-# dependencies = [
-#     "bitarray>=2.5.1",
-#     "numpy>=1.21.2",
-#     "scipy>=1.11.1",
-# ]
-
-# [project.optional-dependencies]
-# tests = [
-#   'coverage>=5.0.3',
-#   "pandas>=1.3.5",
-#   "pytest>=7.4.0",
-#   "scikit-learn>=1.0.1",
-# ]
 
 [project.scripts]
 # Command line interface entrypoint scripts
@@ -110,7 +92,6 @@ repository = "https://github.com/theochem/chemtools"
 # Development dependencies
 # pip install -e .[lint,test,exe]
 # pip install -e .[dev]
-
 # we can only provide one optional dependencies or dynamic dependencies
 # we can't provide both, which leads to errors
 # [project.optional-dependencies]
@@ -119,23 +100,26 @@ repository = "https://github.com/theochem/chemtools"
 #     "ruff",
 #     # checks for unused code
 #     # "vulture",
-#     # # required for codespell to parse pyproject.toml
+#     #
+#     # required for codespell to parse pyproject.toml
 #     # "tomli",
-#     # # validation of pyproject.toml
+#     #
+#     # validation of pyproject.toml
 #     # "validate-pyproject[all]",
+#     #
 #     # automatic sorting of imports
 #     "isort",
-#     # # automatic code formatting to follow a consistent style
+#     #
+#     # automatic code formatting to follow a consistent style
 #     # "black",
 # ]
-
 # test = [
 #     # Handles most of the testing work, including execution
 #     # Docs: https://docs.pytest.org/en/stable/contents.html
 #     "pytest>=7.4.0",
 #     # required by pytest
 #     "hypothesis",
-#     # "Coverage" is how much of the code is actually run (it's "coverage")
+#     # "Coverage" is how much of the code is actually run
 #     # Generates coverage reports from test suite runs
 #     "pytest-cov>=3.0.0",
 #     "tomli",
@@ -145,7 +129,6 @@ repository = "https://github.com/theochem/chemtools"
 #     # Colors for doctest output
 #     "Pygments",
 # ]
-
 # exe = [
 #     "setuptools",
 #     "wheel",
@@ -154,20 +137,19 @@ repository = "https://github.com/theochem/chemtools"
 #     "pyinstaller",
 #     "staticx;platform_system=='Linux'",
 # ]
-
 # dev = [
 #     # https://hynek.me/articles/python-recursive-optional-dependencies/
 #     "chemtools[lint,test,exe]",
-
-#     # # Code quality tools
+#     #
+#     # Code quality tools
 #     # "mypy",
-
-#     # # Improved exception traceback output
-#     # # https://github.com/qix-/better-exceptions
+#     #
+#     # Improved exception traceback output
+#     # https://github.com/qix-/better-exceptions
 #     # "better_exceptions",
-
-#     # # Analyzing dependencies
-#     # # install graphviz to generate graphs
+#     #
+#     # Analyzing dependencies
+#     # install graphviz to generate graphs
 #     # "graphviz",
 #     # "pipdeptree",
 # ]
@@ -179,7 +161,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
-optional-dependencies = {dev = { file = ["requirements_dev.txt"] }}
+optional-dependencies = {dev = {file = ["requirements_dev.txt"]}}
 
 [tool.setuptools_scm]
 # can be empty if no extra settings are needed, presence enables setuptools-scm
@@ -188,6 +170,7 @@ optional-dependencies = {dev = { file = ["requirements_dev.txt"] }}
 # https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
 platforms = ["Linux", "Windows", "MacOS"]
 include-package-data = true
+
 # This just means it's safe to zip up the bdist
 zip-safe = true
 
@@ -196,19 +179,34 @@ zip-safe = true
 [tool.setuptools.package-data]
 chemtools = ["*.xml"]
 
+# Non-code data that should be excluded from the wheel.
+# This prevents chemtools/data files from being installed as package data.
+[tool.setuptools.exclude-package-data]
+chemtools = [
+    "data/*",
+    "data/**/*",
+]
+
 # Python modules and packages that are included in the
-# distribution package (and therefore become importable)
+# distribution package and therefore become importable.
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["chemtools*"]
 exclude = [
     "chemtools.*.test*",
-    "chemtools.data",
     "chemtools.*.tests*",
-    "examples",
-    "doc",
-    ]
+    "chemtools.data",
+    "chemtools.data.*",
 
+    # Defensive exclusions. These are not normally included because
+    # include = ["chemtools*"], but they help if package discovery changes later.
+    "doc",
+    "doc.*",
+    "examples",
+    "examples.*",
+    "tools",
+    "tools.*",
+]
 
 # PDM example
 #[tool.pdm.scripts]
@@ -223,7 +221,6 @@ exclude = [
 #codespell = "codespell --toml ./pyproject.toml"
 #lint = {composite = ["vulture", "codespell", "ruff", "check_isort", "check_black"]}
 
-
 #[tool.codespell]
 ## codespell supports pyproject.toml since version 2.2.2
 ## NOTE: the "tomli" package must be installed for this to work
@@ -233,28 +230,27 @@ exclude = [
 #ignore-words-list = "word,another,something"
 #skip = "htmlcov,.doctrees,*.pyc,*.class,*.ico,*.out,*.PNG,*.inv,*.png,*.jpg,*.dot"
 
-
 [tool.black]
 line-length = 100
+
 # If you need to exclude directories from being reformatted by black
 # force-exclude = '''
 # (
-#     somedirname
-#     | dirname
-#     | filename\.py
+#   somedirname
+#   | dirname
+#   | filename\.py
 # )
 # '''
-
 
 [tool.isort]
 profile = "black"
 known_first_party = ["chemtools"]
+
 # If you need to exclude files from having their imports sorted
-#extend_skip_glob  = [
+#extend_skip_glob = [
 #    "chemtools/somefile.py",
 #    "chemtools/somedir/*",
 #]
-
 
 # https://beta.ruff.rs/docs
 [tool.ruff]
@@ -264,10 +260,10 @@ show-source = true
 # Rules: https://beta.ruff.rs/docs/rules
 # If you violate a rule, lookup the rule on the Rules page in ruff docs.
 # Many rules have links you can click with a explanation of the rule and how to fix it.
-# If there isn't a link, go to the project the rule was source from (e.g. flake8-bugbear)
-# and review it's docs for the corresponding rule.
+# If there isn't a link, go to the project the rule was source from, e.g. flake8-bugbear,
+# and review its docs for the corresponding rule.
 # If you're still confused, ask a fellow developer for assistance.
-# You can also run "ruff rule <rule>" to explain a rule on the command line, without a browser or internet access.
+# You can also run "ruff rule " to explain a rule on the command line, without a browser or internet access.
 select = [
     "E",    # pycodestyle
     "F",    # Pyflakes
@@ -276,7 +272,7 @@ select = [
     "A",    # flake8-builtins
     "C4",   # flake8-comprehensions
     "T10",  # flake8-debugger
-    "EXE",  # flake8-executable,
+    "EXE",  # flake8-executable
     "ISC",  # flake8-implicit-str-concat
     "G",    # flake8-logging-format
     "PIE",  # flake8-pie
@@ -294,7 +290,7 @@ select = [
 
     # ** Things to potentially enable in the future **
     # DTZ requires all usage of datetime module to have timezone-aware
-    # objects (so have a tz argument or be explicitly UTC).
+    # objects, so have a tz argument or be explicitly UTC.
     # "DTZ",  # flake8-datetimez
     # "PTH",  # flake8-use-pathlib
     # "SIM",  # flake8-simplify
@@ -346,20 +342,19 @@ ignore = [
 "chemtools/somefile.py" = ["E402", "E501"]
 "chemtools/somedir/*" = ["E501"]
 
-
 # Configuration for mypy
 # https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
 [tool.mypy]
 python_version = "3.10"
 follow_imports = "skip"
 ignore_missing_imports = true
-files = "chemtools"  # directory mypy should analyze
+files = "chemtools"
+
 # Directories to exclude from mypy's analysis
 exclude = [
     "examples",
     "doc",
 ]
-
 
 # Configuration for pytest
 # https://docs.pytest.org/en/latest/reference/customize.html#pyproject-toml
@@ -374,6 +369,7 @@ addopts = [
     "--cov-report=term-missing",
     "--cov=chemtools",
 ]
+
 testpaths = [
     "chemtools/conceptual/test",
     "chemtools/densetools/test",
@@ -384,20 +380,22 @@ testpaths = [
     "chemtools/utils/test",
     "chemtools/wrappers/test",
 ]
+
 norecursedirs = [
     ".vscode",
     "__pycache__",
     "build",
 ]
+
 # Warnings that should be ignored
 filterwarnings = [
-    "ignore::DeprecationWarning"
+    "ignore::DeprecationWarning",
 ]
+
 # custom markers that can be used using pytest.mark
 markers = [
     "slow: lower-importance tests that take an excessive amount of time",
 ]
-
 
 # Configuration for coverage.py
 [tool.coverage.run]
@@ -405,7 +403,6 @@ markers = [
 omit = [
     "chemtools/*/test/*",
 ]
-
 
 # Configuration for vulture
 [tool.vulture]
@@ -421,6 +418,7 @@ exclude = [
 exclude_dirs = [
     "chemtools/*/test/*",
 ]
+
 skips = [
     "B101", # Ignore assert statements
     "B311", # Ignore pseudo-random generators
