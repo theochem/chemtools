@@ -1,0 +1,6 @@
+sphinx
+sphinxcontrib-bibtex
+ipython
+pylint
+pycodestyle
+coverage
