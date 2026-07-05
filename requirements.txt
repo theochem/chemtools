@@ -1,0 +1,11 @@
+numpy
+scipy
+Pillow
+Image
+sympy
+qc-grid
+qc-gbasis
+# to support the imports of pylibxc
+pylibxc2
+# pip install git+https://github.com/theochem/denspart.git
+
