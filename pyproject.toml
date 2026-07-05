@@ -201,7 +201,13 @@ chemtools = ["*.xml"]
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["chemtools*"]
-exclude = ["chemtools.*.test*", "chemtools.*.tests*"]
+exclude = [
+    "chemtools.*.test*",
+    "chemtools.data",
+    "chemtools.*.tests*",
+    "examples",
+    "doc",
+    ]
 
 
 # PDM example
