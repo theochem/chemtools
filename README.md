@@ -52,6 +52,43 @@ pip install -e .
 
 Check our website for more detailed [installation guide](https://chemtools.org/usr_doc_installation.html).
 
+Docker
+------
+
+ChemTools can be run using Docker, which simplifies dependency management.
+
+### Building the Image
+
+```bash
+docker build -t chemtools:latest .
+```
+
+### Running ChemTools
+
+```bash
+# Show help
+docker run --rm chemtools:latest chemtools --help
+
+# Run with mounted data directory
+docker run --rm -v $(pwd)/data:/chemtools/data chemtools:latest chemtools <command>
+
+# Interactive shell
+docker run --rm -it chemtools:latest /bin/bash
+```
+
+### Using Docker Compose
+
+```bash
+# Build and run
+docker-compose up --build
+
+# Run tests
+docker-compose run chemtools-test
+
+# Run a specific command
+docker-compose run chemtools chemtools --help
+```
+
 Development
 -----------
 New contributors of all programming levels are welcome to join us. You can follow our [developer guidelines](https://chemtools.org/tech_dev.html) for detailed information about contributing code, building
