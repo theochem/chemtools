@@ -117,90 +117,6 @@ def check_condensed_reactivity(model, energy_model, pop_0, pop_p, pop_m, n0, eta
         assert_almost_equal(np.sum(model.softness), 1.0 / eta, decimal=3)
         assert_almost_equal(np.sum(model.hyper_softness), 0.0, decimal=3)
 
-
-def test_condense_linear_from_file_fmr_h_ch4_fchk():
-    # expected populations of CH4 computed with HORTON
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fname:
-        model1 = CondensedConceptualDFT.from_file(fname, "linear", "FMR", "h")
-        model2 = CondensedConceptualDFT.from_file([fname], "linear", "FMR", "h")
-        mol = Molecule.from_file(fname)
-        oned = GaussChebyshev(60)
-        rgrid = BeckeRTransform(1e-5, 1).transform_1d_grid(oned)
-        grid = MolecularGrid.from_molecule(mol, specs=[rgrid, 590], rotate=False)
-        model3 = CondensedConceptualDFT.from_file(fname, "linear", "FMR", "h", grid=grid)
-        model4 = CondensedConceptualDFT.from_file([fname], "linear", "FMR", "h", grid=grid)
-    expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
-    # check using fname given as a string
-    check_condensed_reactivity(model1, "linear", expected, None, None, 10, 0.736396)
-    # check using fname given as a list
-    check_condensed_reactivity(model2, "linear", expected, None, None, 10, 0.736396)
-    # check using fname as a string & passing grid
-    check_condensed_reactivity(model3, "linear", expected, None, None, 10, 0.736396)
-    # check using fname as a list & passing grid
-    check_condensed_reactivity(model4, "linear", expected, None, None, 10, 0.736396)
-
-
-def test_condense_linear_from_molecule_fmr_h_ch4_fchk():
-    # expected populations of CH4 computed with HORTON
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fname:
-        mol = Molecule.from_file(fname)
-    expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
-    # check from_molecule
-    model = CondensedConceptualDFT.from_molecule(mol, "linear", "FMR", "h")
-    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
-    # check from_molecule given as a list
-    model = CondensedConceptualDFT.from_molecule([mol], "linear", "FMR", "h")
-    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
-    # check from_molecule & passing grid
-    grid = MolecularGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, 'insane', 3, False)
-    model = CondensedConceptualDFT.from_molecule(mol, "linear", "FMR", "h", grid=grid)
-    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
-    # check from_molecule given as a list & passing grid
-    model = CondensedConceptualDFT.from_molecule([mol], "linear", "FMR", "h", grid=grid)
-    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
-
-
-def test_condense_linear_from_file_fmr_h_ch4_wfn():
-    # expected populations of CH4 computed with HORTON
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as fname:
-        model1 = CondensedConceptualDFT.from_file(fname, "linear", "FMR", "h")
-        model2 = CondensedConceptualDFT.from_file([fname], "linear", "FMR", "h")
-        mol = Molecule.from_file(fname)
-        grid = MolecularGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, 'insane', 3, False)
-        model3 = CondensedConceptualDFT.from_file(fname, "linear", "FMR", "h", grid=grid)
-        model4 = CondensedConceptualDFT.from_file([fname], "linear", "FMR", "h", grid=grid)
-    expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
-    # check using fname given as a string
-    check_condensed_reactivity(model1, "linear", expected, None, None, 10, 0.736396)
-    # check using fname given as a list
-    check_condensed_reactivity(model2, "linear", expected, None, None, 10, 0.736396)
-    # check using fname as a string & passing grid
-    mol = Molecule.from_file(fname)
-    check_condensed_reactivity(model3, "linear", expected, None, None, 10, 0.736396)
-    # check using fname as a list & passing grid
-    check_condensed_reactivity(model4, "linear", expected, None, None, 10, 0.736396)
-
-
-def test_condense_linear_from_molecule_fmr_h_ch4_wfn():
-    # expected populations of CH4 computed with HORTON
-    with path('chemtools.data', 'ch4_uhf_ccpvdz.wfn') as fname:
-        mol = Molecule.from_file(fname)
-    expected = np.array([6.11301651, 0.97175462, 0.97175263, 0.9717521, 0.97174353])
-    # check from_molecule
-    model = CondensedConceptualDFT.from_molecule(mol, "linear", "FMR", "h")
-    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
-    # check from_molecule given as a list
-    model = CondensedConceptualDFT.from_molecule([mol], "linear", "FMR", "h")
-    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
-    # check from_molecule & passing grid
-    grid = MolecularGrid(mol.coordinates, mol.numbers, mol.pseudo_numbers, 'insane', 3, False)
-    model = CondensedConceptualDFT.from_molecule(mol, "linear", "FMR", "h", grid=grid)
-    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
-    # check from_molecule given as a list & passing grid
-    model = CondensedConceptualDFT.from_molecule([mol], "linear", "FMR", "h", grid=grid)
-    check_condensed_reactivity(model, "linear", expected, None, None, 10, 0.736396)
-
-
 def test_condense_linear_from_file_fmr_mbis_ch4_fchk():
     # expected populations of CH4 computed with HORTON
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fname:
@@ -219,7 +135,6 @@ def test_condense_linear_from_file_fmr_mbis_ch4_fchk():
     check_condensed_reactivity(model3, "linear", expected, None, None, 10, 0.736396)
     # check using fname as a list & passing grid
     check_condensed_reactivity(model4, "linear", expected, None, None, 10, 0.736396)
-
 
 def test_condense_linear_from_molecule_fmr_mbis_ch4_fchk():
     # expected populations of CH4 computed with HORTON

@@ -28,8 +28,6 @@ import numpy as np
 import os as os
 from numpy.testing import assert_equal, assert_almost_equal, assert_approx_equal
 
-from rhopart import ProAtomDB
-
 from grid.onedgrid import GaussChebyshev
 from grid.rtransform import BeckeRTransform
 
@@ -50,7 +48,8 @@ def _get_eos(filename, scheme):
     atoms = glob.glob(f"{os.path.dirname(os.path.realpath(__file__)).split('toolbox')[0]}data/atom_0*")
     oned = GaussChebyshev(60)
     rgrid = BeckeRTransform(1e-5, 1).transform_1d_grid(oned)
-    proatomdb = ProAtomDB.from_files(atoms, agspec=[rgrid, 590])
+    ## the only available scheme is MBIS, no need for proatom. I will keep the proatomdb variable for future use if needed.
+    proatomdb = None
     # load molecule & make grid, denspart, and eos instances
     with path('chemtools.data', filename) as file_path:
         mol = Molecule.from_file(file_path)
@@ -70,9 +69,9 @@ def check_oxidation_states(eos, occs, fragments, spin, oxidations, reliability, 
     assert_approx_equal(reliability, eos.reliability, significant=3)
 
 
-def test_eos_h_h2o_3fragments():
-    # test against APOST-3D (version 3.1)
-    eos = _get_eos('h2o_q+0_ub3lyp_ccpvtz.fchk', 'h')
+def test_eos_mbis_h2o_3fragments():
+    # test against APOST-3D (version 3.1) but with scheme = H
+    eos = _get_eos('h2o_q+0_ub3lyp_ccpvtz.fchk', 'mbis')
     charges = np.array([-0.302250, 0.151138, 0.151185])
     occs = np.array([[0.9948, 0.8953, 0.7958, 0.5573, 0.5348],
                      [0.1858, 0.0194, 0.0126, 0.0030, 0.0],
@@ -87,9 +86,9 @@ def test_eos_h_h2o_3fragments():
     check_oxidation_states(eos, occs, [[0], [1], [2]], 'b', [-2.0, 1.0, 1.0], 84.895, decimal=3)
 
 
-def test_eos_h_h2o_2fragments():
-    # test against APOST-3D (version 3.1)
-    eos = _get_eos('h2o_q+0_ub3lyp_ccpvtz.fchk', 'h')
+def test_eos_mbis_h2o_2fragments():
+    # test against APOST-3D (version 3.1) but with scheme = H
+    eos = _get_eos('h2o_q+0_ub3lyp_ccpvtz.fchk', 'mbis')
     charges = np.array([-0.302250, 0.151138, 0.151185])
     occs = np.array([[0.9974, 0.9678, 0.9194, 0.8942, 0.5931],
                      [0.1859, 0.0194, 0.0126, 0.0030, 0.000]])
@@ -100,53 +99,13 @@ def test_eos_h_h2o_2fragments():
     check_oxidation_states(eos, occs, [[0, 1], [2]], 'b', [-1.0, 1.0], 90.726, decimal=3)
 
 
-def test_eos_h_h2o_1fragments():
-    # test against APOST-3D (version 3.1)
-    eos = _get_eos('h2o_q+0_ub3lyp_ccpvtz.fchk', 'h')
+def test_eos_mbis_h2o_1fragments():
+    # test against APOST-3D (version 3.1) but with scheme = H
+    eos = _get_eos('h2o_q+0_ub3lyp_ccpvtz.fchk', 'mbis')
     charges = np.array([-0.302250, 0.151138, 0.151185])
     occs = np.array([[1.0000, 1.0000, 1.0000, 1.0000, 0.9999]])
     # test atomic charges
     assert_almost_equal(charges, eos.part.charges, decimal=3)
-    # test occupations & oxidation states for alpha & beta orbitals
-    check_oxidation_states(eos, occs, [[0, 1, 2]], 'a', [0.0], 100.0, decimal=3)
-    check_oxidation_states(eos, occs, [[0, 1, 2]], 'b', [0.0], 100.0, decimal=3)
-
-
-def test_eos_hi_h2o_3fragments():
-    # test against APOST-3D (version 3.1)
-    eos = _get_eos('h2o_q+0_ub3lyp_ccpvtz.fchk', 'hi')
-    charges = np.array([-0.90460, 0.45225, 0.45228])
-    occs = np.array([[0.9972, 0.9431, 0.8837, 0.6757, 0.6483],
-                     [0.1023, 0.0, 0.0, 0.0, 0.0], [0.1023, 0.0, 0.0, 0.0, 0.0]])
-    # test atomic charges
-    assert_almost_equal(charges, eos.part.charges, decimal=2)
-    # test occupations for alpha & beta orbitals using default fragments
-    check_oxidation_states(eos, occs, None, 'a', [-2.0, 1.0, 1.0], 100.0, decimal=2)
-    check_oxidation_states(eos, occs, None, 'b', [-2.0, 1.0, 1.0], 100.0, decimal=2)
-    # test occupations for alpha & beta orbitals given 3 fragments
-    check_oxidation_states(eos, occs, [[0], [1], [2]], 'a', [-2.0, 1.0, 1.0], 100.0, decimal=2)
-    check_oxidation_states(eos, occs, [[0], [1], [2]], 'b', [-2.0, 1.0, 1.0], 100.0, decimal=2)
-
-
-def test_eos_hi_h2o_2fragments():
-    # test against APOST-3D (version 3.1)
-    eos = _get_eos('h2o_q+0_ub3lyp_ccpvtz.fchk', 'hi')
-    charges = np.array([-0.90460, 0.45225, 0.45228])
-    occs = np.array([[0.9986, 0.9813, 0.9535, 0.9408, 0.6933], [0.1023, 0.0, 0.0, 0.0, 0.0]])
-    # test atomic charges
-    assert_almost_equal(charges, eos.part.charges, decimal=2)
-    # test occupations & oxidation states for alpha & beta orbitals
-    check_oxidation_states(eos, occs, [[0, 1], [2]], 'a', [-1.0, 1.0], 100.0, decimal=2)
-    check_oxidation_states(eos, occs, [[0, 1], [2]], 'b', [-1.0, 1.0], 100.0, decimal=2)
-
-
-def test_eos_hi_h2o_1fragments():
-    # test against APOST-3D (version 3.1)
-    eos = _get_eos('h2o_q+0_ub3lyp_ccpvtz.fchk', 'hi')
-    charges = np.array([-0.90460, 0.45225, 0.45228])
-    occs = np.array([[1.0000, 1.0000, 1.0000, 1.0000, 0.9999]])
-    # test atomic charges
-    assert_almost_equal(charges, eos.part.charges, decimal=2)
     # test occupations & oxidation states for alpha & beta orbitals
     check_oxidation_states(eos, occs, [[0, 1, 2]], 'a', [0.0], 100.0, decimal=3)
     check_oxidation_states(eos, occs, [[0, 1, 2]], 'b', [0.0], 100.0, decimal=3)

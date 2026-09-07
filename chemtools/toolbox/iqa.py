@@ -28,7 +28,6 @@ from os.path import dirname, join
 import os as os
 from glob import glob
 import multiprocessing as mp
-from multiprocessing import set_start_method
 
 from itertools import product, combinations_with_replacement
 import numpy as np
@@ -142,15 +141,10 @@ class IQA(object):
         # check part
         if part is not None:
             if not isinstance(part, DensPart) and part.__class__.__name__ not in [
-                "VarHirshfeld",
-                "HirshfeldI",
-                "Hirshfeld",
-                "LinearVarHirshfeld",
                 "MBISProModel",
-                "ConstrainedHirshfeldI",
             ]:
                 raise TypeError(
-                    "Argument part should be an instance of DensPart class or VarHirshfeld from rhopart."
+                    "Argument part should be an instance of DensPart class."
                 )
             if part.__class__.__name__ == "MBISProModel":
                 part.numbers = part.atnums
@@ -181,15 +175,10 @@ class IQA(object):
             #     raise ValueError("Grid-2 molecule different from molecule")
         if part_2 is not None:
             if not isinstance(part, DensPart) and part.__class__.__name__ not in [
-                "VarHirshfeld",
-                "HirshfeldI",
-                "Hirshfeld",
-                "LinearVarHirshfeld",
                 "MBISProModel",
-                "ConstrainedHirshfeldI",
             ]:
                 raise TypeError(
-                    "Argument part should be an instance of DensPart class or VarHirshfeld from rhopart."
+                    "Argument part should be an instance of DensPart class."
                 )
             if part_2.__class__.__name__ == "MBISProModel":
                 part_2.numbers = part_2.atnums
@@ -256,15 +245,10 @@ class IQA(object):
             print("No atomic partition scheme provided. No atomic decomposition will be performed.")
         elif part is not None:
             if not isinstance(part, DensPart) and part.__class__.__name__ not in [
-                "VarHirshfeld",
-                "HirshfeldI",
-                "Hirshfeld",
-                "LinearVarHirshfeld",
                 "MBISProModel",
-                "ConstrainedHirshfeldI",
             ]:
                 raise TypeError("Argument part should be an instance of DensPart class.")
-        elif scheme.lower() in ["h", "hi"]:
+        elif scheme.lower() in ["mbis"]:
             part = DensPart.from_molecule(molecule, grid=grid, scheme=scheme.lower(), local=False)
             part.weights = part.at_weights
             if grid_2 is not None:
@@ -272,7 +256,7 @@ class IQA(object):
                     molecule, grid=grid_2, scheme=scheme.lower(), local=False
                 )
                 part_2.weights = part_2.at_weights
-        elif scheme is not None and scheme not in ["H", "HI"]:
+        elif scheme is not None and scheme not in ["MBIS"]:
             raise NotImplementedError(f"Atomic partition {scheme} not yet available")
 
         # Initialize gbasis

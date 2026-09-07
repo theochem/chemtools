@@ -31,9 +31,6 @@ import numpy as np
 from chemtools.wrappers.molecule import Molecule
 from chemtools.wrappers.grid import MolecularGrid
 
-from rhopart import ProAtomDB, ProAtomRecord
-from rhopart import VarHirshfeld, DirectedAlphaDivergence, Hirshfeld, HirshfeldI
-
 from grid.onedgrid import GaussChebyshev
 from grid.rtransform import BeckeRTransform
 
@@ -68,40 +65,7 @@ class DensPart(object):
             Type of atoms-in-molecule partitioning scheme.
 
         """
-        if scheme == "h":
-            if not proatomdb:
-                proatomdb = ProAtomDB.from_refatoms(numbers)
-            part = Hirshfeld(coordinates,
-                                  numbers,
-                                  pseudo_numbers,
-                                  grid,
-                                  density,
-                                  proatomdb,
-                                  lmax=3)
-            part.run()
-            self.part = part
-            self.charges = self.part.charges
-            self.at_weights = part.weights
-            self.populations = part.populations
-
-        elif scheme == "hi":
-            if not proatomdb:
-                proatomdb = ProAtomDB.from_refatoms(numbers)
-            part = HirshfeldI(coordinates,
-                                  numbers,
-                                  pseudo_numbers,
-                                  grid,
-                                  density,
-                                  proatomdb,
-                                  lmax=3)
-            part.run()
-            self.part = part
-            self.charges = part.charges
-            self.at_weights = part.weights
-            self.populations = part.populations
-
-
-        elif scheme == "mbis":
+        if scheme == "mbis":
             pro_model_init = MBISProModel.from_geometry(numbers, coordinates)
             pro_model, localgrids = optimize_reduce_pro_model(
                 pro_model_init,
@@ -135,6 +99,8 @@ class DensPart(object):
             self.charges = pro_model.charges
             self.at_weights = at_weights
             self.populations = numbers - pro_model.charges
+        else:
+            raise NotImplementedError("Scheme {} is not implemented.".format(scheme))
 
 
 
