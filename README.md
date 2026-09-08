@@ -1,8 +1,9 @@
 ChemTools
 =========
 
+[![This project supports Python 3.10+](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org/downloads)
 [![codecov](https://codecov.io/gh/QuantumElephant/chemtools/branch/master/graph/badge.svg?token=s2f4Ilawut)](https://codecov.io/gh/QuantumElephant/chemtools)
-[![Build Status](https://travis-ci.com/QuantumElephant/chemtools.svg?token=wtCKs521Yw1urAV4F5DM&branch=master)](https://travis-ci.com/QuantumElephant/chemtools)
+[![PyPI Release](https://github.com/theochem/chemtools/actions/workflows/pypi_release.yaml/badge.svg)](https://github.com/theochem/chemtools/actions/workflows/pypi_release.yaml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/QuantumElephant/chemtools/blob/master/LICENSE)
 
 
@@ -33,21 +34,8 @@ To install ChemTools and its dependencies using,
 pyenv virtualenv chemtools_py313
 pyenv activate chemtools_py313
 
-# install HORTON 3 libraries
-pip install git+https://github.com/theochem/iodata.git
-pip install git+https://github.com/theochem/gbasis.git
-pip install git+https://github.com/theochem/grid.git
-pip install git+https://github.com/theochem/denspart.git
-
-# install the correct version of dependencies
-pip install numpy scipy==1.16.2 matplotlib
-
-# clone the repository
-git clone https://github.com/theochem/chemtools.git
-
-# install Chemtools
-cd chemtools
-pip install -e .
+# install chemtools with pypi
+pip install qc-chemtools
 ```
 
 Check our website for more detailed [installation guide](https://chemtools.org/usr_doc_installation.html).
