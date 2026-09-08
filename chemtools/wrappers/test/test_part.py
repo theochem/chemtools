@@ -22,8 +22,10 @@
 # --
 
 import numpy as np
+import pytest
 
 from chemtools.wrappers.molecule import Molecule
+from chemtools.wrappers import part as part_module
 from chemtools.wrappers.part import DensPart
 from chemtools.wrappers.grid import MolecularGrid
 try:
@@ -40,6 +42,19 @@ def test_condense_linear_from_file_fmr_mbis_ch4_fchk():
     computed = part.numbers - part.charges
     assert np.all(abs(expected - computed) < 1.e-3)
     assert np.all(abs(part.condense_to_atoms(part.density) - computed) < 1.e-2)
+
+
+def test_mbis_requires_denspart_dependency(monkeypatch):
+    monkeypatch.setattr(part_module, "_DENSPART_IMPORT_ERROR", ImportError("missing denspart"))
+    with pytest.raises(ImportError, match="optional 'denspart' dependency"):
+        DensPart(
+            coordinates=np.zeros((1, 3)),
+            numbers=np.array([1]),
+            pseudo_numbers=np.array([1]),
+            density=np.zeros(1),
+            grid=None,
+            scheme="mbis",
+        )
 
 def test_condense_quadratic_from_molecule_fmr_mbis_ch4_wfn():
     # expected populations of CH4 computed with HORTON
