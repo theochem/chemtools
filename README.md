@@ -1,5 +1,5 @@
-ChemTools
-=========
+# ChemTools
+
 
 [![This project supports Python 3.10+](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org/downloads)
 [![codecov](https://codecov.io/gh/QuantumElephant/chemtools/branch/master/graph/badge.svg?token=s2f4Ilawut)](https://codecov.io/gh/QuantumElephant/chemtools)
@@ -7,8 +7,8 @@ ChemTools
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/QuantumElephant/chemtools/blob/master/LICENSE)
 
 
-About
------
+## About
+
 [ChemTools](https://chemtools.org)  is a free and open source Python library for interpreting the results of quantum
 chemistry calculations. The goal of ChemTools is to provide a toolbox by which the
 quantitative output of electronic structure theory calculations can be expressed in chemical
@@ -16,8 +16,8 @@ language. ChemTools provides easy-to-use core functionality to compute fundament
 of conceptual quantum chemistry, together with a flexible set of utilities allowing scientists
 to easily test their own discoveries. Visit [ChemTools website](https://chemtools.org) for more information.
 
-Citation
---------
+## Citation
+
 Please use the following citation when using ChemTools in your research:
 
 > L. Pujal, A. Tehrani, and F. Heidar-Zadeh. ChemTools: Gain Chemical
@@ -26,8 +26,8 @@ Please use the following citation when using ChemTools in your research:
 > F. Heidar-Zadeh, M. Richer, S. Fias, R.A. Miranda-Quintana, M. Chan,
   M. Franco-Perez, C. E. Gonzalez-Espinoza, T.D. Kim, C. Lanssens, A.H.G. Patel, X.D. Yang, E. Vohringer-Martinez, C. Cardenas, T. Verstraelen, and P. W. Ayers. An explicit approach to conceptual density functional theory descriptors of arbitrary order. [Chem. Phys. Lett., 660:307–312, 2016.](http://www.sciencedirect.com/science/article/pii/S0009261416305280)
 
-Installation
-------------
+## Installation
+
 To install ChemTools and its dependencies using,
 ```bash
 # make a Python environment (with any tool you use, pyenv in this guide) and activate it
@@ -40,7 +40,7 @@ pip install qc-chemtools
 
 Check our website for more detailed [installation guide](https://chemtools.org/usr_doc_installation.html).
 
-Development
------------
+## Development
+
 New contributors of all programming levels are welcome to join us. You can follow our [developer guidelines](https://chemtools.org/tech_dev.html) for detailed information about contributing code, building
 documentation and quality assurance.
