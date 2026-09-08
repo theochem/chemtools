@@ -39,6 +39,36 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          python - <<'PY'
+          from pathlib import Path
+
+          requirements = Path("requirements.txt")
+          lines = requirements.read_text(encoding="utf-8").splitlines()
+          kept = []
+          removed = []
+
+          for line in lines:
+              stripped = line.strip()
+              if not stripped or stripped.startswith("#"):
+                  kept.append(line)
+                  continue
+              normalized = stripped.lower()
+              is_vcs_ref = (
+                  " @ git+" in normalized
+                  or normalized.startswith(("git+", "hg+", "svn+", "bzr+"))
+              )
+              if is_vcs_ref:
+                  removed.append(line)
+                  continue
+              kept.append(line)
+
+          requirements.write_text("\n".join(kept) + "\n", encoding="utf-8")
+          if removed:
+              print("Removed direct URL dependencies from packaging metadata:")
+              for item in removed:
+                  print(f" - {item}")
+          PY
+          python -m pip install "git+https://github.com/theochem/denspart"
           python -m pip install build pytest pytest-cov
           python -m pip install ".[dev]"
       - name: Test package
@@ -47,6 +77,46 @@ jobs:
 
       - name: Build package
         run: python -m build
+
+      - name: Verify metadata has no direct URL dependencies
+        run: |
+          python - <<'PY'
+          import glob
+          import sys
+          import tarfile
+          import zipfile
+
+          violations = []
+
+          wheel_paths = glob.glob("dist/*.whl")
+          if not wheel_paths:
+              raise SystemExit("No wheel found in dist/")
+          wheel_path = wheel_paths[0]
+          with zipfile.ZipFile(wheel_path) as wheel:
+              metadata_name = [name for name in wheel.namelist() if name.endswith("METADATA")][0]
+              metadata_text = wheel.read(metadata_name).decode("utf-8", errors="replace")
+          for line in metadata_text.splitlines():
+              if line.startswith("Requires-Dist:") and " @ " in line and "git+" in line.lower():
+                  violations.append(f"{wheel_path}: {line}")
+
+          sdist_paths = glob.glob("dist/*.tar.gz")
+          if not sdist_paths:
+              raise SystemExit("No sdist found in dist/")
+          sdist_path = sdist_paths[0]
+          with tarfile.open(sdist_path, "r:gz") as sdist:
+              pkg_info_member = next(member for member in sdist.getmembers() if member.name.endswith("PKG-INFO"))
+              pkg_info_text = sdist.extractfile(pkg_info_member).read().decode("utf-8", errors="replace")
+          for line in pkg_info_text.splitlines():
+              if line.startswith("Requires-Dist:") and " @ " in line and "git+" in line.lower():
+                  violations.append(f"{sdist_path}: {line}")
+
+          if violations:
+              print("Detected direct URL dependencies in built metadata:")
+              for item in violations:
+                  print(item)
+              sys.exit(1)
+          print("Metadata verification passed: no direct URL dependencies found.")
+          PY
 
       - name: Store the distribution packages
         uses: actions/upload-artifact@v7
