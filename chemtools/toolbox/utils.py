@@ -29,12 +29,6 @@ import numpy as np
 from grid.onedgrid import GaussChebyshev
 from grid.rtransform import BeckeRTransform
 
-from rhopart import ProAtomDB
-
-# from horton import ProAtomDB
-# from horton.scripts.wpart import wpart_schemes
-# from horton.cache import Cache
-
 from chemtools.wrappers.grid import MolecularGrid
 from chemtools.wrappers.molecule import Molecule
 from chemtools.wrappers.part import DensPart
@@ -331,15 +325,6 @@ def get_dict_population(molecule, approach, scheme, **kwargs):
     else:
         raise ValueError("Argument molecule not recognized!")
 
-    # check and generate partitioning class & proatomdb
-    # wpart = wpart_schemes[scheme]
-    # # make proatom database
-    # if scheme.lower() not in ["mbis", "b"]:
-    #     if "proatomdb" not in list(kwargs.keys()) or kwargs["proatomdb"] is None:
-    #         proatomdb = ProAtomDB.from_refatoms(mol0.numbers)
-    #         kwargs["proatomdb"] = proatomdb
-
-    proatomdb = ProAtomDB.from_refatoms(mol0.numbers)
     # check or generate molecular grid
     grid = get_molecular_grid(molecule, kwargs.pop("grid", None))
     # compute dictionary of number of electron and density
@@ -380,173 +365,6 @@ def get_dict_population(molecule, approach, scheme, **kwargs):
         dict_pops[nelec] = pops
     return dict_pops
 
-# def get_libxc_xc_density(molecule, grid, one_elec, libxc_label, libxc_c_label=None):
-#     from horton.meanfield import RLibXCLDA, RLibXCGGA, RLibXCHybridGGA, RLibXCMGGA, RLibXCHybridMGGA
-#     from horton.meanfield import ULibXCLDA, ULibXCGGA, ULibXCHybridGGA, ULibXCMGGA, ULibXCHybridMGGA
-#     from horton.meanfield import RTwoIndexTerm, RDirectTerm, RGridGroup, RTwoIndexTerm
-#     from horton.meanfield import UTwoIndexTerm, UDirectTerm, UGridGroup, UTwoIndexTerm
-#     from horton.meanfield import REffHam, UEffHam
-#
-#     horton_libxc = {
-#         "restricted": {
-#             "lda": RLibXCLDA,
-#             "gga": RLibXCGGA,
-#             "hyb_gga": RLibXCHybridGGA,
-#             "mgga": RLibXCMGGA,
-#             "hyb_mgga": RLibXCHybridMGGA,
-#         },
-#         "unrestricted": {
-#             "lda": ULibXCLDA,
-#             "gga": ULibXCGGA,
-#             "hyb_gga": ULibXCHybridGGA,
-#             "mgga": ULibXCMGGA,
-#             "hyb_mgga": ULibXCHybridMGGA,
-#         }
-#     }
-#
-#     # check atomic coordinates & numbers of grid object against loaded wave-function
-#     # if np.max(abs(molecule.coordinates - grid.centers)):
-#     #     raise ValueError(
-#     #         f"Coordinates from molecule and grid arguments does not match"
-#     #     )
-#     # if np.max(abs(molecule.numbers - grid.numbers)):
-#     #     raise ValueError(
-#     #         f"Coordinates from molecule and grid arguments does not match"
-#     #     )
-#
-#     # get Gaussian basis set
-#     obasis = molecule._ao._basis
-#
-#     # get molecular orbitals and density matrix
-#     orb_alpha = molecule._mo._orb_alpha
-#     dm_alpha = molecule._mo.compute_dm(spin='a')
-#
-#     # check whether wave-function is restricted or not
-#     # Note: if called from iqa class only restricted wave-function
-#     restricted = True
-#     orb_beta, dm_beta = None, None
-#     if hasattr(molecule, "orb_beta") and molecule.orb_beta is not None:
-#         restricted = False
-#         orb_beta = molecule.orb_beta
-#         dm_beta = orb_beta.to_dm()
-#
-#     # get libxc functionals
-#     libxc = horton_libxc["restricted" if restricted else "unrestricted"]
-#     func = libxc_label.lower().split("_")
-#     if libxc_c_label:
-#         func_c = libxc_c_label.lower().split("_")
-#
-#     # Assuming for now hybrid functionals always specified as xc together
-#     if func[0] == 'hyb':
-#         func_group = func[0] + '_' + func[1]
-#         func_type = func[-2] + '_' + func[-1]
-#     else:
-#         if func[-1] == 'x':
-#             func_type = 'x'
-#             func_group = func[0]
-#         if func[-1] != 'x':
-#             func_group = func[0]
-#             func_type = func[-2] + '_' + func[-1]
-#             print(func_type)
-#             print(func_group)
-#         if libxc_c_label:
-#             func_group_c = func_c[0]
-#             func_type_c = func_c[-2] + '_' + func_c[-1]
-#
-#     if func_group not in libxc:
-#         raise ValueError(
-#             f"Does not support exchange functional {func}. Options: {libxc.keys()}"
-#         )
-#
-#     # parse Gaussian integrals
-#     olp = one_elec['olp']
-#     kin = one_elec['kin']
-#     na = one_elec['na']
-#     er_vecs = one_elec['er_vecs']
-#
-#     # construct hamiltonian
-#     external = {'nn': one_elec['nn']}
-#     # Get libxc object
-#     if libxc_c_label:
-#         # e.g This libxc[func_group](func_type) is equal to RLibXCLDA('x')
-#         meanfield_x = libxc[func_group](func_type)
-#         meanfield_c = libxc[func_group_c](func_type_c)
-#         grid_terms = [libxc[func_group](func_type), libxc[func_group_c](func_type_c)]
-#
-#     else:
-#         meanfield_xc = libxc[func_group](func_type)
-#         grid_terms = [libxc[func_group](func_type)]
-#     coeff_mix = None
-#     if func_group in ['hyb_gga', 'hyb_mgga']:
-#         coeff_mix = grid_terms[0].get_exx_fraction()
-#
-#     # assert 5 == 6
-#
-#     if restricted:
-#         terms = [
-#             RTwoIndexTerm(kin, 'kin'),
-#             RDirectTerm(er_vecs, 'hartree'),
-#             RGridGroup(obasis, grid, grid_terms),
-#             RTwoIndexTerm(na, 'ne'),
-#         ]
-#         ham = REffHam(terms, external=external)
-#         fock_alpha = np.zeros(olp.shape)
-#         ham.reset(dm_alpha)
-#         ham.compute_energy()
-#         ham.compute_fock(fock_alpha)
-#         orb_alpha.from_fock_and_dm(fock_alpha, dm_alpha, olp)
-#     else:
-#         terms = [
-#             UTwoIndexTerm(kin, 'kin'),
-#             UDirectTerm(er_vecs, 'hartree'),
-#             UGridGroup(obasis, grid, grid_terms),
-#             UTwoIndexTerm(na, 'ne'),
-#         ]
-#         ham = UEffHam(terms, external=external)
-#         fock_alpha = np.zeros(olp.shape)
-#         fock_beta = np.zeros(olp.shape)
-#         ham.reset(dm_alpha, dm_beta)
-#         ham.compute_energy()
-#         ham.compute_fock(fock_alpha, fock_beta)
-#         orb_alpha.from_fock_and_dm(fock_alpha, dm_alpha, olp)
-#         orb_beta.from_fock_and_dm(fock_beta, dm_beta, olp)
-#
-#     if func_type.startswith('xc'):
-#         results = {"edens_xc": ham.cache[f"edens_libxc_{func_group}_{func_type}_full"], 'coeff_mix':coeff_mix}
-#         return results, meanfield_xc
-#     elif func_type.startswith('x') and func_type_c.startswith('c'):
-#         results = {"edens_x": ham.cache[f"edens_libxc_{func_group}_{func_type}_full"],
-#                    "edens_c": ham.cache[f"edens_libxc_{func_group_c}_{func_type_c}_full"],
-#                    'coeff_mix':coeff_mix}
-#
-#         return results, meanfield_x, meanfield_c
-#
-#
-#
-# def get_horton_analytical_components(molecule):
-#     from horton import compute_nucnuc
-#
-#     # get Gaussian basis set
-#     obasis = molecule._ao._basis
-#
-#     # compute Gaussian integrals
-#     olp = obasis.compute_overlap()
-#     kin = obasis.compute_kinetic()
-#     na = obasis.compute_nuclear_attraction(molecule.coordinates, molecule.pseudo_numbers)
-#     er_vecs = obasis.compute_electron_repulsion_cholesky()
-#     nn = compute_nucnuc(molecule.coordinates, molecule.pseudo_numbers)
-#
-#     one_elect_analytical = {
-#         'nn': nn,
-#         'olp': olp,
-#         'kin': kin,
-#         'na': na,
-#         'er_vecs': er_vecs
-#     }
-#
-#     return one_elect_analytical
-#
-
 def compute_molecular_orbitals_from_ao(molecule, ao_basis):
 
     eval_ao = ao_basis
@@ -558,6 +376,3 @@ def compute_molecular_orbitals_from_ao(molecule, ao_basis):
         eval_mo[i] = mo
 
     return eval_mo
-
-
-

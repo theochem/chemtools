@@ -32,11 +32,11 @@ except ImportError:
     from importlib.resources import path
 
 
-def test_condense_linear_from_file_fmr_h_ch4_fchk():
+def test_condense_linear_from_file_fmr_mbis_ch4_fchk():
     # expected populations of CH4 computed with HORTON
     with path('chemtools.data', 'ch4_uhf_ccpvdz.fchk') as fname:
-        part = DensPart.from_file(fname, scheme='h')
-    expected = np.array([6.10441928, 0.97389509, 0.97389441, 0.9738962,  0.97389376])
+        part = DensPart.from_file(fname, scheme='mbis')
+    expected = np.array([6.46038055, 0.88489494, 0.88492901, 0.88493897, 0.88492396])
     computed = part.numbers - part.charges
     assert np.all(abs(expected - computed) < 1.e-3)
     assert np.all(abs(part.condense_to_atoms(part.density) - computed) < 1.e-2)
