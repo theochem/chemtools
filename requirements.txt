@@ -8,4 +8,4 @@ qc-gbasis
 qc-iodata
 # to support the imports of pylibxc
 pylibxc2
-densepart @ git+https://github.com/theochem/denspart
+denspart @ git+https://github.com/theochem/denspart
