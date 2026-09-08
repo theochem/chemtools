@@ -65,7 +65,6 @@ classifiers = [
     "Topic :: Scientific/Engineering",
 ]
 
-# version = "0.0.2b4"
 dynamic = [
     "dependencies",
     "optional-dependencies",
