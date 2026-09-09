@@ -159,7 +159,7 @@ requires = ["setuptools>=64", "setuptools-scm>=8", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
+dependencies = {file = ["requirements_pypi.txt"]}
 optional-dependencies = {dev = {file = ["requirements_dev.txt"]}}
 
 [tool.setuptools_scm]

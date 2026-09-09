@@ -34,9 +34,19 @@ from chemtools.wrappers.grid import MolecularGrid
 from grid.onedgrid import GaussChebyshev
 from grid.rtransform import BeckeRTransform
 
-from denspart.mbis import MBISProModel
-from denspart.vh import optimize_reduce_pro_model
-from denspart.properties import compute_radial_moments, compute_multipole_moments, safe_ratio
+try:
+    from denspart.mbis import MBISProModel
+    from denspart.vh import optimize_reduce_pro_model
+    from denspart.properties import compute_radial_moments, compute_multipole_moments, safe_ratio
+except ImportError as exc:
+    MBISProModel = None
+    optimize_reduce_pro_model = None
+    compute_radial_moments = None
+    compute_multipole_moments = None
+    safe_ratio = None
+    _DENSPART_IMPORT_ERROR = exc
+else:
+    _DENSPART_IMPORT_ERROR = None
 
 
 
@@ -66,6 +76,11 @@ class DensPart(object):
 
         """
         if scheme == "mbis":
+            if _DENSPART_IMPORT_ERROR is not None:
+                raise ImportError(
+                    "DensPart requires the optional 'denspart' dependency. "
+                    "Install it separately before using the 'mbis' scheme."
+                ) from _DENSPART_IMPORT_ERROR
             pro_model_init = MBISProModel.from_geometry(numbers, coordinates)
             pro_model, localgrids = optimize_reduce_pro_model(
                 pro_model_init,
