@@ -103,10 +103,12 @@ def mesh_plane(points, spacing, extension):
     origin += vec_horizontal
     unit_horizontal = vec_horizontal / np.sum(vec_horizontal ** 2) ** 0.5
 
+    # width and height are arrays with one element, which cannot be converted to int directly
+    # since NumPy 2.5.
     output = np.linspace(
-        origin, origin - unit_horizontal * width, num=int(width / spacing) + 2, endpoint=True
+        origin, origin - unit_horizontal * width, num=int(width.item() / spacing) + 2, endpoint=True
     )
     output = np.linspace(
-        output, output - unit_vertical * height, num=int(height / spacing) + 2, endpoint=True
+        output, output - unit_vertical * height, num=int(height.item() / spacing) + 2, endpoint=True
     )
     return output
