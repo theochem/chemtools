@@ -106,17 +106,18 @@ def get_matching_attr(molecule, attr, accuracy=1.e-6):
     return ref
 
 
-def get_molecular_grid(molecule, R=1, grid=None):
+def get_molecular_grid(molecule, grid=None, R=1):
     r"""Return molecular grid or check that given grid is consistent with molecule.
 
     Parameters
     ----------
     molecule : Molecule or Sequence of Molecule
         Instance of Molecule class, or sequence of Molecule class instances.
-    R: float
-        The scale factor used in the transformation. use different values to make default grids without overlaping
     grid : MolecularGrid, optional
         Instance or MolecularGrid. If `None`, a default `MolecularGrid` is returned.
+    R : float, optional
+        The scale factor used in the transformation. Use different values to make default grids
+        without overlapping. It is only used when a default grid is made.
     """
     # check grid or make grid
     if grid is not None and isinstance(molecule, Molecule):
